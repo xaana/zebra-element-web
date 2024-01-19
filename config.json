@@ -1,0 +1,166 @@
+{
+    "default_server_config": {
+        "m.homeserver": {
+            "base_url": "http:/localhost:8008",
+            "server_name": "localhost"
+        },
+        "m.identity_server": {
+            "base_url": "https://vector.im"
+        }
+    },
+    "disable_custom_urls": false,
+    "disable_guests": false,
+    "disable_login_language_selector": true,
+    "disable_3pid_login": false,
+    "brand": "Zebra",
+    "integrations_ui_url": "https://scalar.vector.im/",
+    "integrations_rest_url": "https://scalar.vector.im/api",
+    "integrations_widgets_urls": [
+        "https://scalar.vector.im/_matrix/integrations/v1",
+        "https://scalar.vector.im/api",
+        "https://scalar-staging.vector.im/_matrix/integrations/v1",
+        "https://scalar-staging.vector.im/api",
+        "https://scalar-staging.riot.im/scalar/api"
+    ],
+    "default_country_code": "GB",
+    "show_labs_settings": false,
+    "features": {},
+    "default_federate": true,
+    "default_theme": "light",
+    "room_directory": {
+        "servers": ["matrix.org"]
+    },
+    "enable_presence_by_hs_url": {
+        "https://matrix.org": false,
+        "https://matrix-client.matrix.org": false
+    },
+    "setting_defaults": {
+        "breadcrumbs": true,
+        "custom_themes": [
+            {
+                "name": "Zebra",
+                "is_dark": false,
+                "fonts": {
+                    "faces": [
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "normal",
+                            "font-weight": 400,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Regular.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Regular.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "italic",
+                            "font-weight": 400,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Italic.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Italic.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "normal",
+                            "font-weight": 500,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Regular.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Regular.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "italic",
+                            "font-weight": 500,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Italic.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Italic.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "normal",
+                            "font-weight": 600,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Medium.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Medium.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "italic",
+                            "font-weight": 600,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-MediumItalic.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-MediumItalic.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "normal",
+                            "font-weight": 700,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-Medium.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-Medium.woff", "format": "woff" }
+                            ]
+                        },
+                        {
+                            "font-family": "Tomorrow",
+                            "font-style": "italic",
+                            "font-weight": 700,
+                            "font-display": "swap",
+                            "src": [
+                                { "url": "/fonts/Tomorrow/Tomorrow-MediumItalic.woff2", "format": "woff2" },
+                                { "url": "/fonts/Tomorrow/Tomorrow-MediumItalic.woff", "format": "woff" }
+                            ]
+                        }
+                    ],
+                    "general": "Tomorrow, sans",
+                    "monospace": "'Courier New'"
+                },
+                "colors": {
+                    "accent-color": "#3596fc",
+                    "primary-color": "#368bd6",
+                    "warning-color": "#ff4b55",
+                    "sidebar-color": "#27303a",
+                    "roomlist-background-color": "#f3f8fd",
+                    "roomlist-text-color": "#2e2f32",
+                    "roomlist-text-secondary-color": "#61708b",
+                    "roomlist-highlights-color": "#ffffff",
+                    "roomlist-separator-color": "#e3e8f0",
+                    "timeline-background-color": "#ffffff",
+                    "timeline-text-color": "#2e2f32",
+                    "timeline-text-secondary-color": "#61708b",
+                    "timeline-highlights-color": "#f3f8fd",
+                    "username-colors": ["#254797", "#3e38b0", "#6d239d", "#7fle7c", "#8d1d38", "#8e280d", "#9c6c18"],
+                    "avatar-background-colors": [
+                        "#d9deff",
+                        "#e5d6ff",
+                        "#f9d0ff",
+                        "#ffcefc",
+                        "#ffd0d4",
+                        "#ffd2be",
+                        "#fff3bc"
+                    ]
+                }
+            }
+        ]
+    },
+    "jitsi": {
+        "preferred_domain": "meet.element.io"
+    },
+    "element_call": {
+        "url": "https://call.element.io",
+        "participant_limit": 8,
+        "brand": "Element Call"
+    },
+    "map_style_url": "https://api.maptiler.com/maps/streets/style.json?key=fU3vlMsMn4Jb6dnEIFsx"
+}
