@@ -591,7 +591,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
 
-        if (this.props.replacingEventId && this.props.mxEvent.getSender() !== "@bot:localhost") {
+        if (this.props.replacingEventId && this.props.mxEvent.getSender() !== "@zebra:matrix.algoreus.net") {
             body = (
                 <>
                     {body}
