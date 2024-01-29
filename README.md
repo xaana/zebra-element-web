@@ -188,11 +188,11 @@ yarn install
 popd
 ```
 
-Clone this repo and switch to the `element-web` directory:
+Clone this repo and switch to the `zebra-element-web` directory:
 
 ```bash
 git clone https://github.com/xaana/zebra-element-web.git
-cd element-web
+cd zebra-element-web
 ```
 
 Configure the app by modifying `config.json`. See the [configuration docs](docs/config.md) for details.
