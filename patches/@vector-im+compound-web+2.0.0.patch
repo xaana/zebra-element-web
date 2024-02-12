@@ -1,0 +1,100 @@
+diff --git a/node_modules/@vector-im/compound-web/dist/style.css b/node_modules/@vector-im/compound-web/dist/style.css
+index c599298..5a3249f 100644
+--- a/node_modules/@vector-im/compound-web/dist/style.css
++++ b/node_modules/@vector-im/compound-web/dist/style.css
+@@ -29,8 +29,8 @@ limitations under the License.
+ }
+ 
+ ._alert_1bz08_19[data-type="success"] {
+-  background-color: var(--cpd-color-green-200);
+-  border-color: var(--cpd-color-green-500);
++  background-color: var(--cpd-color-zebra-200);
++  border-color: var(--cpd-color-zebra-500);
+ }
+ 
+ ._alert_1bz08_19[data-type="critical"] {
+@@ -55,7 +55,7 @@ limitations under the License.
+ }
+ 
+ [data-type="success"] :is(._title_1bz08_57, ._icon_1bz08_57) {
+-  color: var(--cpd-color-green-900);
++  color: var(--cpd-color-zebra-900);
+ }
+ 
+ [data-type="critical"] :is(._title_1bz08_57, ._icon_1bz08_57) {
+@@ -590,8 +590,8 @@ button._avatar_1o69u_17:disabled {
+ }
+ 
+ ._avatar_1o69u_17[data-color="3"] {
+-  --cpd-avatar-bg: var(--cpd-color-green-300);
+-  --cpd-avatar-color: var(--cpd-color-green-1200);
++  --cpd-avatar-bg: var(--cpd-color-zebra-300);
++  --cpd-avatar-color: var(--cpd-color-zebra-1200);
+ }
+ 
+ ._avatar_1o69u_17[data-color="4"] {
+@@ -683,8 +683,8 @@ limitations under the License.
+ }
+ 
+ ._badge_qipht_17[data-kind="success"] {
+-  background: var(--cpd-color-green-400);
+-  color: var(--cpd-color-green-900);
++  background: var(--cpd-color-zebra-400);
++  color: var(--cpd-color-zebra-900);
+ }
+ 
+ ._badge_qipht_17[data-kind="critical"] {
+diff --git a/node_modules/@vector-im/compound-web/src/components/Alert/Alert.module.css b/node_modules/@vector-im/compound-web/src/components/Alert/Alert.module.css
+index bc6d1c5..7b9e42c 100644
+--- a/node_modules/@vector-im/compound-web/src/components/Alert/Alert.module.css
++++ b/node_modules/@vector-im/compound-web/src/components/Alert/Alert.module.css
+@@ -29,8 +29,8 @@ limitations under the License.
+ }
+ 
+ .alert[data-type="success"] {
+-  background-color: var(--cpd-color-green-200);
+-  border-color: var(--cpd-color-green-500);
++  background-color: var(--cpd-color-zebra-200);
++  border-color: var(--cpd-color-zebra-500);
+ }
+ 
+ .alert[data-type="critical"] {
+@@ -55,7 +55,7 @@ limitations under the License.
+ }
+ 
+ [data-type="success"] :is(.title, .icon) {
+-  color: var(--cpd-color-green-900);
++  color: var(--cpd-color-zebra-900);
+ }
+ 
+ [data-type="critical"] :is(.title, .icon) {
+diff --git a/node_modules/@vector-im/compound-web/src/components/Avatar/Avatar.module.css b/node_modules/@vector-im/compound-web/src/components/Avatar/Avatar.module.css
+index b55884f..6928cbc 100644
+--- a/node_modules/@vector-im/compound-web/src/components/Avatar/Avatar.module.css
++++ b/node_modules/@vector-im/compound-web/src/components/Avatar/Avatar.module.css
+@@ -76,8 +76,8 @@ button.avatar:disabled {
+ }
+ 
+ .avatar[data-color="3"] {
+-  --cpd-avatar-bg: var(--cpd-color-green-300);
+-  --cpd-avatar-color: var(--cpd-color-green-1200);
++  --cpd-avatar-bg: var(--cpd-color-zebra-300);
++  --cpd-avatar-color: var(--cpd-color-zebra-1200);
+ }
+ 
+ .avatar[data-color="4"] {
+diff --git a/node_modules/@vector-im/compound-web/src/components/Badge/Badge.module.css b/node_modules/@vector-im/compound-web/src/components/Badge/Badge.module.css
+index 7340063..c2e3087 100644
+--- a/node_modules/@vector-im/compound-web/src/components/Badge/Badge.module.css
++++ b/node_modules/@vector-im/compound-web/src/components/Badge/Badge.module.css
+@@ -25,8 +25,8 @@ limitations under the License.
+ }
+ 
+ .badge[data-kind="success"] {
+-  background: var(--cpd-color-green-400);
+-  color: var(--cpd-color-green-900);
++  background: var(--cpd-color-zebra-400);
++  color: var(--cpd-color-zebra-900);
+ }
+ 
+ .badge[data-kind="critical"] {

@@ -14,10 +14,10 @@
         "app_launch_unexpected_error": "ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດໃນການກະກຽມແອັບຯ. ເບິ່ງ console ສໍາລັບລາຍລະອຽດ.",
         "cannot_load_config": "ບໍ່ສາມາດໂຫຼດໄຟລ໌ config ໄດ້: ກະລຸນາໂຫຼດໜ້ານີ້ຄືນໃໝ່ເພື່ອລອງອີກຄັ້ງ.",
         "invalid_configuration_no_server": "ການຕັ້ງຄ່າບໍ່ຖືກຕ້ອງ: ບໍ່ໄດ້ລະບຸເຊີບເວີເລີ່ມຕົ້ນ.",
-        "invalid_json": "ການຕັ້ງຄ່າແອັບ Element ຂອງທ່ານມີຄ່າ JSON ທີ່ບໍ່ຖືກຕ້ອງ. ກະລຸນາແກ້ໄຂບັນຫາ ແລະໂຫຼດໜ້ານີ້ຄືນໃໝ່.",
+        "invalid_json": "ການຕັ້ງຄ່າແອັບ Zebra ຂອງທ່ານມີຄ່າ JSON ທີ່ບໍ່ຖືກຕ້ອງ. ກະລຸນາແກ້ໄຂບັນຫາ ແລະໂຫຼດໜ້ານີ້ຄືນໃໝ່.",
         "invalid_json_detail": "ຂໍ້ຄວາມຈາກຕົວປ່ຽນແມ່ນ: %(message)s",
         "invalid_json_generic": "JSON ບໍ່ຖືກຕ້ອງ",
-        "misconfigured": "ການຕັ້ງຄ່າແອັບ Element ຂອງທ່ານບໍ່ຖືກຕ້ອງ"
+        "misconfigured": "ການຕັ້ງຄ່າແອັບ Zebra ຂອງທ່ານບໍ່ຖືກຕ້ອງ"
     },
     "failed_to_start": "ບໍ່ສາມາດເປີດໄດ້",
     "go_to_element_io": "ໄປຫາ element.io",

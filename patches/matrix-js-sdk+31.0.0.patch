@@ -1,0 +1,87 @@
+diff --git a/node_modules/matrix-js-sdk/src/models/event-timeline.ts b/node_modules/matrix-js-sdk/src/models/event-timeline.ts
+index a20dac8..4270fb9 100644
+--- a/node_modules/matrix-js-sdk/src/models/event-timeline.ts
++++ b/node_modules/matrix-js-sdk/src/models/event-timeline.ts
+@@ -243,6 +243,42 @@ export class EventTimeline {
+      * @returns An array of MatrixEvents
+      */
+     public getEvents(): MatrixEvent[] {
++        // Check if there are at least 2 events in the timeline
++        if (this.events.length > 1) {
++            const lastMessage = this.events[this.events.length - 1];
++            // Check if the latest event is a streaming custom event
++            if (lastMessage.getType() === "com.example.custom_event") {
++                // Check if the latest custom event is a streamed edit to a previous custom event
++                if (lastMessage.getContent()?.["m.relates_to"]?.["rel_type"] === "m.stream.append") {
++                    // Find the previous event to edit and update its content
++                    const targetEventIndex = this.events.findIndex(
++                        (event) => event.getId() === lastMessage.getContent()?.["m.relates_to"]?.["event_id"],
++                    );
++                    if (
++                        targetEventIndex !== -1 &&
++                        this.events[targetEventIndex]?.getContent()?.body !== lastMessage.getContent()?.body
++                    ) {
++                        // Update the content of the custom event
++                        this.events[targetEventIndex]?.setContent(lastMessage.getContent());
++                        // Drop the current latest custom event
++                        this.events.pop();
++                    }
++                } else {
++                    // Update the type of the custom event to be a regular message
++                    this.events[this.events.length - 1]?.setType(EventType.RoomMessage);
++                }
++            } else if (lastMessage.getType() === EventType.RoomMessage) {
++                // Check if the last event is a completed message of a series of streamed events
++                if (lastMessage.getContent()?.["m.relates_to"]?.["rel_type"] === "m.stream.replace") {
++                    // Find the previous streamed custom event
++                    const targetEventIndex = this.events.findIndex(
++                        (event) => event.getId() === lastMessage.getContent()?.["m.relates_to"]?.["event_id"],
++                    );
++                    // Update the type of the custom event so that it is no longer rendered
++                    targetEventIndex !== -1 && this.events[targetEventIndex]?.setType("com.example.custom_event");
++                }
++            }
++        }
+         return this.events;
+     }
+ 
+diff --git a/node_modules/matrix-js-sdk/src/models/event.ts b/node_modules/matrix-js-sdk/src/models/event.ts
+index 370f94c..10d3f1a 100644
+--- a/node_modules/matrix-js-sdk/src/models/event.ts
++++ b/node_modules/matrix-js-sdk/src/models/event.ts
+@@ -59,6 +59,8 @@ export interface IContent {
+     "displayname"?: string;
+     "m.relates_to"?: IEventRelation;
+ 
++    "edit_state"?: string;
++
+     "m.mentions"?: IMentions;
+ }
+ 
+@@ -495,6 +497,26 @@ export class MatrixEvent extends TypedEventEmitter<MatrixEventEmittedEvents, Mat
+         return this.event.type!;
+     }
+ 
++    /**
++     * Set the event type.
++     * Used for streamed messages from Zebra bot
++     *
++     */
++    public setType(newType: EventType | string): void {
++        this.event.type = newType;
++    }
++
++    /**
++     * Set the event content JSON.
++     * Used for streamed messages from Zebra bot
++     *
++     */
++    public setContent(newContent: IContent): void {
++        if (this.event.content?.body) this.event.content.body = newContent.body;
++        if (this.event.content?.formatted_body) this.event.content.formatted_body = newContent.formatted_body;
++        if (this.event.content) this.event.content.edit_state = newContent.edit_state;
++    }
++
+     /**
+      * Get the (possibly encrypted) type of the event that will be sent to the
+      * homeserver.

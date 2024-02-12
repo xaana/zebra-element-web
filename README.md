@@ -1,7 +1,47 @@
+[![Chat](https://img.shields.io/matrix/element-web:matrix.org?logo=matrix)](https://matrix.to/#/#element-web:matrix.org)
+![Tests](https://github.com/element-hq/element-web/actions/workflows/tests.yaml/badge.svg)
+![Static Analysis](https://github.com/element-hq/element-web/actions/workflows/static_analysis.yaml/badge.svg)
+[![Localazy](https://img.shields.io/endpoint?url=https%3A%2F%2Fconnect.localazy.com%2Fstatus%2Felement-web%2Fdata%3Fcontent%3Dall%26title%3Dlocalazy%26logo%3Dtrue)](https://localazy.com/p/element-web)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=element-web&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=element-web)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=element-web&metric=coverage)](https://sonarcloud.io/summary/new_code?id=element-web)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=element-web&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=element-web)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=element-web&metric=bugs)](https://sonarcloud.io/summary/new_code?id=element-web)
+
 # Element
 
 Element (formerly known as Vector and Riot) is a Matrix web client built using the [Matrix
 React SDK](https://github.com/matrix-org/matrix-react-sdk).
+
+# Supported Environments
+
+Element has several tiers of support for different environments:
+
+-   Supported
+    -   Definition: Issues **actively triaged**, regressions **block** the release
+    -   Last 2 major versions of Chrome, Firefox, and Edge on desktop OSes
+    -   Last 2 versions of Safari
+    -   Latest release of official Element Desktop app on desktop OSes
+    -   Desktop OSes means macOS, Windows, and Linux versions for desktop devices
+        that are actively supported by the OS vendor and receive security updates
+-   Experimental
+    -   Definition: Issues **accepted**, regressions **do not block** the release
+    -   Element as an installed PWA via current stable version of Chrome
+    -   Mobile web for current stable version of Chrome, Firefox, and Safari on Android, iOS, and iPadOS
+-   Not supported
+    -   Definition: Issues only affecting unsupported environments are **closed**
+    -   Everything else
+
+For accessing Element on an Android or iOS device, we currently recommend the
+native apps [element-android](https://github.com/element-hq/element-android)
+and [element-ios](https://github.com/element-hq/element-ios).
+
+# Getting Started
+
+The easiest way to test Element is to just use the hosted copy at <https://app.element.io>.
+The `develop` branch is continuously deployed to <https://develop.element.io>
+for those who like living dangerously.
+
+To host your own instance of Element see [Installing Element Web](docs/install.md).
 
 To install Element as a desktop application, see [Running as a desktop app](#running-as-a-desktop-app) below.
 
@@ -188,14 +228,15 @@ yarn install
 popd
 ```
 
-Clone this repo and switch to the `zebra-element-web` directory:
+Clone the repo and switch to the `element-web` directory:
 
 ```bash
-git clone https://github.com/xaana/zebra-element-web.git
-cd zebra-element-web
+git clone https://github.com/element-hq/element-web.git
+cd element-web
 ```
 
-Configure the app by modifying `config.json`. See the [configuration docs](docs/config.md) for details.
+Configure the app by copying `config.sample.json` to `config.json` and
+modifying it. See the [configuration docs](docs/config.md) for details.
 
 Finally, build and start Element itself:
 
@@ -272,3 +313,9 @@ See [matrix-react-sdk](https://github.com/matrix-org/matrix-react-sdk/#end-to-en
 To add a new translation, head to the [translating doc](docs/translating.md).
 
 For a developer guide, see the [translating dev doc](docs/translating-dev.md).
+
+# Triaging issues
+
+Issues are triaged by community members and the Web App Team, following the [triage process](https://github.com/element-hq/element-meta/wiki/Triage-process).
+
+We use [issue labels](https://github.com/element-hq/element-meta/wiki/Issue-labelling) to sort all incoming issues.

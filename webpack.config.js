@@ -23,24 +23,35 @@ crypto.createHash = (algorithm, options) => createHash(algorithm === "md4" ? "sh
 //   this can be helpful if your deployment has redirects for old bundles, such as develop.element.io.
 
 dotenv.config();
-let ogImageUrl = process.env.RIOT_OG_IMAGE_URL;
-if (!ogImageUrl) ogImageUrl = "https://app.element.io/themes/element/img/logos/opengraph.png";
+// let ogImageUrl = process.env.RIOT_OG_IMAGE_URL;
+// if (!ogImageUrl) ogImageUrl = "https://app.element.io/themes/element/img/logos/opengraph.png";
+let ogImageUrl = "https://i.imgur.com/Cx8xOFW.png";
 
 if (!process.env.VERSION) {
     console.warn("Unset VERSION variable - this may affect build output");
     process.env.VERSION = "!!UNSET!!";
 }
 
+// const cssThemes = {
+//     // CSS themes
+//     "theme-legacy-light": "./node_modules/matrix-react-sdk/res/themes/legacy-light/css/legacy-light.pcss",
+//     "theme-legacy-dark": "./node_modules/matrix-react-sdk/res/themes/legacy-dark/css/legacy-dark.pcss",
+//     "theme-light": "./node_modules/matrix-react-sdk/res/themes/light/css/light.pcss",
+//     "theme-light-high-contrast":
+//         "./node_modules/matrix-react-sdk/res/themes/light-high-contrast/css/light-high-contrast.pcss",
+//     "theme-dark": "./node_modules/matrix-react-sdk/res/themes/dark/css/dark.pcss",
+//     "theme-light-custom": "./node_modules/matrix-react-sdk/res/themes/light-custom/css/light-custom.pcss",
+//     "theme-dark-custom": "./node_modules/matrix-react-sdk/res/themes/dark-custom/css/dark-custom.pcss",
+// };
 const cssThemes = {
     // CSS themes
-    "theme-legacy-light": "./node_modules/matrix-react-sdk/res/themes/legacy-light/css/legacy-light.pcss",
-    "theme-legacy-dark": "./node_modules/matrix-react-sdk/res/themes/legacy-dark/css/legacy-dark.pcss",
-    "theme-light": "./node_modules/matrix-react-sdk/res/themes/light/css/light.pcss",
-    "theme-light-high-contrast":
-        "./node_modules/matrix-react-sdk/res/themes/light-high-contrast/css/light-high-contrast.pcss",
-    "theme-dark": "./node_modules/matrix-react-sdk/res/themes/dark/css/dark.pcss",
-    "theme-light-custom": "./node_modules/matrix-react-sdk/res/themes/light-custom/css/light-custom.pcss",
-    "theme-dark-custom": "./node_modules/matrix-react-sdk/res/themes/dark-custom/css/dark-custom.pcss",
+    "theme-legacy-light": "./res/themes/legacy-light/css/legacy-light.pcss",
+    "theme-legacy-dark": "./res/themes/legacy-dark/css/legacy-dark.pcss",
+    "theme-light": "./res/themes/light/css/light.pcss",
+    "theme-light-high-contrast": "./res/themes/light-high-contrast/css/light-high-contrast.pcss",
+    "theme-dark": "./res/themes/dark/css/dark.pcss",
+    "theme-light-custom": "./res/themes/light-custom/css/light-custom.pcss",
+    "theme-dark-custom": "./res/themes/dark-custom/css/dark-custom.pcss",
 };
 
 function getActiveThemes() {
@@ -335,37 +346,22 @@ module.exports = (env, argv) => {
                         },
                         {
                             loader: "postcss-loader",
-                            ident: "postcss",
                             options: {
-                                "sourceMap": true,
-                                "plugins": () => [
-                                    // Note that we use significantly fewer plugins on the plain
-                                    // CSS parser. If we start to parse plain CSS, we end with all
-                                    // kinds of nasty problems (like stylesheets not loading).
-                                    //
-                                    // You might have noticed that we're also sending regular CSS
-                                    // through PostCSS. This looks weird, and in fact is probably
-                                    // not what you'd expect, however in order for our CSS build
-                                    // to work nicely we have to do this. Because down the line
-                                    // our SCSS stylesheets reference plain CSS we have to load
-                                    // the plain CSS through PostCSS so it can find it safely. This
-                                    // also acts like a babel-for-css by transpiling our (S)CSS
-                                    // down/up to the right browser support (prefixes, etc).
-                                    // Further, if we don't do this then PostCSS assumes that our
-                                    // plain CSS is SCSS and it really doesn't like that, even
-                                    // though plain CSS should be compatible. The chunking options
-                                    // at the top of this webpack config help group the SCSS and
-                                    // plain CSS together for the bundler.
+                                sourceMap: true,
+                                postcssOptions: {
+                                    plugins: [
+                                        require("postcss-simple-vars")(),
+                                        require("postcss-hexrgba")(),
 
-                                    require("postcss-simple-vars")(),
-                                    require("postcss-hexrgba")(),
+                                        // Tailwind CSS and Autoprefixer
+                                        require("tailwindcss"),
+                                        require("autoprefixer"),
 
-                                    // It's important that this plugin is last otherwise we end
-                                    // up with broken CSS.
-                                    require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" }),
-                                ],
-                                "parser": "postcss-scss",
-                                "local-plugins": true,
+                                        // Make sure postcss-preset-env is last
+                                        require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" }),
+                                    ],
+                                    parser: "postcss-scss",
+                                },
                             },
                         },
                     ],
@@ -418,24 +414,62 @@ module.exports = (env, argv) => {
                         },
                         {
                             loader: "postcss-loader",
-                            ident: "postcss",
                             options: {
-                                "sourceMap": true,
-                                "plugins": () => [
-                                    // Note that we use slightly different plugins for PostCSS.
-                                    require("postcss-import")(),
-                                    require("postcss-mixins")(),
-                                    require("postcss-simple-vars")(),
-                                    require("postcss-nested")(),
-                                    require("postcss-easings")(),
-                                    require("postcss-hexrgba")(),
+                                sourceMap: true,
+                                postcssOptions: {
+                                    plugins: [
+                                        // require("postcss-import")({
+                                        //     resolve: (id, basedir, importOptions) => {
+                                        //         // Normalize the path for cross-platform compatibility
+                                        //         const normalizedId = path.normalize(id);
 
-                                    // It's important that this plugin is last otherwise we end
-                                    // up with broken CSS.
-                                    require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" }),
-                                ],
-                                "parser": "postcss-scss",
-                                "local-plugins": true,
+                                        //         // Iterate over the fileOverrides to find a match
+                                        //         for (const [key, value] of Object.entries(fileOverrides)) {
+                                        //             const normalizedKey = path.normalize(key);
+                                        //             const filename = path.basename(normalizedKey); // Extracts the filename from the path
+                                        //             if (
+                                        //                 normalizedId.endsWith(filename) &&
+                                        //                 normalizedKey.endsWith(".pcss")
+                                        //             ) {
+                                        //                 // Return the resolved path from the overrides
+                                        //                 return path.resolve(__dirname, value);
+                                        //             }
+                                        //         }
+
+                                        //         // Fallback to the default behavior for all other imports
+                                        //         return id;
+                                        //     },
+                                        // }),
+                                        require("postcss-import")({
+                                            resolve: (id, basedir, importOptions) => {
+                                                const filename = path.basename(path.normalize(id));
+                                                // Common pcss files
+                                                const commonFiles = [
+                                                    "_common.pcss",
+                                                    "_animations.pcss",
+                                                    "_components.pcss",
+                                                    "_font-sizes.pcss",
+                                                    "_spacing.pcss",
+                                                ];
+                                                if (commonFiles.includes(filename)) {
+                                                    return path.resolve(__dirname, "res/css", filename);
+                                                }
+                                                // Fallback to the default behavior for all other imports
+                                                return id;
+                                            },
+                                        }),
+                                        require("postcss-import")(),
+                                        require("postcss-mixins")(),
+                                        require("postcss-simple-vars")(),
+                                        require("postcss-nested")(),
+                                        require("postcss-easings")(),
+                                        require("postcss-hexrgba")(),
+
+                                        // Make sure postcss-preset-env is last
+                                        require("postcss-preset-env")({ stage: 3, browsers: "last 2 versions" }),
+                                    ],
+                                    parser: "postcss-scss",
+                                },
                             },
                         },
                     ],
@@ -733,7 +767,6 @@ module.exports = (env, argv) => {
                     { from: "welcome/**", context: path.resolve(__dirname, "res") },
                     { from: "themes/**", context: path.resolve(__dirname, "res") },
                     { from: "vector-icons/**", context: path.resolve(__dirname, "res") },
-                    { from: "fonts/**", context: path.resolve(__dirname, "res") },
                     { from: "decoder-ring/**", context: path.resolve(__dirname, "res") },
                     { from: "media/**", context: path.resolve(__dirname, "node_modules/matrix-react-sdk/res/") },
                     "node_modules/@matrix-org/olm/olm_legacy.js",

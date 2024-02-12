@@ -1,3 +1,3 @@
 {
-    "src/components/views/messages/TextualBody.tsx": "src/components/views/messages/TextualBody.tsx"
+    "src/components/structures/MessagePanel.tsx": "src/components/structures/MessagePanel.tsx"
 }

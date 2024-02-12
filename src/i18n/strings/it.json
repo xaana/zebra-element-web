@@ -36,5 +36,5 @@
     "unknown_device": "Dispositivo sconosciuto",
     "use_brand_on_mobile": "Usa %(brand)s su mobile",
     "web_default_device_name": "%(appName)s: %(browserName)s su %(osName)s",
-    "welcome_to_element": "Benvenuti su Element"
+    "welcome_to_element": "Benvenuti su Zebra"
 }

@@ -14,10 +14,10 @@
         "app_launch_unexpected_error": "Er is een onverwachte fout opgetreden bij het voorbereiden van de app. Zie de console voor details.",
         "cannot_load_config": "Kan het configuratiebestand niet laden. Herlaad de pagina.",
         "invalid_configuration_no_server": "Configuratie ongeldig: geen standaardserver opgegeven.",
-        "invalid_json": "Jouw Element configuratie bevat ongeldige JSON. Corrigeer het probleem en herlaad de pagina.",
+        "invalid_json": "Jouw Zebra configuratie bevat ongeldige JSON. Corrigeer het probleem en herlaad de pagina.",
         "invalid_json_detail": "De ontleder meldt: %(message)s",
         "invalid_json_generic": "Ongeldige JSON",
-        "misconfigured": "Jouw Element is verkeerd geconfigureerd"
+        "misconfigured": "Jouw Zebra is verkeerd geconfigureerd"
     },
     "failed_to_start": "Opstarten mislukt",
     "go_to_element_io": "Ga naar element.io",
@@ -34,5 +34,5 @@
     "unknown_device": "Onbekend apparaat",
     "use_brand_on_mobile": "Gebruik %(brand)s op je mobiel",
     "web_default_device_name": "%(appName)s: %(browserName)s op %(osName)s",
-    "welcome_to_element": "Welkom bij Element"
+    "welcome_to_element": "Welkom bij Zebra"
 }

@@ -1,0 +1,47 @@
+diff --git a/node_modules/@vector-im/compound-design-tokens/assets/web/css/cpd-common.css b/node_modules/@vector-im/compound-design-tokens/assets/web/css/cpd-common.css
+index 936f3d8..7bfe406 100644
+--- a/node_modules/@vector-im/compound-design-tokens/assets/web/css/cpd-common.css
++++ b/node_modules/@vector-im/compound-design-tokens/assets/web/css/cpd-common.css
+@@ -39,9 +39,9 @@
+   --cpd-space-scale: 4px;
+   --cpd-color-icon-on-solid-primary: var(--cpd-color-theme-bg);
+   --cpd-color-icon-info-primary: var(--cpd-color-blue-900);
+-  --cpd-color-icon-success-primary: var(--cpd-color-green-900);
++  --cpd-color-icon-success-primary: var(--cpd-color-zebra-900);
+   --cpd-color-icon-critical-primary: var(--cpd-color-red-900);
+-  --cpd-color-icon-accent-tertiary: var(--cpd-color-green-800);
++  --cpd-color-icon-accent-tertiary: var(--cpd-color-zebra-800);
+   --cpd-color-icon-quaternary-alpha: var(--cpd-color-alpha-gray-700);
+   --cpd-color-icon-tertiary-alpha: var(--cpd-color-alpha-gray-800);
+   --cpd-color-icon-secondary-alpha: var(--cpd-color-alpha-gray-900);
+@@ -52,7 +52,7 @@
+   --cpd-color-icon-secondary: var(--cpd-color-gray-900);
+   --cpd-color-icon-primary: var(--cpd-color-gray-1400);
+   --cpd-color-border-info-subtle: var(--cpd-color-blue-500);
+-  --cpd-color-border-success-subtle: var(--cpd-color-green-500);
++  --cpd-color-border-success-subtle: var(--cpd-color-zebra-500);
+   --cpd-color-border-critical-subtle: var(--cpd-color-red-500);
+   --cpd-color-border-critical-hovered: var(--cpd-color-red-1000);
+   --cpd-color-border-critical-primary: var(--cpd-color-red-900);
+@@ -62,7 +62,7 @@
+   --cpd-color-border-focused: var(--cpd-color-blue-900);
+   --cpd-color-border-disabled: var(--cpd-color-gray-500);
+   --cpd-color-bg-info-subtle: var(--cpd-color-blue-200);
+-  --cpd-color-bg-success-subtle: var(--cpd-color-green-200);
++  --cpd-color-bg-success-subtle: var(--cpd-color-zebra-200);
+   --cpd-color-bg-critical-subtle-hovered: var(--cpd-color-red-300);
+   --cpd-color-bg-critical-subtle: var(--cpd-color-red-200);
+   --cpd-color-bg-critical-hovered: var(--cpd-color-red-1000);
+@@ -80,10 +80,10 @@
+   --cpd-color-bg-subtle-primary: var(--cpd-color-gray-400);
+   --cpd-color-text-on-solid-primary: var(--cpd-color-theme-bg);
+   --cpd-color-text-info-primary: var(--cpd-color-blue-900);
+-  --cpd-color-text-success-primary: var(--cpd-color-green-900);
++  --cpd-color-text-success-primary: var(--cpd-color-zebra-900);
+   --cpd-color-text-critical-primary: var(--cpd-color-red-900);
+   --cpd-color-text-link-external: var(--cpd-color-blue-900);
+-  --cpd-color-text-action-accent: var(--cpd-color-green-900);
++  --cpd-color-text-action-accent: var(--cpd-color-zebra-900);
+   --cpd-color-text-action-primary: var(--cpd-color-gray-1400);
+   --cpd-color-text-disabled: var(--cpd-color-gray-800);
+   --cpd-color-text-placeholder: var(--cpd-color-gray-800);

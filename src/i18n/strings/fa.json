@@ -18,7 +18,7 @@
         "invalid_json": "پیکربندی المنت شما شامل JSON نا معتبر است. لطفا مشکل را اصلاح کنید و صفحه را بارگذاری مجدد کنید.",
         "invalid_json_detail": "پیام از طرف تجزیه کننده: %(message)s",
         "invalid_json_generic": "JSON اشتباه",
-        "misconfigured": "Element شما پیکربندی نشده است"
+        "misconfigured": "Zebra شما پیکربندی نشده است"
     },
     "failed_to_start": "خطا در شروع",
     "go_to_element_io": "برو به element.io",
@@ -35,5 +35,5 @@
     "unknown_device": "دستگاه ناشناخته",
     "use_brand_on_mobile": "از %(brand)s گوشی استفاده کنید",
     "web_default_device_name": "%(appName)s: %(browserName)s: روی %(osName)s",
-    "welcome_to_element": "به Element خوش‌آمدید"
+    "welcome_to_element": "به Zebra خوش‌آمدید"
 }

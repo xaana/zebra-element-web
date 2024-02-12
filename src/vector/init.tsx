@@ -154,18 +154,18 @@ export async function loadApp(fragParams: {}): Promise<void> {
     ReactDOM.render(await module.loadApp(fragParams, setWindowMatrixChat), document.getElementById("matrixchat"));
 }
 
-export async function showError(title: string, messages?: string[]): Promise<void> {
-    const ErrorView = (
-        await import(
-            /* webpackChunkName: "error-view" */
-            "../async-components/structures/ErrorView"
-        )
-    ).default;
-    window.matrixChat = ReactDOM.render(
-        <ErrorView title={title} messages={messages} />,
-        document.getElementById("matrixchat"),
-    );
-}
+// export async function showError(title: string, messages?: string[]): Promise<void> {
+//     const ErrorView = (
+//         await import(
+//             /* webpackChunkName: "error-view" */
+//             "../async-components/structures/ErrorView"
+//         )
+//     ).default;
+//     window.matrixChat = ReactDOM.render(
+//         <ErrorView title={title} messages={messages} />,
+//         document.getElementById("matrixchat"),
+//     );
+// }
 
 export async function showIncompatibleBrowser(onAccept: () => void): Promise<void> {
     const CompatibilityView = (

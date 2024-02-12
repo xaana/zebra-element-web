@@ -14,8 +14,8 @@ electron/dist
 electron/pub
 **/.idea
 # /config.json
-/config.json.*
-/config.local*.json
+# /config.json.*
+# /config.local*.json
 # Legacy skinning file that some people might still have
 /src/component-index.js
 /.tmp

@@ -19,36 +19,37 @@ import ReactDOM from "react-dom";
 import highlight from "highlight.js";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { TooltipProvider } from "@vector-im/compound-web";
+
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { formatDate } from "matrix-react-sdk/src/DateUtils";
 import Modal from "matrix-react-sdk/src/Modal";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import { _t } from "matrix-react-sdk/src/languageHandler";
+import * as ContextMenu from "matrix-react-sdk/src/components/structures/ContextMenu";
+import { ChevronFace, toRightOf } from "matrix-react-sdk/src/components/structures/ContextMenu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { pillifyLinks, unmountPills } from "matrix-react-sdk/src/utils/pillify";
 import { tooltipifyLinks, unmountTooltips } from "matrix-react-sdk/src/utils/tooltipify";
 import { IntegrationManagers } from "matrix-react-sdk/src/integrations/IntegrationManagers";
 import { isPermalinkHost, tryTransformPermalinkToLocalHref } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
 import { copyPlaintext } from "matrix-react-sdk/src/utils/strings";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import UIStore from "matrix-react-sdk/src/stores/UIStore";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
-import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
-import { options as linkifyOpts } from "matrix-react-sdk/src/linkify-matrix";
-import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
-import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
-import * as ContextMenu from "matrix-react-sdk/src/components/structures/ContextMenu";
-import { ChevronFace, toRightOf } from "matrix-react-sdk/src/components/structures/ContextMenu";
-import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import GenericTextContextMenu from "matrix-react-sdk/src/components/views/context_menus/GenericTextContextMenu";
 import Spoiler from "matrix-react-sdk/src/components/views/elements/Spoiler";
 import QuestionDialog from "matrix-react-sdk/src/components/views/dialogs/QuestionDialog";
 import MessageEditHistoryDialog from "matrix-react-sdk/src/components/views/dialogs/MessageEditHistoryDialog";
 import EditMessageComposer from "matrix-react-sdk/src/components/views/rooms/EditMessageComposer";
 import LinkPreviewGroup from "matrix-react-sdk/src/components/views/rooms/LinkPreviewGroup";
+import { IBodyProps } from "matrix-react-sdk/src/components/views/messages/IBodyProps";
+import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import AccessibleButton from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+import { options as linkifyOpts } from "matrix-react-sdk/src/linkify-matrix";
+import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
 import { EditWysiwygComposer } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer";
 import { IEventTileOps } from "matrix-react-sdk/src/components/views/rooms/EventTile";
-import { IBodyProps } from "matrix-react-sdk/src/components/views/messages/IBodyProps";
+import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -460,11 +461,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     };
 
     public getEventTileOps = (): IEventTileOps => ({
-        isWidgetHidden: (): boolean => {
+        isWidgetHidden: () => {
             return this.state.widgetHidden;
         },
 
-        unhideWidget: (): undefined => {
+        unhideWidget: () => {
             this.setState({ widgetHidden: false });
             if (global.localStorage) {
                 global.localStorage.removeItem("hide_preview_" + this.props.mxEvent.getId());
@@ -591,7 +592,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
 
-        if (this.props.replacingEventId && this.props.mxEvent.getSender() !== "@zebra:matrix.algoreus.net") {
+        if (this.props.replacingEventId) {
             body = (
                 <>
                     {body}
@@ -649,6 +650,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (isNotice) {
             return (
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+                    <div className="zexa-flex zexa-bg-red-400">
+                        <div className="zexa-lowercase">Lorem, ipsum.</div>
+                        <div className="zexa-underline">Dolor sit.</div>
+                    </div>
                     {body}
                     {widgets}
                 </div>
@@ -656,6 +661,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return (
             <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+                <span>Lorem ipsum dolor sit amet.</span>
                 {body}
                 {widgets}
             </div>
