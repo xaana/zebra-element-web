@@ -19,7 +19,6 @@ import ReactDOM from "react-dom";
 import highlight from "highlight.js";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { TooltipProvider } from "@vector-im/compound-web";
-
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { formatDate } from "matrix-react-sdk/src/DateUtils";
 import Modal from "matrix-react-sdk/src/Modal";
@@ -51,6 +50,10 @@ import { EditWysiwygComposer } from "matrix-react-sdk/src/components/views/rooms
 import { IEventTileOps } from "matrix-react-sdk/src/components/views/rooms/EventTile";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 
+import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
+import { CollapsibleMessage } from "../../../components/database/collapsible-message";
+import { EChartPanel } from "../../../components/database/echart-panel";
+
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
 interface IState {
@@ -60,6 +63,7 @@ interface IState {
     // track whether the preview widget is hidden
     widgetHidden: boolean;
 }
+
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
     private readonly contentRef = createRef<HTMLSpanElement>();
@@ -579,7 +583,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const content = mxEvent.getContent();
         let isNotice = false;
         let isEmote = false;
-
+        const database = content.database_table;
+        const fetchedDataLen = content.fetched_data_len
+        const query = content.query
+        const roomId = content.room_id
+        const queryDescription = content.query_description
+        const echartsOption = content.echartsOption
+        const echartsQuery = content.echartsQuery
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -591,6 +601,60 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if (echartsOption&&echartsQuery){
+            console.log(echartsOption,echartsQuery)
+            body=(
+                <>
+                {body}
+                {/* <div className="echarts__div zexa-order-1 group-[.maximised]/main:sm:zexa-order-2 zexa-relative zexa-px-3 zexa-pt-3 zexa-pb-12 group-[.maximised]/main:sm:zexa-pb-3 zexa-overflow-auto zexa-border-b zexa-border-l-0 group-[.maximised]/main:sm:zexa-border-l group-[.maximised]/main:sm:zexa-border-b-0 zexa-h-1/2 group-[.maximised]/main:sm:zexa-h-full zexa-w-full group-[.maximised]/main:sm:zexa-w-1/2"> */}
+                <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
+                {/* </div> */}
+                </>
+            )
+        }
+        if (database){
+            const tableJson = JSON.parse(database)
+            // const keys =Object.keys(tableJson[0])
+            tableJson.forEach((temp:any)=>console.log(temp))
+            
+            console.log('==================')
+            console.log(fetchedDataLen)
+            console.log(query)
+            body=(
+                <>
+                {body}
+                {/* TODO: view echart */}
+                <div className="zexa-flex zexa-flex-col zexa-gap-y-2">
+                    {tableJson && tableJson.length > 0 && query && (
+                        <>
+                        <MessageChildDatabaseResult
+                            data={tableJson || []}
+                            totalEntries={fetchedDataLen}
+                            handleViewCharts={()=>{
+                                // http://localhost:29316/_matrix/maubot/plugin/1/123456
+                                const jsonData = {
+                                    query: query,
+                                    query_description: queryDescription,
+                                    echartsData:tableJson
+                                };
+                                const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
+                                    method: 'POST',
+                                    mode: 'no-cors', // This is the part that tries to bypass CORS, but it has limitations
+                                    body:JSON.stringify(jsonData)
+                                });
+                                fetch(request)
+                            }}
+                        />
+                        <div className="zexa-shadow-none">
+                            <CollapsibleMessage title="View SQL Query" contents={query || []} />
+                        </div>
+                        </>
+                    )}
+            </div>
+                
+                </>
+            )
+        }
 
         if (this.props.replacingEventId) {
             body = (
@@ -650,10 +714,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (isNotice) {
             return (
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
-                    <div className="zexa-flex zexa-bg-red-400">
-                        <div className="zexa-lowercase">Lorem, ipsum.</div>
-                        <div className="zexa-underline">Dolor sit.</div>
-                    </div>
                     {body}
                     {widgets}
                 </div>
@@ -661,7 +721,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return (
             <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
-                <span>Lorem ipsum dolor sit amet.</span>
                 {body}
                 {widgets}
             </div>
