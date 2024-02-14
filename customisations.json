@@ -1,3 +1,6 @@
 {
-    "src/components/structures/MessagePanel.tsx": "src/components/structures/MessagePanel.tsx"
+    "src/components/structures/MessagePanel.tsx": "src/components/structures/MessagePanel.tsx",
+    "src/components/views/messages/TextualBody.tsx": "src/components/views/messages/TextualBody.tsx",
+    "src/components/structures/RightPanel.tsx": "src/customisations/RightPanel.tsx",
+    "src/components/structures/RoomView.tsx": "src/customisations/RoomView.tsx"
 }
