@@ -18,7 +18,6 @@ import React, { createRef, SyntheticEvent, MouseEvent } from "react";
 import ReactDOM from "react-dom";
 import highlight from "highlight.js";
 import { MsgType } from "matrix-js-sdk/src/matrix";
-import { TooltipProvider } from "@vector-im/compound-web";
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { formatDate } from "matrix-react-sdk/src/DateUtils";
 import Modal from "matrix-react-sdk/src/Modal";
@@ -49,12 +48,13 @@ import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
 import { EditWysiwygComposer } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer";
 import { IEventTileOps } from "matrix-react-sdk/src/components/views/rooms/EventTile";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
+// import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
-import { EChartPanel } from "../../../components/database/echart-panel";
-import RightPanel from "../../../customisations/RightPanel";
-import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
+// import RightPanel from "../../../customisations/RightPanel";
+// import { EChartPanel } from "../../../components/database/echart-panel";
+
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -65,7 +65,6 @@ interface IState {
     // track whether the preview widget is hidden
     widgetHidden: boolean;
 }
-
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
     private readonly contentRef = createRef<HTMLSpanElement>();
@@ -354,11 +353,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
                 const reason = node.getAttribute("data-mx-spoiler") ?? undefined;
                 node.removeAttribute("data-mx-spoiler"); // we don't want to recurse
-                const spoiler = (
-                    <TooltipProvider>
-                        <Spoiler reason={reason} contentHtml={node.outerHTML} />
-                    </TooltipProvider>
-                );
+                const spoiler = <Spoiler reason={reason} contentHtml={node.outerHTML} />;
 
                 ReactDOM.render(spoiler, spoilerContainer);
                 node.parentNode?.replaceChild(spoilerContainer, node);
@@ -467,11 +462,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     };
 
     public getEventTileOps = (): IEventTileOps => ({
-        isWidgetHidden: () => {
+        isWidgetHidden: (): boolean => {
             return this.state.widgetHidden;
         },
 
-        unhideWidget: () => {
+        unhideWidget: (): void => {
             this.setState({ widgetHidden: false });
             if (global.localStorage) {
                 global.localStorage.removeItem("hide_preview_" + this.props.mxEvent.getId());
@@ -619,7 +614,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             const tableJson = JSON.parse(database)
             // const keys =Object.keys(tableJson[0])
             tableJson.forEach((temp:any)=>console.log(temp))
-    
+
             body=(
                 <>
                 {body}
@@ -655,7 +650,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     }else{
                                         console.log('response not ok')
                                     }
-                                    
+
                                 })
                             }}
                         />
@@ -665,7 +660,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </>
                     )}
             </div>
-                
+
                 </>
             )
         }
