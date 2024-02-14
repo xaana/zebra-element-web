@@ -3,7 +3,12 @@
 set -ex
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-DIST_VERSION=$(git describe --abbrev=0 --tags)
+# DIST_VERSION=$(git describe --abbrev=0 --tags)
+if ! DIST_VERSION=$(git describe --abbrev=0 --tags); then
+    echo "Unable to find tags in the repository. Setting DIST_VERSION to a default value."
+    DIST_VERSION="1.0.0"
+fi
+
 
 DIR=$(dirname "$0")
 
