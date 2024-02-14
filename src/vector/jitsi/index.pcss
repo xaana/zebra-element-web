@@ -22,13 +22,21 @@ limitations under the License.
     font-weight: 400;
     src: url("~matrix-react-sdk/res/fonts/Nunito/Nunito-Regular.ttf") format("truetype");
 }
+@font-face {
+    font-family: "Tomorrow";
+    font-style: normal;
+    font-weight: 400;
+    src:
+        url("~/res/fonts/Tomorrow/Tomorrow-Regular.woff2") format("woff2"),
+        url("~/res/fonts/Tomorrow/Tomorrow-Regular.woff") format("woff");
+}
 
 $dark-fg: #edf3ff;
 $dark-bg: #363c43;
 $light-fg: #2e2f32;
 $light-bg: #fff;
 body {
-    font-family: Nunito, Arial, Helvetica, sans-serif;
+    font-family: Tomorrow, Arial, Helvetica, sans-serif;
     background-color: $dark-bg;
     color: $dark-fg;
 }
