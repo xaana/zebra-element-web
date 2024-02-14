@@ -1,6 +1,8 @@
 # Builder
 FROM --platform=$BUILDPLATFORM node:20-bullseye as builder
 
+RUN apt-get update && apt-get install -y git dos2unix
+
 WORKDIR /src
 
 COPY . /src

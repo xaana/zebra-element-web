@@ -6,4 +6,4 @@ node_modules/
 karma-reports/
 .idea/
 .tmp/
-config.json*
+# config.json*
