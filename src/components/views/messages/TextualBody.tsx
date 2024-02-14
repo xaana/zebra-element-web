@@ -53,6 +53,8 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
 import { EChartPanel } from "../../../components/database/echart-panel";
+import RightPanel from "../../../customisations/RightPanel";
+import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -607,8 +609,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                 {body}
                 {/* <div className="echarts__div zexa-order-1 group-[.maximised]/main:sm:zexa-order-2 zexa-relative zexa-px-3 zexa-pt-3 zexa-pb-12 group-[.maximised]/main:sm:zexa-pb-3 zexa-overflow-auto zexa-border-b zexa-border-l-0 group-[.maximised]/main:sm:zexa-border-l group-[.maximised]/main:sm:zexa-border-b-0 zexa-h-1/2 group-[.maximised]/main:sm:zexa-h-full zexa-w-full group-[.maximised]/main:sm:zexa-w-1/2"> */}
-                <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
+                {/* <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} /> */}
                 {/* </div> */}
+                {/* <RightPanel overwriteCard={{ phase: RightPanelPhases.EchartsView, state: { echartsOption: echartsOption, echartsQuery: echartsQuery } }} /> */}
                 </>
             )
         }
@@ -616,10 +619,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             const tableJson = JSON.parse(database)
             // const keys =Object.keys(tableJson[0])
             tableJson.forEach((temp:any)=>console.log(temp))
-            
-            console.log('==================')
-            console.log(fetchedDataLen)
-            console.log(query)
+    
             body=(
                 <>
                 {body}
@@ -642,7 +642,21 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     mode: 'no-cors', // This is the part that tries to bypass CORS, but it has limitations
                                     body:JSON.stringify(jsonData)
                                 });
-                                fetch(request)
+                                fetch(request).then((data) => {
+                                    console.log('==================data of echarts')
+                                    console.log(data)
+                                    if(data.ok){
+                                        dis.dispatch({
+                                            action: "view_echarts",
+                                            echartsOption: echartsOption,
+                                            echartsQuery: echartsQuery,
+                                            push: true,
+                                        });
+                                    }else{
+                                        console.log('response not ok')
+                                    }
+                                    
+                                })
                             }}
                         />
                         <div className="zexa-shadow-none">
