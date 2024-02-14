@@ -32,6 +32,7 @@ import "setimmediate";
 // Our own CSS (which is themed) is imported via separate webpack entry points
 // in webpack.config.js
 require("./tw.css");
+require("./tailwind.css");
 require("gfm.css/gfm.css");
 require("katex/dist/katex.css");
 

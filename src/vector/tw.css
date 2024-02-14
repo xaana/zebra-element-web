@@ -9,7 +9,7 @@
   font-family: 'Roboto Mono', monospace;
 }
 
-@tailwind utilities;
+/* @tailwind utilities; */
 
 .zebra-container {
   --background: 0 0% 100%;

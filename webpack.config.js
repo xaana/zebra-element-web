@@ -826,6 +826,32 @@ module.exports = (env, argv) => {
 
             // Disable host check
             allowedHosts: "all",
+
+            // Proxy
+            proxy: {
+                '/api': {
+                    target: 'http://localhost:5000',
+                    ws: true,
+                },
+                '/vod': {
+                    target: 'http://localhost:5000'
+                },
+                '/clips': {
+                    target: 'http://localhost:5000'
+                },
+                '/exports': {
+                    target: 'http://localhost:5000'
+                },
+                '/ws': {
+                    target: 'ws://localhost:5000',
+                    ws: true,
+                },
+                '/live': {
+                    target: 'ws://localhost:5000',
+                    changeOrigin: true,
+                    ws: true,
+                },
+            }
         },
     };
 };
