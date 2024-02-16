@@ -25,11 +25,11 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
         role="treeitem"
         aria-selected={selected}
     >
-      <div className="py-1">        
+      <div className="zexa-py-1">
         <div 
-            className={classNames("flex items-center rounded-lg ml-4 cursor-pointer", {
-                "p-1": !selected,
-                "bg-zinc-200 p-1": selected && !isPanelCollapsed,
+            className={classNames("zexa-flex zexa-items-center zexa-rounded-lg zexa-ml-4 zexa-cursor-pointer", {
+                "zexa-p-1": !selected,
+                "zexa-bg-zinc-200 zexa-p-1": selected && !isPanelCollapsed,
             })}
             onClick={(e) => {
                 window.localStorage.setItem("mx_active_space", `plugin.${name}`);
@@ -41,13 +41,13 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
             }}
         >
             <div 
-                className={classNames("flex justify-center bg-gray-300/50 rounded-lg p-2 text-gray-500 w-4 h-4", {
-                  "border-black border-[3px] p-1 border-solid": selected && isPanelCollapsed,
+                className={classNames("zexa-flex zexa-justify-center zexa-bg-gray-300/50 zexa-rounded-lg zexa-p-2 zexa-text-gray-500 zexa-w-4 zexa-h-4", {
+                  "zexa-border-black zexa-border-[3px] zexa-p-1 zexa-border-solid": selected && isPanelCollapsed,
                 })}
             >
               <Icon />
             </div>
-            { !isPanelCollapsed && <div className="ml-2">{ title }</div> }
+            { !isPanelCollapsed && <div className="zexa-ml-2">{ title }</div> }
         </div>
       </div>
     </li>

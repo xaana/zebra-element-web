@@ -3,7 +3,7 @@ module.exports = {
     corePlugins: {
         preflight: false,
     },
-    // prefix: "zexa-",
+    prefix: "zexa-",
     // darkMode: ["class", '[class="dark"]'],
     content: ["./src/**/*.{html,ts,tsx}", "./node_modules/matrix-react-sdk/src/**/*.{html,ts,tsx}"],
     theme: {
