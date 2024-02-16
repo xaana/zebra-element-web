@@ -1,13 +1,11 @@
 import React from "react";
 import { Plugin } from '../plugin';
 import { MainPanel } from './MainPanel';
-import {
-  LuVideo,
-} from "react-icons/lu";
+import { Icon } from "./icon.svg";
 
 export const VideoPlugin: Plugin = {
   name: 'video',
   label: 'Video',
-  Icon: () => <LuVideo className="fill-current" />,
+  Icon: () => <Icon className="fill-current" />,
   MainPanel: () => <MainPanel />,
 };
