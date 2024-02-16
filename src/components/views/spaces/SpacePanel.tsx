@@ -84,8 +84,8 @@ const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
       UPDATE_TOP_LEVEL_SPACES,
       () => [SpaceStore.instance.enabledMetaSpaces, SpaceStore.instance.spacePanelSpaces],
   );
-  const activeSpace = useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, () => {
-      return SpaceStore.instance.activeSpace;
+  const activeSpace = useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, (space) => {
+      return space?? SpaceStore.instance.activeSpace;
   });
   return [invites, metaSpaces, actualSpaces, activeSpace];
 };
@@ -351,6 +351,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
 const SpacePanel: React.FC = () => {
   const [dragging, setDragging] = useState(false);
   const [isPanelCollapsed, setPanelCollapsed] = useState(true);
+  const [, , , activeSpace] = useSpaces();
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
       if (ref.current) UIStore.instance.trackElementDimensions("SpacePanel", ref.current);
@@ -384,7 +385,7 @@ const SpacePanel: React.FC = () => {
                       aria-label={_t("common|spaces")}
                   >
                       <UserMenu isPanelCollapsed={isPanelCollapsed}>
-                          <AccessibleTooltipButton
+                          {!activeSpace.startsWith("plugin.") && <AccessibleTooltipButton
                               className={classNames("mx_SpacePanel_toggleCollapse", { expanded: !isPanelCollapsed })}
                               onClick={() => setPanelCollapsed(!isPanelCollapsed)}
                               title={isPanelCollapsed ? _t("action|expand") : _t("action|collapse")}
@@ -403,7 +404,7 @@ const SpacePanel: React.FC = () => {
                                       </div>
                                   </div>
                               }
-                          />
+                          />}
                       </UserMenu>
                       <Droppable droppableId="top-level-spaces">
                           {(provided, snapshot) => (

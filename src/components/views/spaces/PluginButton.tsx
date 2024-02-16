@@ -1,6 +1,5 @@
 import React from "react";
 import classNames from "classnames";
-import { useLocalStorageState } from "matrix-react-sdk/src/hooks/useLocalStorageState";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
 import { SpaceKey, UPDATE_SELECTED_SPACE } from 'matrix-react-sdk/src/stores/spaces';
 import { useEventEmitterState } from 'matrix-react-sdk/src/hooks/useEventEmitter';
@@ -13,15 +12,10 @@ interface PluginButtonProps extends Omit<Plugin, "MainPanel" | "LeftPanel"> {
 }
 
 export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: PluginButtonProps) => {
-  const [activeSpace, setActiveSpace] =  useLocalStorageState("active_space", "");
-  useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, () => {
-    const updatedActiveSpace = window.localStorage.getItem("mx_active_space")?? "";
-    setActiveSpace(updatedActiveSpace);
-    return updatedActiveSpace;
-  });
+  const activeSpace = useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, (space) => space);
 
   const title = label?? name;
-  const selected = activeSpace === name;
+  const selected = activeSpace === `plugin.${name}`;
 
   return (
     <li
@@ -38,9 +32,9 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
                 "bg-zinc-200 p-1": selected && !isPanelCollapsed,
             })}
             onClick={(e) => {
-                // SpaceStore.instance.unsetActiveSpace();
-                setActiveSpace(name);
-                defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: 'video' });
+                window.localStorage.setItem("mx_active_space", `plugin.${name}`);
+                SpaceStore.instance.emit(UPDATE_SELECTED_SPACE, `plugin.${name}`);
+                defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
                 if (onClick) {
                     onClick(e);
                 }
