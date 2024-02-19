@@ -16,9 +16,13 @@ limitations under the License.
 
 import type { IConfigOptions } from "matrix-react-sdk/src/IConfigOptions";
 
+export interface IExtendedConfigOptions extends IConfigOptions {
+    plugins: Record<string, Record<string, any>>;
+}
+
 // Load the config file. First try to load up a domain-specific config of the
 // form "config.$domain.json" and if that fails, fall back to config.json.
-export async function getVectorConfig(relativeLocation = ""): Promise<IConfigOptions | undefined> {
+export async function getVectorConfig(relativeLocation = ""): Promise<IExtendedConfigOptions | undefined> {
     if (relativeLocation !== "" && !relativeLocation.endsWith("/")) relativeLocation += "/";
 
     // Handle trailing dot FQDNs
@@ -42,7 +46,7 @@ export async function getVectorConfig(relativeLocation = ""): Promise<IConfigOpt
     }
 }
 
-async function getConfig(configJsonFilename: string): Promise<IConfigOptions | undefined> {
+async function getConfig(configJsonFilename: string): Promise<IExtendedConfigOptions | undefined> {
     const url = new URL(configJsonFilename, window.location.href);
     url.searchParams.set("cachebuster", Date.now().toString());
     const res = await fetch(url, {
@@ -54,7 +58,7 @@ async function getConfig(configJsonFilename: string): Promise<IConfigOptions | u
         // Lack of a config isn't an error, we should just use the defaults.
         // Also treat a blank config as no config, assuming the status code is 0, because we don't get 404s from file:
         // URIs so this is the only way we can not fail if the file doesn't exist when loading from a file:// URI.
-        return {} as IConfigOptions;
+        return {} as IExtendedConfigOptions;
     }
 
     if (res.ok) {

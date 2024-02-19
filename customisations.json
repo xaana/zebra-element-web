@@ -4,4 +4,7 @@
     "src/components/structures/RightPanel.tsx": "src/customisations/RightPanel.tsx",
     "src/components/structures/RoomView.tsx": "src/customisations/RoomView.tsx",
     "src/components/views/right_panel/BaseCard.tsx": "src/customisations/BaseCard.tsx",
-    "src/stores/right-panel/RightPanelStorePhases.ts": "src/customisations/RightPanelStorePhases.ts"}
+    "src/stores/right-panel/RightPanelStorePhases.ts": "src/customisations/RightPanelStorePhases.ts",
+    "src/components/structures/LoggedInView.tsx": "src/components/structures/LoggedInView.tsx",
+    "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx"
+}
