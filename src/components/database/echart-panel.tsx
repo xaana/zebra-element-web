@@ -4,7 +4,7 @@ import React from 'react'
 
 import type { DataItem } from './message-child-database-result'
 import { Loader } from '../ui/loader'
-import BaseCard from '../../customisations/BaseCard'
+import BaseCard from '../views/BaseCard'
 
 // import { Button } from '../ui/button'
 // import { IconCheckCircle, IconClose, IconTurium } from '../ui/icons'

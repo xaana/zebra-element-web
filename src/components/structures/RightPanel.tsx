@@ -19,7 +19,6 @@ import React from "react";
 import { Room, RoomState, RoomStateEvent, RoomMember, MatrixEvent } from "matrix-js-sdk/src/matrix";
 import { throttle } from "lodash";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import RoomSummaryCard from "matrix-react-sdk/src/components/views/right_panel/RoomSummaryCard";
@@ -41,8 +40,10 @@ import { UPDATE_EVENT } from "matrix-react-sdk/src/stores/AsyncStore";
 import { IRightPanelCard, IRightPanelCardState } from "matrix-react-sdk/src/stores/right-panel/RightPanelStoreIPanelState";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { XOR } from "matrix-react-sdk/src/@types/common";
-import { EChartPanel } from "../components/database/echart-panel";
-import { Citations } from "../components/pdf/citations";
+
+import { EChartPanel } from "../database/echart-panel";
+import { Citations } from "../pdf/citations";
+import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
 
 interface BaseProps {
     overwriteCard?: IRightPanelCard; // used to display a custom card and ignoring the RightPanelStore (used for UserView)

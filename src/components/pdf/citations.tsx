@@ -25,7 +25,7 @@ import type { BoundingBox } from './citations-table'
 import 'react-pdf/dist/Page/TextLayer.css'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import React from 'react'
-import BaseCard from '../../customisations/BaseCard'
+import BaseCard from '../views/BaseCard'
 import { Loader } from '../ui/loader'
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(

@@ -130,7 +130,8 @@ import { CancelAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads
 import { SubmitAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/SubmitAskToJoinPayload";
 import { onView3pidInvite } from "matrix-react-sdk/src/stores/right-panel/action-handlers";
 import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
-import { RightPanelPhases } from "./RightPanelStorePhases";
+
+import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
