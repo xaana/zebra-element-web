@@ -4,6 +4,7 @@ import React from 'react'
 
 import type { DataItem } from './message-child-database-result'
 import { Loader } from '../ui/loader'
+import BaseCard from '../../customisations/BaseCard'
 
 // import { Button } from '../ui/button'
 // import { IconCheckCircle, IconClose, IconTurium } from '../ui/icons'
@@ -20,9 +21,11 @@ import { Loader } from '../ui/loader'
 export const EChartPanel = ({
   echartsOption,
   echartsQuery,
+  onClose
 }: {
   echartsOption:any | null
   echartsQuery: string | null
+  onClose: () => void
 }) => {
 //   const [isAddedToAlgology, setIsAddedToAlgology] = useState(false)
 //   const sessionToken = useContext(SessionTokenContext)
@@ -111,6 +114,18 @@ export const EChartPanel = ({
   //   //   setIsAddedToAlgology(false)
   //   }
   // }, [echartsCode])
+  console.log(echartsOption)
+  const content = echartsOption ? (
+    <>
+    <div className=''>
+      <ReactECharts option={echartsOption} />
+      </div>
+    </>
+  ) : <Loader
+  className="zexa-flex zexa-justify-center zexa-mt-[100px] zexa-w-full zexa-h-full"
+  height="100"
+  width="100"
+/>
 
   return (
     <>
@@ -124,15 +139,10 @@ export const EChartPanel = ({
           <IconClose className="zexa-w-4 zexa-h-4" />
         </Button>
       </div> */}
-      {echartsOption ? (
-        <>
-          <ReactECharts option={JSON.parse(echartsOption)} />
-        </>
-      ) : <Loader
-      className="zexa-flex zexa-justify-center zexa-mt-[100px] zexa-w-full zexa-h-full"
-      height="100"
-      width="100"
-    />}
+      <BaseCard className="BasedCard_echarts" onClose={onClose} hideBackButton={true}>
+                {content}
+      </BaseCard>
+      
     </>
   )
 }

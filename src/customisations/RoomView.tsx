@@ -96,7 +96,6 @@ import TopUnreadMessagesBar from "matrix-react-sdk/src/components/views/rooms/To
 import { fetchInitialEvent } from "matrix-react-sdk/src/utils/EventUtils";
 import { ComposerInsertPayload, ComposerType } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import AppsDrawer from "matrix-react-sdk/src/components/views/rooms/AppsDrawer";
-import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import { KeyBindingAction } from "matrix-react-sdk/src/accessibility/KeyboardShortcuts";
 import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
@@ -129,8 +128,9 @@ import { WaitingForThirdPartyRoomView } from "matrix-react-sdk/src/components/st
 import { isNotUndefined } from "matrix-react-sdk/src/Typeguards";
 import { CancelAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/CancelAskToJoinPayload";
 import { SubmitAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/SubmitAskToJoinPayload";
-import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 import { onView3pidInvite } from "matrix-react-sdk/src/stores/right-panel/action-handlers";
+import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "./RightPanelStorePhases";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -1305,6 +1305,26 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         phase: RightPanelPhases.EchartsView,
                         state: { echartsOption: payload.echartsOption, echartsQuery: payload.echartsQuery },
                     });}
+                    else{
+                        RightPanelStore.instance.pushCard({
+                            phase: RightPanelPhases.EchartsView,
+                            state: { echartsOption: payload.echartsOption, echartsQuery: payload.echartsQuery },
+                        });
+                    }
+
+                break;
+            case "view_citations":
+                if (payload.push) {
+                    RightPanelStore.instance.pushCard({
+                        phase: RightPanelPhases.CitationsView,
+                        state: { pdfUrls: payload.pdfUrls, citations: payload.citations },
+                    });}
+                    else{
+                        RightPanelStore.instance.pushCard({
+                            phase: RightPanelPhases.CitationsView,
+                            state: { pdfUrls: payload.pdfUrls, citations: payload.citations },
+                        });
+                    }
 
                 break;
         }

@@ -42,10 +42,11 @@ import { IRightPanelCard, IRightPanelCardState } from "matrix-react-sdk/src/stor
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { XOR } from "matrix-react-sdk/src/@types/common";
 import { EChartPanel } from "../components/database/echart-panel";
+import { Citations } from "../components/pdf/citations";
 
 interface BaseProps {
     overwriteCard?: IRightPanelCard; // used to display a custom card and ignoring the RightPanelStore (used for UserView)
-    resizeNotifier?: ResizeNotifier;
+    resizeNotifier: ResizeNotifier;
     e2eStatus?: E2EStatus;
 }
 
@@ -150,6 +151,7 @@ export default class RightPanel extends React.Component<Props, IState> {
             // When the user clicks close on the encryption panel cancel the pending request first if any
             this.state.cardState.verificationRequest.cancel();
         } else {
+            console.log('-------------------------- closing right panel');
             RightPanelStore.instance.togglePanel(this.props.room?.roomId ?? null);
         }
     };
@@ -168,9 +170,14 @@ export default class RightPanel extends React.Component<Props, IState> {
             case RightPanelPhases.EchartsView:
 
                     card = (
-                        <EChartPanel echartsOption={cardState.echartsOption} echartsQuery={cardState.echartsQuery} />
+                        <EChartPanel echartsOption={cardState.echartsOption} echartsQuery={cardState.echartsQuery} onClose={this.onClose} />
                     );
                 break;
+            case RightPanelPhases.CitationsView:
+                card = (
+                    <Citations pdfUrls={cardState.pdfUrls} citations={cardState.citations} onClose={this.onClose} />
+                );
+            break;
             case RightPanelPhases.RoomMemberList:
                 if (!!roomId) {
                     card = (
@@ -317,6 +324,18 @@ export default class RightPanel extends React.Component<Props, IState> {
         }
 
         console.log('-----------------',phase,'--------------',cardState,'-------------------',roomId,'-----------------------',card)
+        if(phase===RightPanelPhases.EchartsView){
+            return (
+            <aside className="" id="mx_RightPanel">
+            {card}
+            </aside>)
+        }
+//         if(phase===RightPanelPhases.CitationsView){
+//             return (
+
+//             {card}
+// )
+//         }
 
         return (
             <aside className="mx_RightPanel" id="mx_RightPanel">

@@ -52,9 +52,12 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
-// import RightPanel from "../../../customisations/RightPanel";
-// import { EChartPanel } from "../../../components/database/echart-panel";
-
+import { EChartPanel } from "../../../components/database/echart-panel";
+import RightPanel from "../../../customisations/RightPanel";
+import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
+import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
+import { Button } from "../../ui/button";
+import { IconChartDonut } from "../../ui/icons";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -64,6 +67,8 @@ interface IState {
 
     // track whether the preview widget is hidden
     widgetHidden: boolean;
+    pdfUrls: any[];
+    citations: any[];
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -82,6 +87,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         this.state = {
             links: [],
             widgetHidden: false,
+            pdfUrls: [],
+            citations: [],
         };
     }
 
@@ -566,6 +573,25 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return <span className="mx_EventTile_pendingModeration">{`(${text})`}</span>;
     }
+    private convertToPdfUrls(source: FileList | any[]) {
+        if (source instanceof FileList) {
+          return Array.from(source).map(file => ({
+            url: URL.createObjectURL(file),
+            name: file.name.toString()
+          }))
+        } else if (Array.isArray(source)) {
+          return source.map(pdfData => ({
+            url: URL.createObjectURL(
+              new Blob(
+                [Uint8Array.from(atob(pdfData.content), c => c.charCodeAt(0))],
+                { type: 'application/pdf' }
+              )
+            ),
+            name: pdfData.filename.toString()
+          }))
+        }
+        return []
+      }
 
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -583,10 +609,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const database = content.database_table;
         const fetchedDataLen = content.fetched_data_len
         const query = content.query
-        const roomId = content.room_id
+        const roomId = content.roomId
         const queryDescription = content.query_description
         const echartsOption = content.echartsOption
         const echartsQuery = content.echartsQuery
+        const pdfResponse = content.pdfResponse
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -598,23 +625,88 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (echartsOption&&echartsQuery){
-            console.log(echartsOption,echartsQuery)
+        if(pdfResponse){
             body=(
                 <>
                 {body}
-                {/* <div className="echarts__div zexa-order-1 group-[.maximised]/main:sm:zexa-order-2 zexa-relative zexa-px-3 zexa-pt-3 zexa-pb-12 group-[.maximised]/main:sm:zexa-pb-3 zexa-overflow-auto zexa-border-b zexa-border-l-0 group-[.maximised]/main:sm:zexa-border-l group-[.maximised]/main:sm:zexa-border-b-0 zexa-h-1/2 group-[.maximised]/main:sm:zexa-h-full zexa-w-full group-[.maximised]/main:sm:zexa-w-1/2"> */}
-                {/* <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} /> */}
-                {/* </div> */}
-                {/* <RightPanel overwriteCard={{ phase: RightPanelPhases.EchartsView, state: { echartsOption: echartsOption, echartsQuery: echartsQuery } }} /> */}
+                <div className="zexa-border-t zexa-w-full">
+                <div className="zexa-flex zexa-items-center zexa-justify-between">
+                  <Button
+                    onClick={()=>{
+                        dis.dispatch({
+                            action: "view_citations",
+                            echartsOption: null,
+                            echartsQuery: null,
+                            push: true,
+                        });
+                        const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`
+                        const temp = new Request(url, {
+                            method: 'GET',
+                        });
+                        fetch(temp).then(data=>data.json()).then((data)=>
+                            {
+                
+                                this.setState({pdfUrls:this.convertToPdfUrls(data)})
+                            }
+                            ).then(()=>{
+                                const request = new Request(`http://localhost:8000/api/citations?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`, {
+                                    method: 'GET',
+                        });
+                                return fetch(request)
+                            }).then((data)=>data.json()).then((data)=>{
+                                this.setState({citations:data})
+                            }).then(()=>{
+                                console.log(this.state.pdfUrls,this.state.citations,'aaaaaaaaaaaaaaaaa')
+                                dis.dispatch({
+                                    action: "view_citations",
+                                    pdfUrls: this.state.pdfUrls,
+                                    citations: this.state.citations,
+                                    push: false,
+                                });
+                            })   
+                    }
+                    }
+                    className="zexa-font-normal"
+                  >
+                    <IconChartDonut className="zexa-h-4 zexa-w-4 zexa-mr-2" />
+                    Show Citation
+                  </Button>
+                </div>
+              </div>
                 </>
             )
         }
+        if (echartsOption&&echartsQuery){
+            console.log(echartsOption,echartsQuery)
+            // body=(
+            //     <>
+            //     {body}
+            //     {/* <div className="echarts__div zexa-order-1 group-[.maximised]/main:sm:zexa-order-2 zexa-relative zexa-px-3 zexa-pt-3 zexa-pb-12 group-[.maximised]/main:sm:zexa-pb-3 zexa-overflow-auto zexa-border-b zexa-border-l-0 group-[.maximised]/main:sm:zexa-border-l group-[.maximised]/main:sm:zexa-border-b-0 zexa-h-1/2 group-[.maximised]/main:sm:zexa-h-full zexa-w-full group-[.maximised]/main:sm:zexa-w-1/2"> */}
+            //     {/* <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} /> */}
+            //     {/* </div> */}
+            //     {/* <RightPanel overwriteCard={{ phase: RightPanelPhases.EchartsView, state: { echartsOption: echartsOption, echartsQuery: echartsQuery } }} /> */}
+            //     {dis.dispatch({
+            //                                 action: "view_echarts",
+            //                                 echartsOption: echartsOption,
+            //                                 echartsQuery: echartsQuery,
+            //                                 push: true,
+            //                             });}
+            //     </>
+            // )
+            // dis.dispatch({
+            //     action: "view_echarts",
+            //     echartsOption: echartsOption,
+            //     echartsQuery: echartsQuery,
+            //     push: true,
+            // });
+        }
+        console.log(database)
+        console.log('----------------',query)
         if (database){
             const tableJson = JSON.parse(database)
             // const keys =Object.keys(tableJson[0])
             tableJson.forEach((temp:any)=>console.log(temp))
-
+            
             body=(
                 <>
                 {body}
@@ -627,30 +719,47 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             totalEntries={fetchedDataLen}
                             handleViewCharts={()=>{
                                 // http://localhost:29316/_matrix/maubot/plugin/1/123456
+                                dis.dispatch({
+                                    action: "view_echarts",
+                                    echartsOption: null,
+                                    echartsQuery: null,
+                                    push: true,
+                                });
                                 const jsonData = {
                                     query: query,
                                     query_description: queryDescription,
                                     echartsData:tableJson
                                 };
-                                const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
+                                const url = `http://localhost:3333/data`
+                                const request = new Request(url, {
                                     method: 'POST',
-                                    mode: 'no-cors', // This is the part that tries to bypass CORS, but it has limitations
+                                    // mode: 'no-cors',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }, // This is the part that tries to bypass CORS, but it has limitations
                                     body:JSON.stringify(jsonData)
                                 });
-                                fetch(request).then((data) => {
-                                    console.log('==================data of echarts')
-                                    console.log(data)
-                                    if(data.ok){
-                                        dis.dispatch({
-                                            action: "view_echarts",
-                                            echartsOption: echartsOption,
-                                            echartsQuery: echartsQuery,
-                                            push: true,
-                                        });
-                                    }else{
+                                fetch(request).then((response)=>{
+                                    if(response.ok){
+                                        console.log(response)
+                                        return response.json();
+                                    }
+                                    else{
                                         console.log('response not ok')
                                     }
-
+                                }).then((data)=>{
+                                    data = JSON.parse(data)
+                                    console.log(data,data.echartsOption,data.echartsQuery,'??????????????????')
+                                    
+                                    dis.dispatch({
+                                        action: "view_echarts",
+                                        echartsOption: data.echartsOption,
+                                        echartsQuery: data.echartsQuery,
+                                        push: false,
+                                    });
+                                    
+                                }).catch((error)=>{
+                                    console.log(error)
                                 })
                             }}
                         />
