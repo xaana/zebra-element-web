@@ -57,7 +57,7 @@ import RightPanel from "../../../customisations/RightPanel";
 import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 import { Button } from "../../ui/button";
-import { IconChartDonut } from "../../ui/icons";
+import { IconChartDonut, IconTable } from "../../ui/icons";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -629,9 +629,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body=(
                 <>
                 {body}
-                <div className="zexa-border-t zexa-w-full">
-                <div className="zexa-flex zexa-items-center zexa-justify-between">
                   <Button
+                    variant="secondary"
+                    className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
                     onClick={()=>{
                         dis.dispatch({
                             action: "view_citations",
@@ -666,13 +666,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             })   
                     }
                     }
-                    className="zexa-font-normal"
                   >
-                    <IconChartDonut className="zexa-h-4 zexa-w-4 zexa-mr-2" />
+                    <IconTable className="zexa-mr-2" />
                     Show Citation
                   </Button>
-                </div>
-              </div>
                 </>
             )
         }
