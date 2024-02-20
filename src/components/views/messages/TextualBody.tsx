@@ -52,12 +52,9 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
-import { EChartPanel } from "../../../components/database/echart-panel";
-import RightPanel from "../../../customisations/RightPanel";
-import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
-import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 import { Button } from "../../ui/button";
-import { IconChartDonut, IconTable } from "../../ui/icons";
+import { IconTable } from "../../ui/icons";
+import { Citation } from "../../pdf/citations-table";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -68,7 +65,7 @@ interface IState {
     // track whether the preview widget is hidden
     widgetHidden: boolean;
     pdfUrls: any[];
-    citations: any[];
+    citations: Citation[];
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -573,6 +570,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return <span className="mx_EventTile_pendingModeration">{`(${text})`}</span>;
     }
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     private convertToPdfUrls(source: FileList | any[]) {
         if (source instanceof FileList) {
           return Array.from(source).map(file => ({
@@ -592,6 +590,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return []
       }
+
 
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -626,24 +625,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
         if(pdfResponse){
-            body=(
-                <>
-                {body}
-                  <Button
-                    variant="secondary"
-                    className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
-                    onClick={()=>{
-                        dis.dispatch({
-                            action: "view_citations",
-                            echartsOption: null,
-                            echartsQuery: null,
-                            push: true,
-                        });
-                        const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`
+            const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`
                         const temp = new Request(url, {
                             method: 'GET',
                         });
-                        fetch(temp).then(data=>data.json()).then((data)=>
+                        fetch(temp).then(data=>{if(!data.ok){throw new Error('Network response was not ok');}return data.json()}).then((data)=>
                             {
                 
                                 this.setState({pdfUrls:this.convertToPdfUrls(data)})
@@ -653,25 +639,37 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     method: 'GET',
                         });
                                 return fetch(request)
-                            }).then((data)=>data.json()).then((data)=>{
+                            }).then((reponse)=>{if(!reponse.ok){throw new Error('Network response was not ok');}return reponse.json()}).then((data)=>{
                                 this.setState({citations:data})
                             }).then(()=>{
-                                console.log(this.state.pdfUrls,this.state.citations,'aaaaaaaaaaaaaaaaa')
-                                dis.dispatch({
-                                    action: "view_citations",
-                                    pdfUrls: this.state.pdfUrls,
-                                    citations: this.state.citations,
-                                    push: false,
-                                });
-                            })   
+                                console.log(this.state.citations,this.state.pdfUrls,'this.state.citations,this.state.pdfUrls')
+                            })
+                            .catch((err)=>{
+                                console.log(err)
+                            })
+            body=(
+                <>
+                {body}
+                <Button
+                    variant="secondary"
+                    className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
+                    onClick={()=>{   
+                        (this.state.pdfUrls&&this.state.citations&&this.state.pdfUrls.length>0&&this.state.citations.length>0)&&dis.dispatch({
+                                action: "view_citations",
+                                pdfUrls: this.state.pdfUrls,
+                                citations: this.state.citations,
+                                push: false,
+                            });
+                        
                     }
                     }
-                  >
+                >
                     <IconTable className="zexa-mr-2" />
                     Show Citation
-                  </Button>
+                </Button>
                 </>
             )
+            
         }
         if (echartsOption&&echartsQuery){
             console.log(echartsOption,echartsQuery)
