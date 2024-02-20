@@ -654,7 +654,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     variant="secondary"
                     className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
                     onClick={()=>{   
-                        (this.state.pdfUrls&&this.state.citations&&this.state.pdfUrls.length>0&&this.state.citations.length>0)&&dis.dispatch({
+                        (this.state.pdfUrls&&this.state.citations&&this.state.pdfUrls.length>0&&this.state.citations.length>0)&&
+                        dis.dispatch({
                                 action: "view_citations",
                                 pdfUrls: this.state.pdfUrls,
                                 citations: this.state.citations,

@@ -56,3 +56,32 @@ export function IconZoomOut({ className, ...props }: React.ComponentProps<'svg'>
       </svg>
     )
   }
+
+
+  export function IconHeadphones({ className, ...props }: React.ComponentProps<'svg'>) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 256 256"
+        fill="#737D8C"
+        className={cn('zexa-h-4 zexa-w-4', className)}
+        {...props}
+      >
+        <path d="M232,136v56a24,24,0,0,1-24,24H192a24,24,0,0,1-24-24V152a24,24,0,0,1,24-24h23.65a87.71,87.71,0,0,0-87-80H128a88,88,0,0,0-87.64,80H64a24,24,0,0,1,24,24v40a24,24,0,0,1-24,24H48a24,24,0,0,1-24-24V136A104.11,104.11,0,0,1,201.89,62.66,103.41,103.41,0,0,1,232,136Z"></path>
+      </svg>
+    )
+  }
+
+  export function IconMicrophone({ className, ...props }: React.ComponentProps<'svg'>) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="#737D8C"
+        className={cn('zexa-h-4 zexa-w-4', className)}
+        viewBox="0 0 256 256"
+        {...props}
+      >
+        <path d="M80,128V64a48,48,0,0,1,96,0v64a48,48,0,0,1-96,0Zm128,0a8,8,0,0,0-16,0,64,64,0,0,1-128,0,8,8,0,0,0-16,0,80.11,80.11,0,0,0,72,79.6V232a8,8,0,0,0,16,0V207.6A80.11,80.11,0,0,0,208,128Z"></path>
+      </svg>
+    )
+  }

@@ -6,5 +6,6 @@
     "src/components/views/right_panel/BaseCard.tsx": "src/components/views/BaseCard.tsx",
     "src/stores/right-panel/RightPanelStorePhases.ts": "src/stores/right-panel/RightPanelStorePhases.ts",
     "src/components/structures/LoggedInView.tsx": "src/components/structures/LoggedInView.tsx",
-    "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx"
+    "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx",
+    "src/components/views/rooms/MessageComposerButtons.tsx": "src/components/views/rooms/MessageComposerButtons.tsx"
 }
