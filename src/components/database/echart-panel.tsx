@@ -21,11 +21,9 @@ import BaseCard from '../views/BaseCard'
 export const EChartPanel = ({
   echartsOption,
   echartsQuery,
-  onClose
 }: {
   echartsOption:any | null
   echartsQuery: string | null
-  onClose: () => void
 }) => {
 //   const [isAddedToAlgology, setIsAddedToAlgology] = useState(false)
 //   const sessionToken = useContext(SessionTokenContext)
@@ -118,7 +116,7 @@ export const EChartPanel = ({
   const content = echartsOption ? (
     <>
     <div className=''>
-      <ReactECharts option={echartsOption} />
+      <ReactECharts option={JSON.parse(echartsOption)} />
       </div>
     </>
   ) : <Loader
@@ -139,9 +137,9 @@ export const EChartPanel = ({
           <IconClose className="zexa-w-4 zexa-h-4" />
         </Button>
       </div> */}
-      <BaseCard className="BasedCard_echarts" onClose={onClose} hideBackButton={true}>
+      {/* <BaseCard className="BasedCard_echarts" hideBackButton={true}> */}
                 {content}
-      </BaseCard>
+      {/* </BaseCard> */}
       
     </>
   )
