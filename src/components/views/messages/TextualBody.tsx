@@ -609,8 +609,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const database = content.database_table;
         const fetchedDataLen = content.fetched_data_len
         const query = content.query
-        const roomId = mxEvent.event.room_id
-        const eventId = mxEvent.event.event_id
+        const roomId = mxEvent.getRoomId()
+        const rootId = mxEvent.threadRootId
         const queryDescription = content.query_description
         const echartsOption = content.echartsOption
         const echartsQuery = content.echartsQuery
@@ -626,7 +626,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if(pdfResponse){
+        if(pdfResponse&&roomId){
             const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`
                         const temp = new Request(url, {
                             method: 'GET',
@@ -684,7 +684,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             )
         }
-        if (database){
+        if (database&&roomId){
             const tableJson = JSON.parse(database)
             // const keys =Object.keys(tableJson[0])
             tableJson.forEach((temp:any)=>console.log(temp))
@@ -704,7 +704,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query: query,
                                     query_description: queryDescription,
                                     echartsData:tableJson,
-                                    eventId:eventId
+                                    eventId:rootId
                                 };
                                 const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
                                     method: 'POST',
