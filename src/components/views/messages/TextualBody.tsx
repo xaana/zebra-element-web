@@ -609,8 +609,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const database = content.database_table;
         const fetchedDataLen = content.fetched_data_len
         const query = content.query
-        const roomId = content.room_id
-        const eventId = content.event_id
+        const roomId = mxEvent.event.room_id
+        const eventId = mxEvent.event.event_id
         const queryDescription = content.query_description
         const echartsOption = content.echartsOption
         const echartsQuery = content.echartsQuery
@@ -708,7 +708,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 };
                                 const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
                                     method: 'POST',
-                                    mode: 'no-cors', // This is the part that tries to bypass CORS, but it has limitations
+                                    // This is the part that tries to bypass CORS, but it has limitations
                                     body:JSON.stringify(jsonData)
                                 });
                                 fetch(request)
