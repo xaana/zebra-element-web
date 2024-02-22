@@ -132,11 +132,13 @@
         "swr": "^2.2.4",
         "tailwind-merge": "^2.2.1",
         "tailwindcss-animate": "^1.0.7",
+        "three": "^0.159.0",
         "ua-parser-js": "^1.0.37",
         "video.js": "^8.10.0",
         "videojs-playlist": "^5.1.0",
         "vis-data": "^7.1.9",
-        "vis-timeline": "^7.7.3"
+        "vis-timeline": "^7.7.3",
+        "zustand": "^4.4.7"
     },
     "devDependencies": {
         "@action-validator/cli": "^0.5.3",
@@ -191,6 +193,7 @@
         "@types/sdp-transform": "^2.4.9",
         "@types/strftime": "^0.9.8",
         "@types/tar-js": "^0.3.5",
+        "@types/three": "^0.159.0",
         "@types/ua-parser-js": "^0.7.36",
         "@types/uuid": "^9.0.7",
         "@typescript-eslint/eslint-plugin": "^6.0.0",

@@ -27,9 +27,9 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
         style-src 'self' 'unsafe-inline' <%= csp_extra_source %>;
-        script-src 'self' 'wasm-unsafe-eval' https://www.recaptcha.net/recaptcha/ https://www.gstatic.com/recaptcha/ <%= csp_extra_source %>;
+        script-src 'self' 'wasm-unsafe-eval' https://www.recaptcha.net/recaptcha/ https://www.gstatic.com/recaptcha/ http://localhost:5500 http://localhost:29316 <%= csp_extra_source %>;
         img-src * blob: data:;
-        connect-src * blob:;
+        connect-src * blob: http://localhost:29316;
         font-src 'self' data: <%= csp_extra_source %>;
         media-src * blob: data:;
         child-src * blob: data:;
