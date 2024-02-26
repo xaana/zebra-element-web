@@ -40,11 +40,9 @@ type PageRef = React.RefObject<HTMLDivElement>
 export function Citations({
   pdfUrls,
   citations, // setShowCitations
-  onClose
 }: {
   pdfUrls: { url: string; name: string }[]
   citations: Citation[]
-  onClose: () => void
 }) {
   const [numPages, setNumPages] = useState(0)
   const pageRefs = useRef<PageRef[]>([])
@@ -163,9 +161,10 @@ export function Citations({
   }
   {console.log(pdfUrls,citations,'sadasdasdasd')}
   return (
-    <BaseCard className="BasedCard_citation" onClose={onClose} hideBackButton={true}>
+    <>
 
-    {(pdfUrls && citations)?<div className="zexa-flex zexa-flex-col zexa-gap-y-3 zexa-h-full">
+    {(pdfUrls && citations)?
+    <div className="zexa-flex zexa-flex-col zexa-gap-y-3 zexa-h-full">
       <div className="zexa-basis-3/5 zexa-min-h-[300px] zexa-overflow-hidden zexa-flex zexa-flex-col zexa-grow zexa-shrink-0">
         <div className="zexa-flex zexa-items-center zexa-justify-between zexa-pt-4 zexa-pb-2">
           <div className="zexa-basis-1/2">
@@ -248,6 +247,6 @@ export function Citations({
   height="100"
   width="100"
 />}
-    </BaseCard>
+</>
   )
 }

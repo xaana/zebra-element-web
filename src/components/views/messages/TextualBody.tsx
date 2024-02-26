@@ -56,6 +56,7 @@ import { Button } from "../../ui/button";
 import { IconTable } from "../../ui/icons";
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
+import { PdfViewer } from "../../pdf/pdf-viewer";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -87,8 +88,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             widgetHidden: false,
             pdfUrls: [],
             citations: [],
-        };
-    }
+            };
+              }
 
     public componentDidMount(): void {
         if (!this.props.editState) {
@@ -299,7 +300,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             if (messageWasEdited || stoppedEditing) {
                 this.applyFormatting();
             }
-        }
+                  }
     }
 
     public componentWillUnmount(): void {
@@ -572,27 +573,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return <span className="mx_EventTile_pendingModeration">{`(${text})`}</span>;
     }
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private convertToPdfUrls(source: FileList | any[]) {
-        if (source instanceof FileList) {
-          return Array.from(source).map(file => ({
-            url: URL.createObjectURL(file),
-            name: file.name.toString()
-          }))
-        } else if (Array.isArray(source)) {
-          return source.map(pdfData => ({
-            url: URL.createObjectURL(
-              new Blob(
-                [Uint8Array.from(atob(pdfData.content), c => c.charCodeAt(0))],
-                { type: 'application/pdf' }
-              )
-            ),
-            name: pdfData.filename.toString()
-          }))
-        }
-        return []
-      }
-
-
     public render(): React.ReactNode {
         if (this.props.editState) {
             const isWysiwygComposerEnabled = SettingsStore.getValue("feature_wysiwyg_composer");
@@ -627,49 +607,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
         if(pdfResponse&&roomId){
-            const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`
-                        const temp = new Request(url, {
-                            method: 'GET',
-                        });
-                        fetch(temp).then(data=>{if(!data.ok){throw new Error('Network response was not ok');}return data.json()}).then((data)=>
-                            {
-                
-                                this.setState({pdfUrls:this.convertToPdfUrls(data)})
-                            }
-                            ).then(()=>{
-                                const request = new Request(`http://localhost:8000/api/citations?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`, {
-                                    method: 'GET',
-                        });
-                                return fetch(request)
-                            }).then((reponse)=>{if(!reponse.ok){throw new Error('Network response was not ok');}return reponse.json()}).then((data)=>{
-                                this.setState({citations:data})
-                            }).then(()=>{
-                                console.log(this.state.citations,this.state.pdfUrls,'this.state.citations,this.state.pdfUrls')
-                            })
-                            .catch((err)=>{
-                                console.log(err)
-                            })
             body=(
                 <>
                 {body}
-                <Button
-                    variant="secondary"
-                    className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
-                    onClick={()=>{   
-                        (this.state.pdfUrls&&this.state.citations&&this.state.pdfUrls.length>0&&this.state.citations.length>0)&&
-                        dis.dispatch({
-                                action: "view_citations",
-                                pdfUrls: this.state.pdfUrls,
-                                citations: this.state.citations,
-                                push: false,
-                            });
-                        
-                    }
-                    }
-                >
-                    <IconTable className="zexa-mr-2" />
-                    Show Citation
-                </Button>
+                <PdfViewer roomId={roomId} />
                 </>
             )
             
@@ -708,7 +649,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 };
                                 const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
                                     method: 'POST',
-                                    // This is the part that tries to bypass CORS, but it has limitations
+                                    mode: 'no-cors',// This is the part that tries to bypass CORS, but it has limitations
                                     body:JSON.stringify(jsonData)
                                 });
                                 fetch(request)
