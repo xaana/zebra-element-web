@@ -25,7 +25,7 @@ crypto.createHash = (algorithm, options) => createHash(algorithm === "md4" ? "sh
 dotenv.config();
 // let ogImageUrl = process.env.RIOT_OG_IMAGE_URL;
 // if (!ogImageUrl) ogImageUrl = "https://app.element.io/themes/element/img/logos/opengraph.png";
-let ogImageUrl = "https://i.imgur.com/Cx8xOFW.png";
+const ogImageUrl = "https://i.imgur.com/Cx8xOFW.png";
 
 if (!process.env.VERSION) {
     console.warn("Unset VERSION variable - this may affect build output");
@@ -764,6 +764,7 @@ module.exports = (env, argv) => {
                     "res/manifest.json",
                     "res/sw.js",
                     "res/welcome.html",
+                    { from: "models/**", context: path.resolve(__dirname, "res") },
                     { from: "welcome/**", context: path.resolve(__dirname, "res") },
                     { from: "themes/**", context: path.resolve(__dirname, "res") },
                     { from: "vector-icons/**", context: path.resolve(__dirname, "res") },
