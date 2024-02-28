@@ -260,14 +260,17 @@ export const VoiceBotButton = () => {
         //     startListeningForActivationPhrase()
         //   }
         // })
+        const baseUrl = window.location.origin; // Get the base URL of the current webapp
+        const modelUrl = `${baseUrl}/models/model.json`; // Construct the model URL
+        const metadataUrl = `${baseUrl}/models/metadata.json`; // Construct the metadata URL
         tf.setBackend("cpu").then(async () => {
             // Initialize or load your model here
             try {
                 const recognizer = speechCommands.create(
                     "BROWSER_FFT",
                     undefined,
-                    `http://localhost:5500/model.json`, // URL to the custom model's model.json
-                    `http://localhost:5500/metadata.json`, // URL to the custom model's metadata.json
+                    modelUrl, // URL to the custom model's model.json
+                    metadataUrl, // URL to the custom model's metadata.json
                 );
                 await recognizer.ensureModelLoaded();
                 recognizerRef.current = recognizer;

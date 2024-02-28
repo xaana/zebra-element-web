@@ -23,7 +23,7 @@ stages:
           cd /opt/zebra-element-web
           sudo docker-compose down || echo "No containers to stop"
           sudo docker-compose rm -f || echo "No containers to remove"
-          sudo docker rmi zebra-element-web-webapp || echo "webapp image not found"
+          sudo docker rmi zebra-element-web || echo "webapp image not found"
           sudo docker system prune -f || echo "No space reclaimed"
         failOnStdErr: false
       continueOnError: true
