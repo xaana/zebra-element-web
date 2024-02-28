@@ -261,8 +261,8 @@ export const VoiceBotButton = () => {
         //   }
         // })
         const baseUrl = window.location.origin; // Get the base URL of the current webapp
-        const modelUrl = `${baseUrl}/models/model.json`; // Construct the model URL
-        const metadataUrl = `${baseUrl}/models/metadata.json`; // Construct the metadata URL
+        const modelUrl = `${baseUrl}/models/speech-commands/model.json`; // Construct the model URL
+        const metadataUrl = `${baseUrl}/models/speech-commands/metadata.json`; // Construct the metadata URL
         tf.setBackend("cpu").then(async () => {
             // Initialize or load your model here
             try {
