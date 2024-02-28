@@ -1,0 +1,52 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    displayName: 'Deploy to UAT EC2 Instance'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        addToPath: true
+
+    - task: SSH@0
+      inputs:
+        sshEndpoint: 'EC2 UAT Instance'
+        runOptions: 'inline'
+        inline: |
+          cd /opt/zebra-element-web
+          sudo docker-compose down || echo "No containers to stop"
+          sudo docker-compose rm -f || echo "No containers to remove"
+          sudo docker rmi zebra-element-web || echo "webapp image not found"
+          sudo docker system prune -f || echo "No space reclaimed"
+        failOnStdErr: false
+      continueOnError: true
+          
+    - task: SSH@0
+      inputs:
+        sshEndpoint: 'EC2 UAT Instance'
+        runOptions: inline
+        inline: |
+          cd /opt/zebra-element-web
+          git config --global --add safe.directory /opt/zebra-element-web
+          sudo git checkout master || echo "Master branch not found"
+          sudo git fetch --all || echo "Remote changes not fetched"
+          sudo git reset --hard origin/master || echo "Git reset failed"
+          sudo git pull origin master || echo "Origin pull failed"
+        failOnStdErr: false
+      continueOnError: true
+
+    - task: SSH@0
+      inputs:
+        sshEndpoint: 'EC2 UAT Instance'
+        runOptions: inline
+        inline: |
+          cd /opt/zebra-element-web
+          sudo docker-compose up -d
+        failOnStdErr: false
