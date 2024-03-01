@@ -207,6 +207,8 @@ class LoggedInView extends React.Component<IProps, IState> {
                 if (plugin) {
                     this.setState({ activePlugin: plugin });
                 }
+            } else if (payload.action === PluginActions.UnloadPlugin) {
+                this.setState({ activePlugin: null });
             }
         });
 
@@ -702,7 +704,6 @@ class LoggedInView extends React.Component<IProps, IState> {
         if (this.state.activePlugin) {
             const { MainPanel, LeftPanel } = this.state.activePlugin;
             pageElement = <MainPanel />;
-            console.log({ pageElement });
             leftPanel = LeftPanel? <LeftPanel />: null;
         }
 

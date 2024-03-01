@@ -33,8 +33,10 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
             })}
             onClick={(e) => {
                 window.localStorage.setItem("mx_active_space", `plugin.${name}`);
-                SpaceStore.instance.emit(UPDATE_SELECTED_SPACE, `plugin.${name}`);
+                // TODO: if we enabled line below space store will be empty, find a way
+                // SpaceStore.instance.emit(UPDATE_SELECTED_SPACE, `plugin.${name}`);
                 defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
+                window.location.hash = `#/plugins/${name}`;
                 if (onClick) {
                     onClick(e);
                 }
