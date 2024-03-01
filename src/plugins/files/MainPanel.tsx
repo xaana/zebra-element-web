@@ -62,7 +62,9 @@ export const MainPanel = () => {
     
       commonFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, commonFilter);
       const commonTimelineSets = commonRooms.map((room) => room.getOrCreateFilteredTimelineSet(commonFilter));
-      const commonEvents = commonTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
+      const commonEvents = commonTimelineSets
+        .flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()))
+        .filter((ev) => ev.getContent().file);
 
       setEvents([ ...dmEvents, ...commonEvents]);
     }
@@ -78,8 +80,6 @@ export const MainPanel = () => {
 
     fetchFileEventsServer(newRooms);
   }, []);
-
-  console.log({ rooms });
 
   const files: File[] = events.map((event) => {
     const mxcUrl = event.getContent().url?? event.getContent().file?.url;
