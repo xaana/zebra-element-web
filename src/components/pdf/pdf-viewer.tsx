@@ -18,9 +18,13 @@ import { Citations } from "./citations";
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const PdfViewer = ({
     roomId,
+    pdfurls,
+    citations
      // setShowCitations
   }: {
     roomId:string
+    pdfurls: any[]
+    citations: any[]
   }) => {
   const [showCitations, setShowCitations] = React.useState(false)
   const [pdfUrls, setPdfUrls] = React.useState<any>([])

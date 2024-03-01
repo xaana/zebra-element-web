@@ -27,7 +27,7 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
     >
       <div className="zexa-py-1">
         <div 
-            className={classNames("zexa-flex zexa-items-center zexa-rounded-lg zexa-ml-4 zexa-cursor-pointer", {
+            className={classNames("zexa-flex zexa-place-content-center zexa-rounded-lg zexa-ml-3 zexa-cursor-pointer", {
                 "zexa-p-1": !selected,
                 "zexa-bg-zinc-200 zexa-p-1": selected && !isPanelCollapsed,
             })}
@@ -41,11 +41,12 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
             }}
         >
             <div 
-                className={classNames("zexa-flex zexa-justify-center zexa-bg-gray-300/50 zexa-rounded-lg zexa-p-2 zexa-text-gray-500 zexa-w-4 zexa-h-4", {
+                className={classNames("zexa-flex zexa-justify-center zexa-p-1 zexa-bg-gray-300/50 zexa-rounded-[8px] zexa-text-gray-500", {
                   "zexa-border-black zexa-border-[3px] zexa-p-1 zexa-border-solid": selected && isPanelCollapsed,
                 })}
-            >
+            ><div className="zexa-w-6 zexa-h-6">
               <Icon />
+              </div>
             </div>
             { !isPanelCollapsed && <div className="zexa-ml-2">{ title }</div> }
         </div>

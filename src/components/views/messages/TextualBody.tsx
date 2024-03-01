@@ -52,8 +52,6 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
-import { Button } from "../../ui/button";
-import { IconTable } from "../../ui/icons";
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
@@ -595,6 +593,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const echartsOption = content.echartsOption
         const echartsQuery = content.echartsQuery
         const pdfResponse = content.pdfResponse
+        const citations = content.citations
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -607,10 +606,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
         if(pdfResponse&&roomId){
+            console.log(citations,'?????')
             body=(
                 <>
                 {body}
-                <PdfViewer roomId={roomId} />
+                {/* <PdfViewer roomId={roomId} pdfUrls={pdfUrls} citations={citations} /> */}
                 </>
             )
             
