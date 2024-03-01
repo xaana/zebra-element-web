@@ -32,7 +32,9 @@ import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientConte
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { useDispatcher } from "matrix-react-sdk/src/hooks/useDispatcher";
 import { chromeFileInputFix } from "matrix-react-sdk/src/utils/BrowserWorkarounds";
-import IconizedContextMenu, { IconizedContextMenuOptionList } from "matrix-react-sdk/src/components/views/context_menus/IconizedContextMenu";
+import IconizedContextMenu, {
+    IconizedContextMenuOptionList,
+} from "matrix-react-sdk/src/components/views/context_menus/IconizedContextMenu";
 import { EmojiButton } from "matrix-react-sdk/src/components/views/rooms/EmojiButton";
 import { filterBoolean } from "matrix-react-sdk/src/utils/arrays";
 import { useSettingValue } from "matrix-react-sdk/src/hooks/useSettings";
@@ -65,8 +67,6 @@ interface IProps {
 type OverflowMenuCloser = () => void;
 export const OverflowMenuContext = createContext<OverflowMenuCloser | null>(null);
 
-
-
 const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
     const { room, narrow } = useContext(RoomContext);
@@ -77,7 +77,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     if (!matrixClient || !room || props.haveRecording) {
         return null;
     }
-    
+
     let mainButtons: ReactNode[];
     let moreButtons: ReactNode[];
     if (narrow) {
@@ -89,8 +89,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                     onClick={props.onComposerModeClick}
                 />
             ) : (
-                emojiButton(props),
-                voiceBotButton()
+                (emojiButton(props), voiceBotButton())
             ),
         ];
         moreButtons = [
@@ -114,7 +113,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ),
             uploadButton(), // props passed via UploadButtonContext
             voiceBotButton(),
-            audioCaptureButton()
+            audioCaptureButton(),
         ];
         moreButtons = [
             showStickersButton(props),
@@ -125,14 +124,18 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     }
     function audioCaptureButton(): ReactElement {
-        return <AudioCapture onCapture={(text)=>{
-            dis.dispatch<ComposerInsertPayload>({
-                action: Action.ComposerInsert,
-                text: text,
-                timelineRenderingType: context.timelineRenderingType,
-            });    
-    
-    }} />
+        return (
+            <AudioCapture
+                key="controls_audiocapture"
+                onCapture={(text) => {
+                    dis.dispatch<ComposerInsertPayload>({
+                        action: Action.ComposerInsert,
+                        text: text,
+                        timelineRenderingType: context.timelineRenderingType,
+                    });
+                }}
+            />
+        );
     }
     mainButtons = filterBoolean(mainButtons);
     moreButtons = filterBoolean(moreButtons);
@@ -185,11 +188,8 @@ function uploadButton(): ReactElement {
 }
 
 function voiceBotButton(): ReactElement {
-    return <VoiceBotButton />;
+    return <VoiceBotButton key="controls_voicebot" />;
 }
-let responseBuffer=''
-
-
 
 type UploadButtonFn = () => void;
 export const UploadButtonContext = createContext<UploadButtonFn | null>(null);
