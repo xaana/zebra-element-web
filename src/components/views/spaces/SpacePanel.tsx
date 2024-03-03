@@ -337,6 +337,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                     label={plugin.label}
                     isPanelCollapsed={isPanelCollapsed}
                     Icon={plugin.Icon}
+                    activeSpace={activeSpace}
                 />
               ))}
 

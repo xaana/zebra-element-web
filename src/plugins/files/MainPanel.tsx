@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import RoomListStore from 'matrix-react-sdk/src/stores/room-list/RoomListStore';
-import SpaceStore from 'matrix-react-sdk/src/stores/spaces/SpaceStore';
 import { Filter, MatrixClient, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
 import { columns, DataTable, File } from './DataTable';
 import DMRoomMap from 'matrix-react-sdk/src/utils/DMRoomMap';
@@ -71,11 +69,7 @@ export const MainPanel = () => {
 
     initRouting();
 
-    
-    const spaces = SpaceStore.instance.spacePanelSpaces;
-    const invited = SpaceStore.instance.invitedSpaces;
-    const lists = RoomListStore.instance.orderedLists;
-    const newRooms = [ ...spaces, ...invited, ...(Object.values(lists).flat())];
+    const newRooms = client.getVisibleRooms(false);
     setRooms(newRooms);
 
     fetchFileEventsServer(newRooms);
