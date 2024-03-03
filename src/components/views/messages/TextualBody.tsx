@@ -610,7 +610,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body=(
                 <>
                 {body}
-                {/* <PdfViewer roomId={roomId} pdfUrls={pdfUrls} citations={citations} /> */}
+                <PdfViewer roomId={roomId} citations={citations} />
                 </>
             )
             
