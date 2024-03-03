@@ -110,6 +110,7 @@ interface IProps {
     justRegistered?: boolean;
     roomJustCreatedOpts?: IOpts;
     forceTimeline?: boolean; // see props on MatrixChat
+    activePluginName?: string | null;
 }
 
 interface IState {
@@ -200,6 +201,13 @@ class LoggedInView extends React.Component<IProps, IState> {
         this.loadResizerPreferences();
         this.refreshBackgroundImage();
 
+        if (this.props.activePluginName) {
+            const plugin = getPlugin(this.props.activePluginName);
+            if (plugin) {
+                this.setState({ activePlugin: plugin });
+            }
+        }
+
         defaultDispatcher.register((payload) => {
             if (payload.action === PluginActions.LoadPlugin) {
                 const pluginName = payload.plugin;
@@ -213,7 +221,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         });
 
         SpaceStore.instance.on(UPDATE_SELECTED_SPACE, (space) => {
-            if (space !== null && space.length > 0) {
+            if (space !== null && space.length > 0 && !space.startsWith('plugin.')) {
                 this.setState({ activePlugin: null });
             }
         })
@@ -705,6 +713,11 @@ class LoggedInView extends React.Component<IProps, IState> {
             const { MainPanel, LeftPanel } = this.state.activePlugin;
             pageElement = <MainPanel />;
             leftPanel = LeftPanel? <LeftPanel />: null;
+
+            const activeSpace = SpaceStore.instance.activeSpace;
+            if (!activeSpace.startsWith('plugin.')) {
+                SpaceStore.instance.setActiveSpace(`plugin.${this.props.activePluginName}`);
+            }
         }
 
         return (
