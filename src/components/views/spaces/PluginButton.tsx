@@ -1,21 +1,20 @@
 import React from "react";
 import classNames from "classnames";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
-import { SpaceKey, UPDATE_SELECTED_SPACE } from 'matrix-react-sdk/src/stores/spaces';
-import { useEventEmitterState } from 'matrix-react-sdk/src/hooks/useEventEmitter';
 import { Plugin, PluginActions } from '../../../plugins';
 import defaultDispatcher from 'matrix-react-sdk/src/dispatcher/dispatcher';
 
 interface PluginButtonProps extends Omit<Plugin, "MainPanel" | "LeftPanel"> {
   isPanelCollapsed: boolean;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
+  activeSpace?: string;
 }
 
-export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: PluginButtonProps) => {
-  const activeSpace = useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, (space) => space);
+export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick, activeSpace}: PluginButtonProps) => {
+  const pluginSpaceName = `plugin.${name}`;
 
   const title = label?? name;
-  const selected = activeSpace === `plugin.${name}`;
+  const selected = activeSpace === pluginSpaceName;
 
   return (
     <li
@@ -32,9 +31,7 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
                 "zexa-bg-zinc-200 zexa-p-1": selected && !isPanelCollapsed,
             })}
             onClick={(e) => {
-                window.localStorage.setItem("mx_active_space", `plugin.${name}`);
-                // TODO: if we enabled line below space store will be empty, find a way
-                // SpaceStore.instance.emit(UPDATE_SELECTED_SPACE, `plugin.${name}`);
+                SpaceStore.instance.setActiveSpace(pluginSpaceName);
                 defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
                 window.location.hash = `#/plugins/${name}`;
                 if (onClick) {
@@ -44,7 +41,7 @@ export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick}: Pl
         >
             <div 
                 className={classNames("zexa-flex zexa-justify-center zexa-bg-gray-300/50 zexa-rounded-lg zexa-p-2 zexa-text-gray-500 zexa-w-4 zexa-h-4", {
-                  "zexa-border-black zexa-border-[3px] zexa-p-1 zexa-border-solid": selected && isPanelCollapsed,
+                  "!zexa-border-black zexa-border-[3px] zexa-p-1 zexa-border-solid": selected && isPanelCollapsed,
                 })}
             >
               <Icon />

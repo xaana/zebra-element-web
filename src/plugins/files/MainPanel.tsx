@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-import RoomListStore from 'matrix-react-sdk/src/stores/room-list/RoomListStore';
-import SpaceStore from 'matrix-react-sdk/src/stores/spaces/SpaceStore';
 import { Filter, MatrixClient, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
 import { columns, DataTable, File } from './DataTable';
 import DMRoomMap from 'matrix-react-sdk/src/utils/DMRoomMap';
@@ -62,24 +60,20 @@ export const MainPanel = () => {
     
       commonFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, commonFilter);
       const commonTimelineSets = commonRooms.map((room) => room.getOrCreateFilteredTimelineSet(commonFilter));
-      const commonEvents = commonTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
+      const commonEvents = commonTimelineSets
+        .flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()))
+        .filter((ev) => ev.getContent().file);
 
       setEvents([ ...dmEvents, ...commonEvents]);
     }
 
     initRouting();
 
-    
-    const spaces = SpaceStore.instance.spacePanelSpaces;
-    const invited = SpaceStore.instance.invitedSpaces;
-    const lists = RoomListStore.instance.orderedLists;
-    const newRooms = [ ...spaces, ...invited, ...(Object.values(lists).flat())];
+    const newRooms = client.getVisibleRooms(false);
     setRooms(newRooms);
 
     fetchFileEventsServer(newRooms);
   }, []);
-
-  console.log({ rooms });
 
   const files: File[] = events.map((event) => {
     const mxcUrl = event.getContent().url?? event.getContent().file?.url;
