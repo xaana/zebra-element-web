@@ -24,6 +24,18 @@ index 5fadde7..db0c561 100644
                      {this.renderLoginComponentForFlows()}
                      {footer}
                  </AuthBody>
+diff --git a/node_modules/matrix-react-sdk/src/components/views/auth/PasswordLogin.tsx b/node_modules/matrix-react-sdk/src/components/views/auth/PasswordLogin.tsx
+index 6f1635e..38fb768 100644
+--- a/node_modules/matrix-react-sdk/src/components/views/auth/PasswordLogin.tsx
++++ b/node_modules/matrix-react-sdk/src/components/views/auth/PasswordLogin.tsx
+@@ -421,7 +421,6 @@ export default class PasswordLogin extends React.PureComponent<IProps, IState> {
+         return (
+             <div>
+                 <form onSubmit={this.onSubmitForm}>
+-                    {loginType}
+                     {loginField}
+                     <Field
+                         id="mx_LoginForm_password"
 diff --git a/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx b/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx
 index ee8a375..a84eb81 100644
 --- a/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx
