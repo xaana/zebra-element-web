@@ -2,7 +2,7 @@
     "default_server_config": {
         "m.homeserver": {
             "base_url": "http://localhost:8008",
-            "server_name": "matrix.algoreus.net"
+            "server_name": "securezebra.com"
         },
         "m.identity_server": {
             "base_url": "https://vector.im"
