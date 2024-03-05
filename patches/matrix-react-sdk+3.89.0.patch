@@ -1,0 +1,54 @@
+diff --git a/node_modules/matrix-react-sdk/src/components/structures/auth/Login.tsx b/node_modules/matrix-react-sdk/src/components/structures/auth/Login.tsx
+index 5fadde7..db0c561 100644
+--- a/node_modules/matrix-react-sdk/src/components/structures/auth/Login.tsx
++++ b/node_modules/matrix-react-sdk/src/components/structures/auth/Login.tsx
+@@ -32,7 +32,7 @@ import PasswordLogin from "../../views/auth/PasswordLogin";
+ import InlineSpinner from "../../views/elements/InlineSpinner";
+ import Spinner from "../../views/elements/Spinner";
+ import SSOButtons from "../../views/elements/SSOButtons";
+-import ServerPicker from "../../views/elements/ServerPicker";
++// import ServerPicker from "../../views/elements/ServerPicker";
+ import AuthBody from "../../views/auth/AuthBody";
+ import AuthHeader from "../../views/auth/AuthHeader";
+ import AccessibleButton, { ButtonEvent } from "../../views/elements/AccessibleButton";
+@@ -555,10 +555,10 @@ export default class LoginComponent extends React.PureComponent<IProps, IState>
+                     </h1>
+                     {errorTextSection}
+                     {serverDeadSection}
+-                    <ServerPicker
++                    {/* <ServerPicker
+                         serverConfig={this.props.serverConfig}
+                         onServerConfigChange={this.props.onServerConfigChange}
+-                    />
++                    /> */}
+                     {this.renderLoginComponentForFlows()}
+                     {footer}
+                 </AuthBody>
+diff --git a/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx b/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx
+index ee8a375..a84eb81 100644
+--- a/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx
++++ b/node_modules/matrix-react-sdk/src/components/views/dialogs/ServerPickerDialog.tsx
+@@ -28,7 +28,6 @@ import StyledRadioButton from "../elements/StyledRadioButton";
+ import TextWithTooltip from "../elements/TextWithTooltip";
+ import withValidation, { IFieldState, IValidationResult } from "../elements/Validation";
+ import { ValidatedServerConfig } from "../../../utils/ValidatedServerConfig";
+-import ExternalLink from "../elements/ExternalLink";
+ 
+ interface IProps {
+     title?: string;
+@@ -241,15 +240,6 @@ export default class ServerPickerDialog extends React.PureComponent<IProps, ISta
+                     <AccessibleButton className="mx_ServerPickerDialog_continue" kind="primary" onClick={this.onSubmit}>
+                         {_t("action|continue")}
+                     </AccessibleButton>
+-
+-                    <h2>{_t("action|learn_more")}</h2>
+-                    <ExternalLink
+-                        href="https://matrix.org/docs/matrix-concepts/elements-of-matrix/#homeserver"
+-                        target="_blank"
+-                        rel="noreferrer noopener"
+-                    >
+-                        {_t("auth|server_picker_learn_more")}
+-                    </ExternalLink>
+                 </form>
+             </BaseDialog>
+         );
