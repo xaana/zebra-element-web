@@ -1,42 +1,42 @@
 import React, { useEffect, useState } from "react";
-
-import { Filter, MatrixClient, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
-import { columns, DataTable, File } from './DataTable';
-import DMRoomMap from 'matrix-react-sdk/src/utils/DMRoomMap';
+import { Filter, MatrixClient, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
-import { useMatrixClientContext } from 'matrix-react-sdk/src/contexts/MatrixClientContext';
-import { init as initRouting } from '../../vector/routing';
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+
+import { columns, DataTable, File } from "./DataTable";
+import { init as initRouting } from "../../vector/routing";
 
 const isDirectMessageRoom = (client: MatrixClient, room: Room) => {
-  let dmRoomMap = DMRoomMap.shared();
-  if (!dmRoomMap) {
-    dmRoomMap = DMRoomMap.makeShared(client);
-    dmRoomMap.start();
-  }
+    let dmRoomMap = DMRoomMap.shared();
+    if (!dmRoomMap) {
+        dmRoomMap = DMRoomMap.makeShared(client);
+        dmRoomMap.start();
+    }
 
-  const dmRoomIds = dmRoomMap.getRoomIds();
-  return dmRoomIds.has(room.roomId)
-}
+    const dmRoomIds = dmRoomMap.getRoomIds();
+    return dmRoomIds.has(room.roomId);
+};
 
 export const MainPanel = () => {
-  const [rooms, setRooms] = useState<Room[]>([]); 
-  const [events, setEvents] = useState<MatrixEvent[]>([]);
-  const client = useMatrixClientContext();
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [events, setEvents] = useState<MatrixEvent[]>([]);
+    const client = useMatrixClientContext();
 
   useEffect(() => {
     const fetchFileEventsServer = async (rooms: Room[]) => {
-      const dmRooms = [];
-      const commonRooms = [];
+      const encryptedRooms = [];
+      const plainRooms = [];
       for (let room of rooms) {
-        if (isDirectMessageRoom(client, room)) {
-          dmRooms.push(room);
+        if (client.isRoomEncrypted(room.roomId)) {
+          encryptedRooms.push(room)
         } else {
-          commonRooms.push(room);
+          plainRooms.push(room);;
         }
       }
     
-      const dmFilter = new Filter(client.getSafeUserId());
-      dmFilter.setDefinition({
+      const plainFilter = new Filter(client.getSafeUserId());
+      plainFilter.setDefinition({
         room: {
           timeline: {
             contains_url: true,
@@ -45,12 +45,12 @@ export const MainPanel = () => {
         },
       });
     
-      dmFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_PLAIN_" + client.credentials.userId, dmFilter);
-      const dmTimelineSets = dmRooms.map((room) => room.getOrCreateFilteredTimelineSet(dmFilter));
-      const dmEvents = dmTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
+      plainFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_PLAIN_" + client.credentials.userId, plainFilter);
+      const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
+      const plainEvents = plainTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
     
-      const commonFilter = new Filter(client.getSafeUserId());
-      commonFilter.setDefinition({
+      const encryptedFilter = new Filter(client.getSafeUserId());
+      encryptedFilter.setDefinition({
         room: {
           timeline: {
             types: ["m.room.message"],
@@ -58,41 +58,45 @@ export const MainPanel = () => {
         },
       });
     
-      commonFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, commonFilter);
-      const commonTimelineSets = commonRooms.map((room) => room.getOrCreateFilteredTimelineSet(commonFilter));
-      const commonEvents = commonTimelineSets
+      encryptedFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, encryptedFilter);
+      const encryptedTimelineSets = encryptedRooms.map((room) => room.getOrCreateFilteredTimelineSet(encryptedFilter));
+      const encryptedEvents = encryptedTimelineSets
         .flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()))
         .filter((ev) => ev.getContent().file);
 
-      setEvents([ ...dmEvents, ...commonEvents]);
+      setEvents([ ...plainEvents, ...encryptedEvents]);
     }
 
-    initRouting();
+        initRouting();
 
-    const newRooms = client.getVisibleRooms(false);
-    setRooms(newRooms);
+        const newRooms = client.getVisibleRooms(false);
+        setRooms(newRooms);
 
-    fetchFileEventsServer(newRooms);
-  }, []);
+        console.log("newRooms", newRooms);
 
-  const files: File[] = events.map((event) => {
-    const mxcUrl = event.getContent().url?? event.getContent().file?.url;
-    return {
-      id: event.getId()?? '',
-      name: event.getContent().body,
-      downloadUrl: client.mxcUrlToHttp(mxcUrl)?? '',
-      timestamp: new Date(event.localTimestamp),
-      roomId: event.getRoomId()?? '',
-      room: rooms.find((r) => r.roomId === event.getRoomId()),
-      sender: event.getSender()?? '',
-      isEncrypted: event.isEncrypted(),
-      mediaHelper: new MediaEventHelper(event),
-    }
-  });
+        fetchFileEventsServer(newRooms);
+    }, [client]);
 
-  return (
-    <div>
-      <DataTable columns={columns} data={files} />
-    </div>
-  );
-}
+    const files: File[] = events.map((event) => {
+        const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
+        return {
+            id: event.getId() ?? "",
+            name: event.getContent().body,
+            downloadUrl: client.mxcUrlToHttp(mxcUrl) ?? "",
+            timestamp: new Date(event.localTimestamp),
+            roomId: event.getRoomId() ?? "",
+            room: rooms.find((r) => r.roomId === event.getRoomId()),
+            sender: event.getSender() ?? "",
+            isEncrypted: event.isEncrypted(),
+            mediaHelper: new MediaEventHelper(event),
+        };
+    });
+
+    console.log("Files", files);
+
+    return (
+        <div>
+            <DataTable columns={columns} data={files} />
+        </div>
+    );
+};
