@@ -31,7 +31,7 @@
         "summary": "Your browser can't run %(brand)s",
         "title": "Unsupported browser"
     },
-    "powered_by_matrix": "Powered by Matrix",
+    "powered_by_matrix": "Powered by Turium",
     "powered_by_matrix_with_logo": "Decentralised, encrypted chat &amp; collaboration powered by $matrixLogo",
     "unknown_device": "Unknown device",
     "use_brand_on_mobile": "Use %(brand)s on mobile",

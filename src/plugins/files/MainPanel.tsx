@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
-
-import { Filter, MatrixClient, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
-import { columns, DataTable, File } from './DataTable';
-import DMRoomMap from 'matrix-react-sdk/src/utils/DMRoomMap';
+import { Filter, MatrixClient, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
-import { useMatrixClientContext } from 'matrix-react-sdk/src/contexts/MatrixClientContext';
-import { init as initRouting } from '../../vector/routing';
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+
+import { columns, DataTable, File } from "./DataTable";
+import { init as initRouting } from "../../vector/routing";
 
 const isDirectMessageRoom = (client: MatrixClient, room: Room) => {
-  let dmRoomMap = DMRoomMap.shared();
-  if (!dmRoomMap) {
-    dmRoomMap = DMRoomMap.makeShared(client);
-    dmRoomMap.start();
-  }
+    let dmRoomMap = DMRoomMap.shared();
+    if (!dmRoomMap) {
+        dmRoomMap = DMRoomMap.makeShared(client);
+        dmRoomMap.start();
+    }
 
-  const dmRoomIds = dmRoomMap.getRoomIds();
-  return dmRoomIds.has(room.roomId)
-}
+    const dmRoomIds = dmRoomMap.getRoomIds();
+    return dmRoomIds.has(room.roomId);
+};
 
 export const MainPanel = () => {
-  const [rooms, setRooms] = useState<Room[]>([]); 
-  const [events, setEvents] = useState<MatrixEvent[]>([]);
-  const client = useMatrixClientContext();
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [events, setEvents] = useState<MatrixEvent[]>([]);
+    const client = useMatrixClientContext();
 
   useEffect(() => {
     const fetchFileEventsServer = async (rooms: Room[]) => {
@@ -67,32 +67,36 @@ export const MainPanel = () => {
       setEvents([ ...plainEvents, ...encryptedEvents]);
     }
 
-    initRouting();
+        initRouting();
 
-    const newRooms = client.getVisibleRooms(false);
-    setRooms(newRooms);
+        const newRooms = client.getVisibleRooms(false);
+        setRooms(newRooms);
 
-    fetchFileEventsServer(newRooms);
-  }, []);
+        console.log("newRooms", newRooms);
 
-  const files: File[] = events.map((event) => {
-    const mxcUrl = event.getContent().url?? event.getContent().file?.url;
-    return {
-      id: event.getId()?? '',
-      name: event.getContent().body,
-      downloadUrl: client.mxcUrlToHttp(mxcUrl)?? '',
-      timestamp: new Date(event.localTimestamp),
-      roomId: event.getRoomId()?? '',
-      room: rooms.find((r) => r.roomId === event.getRoomId()),
-      sender: event.getSender()?? '',
-      isEncrypted: event.isEncrypted(),
-      mediaHelper: new MediaEventHelper(event),
-    }
-  });
+        fetchFileEventsServer(newRooms);
+    }, [client]);
 
-  return (
-    <div>
-      <DataTable columns={columns} data={files} />
-    </div>
-  );
-}
+    const files: File[] = events.map((event) => {
+        const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
+        return {
+            id: event.getId() ?? "",
+            name: event.getContent().body,
+            downloadUrl: client.mxcUrlToHttp(mxcUrl) ?? "",
+            timestamp: new Date(event.localTimestamp),
+            roomId: event.getRoomId() ?? "",
+            room: rooms.find((r) => r.roomId === event.getRoomId()),
+            sender: event.getSender() ?? "",
+            isEncrypted: event.isEncrypted(),
+            mediaHelper: new MediaEventHelper(event),
+        };
+    });
+
+    console.log("Files", files);
+
+    return (
+        <div>
+            <DataTable columns={columns} data={files} />
+        </div>
+    );
+};
