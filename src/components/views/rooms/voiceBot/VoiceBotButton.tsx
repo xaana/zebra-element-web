@@ -281,19 +281,46 @@ export const VoiceBotButton = () => {
                 startListeningForActivationPhrase();
             }
         });
+        // const jsonData = {
+        //     query: "weather in canberra"
+        // };
+        // const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio`, {
+        //     method: 'POST',
+        //     body:JSON.stringify(jsonData)
+        // });
+        // fetch(request)
+        // http://localhost:29316/_matrix/maubot/plugin/1/stream
     };
 
     const onCapture = async (text: string) => {
-        const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
+        // const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         //   session_id: sessionId.current,
+        //         query: text,
+        //         // audio: true,
+        //         audio: true,
+        //         //   previous_messages: messages.map(message => {
+        //         //     return {
+        //         //       role: message.role,
+        //         //       content: message.content
+        //         //     }
+        //         //   })
+        //     }),
+        //     signal: abortController.current?.signal,
+        // });
+        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 //   session_id: sessionId.current,
-                query: text,
+                query: "weather in canberra",
                 // audio: true,
-                audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {
                 //       role: message.role,
@@ -303,10 +330,12 @@ export const VoiceBotButton = () => {
             }),
             signal: abortController.current?.signal,
         });
+        
         if (!res.body) {
             throw new Error("No ReadableStream received");
         }
         const contentType = res.headers.get("Content-Type");
+        console.log(contentType)
         const reader: ReadableStreamDefaultReader = res.body.getReader();
         if (contentType === "text/event-stream; charset=utf-8") {
             reader && console.log(reader);
@@ -406,9 +435,11 @@ export const VoiceBotButton = () => {
                                 maxScoreIndex = index;
                             }
                         });
-
+                        
                         const highestScoringWord = words[maxScoreIndex];
                         console.log("Highest scoring word:", highestScoringWord, "with score:", maxScore);
+                        setTriggered(true);
+                        stopListeningForActivationPhrase();
                         console.log("trigger", triggered);
                         if (highestScoringWord.toLowerCase() === "zebra") {
                             console.log("zebra detected");
