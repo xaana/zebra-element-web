@@ -5,18 +5,16 @@
 //   import.meta.url
 // ).toString()
 
-import React, { useEffect,useRef,useState } from "react";
-import { Filter, MatrixClient, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
+import React, { useEffect, useState } from "react";
+import { Filter, MatrixEvent, Room } from 'matrix-js-sdk/src/matrix';
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
-import DMRoomMap from 'matrix-react-sdk/src/utils/DMRoomMap';
 
 import { Button } from "../ui/button";
 import { IconTable } from "../ui/icons";
 import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
-import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
 // import { init as initRouting } from '../../vector/routing';
 
 // import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
@@ -37,35 +35,24 @@ export const PdfViewer = ({
   }) => {
   const [showCitations, setShowCitations] = useState(false)
   const [pdfUrls, setPdfUrls] = useState<any>([])
-  const files = useRef<any[]|undefined>(undefined)
   // const [citations, setCitations] = useState<any>([])
   // const [rooms, setRooms] = useState<Room[]>([]); 
   const [events, setEvents] = useState<MatrixEvent[]>([]);
   const client = useMatrixClientContext();
-  const isDirectMessageRoom = (client: MatrixClient, room: Room) => {
-    let dmRoomMap = DMRoomMap.shared();
-    if (!dmRoomMap) {
-      dmRoomMap = DMRoomMap.makeShared(client);
-      dmRoomMap.start();
-    }
-  
-    const dmRoomIds = dmRoomMap.getRoomIds();
-    return dmRoomIds.has(room.roomId)
-  }
   useEffect(() => {
     const fetchFileEventsServer = async (rooms: Room[]) => {
-      const dmRooms = [];
-      const commonRooms = [];
+      const encryptedRooms = [];
+      const plainRooms = [];
       for (const room of rooms) {
-        if (isDirectMessageRoom(client, room)) {
-          dmRooms.push(room);
+        if (client.isRoomEncrypted(room.roomId)) {
+          encryptedRooms.push(room)
         } else {
-          commonRooms.push(room);
+          plainRooms.push(room);;
         }
       }
     
-      const dmFilter = new Filter(client.getSafeUserId());
-      dmFilter.setDefinition({
+      const plainFilter = new Filter(client.getSafeUserId());
+      plainFilter.setDefinition({
         room: {
           timeline: {
             contains_url: true,
@@ -74,12 +61,12 @@ export const PdfViewer = ({
         },
       });
     
-      dmFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_PLAIN_" + client.credentials.userId, dmFilter);
-      const dmTimelineSets = dmRooms.map((room) => room.getOrCreateFilteredTimelineSet(dmFilter));
-      const dmEvents = dmTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
+      plainFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_PLAIN_" + client.credentials.userId, plainFilter);
+      const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
+      const plainEvents = plainTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
     
-      const commonFilter = new Filter(client.getSafeUserId());
-      commonFilter.setDefinition({
+      const encryptedFilter = new Filter(client.getSafeUserId());
+      encryptedFilter.setDefinition({
         room: {
           timeline: {
             types: ["m.room.message"],
@@ -87,14 +74,13 @@ export const PdfViewer = ({
         },
       });
     
-      commonFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, commonFilter);
-      const commonTimelineSets = commonRooms.map((room) => room.getOrCreateFilteredTimelineSet(commonFilter));
-      // const commonEvents = commonTimelineSets.flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()));
-      const commonEvents = commonTimelineSets
+      encryptedFilter.filterId = await client.getOrCreateFilter("FILTER_FILES_ENCRYPTED_" + client.credentials.userId, encryptedFilter);
+      const encryptedTimelineSets = encryptedRooms.map((room) => room.getOrCreateFilteredTimelineSet(encryptedFilter));
+      const encryptedEvents = encryptedTimelineSets
         .flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents()))
         .filter((ev) => ev.getContent().file);
-      // console.log(dmEvents, commonEvents)
-      setEvents([ ...dmEvents, ...commonEvents]);
+
+      setEvents([ ...plainEvents, ...encryptedEvents]);
     }
 
     // initRouting();
@@ -122,9 +108,9 @@ export const PdfViewer = ({
           const decryptedBlob = await mediaHelper.sourceUrl.value
           const temp = await mediaHelper.sourceBlob.value
             // If the Blob type is not 'application/pdf', create a new Blob with the correct type
-          const temp_pdf = new Blob([temp], { type: 'application/pdf' });
-          console.log(decryptedBlob, temp_pdf)
-          const pdfUrl = URL.createObjectURL(temp_pdf);
+          const Pdf = new Blob([temp], { type: 'application/pdf' });
+          console.log(decryptedBlob, Pdf)
+          const pdfUrl = URL.createObjectURL(Pdf);
           return {name: event.getContent().body, url: pdfUrl}
         } catch (err) {
           console.log('decryption error', err);
@@ -145,25 +131,6 @@ export const PdfViewer = ({
   
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  function convertToPdfUrls(source: FileList | any[]) {
-    if (source instanceof FileList) {
-      return Array.from(source).map(file => ({
-        url: URL.createObjectURL(file),
-        name: file.name.toString()
-      }))
-    } else if (Array.isArray(source)) {
-      return source.map(pdfData => ({
-        url: URL.createObjectURL(
-          new Blob(
-            [new Uint8Array((pdfData.content))],
-            { type: 'application/pdf' }
-          )
-        ),
-        name: pdfData.filename.toString()
-      }))
-    }
-    return []
-  }
 
   // useEffect(()=>{
   //   const url = `http://localhost:8000/api/fetch_pdfs?session_id=${roomId.substring(1).replace(":", "_").split('_')[0]}`

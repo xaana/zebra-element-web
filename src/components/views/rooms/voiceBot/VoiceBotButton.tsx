@@ -6,16 +6,14 @@ import * as speechCommands from "@tensorflow-models/speech-commands";
 import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
-
+import './button.css'
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
-import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands";
-import { IconHeadphones } from "../../../ui/icons";
+import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands"
 import { Visualizer } from "./visualizer";
 import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
 import { SwitchFadeTransition } from "../../../ui/transitions/switch-fade-transition";
-import { cn } from "../../../../lib/utils";
 import { useAudio } from "../../../../lib/hooks/use-audio";
 
 const DialogStyle = styled.div`
@@ -571,7 +569,7 @@ export const VoiceBotButton = () => {
         }
     };
     return (
-        <div>
+        <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px]">
             <Dialog
                 open={voiceBotEnabled}
                 onOpenChange={(open: boolean) => {
@@ -579,15 +577,12 @@ export const VoiceBotButton = () => {
                     !open && updateStatus("loading");
                 }}
             >
-                <DialogTrigger className="zexa-border-0 zexa-bg-transparent">
-                    <div
-                        className={cn(
-                            "!zexa-rounded-full zexa-bg-transparent zexa-shadow-none zexa-border-0 zexa-cursor-pointer",
-                        )}
-                    >
-                        <IconHeadphones className={cn("zexa-h-6 zexa-w-6")} />
-                    </div>
+                
+                <DialogTrigger className="zexa-border-0 zexa-flex zexa-items-center zexa-justify-center zexa-bg-transparent !zexa-w-[26px] !zexa-h-[26px]">
+                    {/* <div className="!zexa-ml-0" /> */}
+                    <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px] mx_MessageComposer_button voice_bot_button" />
                 </DialogTrigger>
+                
                 <DialogStyle>
                     <DialogContent
                         className="zexa-w-[90vw] sm:zexa-w-[50vw] sm:zexa-max-w-[400px] zexa-h-[400px] !zexa-p-0 zexa-bg-white dark:zexa-bg-black zexa-overflow-hidden"
