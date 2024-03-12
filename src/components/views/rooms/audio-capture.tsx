@@ -27,7 +27,7 @@ const RecorderStyle = styled.div`
       opacity: 1;
     }
     50% {
-      opacity: 0;
+      opacity: 0.5;
     }
   }
   .strobing {
@@ -156,7 +156,7 @@ export const AudioCapture = ({
       ) : (
         <div  className={cn(
           'recorder  mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage zexa-w-[26px] zexa-h-[26px]',
-          isRecording ? '!zexa-bg-red-500' : ''
+          isRecording ? '!zexa-bg-[#5734d3] strobing' : ''
         )}
           onClick={
           pipelineRef.current
