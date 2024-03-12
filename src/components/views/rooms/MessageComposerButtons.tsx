@@ -69,7 +69,7 @@ export const OverflowMenuContext = createContext<OverflowMenuCloser | null>(null
 
 const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
-    const { room, narrow } = useContext(RoomContext);
+        const { room, narrow } = useContext(RoomContext);
     const context = useContext(RoomContext);
 
     const isWysiwygLabEnabled = useSettingValue<boolean>("feature_wysiwyg_composer");
@@ -89,7 +89,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                     onClick={props.onComposerModeClick}
                 />
             ) : (
-                (emojiButton(props), voiceBotButton())
+                (emojiButton(props), voiceBotButton(matrixClient,room))
             ),
         ];
         moreButtons = [
@@ -113,7 +113,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ),
             uploadButton(), // props passed via UploadButtonContext
             audioCaptureButton(),
-            voiceBotButton(),
+            voiceBotButton(matrixClient,room),
         ];
         moreButtons = [
             showStickersButton(props),
@@ -187,8 +187,8 @@ function uploadButton(): ReactElement {
     return <UploadButton key="controls_upload" />;
 }
 
-function voiceBotButton(): ReactElement {
-    return <VoiceBotButton key="controls_voicebot" />;
+function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {
+    return <VoiceBotButton key="controls_voicebot" client={matrixClient} room={room.roomId} />;
 }
 
 type UploadButtonFn = () => void;

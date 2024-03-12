@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import { Pipeline, pipeline } from "@xenova/transformers";
 import * as tf from "@tensorflow/tfjs";
@@ -7,6 +7,9 @@ import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
 import './button.css'
+import { IContent } from "matrix-js-sdk/src/models/event";
+import { MatrixClient } from "matrix-js-sdk/src/matrix";
+
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
 import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands"
@@ -68,17 +71,17 @@ export const stopState = create<StopState & StopAction>((set) => ({
     setStopDetected: (stopDetected: boolean) => set(() => ({ stopDetected: stopDetected })),
 }));
 
-type State = {
+type BotState = {
     status: string;
     voiceBotEnabled: boolean;
 };
 
-type Action = {
-    updateStatus: (newStatus: State["status"]) => void;
-    setVoiceBotEnabled: (newDialogOpen: State["voiceBotEnabled"]) => void;
+type BotAction = {
+    updateStatus: (newStatus: BotState["status"]) => void;
+    setVoiceBotEnabled: (newDialogOpen: BotState["voiceBotEnabled"]) => void;
 };
 
-export const voiceBotState = create<State & Action>((set) => ({
+export const voiceBotState = create<BotState & BotAction>((set) => ({
     status: "loading",
     voiceBotEnabled: false,
     updateStatus: (newStatus: string) => {
@@ -132,7 +135,13 @@ registerProcessor('my-audio-worklet-processor', MyAudioWorkletProcessor);
   
 `;
 
-export const VoiceBotButton = () => {
+export const VoiceBotButton = ({
+    client,
+    room
+  }: {
+    client: MatrixClient;
+    room: string;
+  }) => {
     const status = voiceBotState((state) => state.status);
     const updateStatus = voiceBotState((state) => state.updateStatus);
     const voiceBotEnabled = voiceBotState((state) => state.voiceBotEnabled);
@@ -142,7 +151,6 @@ export const VoiceBotButton = () => {
     const setStopDetected = stopState((state) => state.setStopDetected);
     const stopDetected = stopState((state) => state.stopDetected);
     const loaderRef = useRef<HTMLDivElement>(null);
-
     const statusMap: Record<string, string> = {
         loading: "Loading Speech Models...",
         inactive: "Ready",
@@ -310,14 +318,19 @@ export const VoiceBotButton = () => {
         //     }),
         //     signal: abortController.current?.signal,
         // });
-        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio`, {
+        // console.log(messageComposerInput.current, messageComposerInput.current?.sendMessage,'======================')
+        // await messageComposerInput.current?.sendMessage();
+        const content = {"msgtype": "m.text", "body": text} as IContent
+        const rootId = await client.sendMessage(room, content)
+        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 //   session_id: sessionId.current,
-                query: "weather in canberra",
+                query: text,
+                eventId:rootId.event_id,
                 // audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {
