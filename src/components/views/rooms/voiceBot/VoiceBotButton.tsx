@@ -436,8 +436,6 @@ export const VoiceBotButton = () => {
                         
                         const highestScoringWord = words[maxScoreIndex];
                         console.log("Highest scoring word:", highestScoringWord, "with score:", maxScore);
-                        setTriggered(true);
-                        stopListeningForActivationPhrase();
                         console.log("trigger", triggered);
                         if (highestScoringWord.toLowerCase() === "zebra") {
                             console.log("zebra detected");
