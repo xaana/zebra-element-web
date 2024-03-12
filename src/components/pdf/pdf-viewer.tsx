@@ -166,7 +166,7 @@ export const PdfViewer = ({
     <>
     <Button
         variant="secondary"
-        className="zexa-font-normal zexa-text-xs zexa-cursor-pointer"
+        className="zexa-font-normal zexa-text-xs zexa-cursor-pointer !zexa-border-black zexa-border zexa-border-solid"
         // onClick={()=>{   
         //     (this.state.pdfUrls&&this.state.citations&&this.state.pdfUrls.length>0&&this.state.citations.length>0)&&
         //     console.log('reach pdf endpoint...')
