@@ -71,9 +71,6 @@ export const MainPanel = () => {
 
         const newRooms = client.getVisibleRooms(false);
         setRooms(newRooms);
-
-        console.log("newRooms", newRooms);
-
         fetchFileEventsServer(newRooms);
     }, [client]);
 

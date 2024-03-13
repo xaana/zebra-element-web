@@ -57,7 +57,6 @@ export const AudioCapture = ({
       'Xenova/whisper-tiny.en'
     )
     setIsLoadingModel(false)
-    // console.log('Model Loaded in ', performance.now() - startTime)
   }
 
   const startRecording = async () => {
@@ -119,13 +118,11 @@ export const AudioCapture = ({
 
   const processRecording = async (blobUrl: string) => {
     setIsProcessingAudio(() => true)
-    // let startTime = performance.now()
     try {
       // Process the audio using the ASR pipeline
       if (pipelineRef.current) {
         // Process the audio using the ASR pipeline
         const transcriptionResult = await pipelineRef.current(blobUrl)
-        // console.log('Processing audio took: ', performance.now() - startTime)
         if (!transcriptionResult.text)
           throw new Error(
             'Failed to process microphone input. Please try again.'
@@ -164,30 +161,7 @@ export const AudioCapture = ({
               ? stopRecording
               : startRecording
             : loadPipeline
-        }>
-        {/* <Button
-          className={cn(
-            'recorder !zexa-shadow-none zexa-bg-transparent zexa-border-0 zexa-cursor-pointer mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage zexa-w-[26px] zexa-h-[26px]',
-            isRecording ? '!zexa-bg-primary' : ''
-          )}
-          variant="secondary"
-          size='icon'
-          onClick={
-            pipelineRef.current
-              ? isRecording
-                ? stopRecording
-                : startRecording
-              : loadPipeline
-          }
-        >
-          {/* <IconMicrophone
-            className={cn(
-              'zexa-h-6 zexa-w-6',
-              isRecording ? 'strobing zexa-fill-red-500' : ''
-            )}
-          /> */}
-        {/* </Button> } */}
-        </div>
+        } />
       )}
     </RecorderStyle>
   )

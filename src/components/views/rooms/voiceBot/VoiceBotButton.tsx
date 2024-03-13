@@ -111,7 +111,6 @@ export default class MyAudioWorkletProcessor extends AudioWorkletProcessor {
       for (let i = 0; i < channel.length; i++) {
         sum += Math.abs(channel[i]);
       }
-      // console.log(sum)
       this.average = sum *1000/ channel.length;
       if (this.average<this.silenceThreshold){
           this.count+=1
@@ -121,7 +120,6 @@ export default class MyAudioWorkletProcessor extends AudioWorkletProcessor {
       }
       
     }
-    console.log(this.average)
     if (this.count > this.silenceCountThreshold) {
       this.port.postMessage('silence-detected');
       return false; // Stop processing audio when silence is detected
@@ -299,27 +297,6 @@ export const VoiceBotButton = ({
     };
 
     const onCapture = async (text: string) => {
-        // const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //         //   session_id: sessionId.current,
-        //         query: text,
-        //         // audio: true,
-        //         audio: true,
-        //         //   previous_messages: messages.map(message => {
-        //         //     return {
-        //         //       role: message.role,
-        //         //       content: message.content
-        //         //     }
-        //         //   })
-        //     }),
-        //     signal: abortController.current?.signal,
-        // });
-        // console.log(messageComposerInput.current, messageComposerInput.current?.sendMessage,'======================')
-        // await messageComposerInput.current?.sendMessage();
         const content = {"msgtype": "m.text", "body": text} as IContent
         const rootId = await client.sendMessage(room, content)
         const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
@@ -346,7 +323,6 @@ export const VoiceBotButton = ({
             throw new Error("No ReadableStream received");
         }
         const contentType = res.headers.get("Content-Type");
-        console.log(contentType)
         const reader: ReadableStreamDefaultReader = res.body.getReader();
         if (contentType === "text/event-stream; charset=utf-8") {
             reader && console.log(reader);
@@ -384,7 +360,6 @@ export const VoiceBotButton = ({
                     try {
                         const parsedChunk: { type: string; data: string } = JSON.parse(partialChunk);
                         if (parsedChunk.type === "audio") {
-                            //   console.log('stopDetected', stop.current)
                             if (!stop.current) {
                                 playbackAudio(parsedChunk.data);
                             }
@@ -455,7 +430,6 @@ export const VoiceBotButton = ({
                             if (triggered) {
                                 setTriggered(false);
                                 setStopDetected(true);
-                                console.log(onStop);
                                 onStop && onStop();
                                 stopListeningForActivationPhrase();
                             } else {
@@ -572,7 +546,6 @@ export const VoiceBotButton = ({
                 // Process the audio using the ASR pipeline
                 const transcriptionResult = await pipelineRef.current(blobUrl);
                 if (!transcriptionResult.text) throw new Error("Failed to process microphone input. Please try again.");
-                console.log(transcriptionResult.text);
                 await onCapture(transcriptionResult.text);
             }
         } catch (error: any) {
@@ -619,15 +592,6 @@ export const VoiceBotButton = ({
                                     {statusMap[status]}
                                 </p>
                             </SwitchFadeTransition>
-                            {/* <div className=" zexa-flex zexa-gap-1 zexa-items-center">
-                <button onClick={() => updateStatus('loading')}>loading</button>
-                <button onClick={() => updateStatus('inactive')}>
-                  inactive
-                </button>
-                <button onClick={() => updateStatus('listen')}>listen</button>
-                <button onClick={() => updateStatus('compute')}>compute</button>
-                <button onClick={() => updateStatus('speak')}>speak</button>
-              </div> */}
                         </div>
                     </DialogContent>
                 </DialogStyle>
