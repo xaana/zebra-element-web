@@ -101,7 +101,7 @@ export const MainPanel = () => {
       isEncrypted: event.isEncrypted(),
       mediaHelper: new MediaEventHelper(event),
     };
-  });
+  }).filter((file, index, self) => index === self.findIndex((f) => f.id === file.id));
 
   return (
     <div>
