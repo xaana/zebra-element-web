@@ -14,8 +14,8 @@ export function CollapsibleMessage({
 }) {
   return (
     <div className='zexa-bg-muted zexa-rounded-md zexa-px-2'>
-      <Accordion type="single">
-        <AccordionItem value="item-1" >
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
           <AccordionTrigger className="!zexa-py-1 zexa-font-normal zexa-rounded-md zexa-bg-transparent">
             {title}
           </AccordionTrigger>
