@@ -647,7 +647,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     echartsData:tableJson,
                                     eventId:rootId
                                 };
-                                const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
+                                const request = new Request(`${content.webappUrl}/data/${roomId}`, {
                                     method: 'POST',
                                     mode: 'no-cors',// This is the part that tries to bypass CORS, but it has limitations
                                     body:JSON.stringify(jsonData)

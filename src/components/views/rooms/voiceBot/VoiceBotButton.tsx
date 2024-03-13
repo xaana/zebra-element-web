@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import { Pipeline, pipeline } from "@xenova/transformers";
 import * as tf from "@tensorflow/tfjs";
@@ -6,16 +6,17 @@ import * as speechCommands from "@tensorflow-models/speech-commands";
 import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
+import './button.css'
+import { IContent } from "matrix-js-sdk/src/models/event";
+import { MatrixClient } from "matrix-js-sdk/src/matrix";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
-import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands";
-import { IconHeadphones } from "../../../ui/icons";
+import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands"
 import { Visualizer } from "./visualizer";
 import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
 import { SwitchFadeTransition } from "../../../ui/transitions/switch-fade-transition";
-import { cn } from "../../../../lib/utils";
 import { useAudio } from "../../../../lib/hooks/use-audio";
 
 const DialogStyle = styled.div`
@@ -70,17 +71,17 @@ export const stopState = create<StopState & StopAction>((set) => ({
     setStopDetected: (stopDetected: boolean) => set(() => ({ stopDetected: stopDetected })),
 }));
 
-type State = {
+type BotState = {
     status: string;
     voiceBotEnabled: boolean;
 };
 
-type Action = {
-    updateStatus: (newStatus: State["status"]) => void;
-    setVoiceBotEnabled: (newDialogOpen: State["voiceBotEnabled"]) => void;
+type BotAction = {
+    updateStatus: (newStatus: BotState["status"]) => void;
+    setVoiceBotEnabled: (newDialogOpen: BotState["voiceBotEnabled"]) => void;
 };
 
-export const voiceBotState = create<State & Action>((set) => ({
+export const voiceBotState = create<BotState & BotAction>((set) => ({
     status: "loading",
     voiceBotEnabled: false,
     updateStatus: (newStatus: string) => {
@@ -134,7 +135,13 @@ registerProcessor('my-audio-worklet-processor', MyAudioWorkletProcessor);
   
 `;
 
-export const VoiceBotButton = () => {
+export const VoiceBotButton = ({
+    client,
+    room
+  }: {
+    client: MatrixClient;
+    room: string;
+  }) => {
     const status = voiceBotState((state) => state.status);
     const updateStatus = voiceBotState((state) => state.updateStatus);
     const voiceBotEnabled = voiceBotState((state) => state.voiceBotEnabled);
@@ -144,7 +151,6 @@ export const VoiceBotButton = () => {
     const setStopDetected = stopState((state) => state.setStopDetected);
     const stopDetected = stopState((state) => state.stopDetected);
     const loaderRef = useRef<HTMLDivElement>(null);
-
     const statusMap: Record<string, string> = {
         loading: "Loading Speech Models...",
         inactive: "Ready",
@@ -281,10 +287,42 @@ export const VoiceBotButton = () => {
                 startListeningForActivationPhrase();
             }
         });
+        // const jsonData = {
+        //     query: "weather in canberra"
+        // };
+        // const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio`, {
+        //     method: 'POST',
+        //     body:JSON.stringify(jsonData)
+        // });
+        // fetch(request)
+        // http://localhost:29316/_matrix/maubot/plugin/1/stream
     };
 
     const onCapture = async (text: string) => {
-        const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
+        // const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         //   session_id: sessionId.current,
+        //         query: text,
+        //         // audio: true,
+        //         audio: true,
+        //         //   previous_messages: messages.map(message => {
+        //         //     return {
+        //         //       role: message.role,
+        //         //       content: message.content
+        //         //     }
+        //         //   })
+        //     }),
+        //     signal: abortController.current?.signal,
+        // });
+        // console.log(messageComposerInput.current, messageComposerInput.current?.sendMessage,'======================')
+        // await messageComposerInput.current?.sendMessage();
+        const content = {"msgtype": "m.text", "body": text} as IContent
+        const rootId = await client.sendMessage(room, content)
+        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -292,8 +330,8 @@ export const VoiceBotButton = () => {
             body: JSON.stringify({
                 //   session_id: sessionId.current,
                 query: text,
+                eventId:rootId.event_id,
                 // audio: true,
-                audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {
                 //       role: message.role,
@@ -303,10 +341,12 @@ export const VoiceBotButton = () => {
             }),
             signal: abortController.current?.signal,
         });
+        
         if (!res.body) {
             throw new Error("No ReadableStream received");
         }
         const contentType = res.headers.get("Content-Type");
+        console.log(contentType)
         const reader: ReadableStreamDefaultReader = res.body.getReader();
         if (contentType === "text/event-stream; charset=utf-8") {
             reader && console.log(reader);
@@ -406,7 +446,7 @@ export const VoiceBotButton = () => {
                                 maxScoreIndex = index;
                             }
                         });
-
+                        
                         const highestScoringWord = words[maxScoreIndex];
                         console.log("Highest scoring word:", highestScoringWord, "with score:", maxScore);
                         console.log("trigger", triggered);
@@ -540,7 +580,7 @@ export const VoiceBotButton = () => {
         }
     };
     return (
-        <div>
+        <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px]">
             <Dialog
                 open={voiceBotEnabled}
                 onOpenChange={(open: boolean) => {
@@ -548,15 +588,12 @@ export const VoiceBotButton = () => {
                     !open && updateStatus("loading");
                 }}
             >
-                <DialogTrigger className="zexa-border-0 zexa-bg-transparent">
-                    <div
-                        className={cn(
-                            "!zexa-rounded-full zexa-bg-transparent zexa-shadow-none zexa-border-0 zexa-cursor-pointer",
-                        )}
-                    >
-                        <IconHeadphones className={cn("zexa-h-6 zexa-w-6")} />
-                    </div>
+                
+                <DialogTrigger className="zexa-border-0 zexa-flex zexa-items-center zexa-justify-center zexa-bg-transparent !zexa-w-[26px] !zexa-h-[26px]">
+                    {/* <div className="!zexa-ml-0" /> */}
+                    <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px] mx_MessageComposer_button voice_bot_button" />
                 </DialogTrigger>
+                
                 <DialogStyle>
                     <DialogContent
                         className="zexa-w-[90vw] sm:zexa-w-[50vw] sm:zexa-max-w-[400px] zexa-h-[400px] !zexa-p-0 zexa-bg-white dark:zexa-bg-black zexa-overflow-hidden"

@@ -5,8 +5,6 @@ import { Pipeline, pipeline } from '@xenova/transformers'
 import React from 'react'
 
 import { cn } from '../../../lib/utils'
-import { Button } from '../../ui/button'
-import { IconMicrophone } from '../../ui/icons'
 import WaveformLoader from '../../ui/waveform-loader'
 import RingLoader from '../../ui/ring-loader'
 
@@ -29,7 +27,7 @@ const RecorderStyle = styled.div`
       opacity: 1;
     }
     50% {
-      opacity: 0;
+      opacity: 0.5;
     }
   }
   .strobing {
@@ -156,9 +154,20 @@ export const AudioCapture = ({
           {isProcessingAudio && <RingLoader />}
         </div>
       ) : (
-        <Button
+        <div  className={cn(
+          'recorder  mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage zexa-w-[26px] zexa-h-[26px]',
+          isRecording ? '!zexa-bg-[#5734d3] strobing' : ''
+        )}
+          onClick={
+          pipelineRef.current
+            ? isRecording
+              ? stopRecording
+              : startRecording
+            : loadPipeline
+        }>
+        {/* <Button
           className={cn(
-            'recorder !zexa-shadow-none !zexa-rounded-full zexa-bg-transparent zexa-border-0 zexa-cursor-pointer',
+            'recorder !zexa-shadow-none zexa-bg-transparent zexa-border-0 zexa-cursor-pointer mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage zexa-w-[26px] zexa-h-[26px]',
             isRecording ? '!zexa-bg-primary' : ''
           )}
           variant="secondary"
@@ -171,13 +180,14 @@ export const AudioCapture = ({
               : loadPipeline
           }
         >
-          <IconMicrophone
+          {/* <IconMicrophone
             className={cn(
               'zexa-h-6 zexa-w-6',
               isRecording ? 'strobing zexa-fill-red-500' : ''
             )}
-          />
-        </Button>
+          /> */}
+        {/* </Button> } */}
+        </div>
       )}
     </RecorderStyle>
   )
