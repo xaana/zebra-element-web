@@ -205,6 +205,7 @@ class LoggedInView extends React.Component<IProps, IState> {
             const plugin = getPlugin(this.props.activePluginName);
             if (plugin) {
                 this.setState({ activePlugin: plugin });
+                SpaceStore.instance.setActiveSpace(`plugin.${this.props.activePluginName}`);
             }
         }
 
@@ -713,11 +714,6 @@ class LoggedInView extends React.Component<IProps, IState> {
             const { MainPanel, LeftPanel } = this.state.activePlugin;
             pageElement = <MainPanel />;
             leftPanel = LeftPanel? <LeftPanel />: null;
-
-            const activeSpace = SpaceStore.instance.activeSpace;
-            if (!activeSpace.startsWith('plugin.')) {
-                SpaceStore.instance.setActiveSpace(`plugin.${this.props.activePluginName}`);
-            }
         }
 
         return (
