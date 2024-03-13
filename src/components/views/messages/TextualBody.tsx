@@ -606,7 +606,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             returnString: false,
         });
         if(pdfResponse&&roomId){
-            console.log(citations,'?????')
             body=(
                 <>
                 {body}
@@ -615,8 +614,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             )
             
         }
-        if (echartsOption&&echartsQuery){
-            console.log(echartsOption,echartsQuery)
+                if (echartsOption&&echartsQuery){
+        console.log(echartsOption,echartsQuery)
             
             body=(
                 <>
@@ -626,14 +625,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             )
         }
         if (database&&roomId){
-            const tableJson = JSON.parse(database)
-            // const keys =Object.keys(tableJson[0])
-            tableJson.forEach((temp:any)=>console.log(temp))
-            
+            const tableJson = JSON.parse(database)            
             body=(
                 <>
                 {body}
-                {/* TODO: view echart */}
                 <div className="zexa-flex zexa-flex-col zexa-gap-y-2">
                     {tableJson && tableJson.length > 0 && query && (
                         <>
@@ -653,64 +648,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     body:JSON.stringify(jsonData)
                                 });
                                 fetch(request)
-                                // .then((data) => {
-                                //     console.log('==================data of echarts')
-                                //     console.log(data)
-                                //     if(data.ok){
-                                //         dis.dispatch({
-                                //             action: "view_echarts",
-                                //             echartsOption: echartsOption,
-                                //             echartsQuery: echartsQuery,
-                                //             push: true,
-                                //         });
-                                //     }else{
-                                //         console.log('response not ok')
-                                //     }
-                                    
-                                // })
-                                // http://localhost:29316/_matrix/maubot/plugin/1/123456
-                                // dis.dispatch({
-                                //     action: "view_echarts",
-                                //     echartsOption: null,
-                                //     echartsQuery: null,
-                                //     push: true,
-                                // });
-                                // const jsonData = {
-                                //     query: query,
-                                //     query_description: queryDescription,
-                                //     echartsData:tableJson
-                                // };
-                                // const url = `http://localhost:3333/data`
-                                // const request = new Request(url, {
-                                //     method: 'POST',
-                                //     // mode: 'no-cors',
-                                //     headers: {
-                                //         'Content-Type': 'application/json'
-                                //     }, // This is the part that tries to bypass CORS, but it has limitations
-                                //     body:JSON.stringify(jsonData)
-                                // });
-                                // fetch(request).then((response)=>{
-                                //     if(response.ok){
-                                //         console.log(response)
-                                //         return response.json();
-                                //     }
-                                //     else{
-                                //         console.log('response not ok')
-                                //     }
-                                // }).then((data)=>{
-                                //     data = JSON.parse(data)
-                                //     console.log(data,data.echartsOption,data.echartsQuery,'??????????????????')
-                                    
-                                //     dis.dispatch({
-                                //         action: "view_echarts",
-                                //         echartsOption: data.echartsOption,
-                                //         echartsQuery: data.echartsQuery,
-                                //         push: false,
-                                //     });
-                                    
-                                // }).catch((error)=>{
-                                //     console.log(error)
-                                // })
                             }}
                         />
                         <div className="zexa-shadow-none">

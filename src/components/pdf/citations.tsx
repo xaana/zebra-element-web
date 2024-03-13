@@ -159,7 +159,7 @@ export function Citations({
       )
     }
   }
-  {console.log(pdfUrls,citations,'sadasdasdasd')}
+  {console.log(pdfUrls,citations)}
   return (
     <>
 

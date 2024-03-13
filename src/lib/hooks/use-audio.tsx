@@ -17,7 +17,6 @@ export function useAudio() {
   const streamComplete = useRef(false)
   const updateStatus = voiceBotState(state => state.updateStatus)
   const stopDetected = stopState(state => state.stopDetected)
-  const setStopDetected = stopState(state => state.setStopDetected)
   const source = useRef<AudioBufferSourceNode | null>(null)
   const audioContext: AudioContext = new (window.AudioContext ||
     window.webkitAudioContext)()
@@ -30,14 +29,9 @@ export function useAudio() {
     },[streamCompleted])
     useEffect(() => {
       if(stopDetected) {
-        console.log(stopDetected)
-        // audioQueue.current = ['stop']
         audioQueue.current = []
         source.current&&source.current.stop()
         source.current = null
-        // addToAudioQueue('stop')
-        
-        
       }
     },[stopDetected])
   function addToAudioQueue(audioData: string): void {
@@ -52,14 +46,7 @@ export function useAudio() {
   }
 
   async function playNextAudioChunk(): Promise<void> {
-    // console.log(audioQueue)
     if (audioQueue.current.length === 0) {
-    //   if(streamComplete.current) {
-    //         console.log('stream completed, setting status to inactive')
-    //         // updateStatus('inactive')
-    //         // setStreamCompleted(false)
-    //         streamComplete.current=false
-    //       }
       isPlaying.current = false
       return
     }
@@ -79,14 +66,10 @@ export function useAudio() {
     }
   }
   else if (audioData==='stop'){
-      console.log(audioData)
-          console.log('stream completed, setting status to inactive')
-          updateStatus('inactive')
-          // setStreamCompleted(false)
-          // streamComplete.current=false
-          isPlaying.current = false
-          audioQueue.current=[]
-          return
+        updateStatus('inactive')
+        isPlaying.current = false
+        audioQueue.current=[]
+        return
   }
 }
 
