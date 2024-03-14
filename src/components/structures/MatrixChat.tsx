@@ -70,7 +70,7 @@ import ToastStore from "matrix-react-sdk/src/stores/ToastStore";
 import * as StorageManager from "matrix-react-sdk/src/utils/StorageManager";
 import { UseCase } from "matrix-react-sdk/src/settings/enums/UseCase";
 import type LoggedInViewType from "matrix-react-sdk/src/components/structures/LoggedInView";
-import LoggedInView from "matrix-react-sdk/src/components/structures/LoggedInView";
+import LoggedInView from "./LoggedInView";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { hideToast as hideAnalyticsToast, showToast as showAnalyticsToast } from "matrix-react-sdk/src/toasts/AnalyticsToast";
 import { showToast as showNotificationsToast } from "matrix-react-sdk/src/toasts/DesktopNotificationsToast";
@@ -158,7 +158,7 @@ const AUTH_SCREENS = ["register", "login", "forgot_password", "start_sso", "star
 // re-factoring to be included in this list in future.
 const ONBOARDING_FLOW_STARTERS = [Action.ViewUserSettings, "view_create_chat", "view_create_room"];
 
-interface IScreen {
+export interface IScreen {
     screen: string;
     params?: QueryDict;
 }
@@ -2112,11 +2112,10 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                  * we should go through and figure out what we actually need to pass down, as well
                  * as using something like redux to avoid having a billion bits of state kicking around.
                  */
-                view = (
+                                view = (
                     <LoggedInView
                         {...this.props}
                         {...this.state}
-                        ref={this.loggedInView}
                         matrixClient={MatrixClientPeg.safeGet()}
                         onRegistered={this.onRegistered}
                         currentRoomId={this.state.currentRoomId}
