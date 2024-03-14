@@ -48,7 +48,7 @@ import SdkConfig, { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import Notifier from "matrix-react-sdk/src/Notifier";
 import Modal from "matrix-react-sdk/src/Modal";
-import { showRoomInviteDialog, showStartChatInviteDialog } from "matrix-react-sdk/src/RoomInvite";
+import { inviteMultipleToRoom, showRoomInviteDialog, showStartChatInviteDialog } from "matrix-react-sdk/src/RoomInvite";
 import * as Rooms from "matrix-react-sdk/src/Rooms";
 import * as Lifecycle from "matrix-react-sdk/src/Lifecycle";
 // LifecycleStore is not used but does listen to and dispatch actions
@@ -1133,7 +1133,21 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
 
         const [shouldCreate, opts] = await modal.finished;
         if (shouldCreate) {
-            createRoom(MatrixClientPeg.safeGet(), opts!);
+            const cli = MatrixClientPeg.safeGet();
+            const roomId = await createRoom(cli, opts!);
+            const room = roomId&&cli.getRoom(roomId)
+            if (room){
+                try {
+                    const result = await inviteMultipleToRoom(cli, roomId, ["@zebra:securezebra.com"], true);
+                    if (result) {
+                        console.log("invite result", result);
+                    }
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+            
+
         }
     }
 
