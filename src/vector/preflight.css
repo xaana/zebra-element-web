@@ -26,14 +26,6 @@
 }
 
 
-:where(.zebra-container) h3 {
-  font-size: inherit;
-  font-weight: inherit;
-}
-:where(.zebra-container) h3 {
-  margin: 0;
-}
-
 
 :where(.zebra-container) button{
   font-family: inherit;
