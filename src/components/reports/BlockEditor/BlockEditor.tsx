@@ -7,18 +7,17 @@ import { TextMenu } from "../menus/TextMenu";
 import { ContentItemMenu } from "../menus/ContentItemMenu";
 import type { Editor } from "@tiptap/react";
 
-import { LinkMenu } from "@/components/menus";
-
 import "@/styles/index.css";
 
-import { Sidebar } from "@/components/Sidebar";
-import { Loader } from "@/components/ui/Loader";
+import { LinkMenu } from "@/components/reports/menus";
+import { Sidebar } from "@/components/reports/Sidebar";
+import { Loader } from "@/components/ui/LoaderAlt";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
-import ImageBlockMenu from "@/extensions/ImageBlock/components/ImageBlockMenu";
-import { ColumnsMenu } from "@/extensions/MultiColumn/menus";
-import { TableColumnMenu, TableRowMenu } from "@/extensions/Table/menus";
-import { useAIState } from "@/hooks/useAIState";
-import { SidebarState } from "@/hooks/useSidebar";
+import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
+import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
+import { TableColumnMenu, TableRowMenu } from "@/plugins/reports/extensions/Table/menus";
+import { useAIState } from "@/plugins/reports/hooks/useAIState";
+import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
 
 export interface BlockEditorProps {
     editor: Editor | null;

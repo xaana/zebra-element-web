@@ -9,6 +9,7 @@
         "target": "es2016",
         "noUnusedLocals": true,
         "sourceMap": false,
+        "noImplicitReturns": false,
         "outDir": "./lib",
         "declaration": true,
         "jsx": "react",
