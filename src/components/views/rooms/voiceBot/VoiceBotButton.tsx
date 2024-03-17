@@ -6,13 +6,13 @@ import * as speechCommands from "@tensorflow-models/speech-commands";
 import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
-import './button.css'
+import "./button.css";
 import { IContent } from "matrix-js-sdk/src/models/event";
 import { MatrixClient } from "matrix-js-sdk/src/matrix";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
-import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands"
+import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands";
 import { Visualizer } from "./visualizer";
 import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
@@ -133,13 +133,7 @@ registerProcessor('my-audio-worklet-processor', MyAudioWorkletProcessor);
   
 `;
 
-export const VoiceBotButton = ({
-    client,
-    room
-  }: {
-    client: MatrixClient;
-    room: string;
-  }) => {
+export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: string }) => {
     const status = voiceBotState((state) => state.status);
     const updateStatus = voiceBotState((state) => state.updateStatus);
     const voiceBotEnabled = voiceBotState((state) => state.voiceBotEnabled);
@@ -297,8 +291,8 @@ export const VoiceBotButton = ({
     };
 
     const onCapture = async (text: string) => {
-        const content = {"msgtype": "m.text", "body": text} as IContent
-        const rootId = await client.sendMessage(room, content)
+        const content = { msgtype: "m.text", body: text } as IContent;
+        const rootId = await client.sendMessage(room, content);
         const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
             method: "POST",
             headers: {
@@ -307,7 +301,7 @@ export const VoiceBotButton = ({
             body: JSON.stringify({
                 //   session_id: sessionId.current,
                 query: text,
-                eventId:rootId.event_id,
+                eventId: rootId.event_id,
                 // audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {
@@ -318,7 +312,7 @@ export const VoiceBotButton = ({
             }),
             signal: abortController.current?.signal,
         });
-        
+
         if (!res.body) {
             throw new Error("No ReadableStream received");
         }
@@ -421,7 +415,7 @@ export const VoiceBotButton = ({
                                 maxScoreIndex = index;
                             }
                         });
-                        
+
                         const highestScoringWord = words[maxScoreIndex];
                         console.log("Highest scoring word:", highestScoringWord, "with score:", maxScore);
                         console.log("trigger", triggered);
@@ -553,7 +547,7 @@ export const VoiceBotButton = ({
         }
     };
     return (
-        <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px]">
+        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
             <Dialog
                 open={voiceBotEnabled}
                 onOpenChange={(open: boolean) => {
@@ -561,33 +555,32 @@ export const VoiceBotButton = ({
                     !open && updateStatus("loading");
                 }}
             >
-                
-                <DialogTrigger className="zexa-border-0 zexa-flex zexa-items-center zexa-justify-center zexa-bg-transparent !zexa-w-[26px] !zexa-h-[26px]">
-                    {/* <div className="!zexa-ml-0" /> */}
-                    <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px] mx_MessageComposer_button voice_bot_button" />
+                <DialogTrigger className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
+                    {/* <div className="!ml-0" /> */}
+                    <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" />
                 </DialogTrigger>
-                
+
                 <DialogStyle>
                     <DialogContent
-                        className="zexa-w-[90vw] sm:zexa-w-[50vw] sm:zexa-max-w-[400px] zexa-h-[400px] !zexa-p-0 zexa-bg-white dark:zexa-bg-black zexa-overflow-hidden"
+                        className="w-[90vw] sm:w-[50vw] sm:max-w-[400px] h-[400px] !p-0 bg-white dark:bg-black overflow-hidden"
                         style={{ transform: "translate(-50%, -50%)" }}
                     >
                         <FadeTransition
                             in={status === "loading"}
                             nodeRef={loaderRef}
                             duration={300}
-                            className="zexa-z-[2] zexa-h-full zexa-w-full zexa-absolute zexa-top-0 zexa-left-0"
+                            className="z-[2] h-full w-full absolute top-0 left-0"
                         >
-                            <div className="zexa-h-full zexa-w-full zexa-bg-white dark:zexa-bg-black" ref={loaderRef}>
+                            <div className="h-full w-full bg-white dark:bg-black" ref={loaderRef}>
                                 <LoadingAnimation />
                             </div>
                         </FadeTransition>
                         <Visualizer status={status} />
-                        <div className="zexa-absolute zexa-bottom-0 zexa-left-0 zexa-mb-8 zexa-w-full zexa-z-[3]">
+                        <div className="absolute bottom-0 left-0 mb-8 w-full z-[3]">
                             <SwitchFadeTransition switcher={statusMap[status]} nodeRef={statusRef}>
                                 <p
                                     ref={statusRef}
-                                    className="animated-text zexa-text-center zexa-text-sm zexa-uppercase zexa-tracking-widest"
+                                    className="animated-text text-center text-sm uppercase tracking-widest"
                                 >
                                     {statusMap[status]}
                                 </p>

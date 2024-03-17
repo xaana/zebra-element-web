@@ -1,55 +1,112 @@
 import React from "react";
 import classNames from "classnames";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
-import { Plugin, PluginActions } from '../../../plugins';
-import defaultDispatcher from 'matrix-react-sdk/src/dispatcher/dispatcher';
+import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
+import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+
+import { Plugin, PluginActions } from "../../../plugins";
+// import { PluginIcon } from "./PluginIcon";
+
+import { cn } from "@/lib/utils";
 
 interface PluginButtonProps extends Omit<Plugin, "MainPanel" | "LeftPanel"> {
-  isPanelCollapsed: boolean;
-  onClick?: React.MouseEventHandler<HTMLDivElement>;
-  activeSpace?: string;
+    isPanelCollapsed: boolean;
+    onClick?: (e: ButtonEvent) => void;
+    activeSpace?: string;
+    className?: string;
+    children?: React.ReactNode;
+    size?: string;
+    spaceKey?: string;
+    selected?: boolean;
+    // Icon?: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
-export const PluginButton = ({ name, isPanelCollapsed, Icon, label, onClick, activeSpace}: PluginButtonProps) => {
-  const pluginSpaceName = `plugin.${name}`;
+export const PluginButton = ({
+    name,
+    isPanelCollapsed,
+    // Icon,
+    label,
+    onClick,
+    activeSpace,
+    className,
+    children,
+    spaceKey,
+    selected,
+    ...props
+}: PluginButtonProps): JSX.Element => {
+    const pluginSpaceName = `plugin.${name}`;
 
-  const title = label?? name;
-  const selected = activeSpace === pluginSpaceName;
+    const title = label ?? name;
 
-  return (
-    <li
-        className={classNames("", {
-            collapsed: isPanelCollapsed,
-        })}
-        role="treeitem"
-        aria-selected={selected}
-    >
-      <div className="zexa-py-1">
-        <div 
-            className={classNames("zexa-flex zexa-place-content-center zexa-rounded-lg zexa-ml-3 zexa-cursor-pointer", {
-                "zexa-p-1": !selected,
-                "zexa-bg-zinc-200 zexa-p-1": selected && !isPanelCollapsed,
+    return (
+        <li
+            className={classNames("mx_SpaceItem", {
+                collapsed: isPanelCollapsed,
             })}
-            onClick={(e) => {
-                SpaceStore.instance.setActiveSpace(pluginSpaceName);
-                defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
-                window.location.hash = `#/plugins/${name}`;
-                if (onClick) {
-                    onClick(e);
-                }
-            }}
+            role="treeitem"
+            aria-selected={selected}
         >
-            <div 
-                className={classNames("zexa-flex zexa-justify-center zexa-bg-gray-300/50 zexa-rounded-lg zexa-p-2 zexa-text-gray-500 zexa-w-4 zexa-h-4", {
-                  "!zexa-border-black zexa-border-[3px] zexa-p-1 zexa-border-solid": selected && isPanelCollapsed,
+            <AccessibleTooltipButton
+                className={cn("mx_SpaceButton", className, {
+                    mx_SpaceButton_active: selected,
+                    mx_SpaceButton_narrow: isPanelCollapsed,
                 })}
-            ><div className="zexa-w-6 zexa-h-6">
-              <Icon />
-              </div>
-            </div>
-            { !isPanelCollapsed && <div className="zexa-ml-2">{ title }</div> }
-        </div>
-      </div>
-    </li>
-  );
-}
+                title={title}
+                forceHide={!isPanelCollapsed}
+                tabIndex={-1}
+                onClick={(e) => {
+                    SpaceStore.instance.setActiveSpace(pluginSpaceName);
+                    defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
+                    window.location.hash = `#/plugins/${name}`;
+                    onClick && onClick(e);
+                }}
+            >
+                {children}
+                <div className="mx_SpaceButton_selectionWrapper">
+                    <div className="mx_SpaceButton_avatarWrapper">
+                        <div className="mx_SpaceButton_avatarPlaceholder">
+                            <div
+                                className="mx_SpaceButton_icon flex justify-center items-center"
+                                style={{ backgroundColor: "var(--cpd-color-alpha-gray-300)" }}
+                            >
+                                {props.icon({ className: "w-5 h-5", fill: "var(--cpd-color-text-secondary)" })}
+                            </div>
+                        </div>
+                    </div>
+                    {!isPanelCollapsed && <span className="mx_SpaceButton_name">{label}</span>}
+                </div>
+            </AccessibleTooltipButton>
+            {/* <div className="py-1">
+                <div
+                    className={classNames("flex place-content-center rounded-lg ml-3 cursor-pointer", {
+                        "p-1": !selected,
+                        "bg-zinc-200 p-1": selected && !isPanelCollapsed,
+                    })}
+                    onClick={(e) => {
+                        SpaceStore.instance.setActiveSpace(pluginSpaceName);
+                        defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: name });
+                        window.location.hash = `#/plugins/${name}`;
+                        if (onClick) {
+                            onClick(e);
+                        }
+                    }}
+                >
+                    <div
+                        className={classNames(
+                            "flex justify-center bg-gray-300/50 rounded-lg p-2 text-gray-500 w-4 h-4",
+                            {
+                                "!border-black border-[3px] p-1 border-solid": selected && isPanelCollapsed,
+                            },
+                        )}
+                    >
+                        <div className="w-6 h-6">
+                            <Icon />
+                        </div>
+                    </div>
+                    {!isPanelCollapsed && <div className="ml-2">{title}</div>}
+                </div>
+            </div> */}
+        </li>
+    );
+};

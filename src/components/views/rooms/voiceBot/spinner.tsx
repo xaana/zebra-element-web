@@ -1,8 +1,7 @@
-import { useEffect } from 'react'
-
-import styled from 'styled-components'
+import { useEffect } from "react";
+import styled from "styled-components";
 interface StyleProps {
-  dark: boolean
+    dark: boolean;
 }
 const Style = styled.div<StyleProps>`
   .Loader {
@@ -12,10 +11,10 @@ const Style = styled.div<StyleProps>`
     --color-two: #ff1744;
     --color-three: #ffff8d;
     --color-four: #b2ff59;
-    --color-one: ${({ dark }) => (dark ? '#2979ff' : '#91A3BA')};
-    --color-two: ${({ dark }) => (dark ? '#ff1744' : '#B18A97')};
-    --color-three: ${({ dark }) => (dark ? '#ffff8d' : '#B5B58E')};
-    --color-four: ${({ dark }) => (dark ? '#b2ff59' : '#9BA491')};
+    --color-one: ${({ dark }) => (dark ? "#2979ff" : "#91A3BA")};
+    --color-two: ${({ dark }) => (dark ? "#ff1744" : "#B18A97")};
+    --color-three: ${({ dark }) => (dark ? "#ffff8d" : "#B5B58E")};
+    --color-four: ${({ dark }) => (dark ? "#b2ff59" : "#9BA491")};
     --light-size: 2px;
     position: relative;
     width: 75px;
@@ -27,9 +26,9 @@ const Style = styled.div<StyleProps>`
     //   inset 0 0 8px rgba(255, 255, 255, 0.4),
     //   0 0 25px rgba(255, 255, 255, 0.8);
     box-shadow: ${({ dark }) =>
-      dark
-        ? 'inset 0 0 20px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.8);'
-        : 'inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 0, 0, 0.5);'};
+        dark
+            ? "inset 0 0 20px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.8);"
+            : "inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 0, 0, 0.5);"};
   }
 
   .Loader {
@@ -63,10 +62,10 @@ const Style = styled.div<StyleProps>`
     right: 0px;
     bottom: 0px;
     left: 0px;
-    opacity: ${({ dark }) => (dark ? '0.8;' : '1;')}
+    opacity: ${({ dark }) => (dark ? "0.8;" : "1;")}
     // opacity: 0.8;
     // mix-blend-mode: screen;
-    mix-blend-mode: ${({ dark }) => (dark ? 'screen;' : 'overlay;')}
+    mix-blend-mode: ${({ dark }) => (dark ? "screen;" : "overlay;")}
     filter: brightness(120%);
     -webkit-animation-name: SpinAround;
     animation-name: SpinAround;
@@ -144,44 +143,33 @@ const Style = styled.div<StyleProps>`
       transform: rotate(-360deg);
     }
   }
-`
+`;
 
-export const Spinner = ({
-  inactive,
-  theme
-}: {
-  inactive: boolean
-  theme: string
-}) => {
- 
+export const Spinner = ({ inactive, theme }: { inactive: boolean; theme: string }) => {
+    function updateSpeed(speed: number) {
+        // Get all loader circles
+        const circles = document.querySelectorAll(".Loader__Circle");
+        circles.forEach((circle: Element) => {
+            // Ensure circle is treated as an HTMLElement
+            const htmlCircle = circle as HTMLElement;
+            htmlCircle.style.animationDuration = speed + "s";
+        });
+    }
 
-  function updateSpeed(speed: number) {
-    // Get all loader circles
-    const circles = document.querySelectorAll('.Loader__Circle')
-    circles.forEach((circle: Element) => {
-      // Ensure circle is treated as an HTMLElement
-      const htmlCircle = circle as HTMLElement
-      htmlCircle.style.animationDuration = speed + 's'
-    })
-  }
+    useEffect(() => {
+        updateSpeed(inactive ? 3 : 0.5);
+    }, [inactive]);
 
-  useEffect(() => {
-    updateSpeed(inactive ? 3 : 0.5)
-  }, [inactive])
-
-  return (
-    <>
-      <Style
-        dark={theme === 'dark'}
-        className="zexa-bg-transparent zexa-flex zexa-items-center zexa-justify-center zexa-overflow-hidden"
-      >
-        <div className="Loader" data-text="">
-          <span className="Loader__Circle"></span>
-          <span className="Loader__Circle"></span>
-          <span className="Loader__Circle"></span>
-          <span className="Loader__Circle"></span>
-        </div>
-      </Style>
-    </>
-  )
-}
+    return (
+        <>
+            <Style dark={theme === "dark"} className="bg-transparent flex items-center justify-center overflow-hidden">
+                <div className="Loader" data-text="">
+                    <span className="Loader__Circle" />
+                    <span className="Loader__Circle" />
+                    <span className="Loader__Circle" />
+                    <span className="Loader__Circle" />
+                </div>
+            </Style>
+        </>
+    );
+};

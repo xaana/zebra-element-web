@@ -3,8 +3,10 @@ module.exports = {
     corePlugins: {
         preflight: false,
     },
-    prefix: "zexa-",
-    // darkMode: ["class", '[class="dark"]'],
+    // prefix: "zexa-",
+    // darkMode: ["class", '[class="cpd-theme-dark"]'],
+    darkMode: ["selector", ".cpd-theme-dark"],
+    // darkMode: ["selector", '[class="cpd-theme-dark"]'],
     content: ["./src/**/*.{html,ts,tsx}", "./node_modules/matrix-react-sdk/src/**/*.{html,ts,tsx}"],
     theme: {
         container: {
@@ -19,15 +21,18 @@ module.exports = {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
+                // background: "hsl(var(--background))",
+                background: "var(--cpd-color-bg-canvas-default)",
+                // foreground: "hsl(var(--foreground))",
+                foreground: "var(--cpd-color-text-primary)",
                 primary: {
-                    DEFAULT: "hsl(var(--primary))",
+                    DEFAULT: "var(--cpd-color-zebra-900)",
                     foreground: "hsl(var(--primary-foreground))",
                 },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))",
+                    // foreground: "hsl(var(--secondary-foreground))",
+                    foreground: "var(--cpd-color-text-secondary)",
                 },
                 destructive: {
                     DEFAULT: "hsl(var(--destructive))",
@@ -38,7 +43,8 @@ module.exports = {
                     foreground: "hsl(var(--muted-foreground))",
                 },
                 accent: {
-                    DEFAULT: "hsl(var(--accent))",
+                    // DEFAULT: "hsl(var(--accent))",
+                    DEFAULT: "var(--cpd-color-zebra-700)",
                     foreground: "hsl(var(--accent-foreground))",
                 },
                 popover: {

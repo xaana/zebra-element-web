@@ -1,5 +1,5 @@
-/* @tailwind base; */
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Tomorrow&display=swap');
+@tailwind base;
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Tomorrow&display=swap');
 
 #zebra-chat {
   font-family: 'Tomorrow', sans-serif !important;
@@ -7,99 +7,99 @@
 
 #zebra-chat .font-mono {
   font-family: 'Roboto Mono', monospace;
-}
+} */
 
 @tailwind utilities;
 
 .zebra-container {
-  --background: 0 0% 100%;
-  --foreground: 224 71.4% 4.1%;
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
 
-  --card: 220 14% 93%;
-  /* --card: 120 5% 96%; */
-  /* --card: 0 0% 100%; */
-  --card-foreground: 224 71.4% 4.1%;
+    --card: 220 14% 93%;
+    /* --card: 120 5% 96%; */
+    /* --card: 0 0% 100%; */
+    --card-foreground: 224 71.4% 4.1%;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
 
-  --primary: 220.9 39.3% 11%;
-  --primary-foreground: 210 20% 98%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
 
-  --secondary: 0 0% 96%;
-  /* --secondary: 240 9% 98%; */
-  --secondary-foreground: 220.9 39.3% 11%;
+    --secondary: 0 0% 96%;
+    /* --secondary: 240 9% 98%; */
+    --secondary-foreground: 220.9 39.3% 11%;
 
-  /* --muted: 220 14.3% 95.9%; */
-  --muted: 270 6% 90%;
-  --muted-foreground: 220 8.9% 46.1%;
+    /* --muted: 220 14.3% 95.9%; */
+    --muted: 270 6% 90%;
+    --muted-foreground: 220 8.9% 46.1%;
 
-  --accent: 270 6% 90%;
-  --accent-foreground: 220.9 39.3% 11%;
+    --accent: 270 6% 90%;
+    --accent-foreground: 220.9 39.3% 11%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 20% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
 
-  /* --border: 220 13% 91%; */
-  --border: 0 0% 90%;
-  --input: 0 0% 90%;
-  --ring: 224 71.4% 4.1%;
+    /* --border: 220 13% 91%; */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 224 71.4% 4.1%;
 
-  --radius: 0.75rem;
-  /* --radius: 0.5rem; */
+    --radius: 0.75rem;
+    /* --radius: 0.5rem; */
 
-  --md-editor-font-family: 'Roboto Mono', monospace;
+    --md-editor-font-family: "Roboto Mono", monospace;
 }
 
-.dark .zebra-container {
-  --background: 224 0% 5.1%;
-  --foreground: 210 20% 98%;
+.cpd-theme-dark.zebra-container {
+    --background: 224 0% 5.1%;
+    --foreground: 210 20% 98%;
 
-  --card: 300 1% 16%;
-  /* --card: 215 28% 20%; */
-  /* --card: 224 71.4% 4.1%; */
-  --card-foreground: 210 20% 98%;
+    --card: 300 1% 16%;
+    /* --card: 215 28% 20%; */
+    /* --card: 224 71.4% 4.1%; */
+    --card-foreground: 210 20% 98%;
 
-  --popover: 300 1% 16%;
-  /* --popover: 224 71.4% 4.1%; */
-  --popover-foreground: 210 20% 98%;
+    --popover: 300 1% 16%;
+    /* --popover: 224 71.4% 4.1%; */
+    --popover-foreground: 210 20% 98%;
 
-  --primary: 210 20% 98%;
-  --primary-foreground: 220.9 39.3% 11%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
 
-  --secondary: 0 0% 11%;
-  /* --secondary: 219 37% 11%; */
-  --secondary-foreground: 210 20% 98%;
+    --secondary: 0 0% 11%;
+    /* --secondary: 219 37% 11%; */
+    --secondary-foreground: 210 20% 98%;
 
-  --muted: 240 3% 11%;
-  /* --muted: 215 27.9% 16.9%; */
-  --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 240 3% 11%;
+    /* --muted: 215 27.9% 16.9%; */
+    --muted-foreground: 217.9 10.6% 64.9%;
 
-  --accent: 240 3% 21%;
-  /* --accent: 215 27.9% 16.9%; */
-  --accent-foreground: 210 20% 98%;
+    --accent: 240 3% 21%;
+    /* --accent: 215 27.9% 16.9%; */
+    --accent-foreground: 210 20% 98%;
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
 
-  --border: 300 1% 21%;
-  /* --border: 215 27.9% 16.9%; */
-  --input: 300 1% 21%;
-  --ring: 216 12.2% 83.9%;
+    --border: 300 1% 21%;
+    /* --border: 215 27.9% 16.9%; */
+    --input: 300 1% 21%;
+    --ring: 216 12.2% 83.9%;
 }
-
+/* 
 .zebra-container * {
-  border-color: hsl(var(--border));
+    border-color: hsl(var(--border));
 }
 .zebra-container {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+} */
 
-.zebra__main {
-  height: 100vh; /* For general browser support */
-  height: -webkit-fill-available; /* For WebKit/Blink browsers, especially mobile */
-}
+/* .zebra__main {
+    height: 100vh;
+    height: -webkit-fill-available;
+} */
 
 /* @media (min-width: 640px) {
   .sidebar-open {
@@ -113,44 +113,44 @@
 } */
 
 .scrollbar--custom::-webkit-scrollbar {
-  height: 5px;
-  width: 5px;
-  background-color: #e5e4e7;
-  border-radius: 5px;
+    height: 5px;
+    width: 5px;
+    background-color: #e5e4e7;
+    border-radius: 5px;
 }
 .scrollbar--custom::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
-  background-color: #e5e4e7;
-  border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+    background-color: #e5e4e7;
+    border-radius: 5px;
 }
 
 .scrollbar--custom::-webkit-scrollbar-thumb {
-  background-color: #a0a0a0;
-  border-radius: 5px;
+    background-color: #a0a0a0;
+    border-radius: 5px;
 }
 
 .dark .scrollbar--custom::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
-  background-color: #343437;
-  border-radius: 5px;
-  /* background-color: #0d0d0d; */
+    -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
+    background-color: #343437;
+    border-radius: 5px;
+    /* background-color: #0d0d0d; */
 }
 
 .chat__history__item::after {
-  background: linear-gradient(to right, transparent, hsl(var(--secondary)) 80%);
+    background: linear-gradient(to right, transparent, hsl(var(--secondary)) 80%);
 }
 
 .chat__history__item--selected::after {
-  background: linear-gradient(to right, transparent, hsl(var(--card)) 80%);
+    background: linear-gradient(to right, transparent, hsl(var(--card)) 80%);
 }
 
 .chat__history__item:hover::after {
-  background: linear-gradient(to right, transparent, hsl(var(--accent)) 80%);
+    background: linear-gradient(to right, transparent, hsl(var(--accent)) 80%);
 }
 
 .AccordionChevron {
-  transition: transform 150ms;
+    transition: transform 150ms;
 }
-.AccordionTrigger[data-state='open'] > .AccordionChevron {
-  transform: rotate(90deg);
+.AccordionTrigger[data-state="open"] > .AccordionChevron {
+    transform: rotate(90deg);
 }

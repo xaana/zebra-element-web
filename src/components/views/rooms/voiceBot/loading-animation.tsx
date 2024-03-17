@@ -1,24 +1,18 @@
-
-import styled from 'styled-components'
+import styled from "styled-components";
 interface StyleProps {
-  theme: string
+    theme: string;
 }
 const BlobsStyle = styled.div<StyleProps>`
   .blob {
     width: 1.2rem;
     height: 1.2rem;
-    background: ${props =>
-      props.theme === 'dark'
-        ? 'rgba(230, 230, 230, 0.85);'
-        : 'rgba(130, 134, 142, 0.85);'}
+    background: ${(props) => (props.theme === "dark" ? "rgba(230, 230, 230, 0.85);" : "rgba(130, 134, 142, 0.85);")}
     border-radius: 50%;
     position: absolute;
     left: calc(50% - 1rem);
     top: calc(50% - 1rem);
-    box-shadow: 0 0 1rem ${props =>
-      props.theme === 'dark'
-        ? 'rgba(255, 255, 255, 0.25);'
-        : 'rgba(255, 255, 255, 0.25);'}
+    box-shadow: 0 0 1rem ${(props) =>
+        props.theme === "dark" ? "rgba(255, 255, 255, 0.25);" : "rgba(255, 255, 255, 0.25);"}
   }
 
   .blob-2 {
@@ -192,34 +186,30 @@ const BlobsStyle = styled.div<StyleProps>`
       transform: translateX(0rem) scale(1);
     }
   }
-`
+`;
 export const LoadingAnimation = () => {
-  return (
-    <BlobsStyle className="zexa-h-full zexa-w-full" theme={'light'}>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-        <defs>
-          <filter id="gooey">
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation="10"
-              result="blur"
-            ></feGaussianBlur>
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
-              result="goo"
-            ></feColorMatrix>
-            <feBlend in="SourceGraphic" in2="goo"></feBlend>
-          </filter>
-        </defs>
-      </svg>
-      <div className="blob blob-0"></div>
-      <div className="blob blob-1"></div>
-      <div className="blob blob-2"></div>
-      <div className="blob blob-3"></div>
-      <div className="blob blob-4"></div>
-      <div className="blob blob-5"></div>
-    </BlobsStyle>
-  )
-}
+    return (
+        <BlobsStyle className="h-full w-full" theme="light">
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                <defs>
+                    <filter id="gooey">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                        <feColorMatrix
+                            in="blur"
+                            mode="matrix"
+                            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                            result="goo"
+                        />
+                        <feBlend in="SourceGraphic" in2="goo" />
+                    </filter>
+                </defs>
+            </svg>
+            <div className="blob blob-0" />
+            <div className="blob blob-1" />
+            <div className="blob blob-2" />
+            <div className="blob blob-3" />
+            <div className="blob blob-4" />
+            <div className="blob blob-5" />
+        </BlobsStyle>
+    );
+};
