@@ -78,6 +78,8 @@ import { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
 import { getPlugin, Plugin, PluginActions } from '../../plugins';
 import SpaceStore from 'matrix-react-sdk/src/stores/spaces/SpaceStore';
 import { UPDATE_SELECTED_SPACE } from 'matrix-react-sdk/src/stores/spaces';
+import { IScreen } from "./MatrixChat";
+import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
 
 // We need to fetch each pinned message individually (if we don't already have it)
 // so each pinned message may trigger a request. Limit the number per room for sanity.
@@ -111,6 +113,7 @@ interface IProps {
     roomJustCreatedOpts?: IOpts;
     forceTimeline?: boolean; // see props on MatrixChat
     activePluginName?: string | null;
+    initialScreenAfterLogin?: IScreen | null;
 }
 
 interface IState {
@@ -170,6 +173,10 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         document.addEventListener("keydown", this.onNativeKeyDown, false);
+        if (this.props.initialScreenAfterLogin?.screen=="home"){
+                const NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
+                startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
+            }
         LegacyCallHandler.instance.addListener(LegacyCallHandlerEvent.CallState, this.onCallState);
 
         this.updateServerNoticeEvents();
@@ -659,7 +666,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         let pageElement;
-
         switch (this.props.page_type) {
             case PageTypes.RoomView:
                 pageElement = (
@@ -677,7 +683,19 @@ class LoggedInView extends React.Component<IProps, IState> {
                 break;
 
             case PageTypes.HomePage:
+                
                 pageElement = <UserOnboardingPage justRegistered={this.props.justRegistered} />;
+                console.log('going to home page');
+                // console.log(pageElement);
+                // console.log(this.props.initialScreenAfterLogin)
+                console.log('invite zebra!',window.location,this.props.initialScreenAfterLogin);
+                // if (this.props.initialScreenAfterLogin?.screen=="home"){
+                
+                // getInitialScreenAfterLogin(window.location);
+                // console.log('!!!!!!!!!!')                   
+                // NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
+                // startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
+                //     }
                 break;
 
             case PageTypes.UserView:
