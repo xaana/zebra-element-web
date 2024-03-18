@@ -8,6 +8,7 @@ services:
       # If you need to pass the BUILDPLATFORM argument, uncomment the following line and adjust as needed
       # args:
       #   BUILDPLATFORM: linux/amd64
+    restart: unless-stopped
     ports:
       - "80:80"  # Maps port 80 on the host to port 80 in the container, adjust if your app uses a different port
     volumes:

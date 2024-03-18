@@ -1,36 +1,35 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "../../lib/utils"
 
+import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  'zexa-inline-flex zexa-items-center zexa-justify-center zexa-rounded-md zexa-text-sm zexa-font-normal zexa-transition-colors focus-visible:zexa-outline-none focus-visible:zexa-ring-1 focus-visible:zexa-ring-ring disabled:zexa-pointer-events-none disabled:zexa-opacity-50',
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default:
-          'zexa-bg-primary zexa-text-primary-foreground zexa-shadow hover:zexa-bg-primary/90',
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
-          'zexa-bg-destructive zexa-text-destructive-foreground zexa-shadow-sm hover:zexa-bg-destructive/90',
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          'zexa-border zexa-border-input zexa-bg-transparent zexa-shadow-sm hover:zexa-bg-accent hover:zexa-text-accent-foreground',
+          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          'zexa-bg-secondary zexa-text-secondary-foreground zexa-shadow-sm hover:zexa-bg-secondary/80',
-        ghost: 'hover:zexa-bg-accent hover:zexa-text-accent-foreground',
-        link: 'zexa-text-primary zexa-underline-offset-4 hover:zexa-underline'
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: 'zexa-h-9 zexa-px-4 zexa-py-2',
-        sm: 'zexa-h-8 zexa-rounded-md zexa-px-3 zexa-text-xs',
-        lg: 'zexa-h-10 zexa-rounded-md zexa-px-8',
-        icon: 'zexa-h-9 zexa-w-9'
-      }
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default'
-    }
+      variant: "default",
+      size: "default",
+    },
   }
 )
 

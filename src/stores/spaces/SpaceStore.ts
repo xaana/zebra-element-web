@@ -27,7 +27,6 @@ import {
     ISendEventResponse,
 } from "matrix-js-sdk/src/matrix";
 import { logger } from "matrix-js-sdk/src/logger";
-
 import { AsyncStoreWithClient } from "matrix-react-sdk/src/stores/AsyncStoreWithClient";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomListStore from "matrix-react-sdk/src/stores/room-list/RoomListStore";
@@ -69,6 +68,8 @@ import { ViewHomePagePayload } from "matrix-react-sdk/src/dispatcher/payloads/Vi
 import { SwitchSpacePayload } from "matrix-react-sdk/src/dispatcher/payloads/SwitchSpacePayload";
 import { AfterLeaveRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/AfterLeaveRoomPayload";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+
+import { isActivePlugin } from "@/plugins";
 
 interface IState {}
 
@@ -216,7 +217,7 @@ export class SpaceStoreClass extends AsyncStoreWithClient<IState> {
             roomId = this.getNotificationState(space).getFirstRoomWithNotifications();
         }
 
-        if (!!roomId) {
+        if (roomId) {
             defaultDispatcher.dispatch<ViewRoomPayload>({
                 action: Action.ViewRoom,
                 room_id: roomId,
@@ -1172,7 +1173,8 @@ export class SpaceStoreClass extends AsyncStoreWithClient<IState> {
         const lastSpaceId = window.localStorage.getItem(ACTIVE_SPACE_LS_KEY);
         const valid =
             lastSpaceId &&
-            (!isMetaSpace(lastSpaceId) ? this.matrixClient.getRoom(lastSpaceId) : enabledMetaSpaces[lastSpaceId]);
+            ((!isMetaSpace(lastSpaceId) ? this.matrixClient.getRoom(lastSpaceId) : enabledMetaSpaces[lastSpaceId]) ||
+                isActivePlugin(lastSpaceId));
         if (valid) {
             // don't context switch here as it may break permalinks
             this.setActiveSpace(lastSpaceId, false);

@@ -25,6 +25,7 @@ crypto.createHash = (algorithm, options) => createHash(algorithm === "md4" ? "sh
 dotenv.config();
 // let ogImageUrl = process.env.RIOT_OG_IMAGE_URL;
 // if (!ogImageUrl) ogImageUrl = "https://app.element.io/themes/element/img/logos/opengraph.png";
+// TODO: Replace with hosted image URL
 const ogImageUrl = "https://i.imgur.com/Cx8xOFW.png";
 
 if (!process.env.VERSION) {
@@ -261,6 +262,9 @@ module.exports = (env, argv) => {
 
                 // Define a variable so the i18n stuff can load
                 "$webapp": path.resolve(__dirname, "webapp"),
+
+                // Resolve @ to src/
+                "@": path.resolve(__dirname, "src/"),
             },
             fallback: {
                 // Mock out the NodeFS module: The opus decoder imports this wrongly.
@@ -578,10 +582,13 @@ module.exports = (env, argv) => {
                                 // props set on the svg will override defaults
                                 expandProps: "end",
                                 svgoConfig: {
-                                    plugins: {
-                                        // generates a viewbox if missing
-                                        removeDimensions: true,
-                                    },
+                                    plugins: [
+                                        // Each plugin is an object
+                                        {
+                                            name: "removeDimensions",
+                                            active: true, // This is usually the default, so it's optional
+                                        },
+                                    ],
                                 },
                                 /**
                                  * Forwards the React ref to the root SVG element
@@ -596,6 +603,7 @@ module.exports = (env, argv) => {
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     return toPublicPath(outputPath);
                                 },
+                                throwIfNamespace: false, // ignore namespace errors
                             },
                         },
                         {
@@ -773,6 +781,7 @@ module.exports = (env, argv) => {
                     "node_modules/@matrix-org/olm/olm_legacy.js",
                     { from: "config.json", noErrorOnMissing: true },
                     "contribute.json",
+                    { from: "img/**", context: path.resolve(__dirname, "res") },
                 ],
             }),
 
