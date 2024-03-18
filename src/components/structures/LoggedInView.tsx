@@ -217,7 +217,10 @@ class LoggedInView extends React.Component<IProps, IState> {
             if (plugin) {
                 this.setState({ activePlugin: plugin });
                 SpaceStore.instance.setActiveSpace(`plugin.${this.props.activePluginName}`);
-                console.log(`SpaceStore.instance.activeSpace`, SpaceStore.instance.activeSpace);
+                // Set the URL hash to the plugin name if it's not already set
+                if (window.location.hash !== `#/plugins/${this.props.activePluginName}`) {
+                    window.location.hash = `#/plugins/${this.props.activePluginName}`;
+                }
             }
         }
 
