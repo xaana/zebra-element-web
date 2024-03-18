@@ -14,9 +14,9 @@ export const TemplateCard = ({
     setSelectedTemplate: React.Dispatch<React.SetStateAction<Template | undefined>>;
 }) => {
     return (
-        <button
+        <div
             className={cn(
-                "rounded-lg border bg-background pb-3 text-left text-sm transition-all hover:bg-primary/10 overflow-hidden",
+                "rounded-lg border bg-background pb-3 text-left text-sm transition-all hover:bg-primary/10 overflow-hidden cursor-pointer outline-none",
                 selected && "outline outline-4 outline-primary bg-primary/10",
             )}
             onClick={() => setSelectedTemplate(template)}
@@ -38,6 +38,6 @@ export const TemplateCard = ({
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     );
 };

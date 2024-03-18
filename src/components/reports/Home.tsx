@@ -35,10 +35,10 @@ const steps: StepItem[] = [
     },
 ];
 
-export const Home = (): JSX.Element => {
+export const Home = ({ files, templates }: { files: File[]; templates: Template[] }): JSX.Element => {
     // State to store files and templates
-    const [files, setFiles] = useState<File[]>([]);
-    const [templates, setTemplates] = useState<Template[]>([]);
+    // const [files, setFiles] = useState<File[]>([]);
+    // const [templates, setTemplates] = useState<Template[]>([]);
 
     // Use stored state for active step
     const [activeStep, setActiveStep] = useAtom(activeStepAtom);
@@ -48,31 +48,8 @@ export const Home = (): JSX.Element => {
     // Ref to store element of active step
     const stepRef = useRef<HTMLDivElement | null>(null);
 
-    // Fetch files and templates from API
+    // Set active step to first step
     useEffect(() => {
-        const fetchFilesData = async (): Promise<void> => {
-            try {
-                const response = await fetch(`http://localhost:8001/api/files`);
-                const data = await response.json();
-                setFiles([...data]);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        const fetchTemplatesData = async (): Promise<void> => {
-            try {
-                const response = await fetch(`http://localhost:8001/api/templates`);
-                const data = await response.json();
-                setTemplates([...data]);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchFilesData();
-        fetchTemplatesData();
-        // setTemplates([...templatesData])
         reportsStore.set(activeStepAtom, steps[0]);
     }, []);
 

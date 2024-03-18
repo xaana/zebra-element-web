@@ -249,7 +249,7 @@ export const initialContent = {
         {
             type: "imageBlock",
             attrs: {
-                src: "/placeholder-image.jpg",
+                src: "/img/placeholder-image.jpg",
                 width: "100%",
                 align: "center",
             },
@@ -462,7 +462,7 @@ export const sampleTemplate = {
             {
                 type: "imageBlock",
                 attrs: {
-                    src: "/placeholder-image.jpg",
+                    src: "/img/placeholder-image.jpg",
                     width: "100%",
                     align: "center",
                 },

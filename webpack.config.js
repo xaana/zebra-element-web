@@ -25,6 +25,7 @@ crypto.createHash = (algorithm, options) => createHash(algorithm === "md4" ? "sh
 dotenv.config();
 // let ogImageUrl = process.env.RIOT_OG_IMAGE_URL;
 // if (!ogImageUrl) ogImageUrl = "https://app.element.io/themes/element/img/logos/opengraph.png";
+// TODO: Replace with hosted image URL
 const ogImageUrl = "https://i.imgur.com/Cx8xOFW.png";
 
 if (!process.env.VERSION) {
@@ -780,6 +781,7 @@ module.exports = (env, argv) => {
                     "node_modules/@matrix-org/olm/olm_legacy.js",
                     { from: "config.json", noErrorOnMissing: true },
                     "contribute.json",
+                    { from: "img/**", context: path.resolve(__dirname, "res") },
                 ],
             }),
 

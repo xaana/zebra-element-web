@@ -63,19 +63,19 @@ export const TemplateSelector = ({ files, templates, nextStep, prevStep }: Templ
 
             <div className="rounded-lg border bg-card p-4 w-full">
                 <div className="w-full grid grid-cols-4 gap-4">
-                    <button
+                    <div
                         key="new-template"
                         className={cn(
-                            "rounded-lg border pb-3 text-left text-sm transition-all hover:bg-muted overflow-hidden",
+                            "rounded-lg border pb-3 text-left text-sm transition-all hover:bg-muted overflow-hidden cursor-pointer outline-none",
                             !selectedTemplate && "outline outline-4 outline-primary bg-muted",
                         )}
                         onClick={() => setSelectedTemplate(() => undefined)}
                     >
-                        <div className="p-3 flex flex-col items-center justify-center gap-2">
+                        <div className="p-3 w-full h-full flex flex-col items-center justify-center gap-2">
                             <Icon name="Plus" className="w-8 h-8" />
                             <div className="font-semibold text-xl">New Template</div>
                         </div>
-                    </button>
+                    </div>
                     {templates.map((template) => (
                         <TemplateCard
                             key={template.id}

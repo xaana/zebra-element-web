@@ -3,6 +3,8 @@ import { JSONContent } from "@tiptap/core";
 
 import type { File, Template, StepItem } from "@/plugins/reports/types";
 
+// State to store API URL
+export const apiUrlAtom = atom<string>("");
 // State to store selected files
 export const selectedFilesAtom = atom<File[]>([]);
 // State to store selected template
