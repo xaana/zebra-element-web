@@ -1,6 +1,5 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useAtomValue } from "jotai";
 
 import type { Editor } from "@tiptap/core";
 
@@ -20,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea-alt";
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
+import { reportsStore } from "@/plugins/reports/MainPanel";
 
 export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
     const [name, setName] = useState("");
@@ -27,7 +27,6 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const apiUrl = useAtomValue(apiUrlAtom);
 
     useEffect(() => {
         if (!dialogOpen) {
@@ -39,7 +38,7 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
 
     const handleSubmit = async (): Promise<void> => {
         setLoading(true);
-        const response = await fetch(`${apiUrl}/template`, {
+        const response = await fetch(`${reportsStore.get(apiUrlAtom)}/template`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
