@@ -30,8 +30,8 @@ import { DragDropContext, Draggable, Droppable, DroppableProvidedProps } from "r
 import classNames from "classnames";
 import { Room } from "matrix-js-sdk/src/matrix";
 import { _t } from "matrix-react-sdk/src/languageHandler";
-import { useContextMenu } from "matrix-react-sdk/src/components/structures/ContextMenu";
-import SpaceCreateMenu from "matrix-react-sdk/src/components/views/spaces/SpaceCreateMenu";
+// import { useContextMenu } from "matrix-react-sdk/src/components/structures/ContextMenu";
+// import SpaceCreateMenu from "matrix-react-sdk/src/components/views/spaces/SpaceCreateMenu";
 import { SpaceButton, SpaceItem } from "matrix-react-sdk/src/components/views/spaces/SpaceTreeLevel";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import { useEventEmitter, useEventEmitterState } from "matrix-react-sdk/src/hooks/useEventEmitter";
@@ -69,11 +69,12 @@ import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { NotificationState } from "matrix-react-sdk/src/stores/notifications/NotificationState";
 import { ALTERNATE_KEY_NAME } from "matrix-react-sdk/src/accessibility/KeyboardShortcuts";
-import { shouldShowComponent } from "matrix-react-sdk/src/customisations/helpers/UIComponents";
-import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
+// import { shouldShowComponent } from "matrix-react-sdk/src/customisations/helpers/UIComponents";
+// import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
 
 import { PluginButton } from "./PluginButton";
-import { pluginList } from "../../../plugins";
+
+import { pluginList } from "@/plugins";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const invites = useEventEmitterState<Room[]>(SpaceStore.instance, UPDATE_INVITED_SPACES, () => {
@@ -87,6 +88,14 @@ const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const activeSpace = useEventEmitterState<SpaceKey>(SpaceStore.instance, UPDATE_SELECTED_SPACE, (space) => {
         return space ?? SpaceStore.instance.activeSpace;
     });
+
+    // console.log(`SpaceStore.instance.spacePanelSpaces`, SpaceStore.instance.spacePanelSpaces);
+    // console.log(`SpaceStore.instance.activeSpace`, SpaceStore.instance.activeSpace);
+    // SpaceStore.instance.on(UPDATE_SELECTED_SPACE, (space) => {
+    //     if (space !== null && space.length > 0 && !space.startsWith("plugin.")) {
+    //         this.setState({ activePlugin: null });
+    //     }
+    // });
     return [invites, metaSpaces, actualSpaces, activeSpace];
 };
 
@@ -210,54 +219,54 @@ const OrphansButton: React.FC<MetaSpaceButtonProps> = ({ selected, isPanelCollap
     );
 };
 
-const CreateSpaceButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed" | "setPanelCollapsed">> = ({
-    isPanelCollapsed,
-    setPanelCollapsed,
-}) => {
-    const [menuDisplayed, handle, openMenu, closeMenu] = useContextMenu<HTMLElement>();
+// const CreateSpaceButton: React.FC<Pick<IInnerSpacePanelProps, "isPanelCollapsed" | "setPanelCollapsed">> = ({
+//     isPanelCollapsed,
+//     setPanelCollapsed,
+// }) => {
+//     const [menuDisplayed, handle, openMenu, closeMenu] = useContextMenu<HTMLElement>();
 
-    useEffect(() => {
-        if (!isPanelCollapsed && menuDisplayed) {
-            closeMenu();
-        }
-    }, [isPanelCollapsed]); // eslint-disable-line react-hooks/exhaustive-deps
+//     useEffect(() => {
+//         if (!isPanelCollapsed && menuDisplayed) {
+//             closeMenu();
+//         }
+//     }, [isPanelCollapsed]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    let contextMenu: JSX.Element | undefined;
-    if (menuDisplayed) {
-        contextMenu = <SpaceCreateMenu onFinished={closeMenu} />;
-    }
+//     let contextMenu: JSX.Element | undefined;
+//     if (menuDisplayed) {
+//         contextMenu = <SpaceCreateMenu onFinished={closeMenu} />;
+//     }
 
-    const onNewClick = menuDisplayed
-        ? closeMenu
-        : (): void => {
-              if (!isPanelCollapsed) setPanelCollapsed(true);
-              openMenu();
-          };
+//     const onNewClick = menuDisplayed
+//         ? closeMenu
+//         : (): void => {
+//               if (!isPanelCollapsed) setPanelCollapsed(true);
+//               openMenu();
+//           };
 
-    return (
-        <li
-            className={classNames("mx_SpaceItem mx_SpaceItem_new", {
-                collapsed: isPanelCollapsed,
-            })}
-            role="treeitem"
-            aria-selected={false}
-        >
-            <SpaceButton
-                data-testid="create-space-button"
-                className={classNames("mx_SpaceButton_new", {
-                    mx_SpaceButton_newCancel: menuDisplayed,
-                })}
-                label={menuDisplayed ? _t("action|cancel") : _t("create_space|label")}
-                onClick={onNewClick}
-                isNarrow={isPanelCollapsed}
-                innerRef={handle}
-                size="32px"
-            />
+//     return (
+//         <li
+//             className={classNames("mx_SpaceItem mx_SpaceItem_new", {
+//                 collapsed: isPanelCollapsed,
+//             })}
+//             role="treeitem"
+//             aria-selected={false}
+//         >
+//             <SpaceButton
+//                 data-testid="create-space-button"
+//                 className={classNames("mx_SpaceButton_new", {
+//                     mx_SpaceButton_newCancel: menuDisplayed,
+//                 })}
+//                 label={menuDisplayed ? _t("action|cancel") : _t("create_space|label")}
+//                 onClick={onNewClick}
+//                 isNarrow={isPanelCollapsed}
+//                 innerRef={handle}
+//                 size="32px"
+//             />
 
-            {contextMenu}
-        </li>
-    );
-};
+//             {contextMenu}
+//         </li>
+//     );
+// };
 
 const metaSpaceComponentMap: Record<MetaSpace, typeof HomeButton> = {
     [MetaSpace.Home]: HomeButton,

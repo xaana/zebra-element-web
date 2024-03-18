@@ -1,4 +1,5 @@
 import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
+import { SpaceKey } from "matrix-react-sdk/src/stores/spaces";
 
 import { VideoPlugin } from "./video";
 import { FilesPlugin } from "./files";
@@ -18,4 +19,8 @@ export const getPlugin = (name: string): Plugin | undefined => pluginList.find((
 export enum PluginActions {
     LoadPlugin = "LOAD_PLUGIN",
     UnloadPlugin = "UNLOAD_PLUGIN",
+}
+
+export function isActivePlugin(spaceKey: SpaceKey): boolean {
+    return spaceKey.startsWith("plugin.") && pluginList.some((plugin) => spaceKey === `plugin.${plugin.name}`);
 }
