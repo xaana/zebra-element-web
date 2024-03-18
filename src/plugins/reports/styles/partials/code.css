@@ -1,0 +1,83 @@
+/* Target code elements within .ProseMirror */
+.ProseMirror code {
+  @apply caret-white text-white bg-neutral-900 rounded-sm shadow-lg font-mono;
+}
+
+/* Apply ::selection styles to code elements within .ProseMirror */
+.ProseMirror code::selection {
+  @apply bg-white/30;
+}
+
+/* Target pre elements within .ProseMirror */
+.ProseMirror pre {
+  @apply caret-white bg-neutral-700 text-white rounded my-12 p-4 border border-black dark:bg-neutral-900 dark:border-neutral-800;
+}
+
+/* Apply ::selection styles to all children within pre elements in .ProseMirror */
+.ProseMirror pre *::selection {
+  @apply bg-white/20;
+}
+
+/* Apply specific styles to code elements within pre elements in .ProseMirror */
+.ProseMirror pre code {
+  @apply bg-inherit text-inherit p-0 shadow-none;
+}
+
+/* Apply specific styles to elements with .hljs-comment and .hljs-quote classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-comment,
+.ProseMirror pre .hljs-quote {
+  @apply text-neutral-400;
+}
+
+/* Apply specific styles to various classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-variable,
+.ProseMirror pre .hljs-template-variable,
+.ProseMirror pre .hljs-attribute,
+.ProseMirror pre .hljs-tag,
+.ProseMirror pre .hljs-name,
+.ProseMirror pre .hljs-regexp,
+.ProseMirror pre .hljs-link,
+.ProseMirror pre .hljs-selector-id,
+.ProseMirror pre .hljs-selector-class {
+  @apply text-red-300;
+}
+
+/* Continue applying specific styles to various classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-number,
+.ProseMirror pre .hljs-meta,
+.ProseMirror pre .hljs-built_in,
+.ProseMirror pre .hljs-builtin-name,
+.ProseMirror pre .hljs-literal,
+.ProseMirror pre .hljs-type,
+.ProseMirror pre .hljs-params {
+  @apply text-orange-300;
+}
+
+/* Continue applying specific styles to various classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-string,
+.ProseMirror pre .hljs-symbol,
+.ProseMirror pre .hljs-bullet {
+  @apply text-lime-300;
+}
+
+/* Continue applying specific styles to various classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-title,
+.ProseMirror pre .hljs-section {
+  @apply text-yellow-300;
+}
+
+/* Continue applying specific styles to various classes within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-keyword,
+.ProseMirror pre .hljs-selector-tag {
+  @apply text-teal-300;
+}
+
+/* Apply font-style to .hljs-emphasis class within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-emphasis {
+  font-style: italic;
+}
+
+/* Apply font-weight to .hljs-strong class within pre elements in .ProseMirror */
+.ProseMirror pre .hljs-strong {
+  font-weight: 700;
+}

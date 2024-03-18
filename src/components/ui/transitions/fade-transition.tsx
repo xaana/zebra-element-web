@@ -13,8 +13,8 @@ const FadeStyle = styled.div<AnimationStyleProps>`
     opacity: 1;
     transform: translateX(0);
     transition:
-      opacity ${props => props.duration}ms,
-      transform ${props => props.duration}ms;
+      opacity ${(props) => props.duration}ms,
+      transform ${(props) => props.duration}ms;
   }
   .fade-exit {
     opacity: 1;
@@ -23,8 +23,8 @@ const FadeStyle = styled.div<AnimationStyleProps>`
     opacity: 0;
     transform: scale(0.9);
     transition:
-      opacity ${props => props.duration}ms,
-      transform ${props => props.duration}ms;
+      opacity ${(props) => props.duration}ms,
+      transform ${(props) => props.duration}ms;
   }
 `
 type TransitionProps = {
@@ -40,7 +40,7 @@ export const FadeTransition: React.FC<TransitionProps> = ({
   duration = 300,
   children,
   nodeRef,
-  className = ''
+  className = '',
 }) => {
   return (
     <FadeStyle className={className} duration={duration}>
@@ -48,7 +48,7 @@ export const FadeTransition: React.FC<TransitionProps> = ({
         in={inProp}
         nodeRef={nodeRef}
         timeout={duration}
-        classNames="fade"
+        classNames='fade'
         unmountOnExit
       >
         {children}

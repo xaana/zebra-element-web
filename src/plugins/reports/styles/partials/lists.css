@@ -1,0 +1,67 @@
+/* Target ol elements within .ProseMirror */
+.ProseMirror ol {
+  @apply list-decimal;
+}
+
+/* Target ul elements within .ProseMirror */
+.ProseMirror ul {
+  @apply list-disc;
+}
+
+/* Apply styles to both ul and ol elements within .ProseMirror */
+.ProseMirror ul,
+.ProseMirror ol {
+  @apply py-0 px-8 my-6 first:mt-0 last:mb-0;
+}
+
+/* Apply styles to nested ul, ol, and li elements within ul and ol in .ProseMirror */
+.ProseMirror ul ul,
+.ProseMirror ul ol,
+.ProseMirror ol ul,
+.ProseMirror ol ol,
+.ProseMirror ul li,
+.ProseMirror ol li {
+  @apply my-1;
+}
+
+/* Apply styles to p elements within ul and ol in .ProseMirror */
+.ProseMirror ul p,
+.ProseMirror ol p {
+  @apply mt-0 mb-1;
+}
+
+/* Apply styles to direct child ul and ol elements of .ProseMirror */
+.ProseMirror > ul,
+.ProseMirror > ol {
+  @apply my-8 first:mt-0 last:mb-0;
+}
+
+/* Target ul elements with data-type='taskList' within .ProseMirror */
+.ProseMirror ul[data-type='taskList'] {
+  @apply list-none p-0;
+}
+
+/* Apply styles to p elements within ul[data-type='taskList'] in .ProseMirror */
+.ProseMirror ul[data-type='taskList'] p {
+  @apply m-0;
+}
+
+/* Apply styles to li elements within ul[data-type='taskList'] in .ProseMirror */
+.ProseMirror ul[data-type='taskList'] li {
+  @apply flex;
+}
+
+/* Target label elements that are direct children of li within ul[data-type='taskList'] */
+.ProseMirror ul[data-type='taskList'] li > label {
+  @apply grow-0 shrink-0 flex-auto mt-1 mr-2 select-none;
+}
+
+/* Target div elements that are direct children of li within ul[data-type='taskList'] */
+.ProseMirror ul[data-type='taskList'] li > div {
+  @apply flex-auto;
+}
+
+/* Apply styles to li elements with data-checked='true' within ul[data-type='taskList'] */
+.ProseMirror ul[data-type='taskList'] li[data-checked='true'] {
+  @apply line-through;
+}

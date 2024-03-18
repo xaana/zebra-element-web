@@ -1,0 +1,144 @@
+/* Target .tableWrapper within .ProseMirror */
+.ProseMirror .tableWrapper {
+  @apply my-12;
+}
+
+/* Target table within .ProseMirror */
+.ProseMirror table {
+  @apply border-collapse border-black/10 rounded box-border w-full dark:border-white/20;
+}
+
+/* Target td and th within table inside .ProseMirror */
+.ProseMirror table td,
+.ProseMirror table th {
+  @apply border border-black/10 min-w-[100px] p-2 relative text-left align-top dark:border-white/20;
+}
+
+/* Target the first td or th that is not an anchor within table inside .ProseMirror */
+.ProseMirror table td:first-of-type:not(a),
+.ProseMirror table th:first-of-type:not(a) {
+  @apply mt-0;
+}
+
+/* Target p within td or th inside table within .ProseMirror */
+.ProseMirror table td p,
+.ProseMirror table th p {
+  @apply m-0;
+}
+
+/* Target p that is immediately followed by another p within td or th inside table within .ProseMirror */
+.ProseMirror table td p + p,
+.ProseMirror table th p + p {
+  @apply mt-3;
+}
+
+/* Target th within table inside .ProseMirror */
+.ProseMirror table th {
+  @apply font-bold;
+}
+
+/* Target .column-resize-handle within table inside .ProseMirror */
+.ProseMirror table .column-resize-handle {
+  @apply -bottom-[2px] flex pointer-events-none absolute -right-1 top-0 w-2;
+}
+
+/* Target ::before pseudo-element of .column-resize-handle within table inside .ProseMirror */
+.ProseMirror table .column-resize-handle::before {
+  @apply bg-black/20 h-full w-[1px] ml-2 dark:bg-white/20;
+  content: '';
+}
+
+/* Target .selectedCell within table inside .ProseMirror */
+.ProseMirror table .selectedCell {
+  @apply bg-black/5 border-black/20 border-double dark:bg-white/10 dark:border-white/20;
+}
+
+/* Common styles for .grip-column and .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-column,
+.ProseMirror table .grip-row {
+  @apply items-center bg-black/5 cursor-pointer flex justify-center absolute z-10 dark:bg-white/10;
+}
+
+/* Target .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column {
+  @apply w-[calc(100%+1px)] border-l border-black/20 h-3 left-0 -ml-[1px] -top-3 dark:border-white/20;
+}
+
+/* Target hover and selected states of .grip-column within table inside .ProseMirror for ::before pseudo-element */
+.ProseMirror table .grip-column:hover::before,
+.ProseMirror table .grip-column.selected::before {
+  content: '';
+  @apply w-2.5;
+}
+
+/* Target hover state of .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column:hover {
+  @apply bg-black/10 dark:bg-white/20;
+}
+
+/* Apply styles to ::before pseudo-element of .grip-column on hover within table inside .ProseMirror */
+.ProseMirror table .grip-column:hover::before {
+  @apply border-b-2 border-dotted border-black/60 dark:border-white/60;
+}
+
+/* Target first .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column.first {
+  @apply border-transparent rounded-tl-sm;
+}
+
+/* Target last .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column.last {
+  @apply rounded-tr-sm;
+}
+
+/* Target selected .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column.selected {
+  @apply bg-black/30 border-black/30 shadow-sm dark:bg-white/30 dark:border-white/30;
+}
+
+/* Apply styles to ::before pseudo-element of selected .grip-column within table inside .ProseMirror */
+.ProseMirror table .grip-column.selected::before {
+  @apply border-b-2 border-dotted;
+}
+
+/* Target .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row {
+  @apply h-[calc(100%+1px)] border-t border-black/20 -left-3 w-3 top-0 -mt-[1px] dark:border-white/20;
+}
+
+/* Target hover and selected states of .grip-row within table inside .ProseMirror for ::before pseudo-element */
+.ProseMirror table .grip-row:hover::before,
+.ProseMirror table .grip-row.selected::before {
+  @apply h-2.5;
+  content: '';
+}
+
+/* Target hover state of .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row:hover {
+  @apply bg-black/10 dark:bg-white/20;
+}
+
+/* Apply styles to ::before pseudo-element of .grip-row on hover within table inside .ProseMirror */
+.ProseMirror table .grip-row:hover::before {
+  @apply border-l-2 border-dotted border-black/60 dark:border-white/60;
+}
+
+/* Target first .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row.first {
+  @apply border-transparent rounded-tl-sm;
+}
+
+/* Target last .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row.last {
+  @apply rounded-bl-sm;
+}
+
+/* Target selected .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row.selected {
+  @apply bg-black/30 border-black/30 shadow-sm dark:bg-white/30 dark:border-white/30;
+}
+
+/* Apply styles to ::before pseudo-element of selected .grip-row within table inside .ProseMirror */
+.ProseMirror table .grip-row.selected::before {
+  @apply border-l-2 border-dotted;
+}

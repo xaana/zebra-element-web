@@ -27,7 +27,6 @@ import {
 } from "matrix-js-sdk/src/matrix";
 import { MatrixCall } from "matrix-js-sdk/src/webrtc/call";
 import classNames from "classnames";
-
 import { isOnlyCtrlOrCmdKeyEvent, Key } from "matrix-react-sdk/src/Keyboard";
 import PageTypes from "matrix-react-sdk/src/PageTypes";
 import MediaDeviceHandler from "matrix-react-sdk/src/MediaDeviceHandler";
@@ -42,7 +41,10 @@ import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientConte
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
 import { DefaultTagID } from "matrix-react-sdk/src/stores/room-list/models";
-import { hideToast as hideServerLimitToast, showToast as showServerLimitToast } from "matrix-react-sdk/src/toasts/ServerLimitToast";
+import {
+    hideToast as hideServerLimitToast,
+    showToast as showServerLimitToast,
+} from "matrix-react-sdk/src/toasts/ServerLimitToast";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import LeftPanel from "matrix-react-sdk/src/components/structures/LeftPanel";
 import { ViewRoomDeltaPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomDeltaPayload";
@@ -59,7 +61,6 @@ import AudioFeedArrayForLegacyCall from "matrix-react-sdk/src/components/views/v
 import { OwnProfileStore } from "matrix-react-sdk/src/stores/OwnProfileStore";
 import { UPDATE_EVENT } from "matrix-react-sdk/src/stores/AsyncStore";
 import RoomView from "matrix-react-sdk/src/components/structures/RoomView";
-import type { RoomView as RoomViewType } from "matrix-react-sdk/src/components/structures/RoomView";
 import ToastContainer from "matrix-react-sdk/src/components/structures/ToastContainer";
 import UserView from "matrix-react-sdk/src/components/structures/UserView";
 import BackdropPanel from "matrix-react-sdk/src/components/structures/BackdropPanel";
@@ -75,9 +76,14 @@ import { UserOnboardingPage } from "matrix-react-sdk/src/components/views/user-o
 import { PipContainer } from "matrix-react-sdk/src/components/structures/PipContainer";
 import { monitorSyncedPushRules } from "matrix-react-sdk/src/utils/pushRules/monitorSyncedPushRules";
 import { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
-import { getPlugin, Plugin, PluginActions } from '../../plugins';
-import SpaceStore from 'matrix-react-sdk/src/stores/spaces/SpaceStore';
-import { UPDATE_SELECTED_SPACE } from 'matrix-react-sdk/src/stores/spaces';
+import { UPDATE_SELECTED_SPACE } from "matrix-react-sdk/src/stores/spaces";
+import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
+import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
+
+import { IScreen } from "./MatrixChat";
+import type { RoomView as RoomViewType } from "matrix-react-sdk/src/components/structures/RoomView";
+
+import { getPlugin, Plugin, PluginActions } from "@/plugins";
 
 // We need to fetch each pinned message individually (if we don't already have it)
 // so each pinned message may trigger a request. Limit the number per room for sanity.
@@ -111,6 +117,7 @@ interface IProps {
     roomJustCreatedOpts?: IOpts;
     forceTimeline?: boolean; // see props on MatrixChat
     activePluginName?: string | null;
+    initialScreenAfterLogin?: IScreen | null;
 }
 
 interface IState {
@@ -170,6 +177,10 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         document.addEventListener("keydown", this.onNativeKeyDown, false);
+        if (this.props.initialScreenAfterLogin?.screen == "home") {
+            const NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
+            startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
+        }
         LegacyCallHandler.instance.addListener(LegacyCallHandlerEvent.CallState, this.onCallState);
 
         this.updateServerNoticeEvents();
@@ -206,6 +217,10 @@ class LoggedInView extends React.Component<IProps, IState> {
             if (plugin) {
                 this.setState({ activePlugin: plugin });
                 SpaceStore.instance.setActiveSpace(`plugin.${this.props.activePluginName}`);
+                // Set the URL hash to the plugin name if it's not already set
+                if (window.location.hash !== `#/plugins/${this.props.activePluginName}`) {
+                    window.location.hash = `#/plugins/${this.props.activePluginName}`;
+                }
             }
         }
 
@@ -222,10 +237,10 @@ class LoggedInView extends React.Component<IProps, IState> {
         });
 
         SpaceStore.instance.on(UPDATE_SELECTED_SPACE, (space) => {
-            if (space !== null && space.length > 0 && !space.startsWith('plugin.')) {
+            if (space !== null && space.length > 0 && !space.startsWith("plugin.")) {
                 this.setState({ activePlugin: null });
             }
-        })
+        });
     }
 
     public componentWillUnmount(): void {
@@ -659,7 +674,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public render(): React.ReactNode {
         let pageElement;
-
         switch (this.props.page_type) {
             case PageTypes.RoomView:
                 pageElement = (
@@ -678,10 +692,21 @@ class LoggedInView extends React.Component<IProps, IState> {
 
             case PageTypes.HomePage:
                 pageElement = <UserOnboardingPage justRegistered={this.props.justRegistered} />;
+                console.log("going to home page");
+                // console.log(pageElement);
+                // console.log(this.props.initialScreenAfterLogin)
+                console.log("invite zebra!", window.location, this.props.initialScreenAfterLogin);
+                // if (this.props.initialScreenAfterLogin?.screen=="home"){
+
+                // getInitialScreenAfterLogin(window.location);
+                // console.log('!!!!!!!!!!')
+                // NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
+                // startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
+                //     }
                 break;
 
             case PageTypes.UserView:
-                if (!!this.props.currentUserId) {
+                if (this.props.currentUserId) {
                     pageElement = (
                         <UserView userId={this.props.currentUserId} resizeNotifier={this.props.resizeNotifier} />
                     );
@@ -713,7 +738,7 @@ class LoggedInView extends React.Component<IProps, IState> {
         if (this.state.activePlugin) {
             const { MainPanel, LeftPanel } = this.state.activePlugin;
             pageElement = <MainPanel />;
-            leftPanel = LeftPanel? <LeftPanel />: null;
+            leftPanel = LeftPanel ? <LeftPanel /> : null;
         }
 
         return (
@@ -732,13 +757,15 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 <BackdropPanel blurMultiplier={0.5} backgroundImage={this.state.backgroundImage} />
                                 <SpacePanel />
                                 <BackdropPanel backgroundImage={this.state.backgroundImage} />
-                                {leftPanel && <div
-                                    className="mx_LeftPanel_wrapper--user"
-                                    ref={this._resizeContainer}
-                                    data-collapsed={this.props.collapseLhs ? true : undefined}
-                                >
-                                    {leftPanel}
-                                </div>}
+                                {leftPanel && (
+                                    <div
+                                        className="mx_LeftPanel_wrapper--user"
+                                        ref={this._resizeContainer}
+                                        data-collapsed={this.props.collapseLhs ? true : undefined}
+                                    >
+                                        {leftPanel}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" />

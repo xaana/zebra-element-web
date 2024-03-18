@@ -1,0 +1,40 @@
+/* Target .is-empty::before within .ProseMirror */
+.ProseMirror .is-empty::before {
+  @apply text-black/40 dark:text-white/40 float-left h-0 pointer-events-none w-full;
+}
+
+/* Apply styles to p.has-focus.is-empty::before when .ProseMirror has .ProseMirror-focused class */
+.ProseMirror.ProseMirror-focused > p.has-focus.is-empty::before {
+  content: 'Type  /  to browse options';
+}
+
+/* Target p.is-empty.has-focus::before within [data-type='column'] inside [data-type='columns'] when .ProseMirror has .ProseMirror-focused class */
+.ProseMirror.ProseMirror-focused
+  > [data-type='columns']
+  > [data-type='column']
+  > p.is-empty.has-focus::before {
+  content: 'Type  /  to browse options';
+}
+
+/* Target .is-editor-empty::before as a direct child of .ProseMirror */
+.ProseMirror > .is-editor-empty::before {
+  content: 'Click here to start writing …';
+}
+
+/* Convert nested blockquote placeholder to a descendant selector */
+.ProseMirror
+  blockquote
+  .is-empty:not(.is-editor-empty):first-child:last-child::before {
+  content: 'Enter a quote';
+}
+
+/* Convert adjacent sibling selector for blockquote + figcaption.is-empty to a descendant selector */
+.ProseMirror blockquote + figcaption.is-empty:not(.is-editor-empty)::before {
+  content: 'Author';
+}
+
+/* Convert attribute selectors with ::before pseudo-element to descendant selectors */
+.ProseMirror [data-placeholder][data-suggestion]::before,
+.ProseMirror [data-placeholder][data-suggestion] *::before {
+  content: none !important;
+}

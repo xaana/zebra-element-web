@@ -4,29 +4,31 @@ import styled from 'styled-components'
 interface AnimationStyleProps {
   duration: number
   direction: string
+  entertransform: string
+  exittransform: string
 }
 const FadeStyle = styled.div<AnimationStyleProps>`
   .fade-enter {
     opacity: 0;
-    transform: ${props => props.direction}(-100%);
+    transform: ${(props) => props.entertransform};
   }
   .fade-enter-active {
     opacity: 1;
-    transform: ${props => props.direction}(0%);
+    transform: ${(props) => props.direction}(0%);
   }
   .fade-exit {
     opacity: 1;
-    transform: ${props => props.direction}(0%);
+    transform: ${(props) => props.direction}(0%);
   }
   .fade-exit-active {
     opacity: 0;
-    transform: ${props => props.direction}(100%);
+    transform: ${(props) => props.exittransform};
   }
   .fade-enter-active,
   .fade-exit-active {
     transition:
-      opacity ${props => props.duration}ms,
-      transform ${props => props.duration}ms;
+      opacity ${(props) => props.duration}ms,
+      transform ${(props) => props.duration}ms;
   }
 `
 
@@ -36,6 +38,7 @@ type TransitionProps = {
   nodeRef: React.RefObject<HTMLDivElement>
   mode?: 'out-in' | 'in-out'
   direction?: 'X' | 'Y'
+  reverse?: boolean
   duration?: number
   className?: string
 }
@@ -47,22 +50,26 @@ export const SwitchFadeTransition: React.FC<TransitionProps> = ({
   nodeRef,
   className = '',
   mode = 'out-in',
-  direction = 'Y'
+  direction = 'Y',
+  reverse = false,
 }) => {
   return (
     <FadeStyle
       className={className}
       direction={'translate' + direction}
       duration={duration}
+      entertransform={`translate${direction}(${reverse ? '-' : ''}100%)`}
+      exittransform={`translate${direction}(${reverse ? '' : '-'}100%)`}
     >
       <SwitchTransition mode={mode}>
         <CSSTransition
           key={String(switchProp)}
           nodeRef={nodeRef}
-          addEndListener={done => {
+          addEndListener={(done) => {
             nodeRef.current?.addEventListener('transitionend', done, false)
           }}
-          classNames="fade"
+          timeout={duration}
+          classNames='fade'
         >
           {children}
         </CSSTransition>

@@ -1,0 +1,97 @@
+/* Target p within .ProseMirror */
+.ProseMirror p {
+  @apply leading-relaxed my-3 first:mt-0 last:mb-0;
+}
+
+/* Target direct child p within .ProseMirror */
+.ProseMirror > p {
+  @apply my-6 first:mt-0 last:mb-0;
+}
+
+/* Apply styles to heading tags within .ProseMirror */
+.ProseMirror h1 {
+  @apply text-3xl;
+}
+
+.ProseMirror h2 {
+  @apply text-2xl;
+}
+
+.ProseMirror h3 {
+  @apply text-xl;
+}
+
+.ProseMirror h4 {
+  @apply text-lg;
+}
+
+.ProseMirror h5 {
+  @apply text-base;
+}
+
+.ProseMirror h6 {
+  @apply text-sm;
+}
+
+/* Apply font-bold to all heading tags within .ProseMirror */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  @apply font-bold first:mt-0 last:mb-0;
+}
+
+/* Apply margin-top to h1, h2, and h3 within .ProseMirror */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  @apply mt-12;
+}
+
+/* Apply margin-top to h4, h5, and h6 within .ProseMirror */
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  @apply mt-8;
+}
+
+/* Target a with class 'link' within .ProseMirror */
+.ProseMirror a.link {
+  @apply text-blue-500 font-extrabold dark:text-blue-400;
+}
+
+/* Target mark within .ProseMirror */
+.ProseMirror mark {
+  @apply bg-red-500 rounded-sm decoration-clone text-inherit py-1 px-0 dark:bg-red-400;
+}
+
+/* Target img within .ProseMirror */
+.ProseMirror img {
+  @apply h-auto w-full max-w-full;
+}
+
+/* Target elements with data-type='horizontalRule' within .ProseMirror */
+.ProseMirror [data-type='horizontalRule'] {
+  @apply my-8 py-4 transition-all duration-100 ease-in-out cursor-pointer;
+}
+
+/* Apply styles to .ProseMirror-selectednode within [data-type='horizontalRule'] */
+.ProseMirror [data-type='horizontalRule'].ProseMirror-selectednode {
+  @apply bg-black/5 dark:bg-white/10;
+}
+
+.ProseMirror [data-type='horizontalRule'].ProseMirror-selectednode hr {
+  @apply border-t-black/30 dark:border-t-white/30;
+}
+
+/* Handle hover state for [data-type='horizontalRule'] not having .ProseMirror-selectednode */
+.ProseMirror [data-type='horizontalRule']:hover:not(.ProseMirror-selectednode) {
+  @apply bg-black/5 dark:bg-white/10;
+}
+
+/* Target hr within [data-type='horizontalRule'] */
+.ProseMirror [data-type='horizontalRule'] hr {
+  @apply border-0 border-t border-black/20 bg-black/80 dark:border-white/20 dark:bg-white/80;
+}

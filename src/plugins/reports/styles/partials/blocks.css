@@ -1,0 +1,49 @@
+/* Target figure with data-type='imageBlock' within .ProseMirror */
+.ProseMirror figure[data-type='imageBlock'] {
+  @apply m-0;
+}
+
+/* Apply styles to img within figure[data-type='imageBlock'] inside .ProseMirror */
+.ProseMirror figure[data-type='imageBlock'] img {
+  @apply rounded block w-full;
+}
+
+/* Target figure with data-type='blockquoteFigure' within .ProseMirror */
+.ProseMirror figure[data-type='blockquoteFigure'] {
+  @apply my-14 text-black dark:text-white;
+}
+
+/* Convert nested blockquote within .ProseMirror to a descendant selector */
+.ProseMirror > blockquote,
+.ProseMirror [data-type='blockquoteFigure'] blockquote {
+  @apply m-0;
+}
+
+/* Apply first and last child margin styles to all children of blockquote within .ProseMirror */
+.ProseMirror > blockquote > *,
+.ProseMirror [data-type='blockquoteFigure'] blockquote > * {
+  @apply first:mt-0 last:mb-0;
+}
+
+/* Target [data-type='columns'] within .ProseMirror */
+.ProseMirror [data-type='columns'] {
+  @apply grid gap-4 mt-14 mb-12;
+}
+
+/* Apply grid-template-columns based on the class modifier within [data-type='columns'] inside .ProseMirror */
+.ProseMirror [data-type='columns'].layout-sidebar-left {
+  grid-template-columns: 40fr 60fr;
+}
+
+.ProseMirror [data-type='columns'].layout-sidebar-right {
+  grid-template-columns: 60fr 40fr;
+}
+
+.ProseMirror [data-type='columns'].layout-two-column {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Target [data-type='column'] within .ProseMirror */
+.ProseMirror [data-type='column'] {
+  @apply overflow-auto;
+}
