@@ -518,6 +518,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         onChange={this.onChange}
                         disabled={this.state.haveRecording}
                         toggleStickerPickerOpen={this.toggleStickerPickerOpen}
+                        databaseSelect={this.state.databaseSelected}
+                        setDatabase={this.setDatabase}
                     />
                 );
             }

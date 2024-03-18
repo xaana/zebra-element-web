@@ -72,7 +72,6 @@ export const OverflowMenuContext = createContext<OverflowMenuCloser | null>(null
 const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
     const { room, narrow,timelineRenderingType } = useContext(RoomContext);
-    console.log(props)
     const isWysiwygLabEnabled = useSettingValue<boolean>("feature_wysiwyg_composer");
 
     if (!matrixClient || !room || props.haveRecording) {

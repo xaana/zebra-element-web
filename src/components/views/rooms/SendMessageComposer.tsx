@@ -249,6 +249,8 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     onChange?(model: EditorModel): void;
     includeReplyLegacyFallback?: boolean;
     toggleStickerPickerOpen: () => void;
+    databaseSelect:string;
+    setDatabase: (arg0: string) => void;
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -292,7 +294,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     public componentDidUpdate(prevProps: ISendMessageComposerProps): void {
         const replyingToThread = this.props.relation?.key === THREAD_RELATION_TYPE.name;
         const differentEventTarget = this.props.relation?.event_id !== prevProps.relation?.event_id;
-
         const threadChanged = replyingToThread && differentEventTarget;
         if (threadChanged) {
             const partCreator = new CommandPartCreator(this.props.room, this.props.mxClient);
@@ -443,9 +444,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
     }
 
-    public async sendMessage(databaseSelected?: string): Promise<void> {
+    public async sendMessage(): Promise<void> {
         const model = this.model;
-        console.log('!!!!',databaseSelected)
+        // console.log('!!!!',databaseSelected)
         if (model.isEmpty) {
             return;
         }
@@ -550,9 +551,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
-            if(content&&databaseSelected){
-                content.formatted_body = databaseSelected;
+            if(content&&this.props.databaseSelect){
+                content.formatted_body = this.props.databaseSelect;
                 console.log(content,'!!!!')
+                this.props.setDatabase("")
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,
