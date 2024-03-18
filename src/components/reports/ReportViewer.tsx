@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 
 import { ContentHeader } from "./ContentHeader";
 
-import { editorContentAtom } from "@/plugins/reports/stores/store";
+import { editorContentAtom, apiUrlAtom } from "@/plugins/reports/stores/store";
 import { reportsStore } from "@/plugins/reports/MainPanel";
 interface ReportViewerProps {
     nextStep: () => void;
     prevStep: () => void;
 }
-export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps) => {
+export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Element => {
     const [pdfUrl, setPdfUrl] = useState("");
 
-    async function convertImageUrlToBase64(url: string) {
+    async function convertImageUrlToBase64(url: string): Promise<string | ArrayBuffer | null> {
         // Fetch the image
         const response = await fetch(url);
         // Convert the response to a blob
@@ -21,7 +21,7 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps) => {
             const reader = new FileReader();
 
             // Resolve with the Base64 Data URL once reading is complete
-            reader.onloadend = () => resolve(reader.result);
+            reader.onloadend = (): void => resolve(reader.result);
             reader.onerror = reject;
 
             // Read the blob as a Data URL (Base64)
@@ -29,9 +29,9 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps) => {
         });
     }
 
-    const fetchPdf = async (formData: FormData) => {
+    const fetchPdf = async (formData: FormData): Promise<void> => {
         try {
-            const response = await fetch("http://localhost:8001/api/pdf", {
+            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/pdf`, {
                 method: "POST",
                 body: formData,
             });

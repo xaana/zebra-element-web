@@ -17,6 +17,8 @@ import { Toolbar } from "@/components/ui/Toolbar";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { selectedFilesAtom } from "@/plugins/reports/stores/store";
+import { reportsStore } from "@/plugins/reports/MainPanel";
+import { apiUrlAtom } from "@/plugins/reports/stores/store";
 
 export interface DataProps {
     text: string;
@@ -101,7 +103,7 @@ export const AiWriterView = ({ editor, node, getPos, deleteNode, updateAttribute
         }
 
         try {
-            const res: Response = await fetch(`http://localhost:8001/api/generate/`, {
+            const res: Response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/generate/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
