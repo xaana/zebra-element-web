@@ -1,11 +1,11 @@
-import React from "react";
 import { Plugin } from "../plugin";
-import { Icon } from "./icon.svg";
-import { MainPanel } from './MainPanel';
+import { MainPanel } from "./MainPanel";
+
+import { IconDocumentDuplicate } from "@/components/ui/icons";
 
 export const FilesPlugin: Plugin = {
-  name: "files",
-  label: "Files",
-  Icon: () => <Icon className="zexa-fill-current" />,
-  MainPanel: MainPanel,
-}
+    name: "files",
+    label: "Files",
+    icon: IconDocumentDuplicate,
+    MainPanel: MainPanel,
+};

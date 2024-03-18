@@ -86,8 +86,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             widgetHidden: false,
             pdfUrls: [],
             citations: [],
-            };
-              }
+        };
+    }
 
     public componentDidMount(): void {
         if (!this.props.editState) {
@@ -298,7 +298,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             if (messageWasEdited || stoppedEditing) {
                 this.applyFormatting();
             }
-                  }
+        }
     }
 
     public componentWillUnmount(): void {
@@ -585,15 +585,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         let isNotice = false;
         let isEmote = false;
         const database = content.database_table;
-        const fetchedDataLen = content.fetched_data_len
-        const query = content.query
-        const roomId = mxEvent.getRoomId()
-        const rootId = mxEvent.threadRootId
-        const queryDescription = content.query_description
-        const echartsOption = content.echartsOption
-        const echartsQuery = content.echartsQuery
-        const pdfResponse = content.pdfResponse
-        const citations = content.citations
+        const fetchedDataLen = content.fetched_data_len;
+        const query = content.query;
+        const roomId = mxEvent.getRoomId();
+        const rootId = mxEvent.threadRootId;
+        const queryDescription = content.query_description;
+        const echartsOption = content.echartsOption;
+        const echartsQuery = content.echartsQuery;
+        const pdfResponse = content.pdfResponse;
+        const citations = content.citations;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -605,123 +605,58 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if(pdfResponse&&roomId){
-            console.log(citations,'?????')
-            body=(
+        if (pdfResponse && roomId) {
+            body = (
                 <>
-                {body}
-                <PdfViewer roomId={roomId} citations={citations} />
+                    {body}
+                    <PdfViewer roomId={roomId} citations={citations} />
                 </>
-            )
-            
+            );
         }
-        if (echartsOption&&echartsQuery){
-            console.log(echartsOption,echartsQuery)
-            
-            body=(
-                <>
-                {body}
-                <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
-                </>
-            )
-        }
-        if (database&&roomId){
-            const tableJson = JSON.parse(database)
-            // const keys =Object.keys(tableJson[0])
-            tableJson.forEach((temp:any)=>console.log(temp))
-            
-            body=(
-                <>
-                {body}
-                {/* TODO: view echart */}
-                <div className="zexa-flex zexa-flex-col zexa-gap-y-2">
-                    {tableJson && tableJson.length > 0 && query && (
-                        <>
-                        <MessageChildDatabaseResult
-                            data={tableJson || []}
-                            totalEntries={fetchedDataLen}
-                            handleViewCharts={()=>{
-                                const jsonData = {
-                                    query: query,
-                                    query_description: queryDescription,
-                                    echartsData:tableJson,
-                                    eventId:rootId
-                                };
-                                const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/data/${roomId}`, {
-                                    method: 'POST',
-                                    mode: 'no-cors',// This is the part that tries to bypass CORS, but it has limitations
-                                    body:JSON.stringify(jsonData)
-                                });
-                                fetch(request)
-                                // .then((data) => {
-                                //     console.log('==================data of echarts')
-                                //     console.log(data)
-                                //     if(data.ok){
-                                //         dis.dispatch({
-                                //             action: "view_echarts",
-                                //             echartsOption: echartsOption,
-                                //             echartsQuery: echartsQuery,
-                                //             push: true,
-                                //         });
-                                //     }else{
-                                //         console.log('response not ok')
-                                //     }
-                                    
-                                // })
-                                // http://localhost:29316/_matrix/maubot/plugin/1/123456
-                                // dis.dispatch({
-                                //     action: "view_echarts",
-                                //     echartsOption: null,
-                                //     echartsQuery: null,
-                                //     push: true,
-                                // });
-                                // const jsonData = {
-                                //     query: query,
-                                //     query_description: queryDescription,
-                                //     echartsData:tableJson
-                                // };
-                                // const url = `http://localhost:3333/data`
-                                // const request = new Request(url, {
-                                //     method: 'POST',
-                                //     // mode: 'no-cors',
-                                //     headers: {
-                                //         'Content-Type': 'application/json'
-                                //     }, // This is the part that tries to bypass CORS, but it has limitations
-                                //     body:JSON.stringify(jsonData)
-                                // });
-                                // fetch(request).then((response)=>{
-                                //     if(response.ok){
-                                //         console.log(response)
-                                //         return response.json();
-                                //     }
-                                //     else{
-                                //         console.log('response not ok')
-                                //     }
-                                // }).then((data)=>{
-                                //     data = JSON.parse(data)
-                                //     console.log(data,data.echartsOption,data.echartsQuery,'??????????????????')
-                                    
-                                //     dis.dispatch({
-                                //         action: "view_echarts",
-                                //         echartsOption: data.echartsOption,
-                                //         echartsQuery: data.echartsQuery,
-                                //         push: false,
-                                //     });
-                                    
-                                // }).catch((error)=>{
-                                //     console.log(error)
-                                // })
-                            }}
-                        />
-                        <div className="zexa-shadow-none">
-                            <CollapsibleMessage title="View SQL Query" contents={query || []} />
-                        </div>
-                        </>
-                    )}
-            </div>
+        if (echartsOption && echartsQuery) {
+            console.log(echartsOption, echartsQuery);
 
+            body = (
+                <>
+                    {body}
+                    <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
                 </>
-            )
+            );
+        }
+        if (database && roomId) {
+            const tableJson = JSON.parse(database);
+            body = (
+                <>
+                    {body}
+                    <div className="flex flex-col gap-y-2">
+                        {tableJson && tableJson.length > 0 && query && (
+                            <>
+                                <MessageChildDatabaseResult
+                                    data={tableJson || []}
+                                    totalEntries={fetchedDataLen}
+                                    handleViewCharts={() => {
+                                        const jsonData = {
+                                            query: query,
+                                            query_description: queryDescription,
+                                            echartsData: tableJson,
+                                            eventId: rootId,
+                                        };
+                                        const request = new Request(`${content.webappUrl}/data/${roomId}`, {
+                                            method: "POST",
+                                            mode: "no-cors", // This is the part that tries to bypass CORS, but it has limitations
+                                            body: JSON.stringify(jsonData),
+                                        });
+                                        fetch(request);
+                                    }}
+                                />
+                                <div className="shadow-none">
+                                    <CollapsibleMessage title="View SQL Query" contents={query || []} />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </>
+            );
         }
 
         if (this.props.replacingEventId) {

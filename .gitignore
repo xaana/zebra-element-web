@@ -6,7 +6,7 @@
 /node_modules
 /packages/
 /webapp
-/.npmrc
+# /.npmrc
 /*.log
 package-lock.json
 .DS_Store

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useContext } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import { Pipeline, pipeline } from "@xenova/transformers";
 import * as tf from "@tensorflow/tfjs";
@@ -6,16 +6,17 @@ import * as speechCommands from "@tensorflow-models/speech-commands";
 import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
+import "./button.css";
+import { IContent } from "matrix-js-sdk/src/models/event";
+import { MatrixClient } from "matrix-js-sdk/src/matrix";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
 import type { SpeechCommandRecognizerResult } from "@tensorflow-models/speech-commands";
-import { IconHeadphones } from "../../../ui/icons";
 import { Visualizer } from "./visualizer";
 import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
 import { SwitchFadeTransition } from "../../../ui/transitions/switch-fade-transition";
-import { cn } from "../../../../lib/utils";
 import { useAudio } from "../../../../lib/hooks/use-audio";
 
 const DialogStyle = styled.div`
@@ -70,17 +71,17 @@ export const stopState = create<StopState & StopAction>((set) => ({
     setStopDetected: (stopDetected: boolean) => set(() => ({ stopDetected: stopDetected })),
 }));
 
-type State = {
+type BotState = {
     status: string;
     voiceBotEnabled: boolean;
 };
 
-type Action = {
-    updateStatus: (newStatus: State["status"]) => void;
-    setVoiceBotEnabled: (newDialogOpen: State["voiceBotEnabled"]) => void;
+type BotAction = {
+    updateStatus: (newStatus: BotState["status"]) => void;
+    setVoiceBotEnabled: (newDialogOpen: BotState["voiceBotEnabled"]) => void;
 };
 
-export const voiceBotState = create<State & Action>((set) => ({
+export const voiceBotState = create<BotState & BotAction>((set) => ({
     status: "loading",
     voiceBotEnabled: false,
     updateStatus: (newStatus: string) => {
@@ -110,7 +111,6 @@ export default class MyAudioWorkletProcessor extends AudioWorkletProcessor {
       for (let i = 0; i < channel.length; i++) {
         sum += Math.abs(channel[i]);
       }
-      // console.log(sum)
       this.average = sum *1000/ channel.length;
       if (this.average<this.silenceThreshold){
           this.count+=1
@@ -120,7 +120,6 @@ export default class MyAudioWorkletProcessor extends AudioWorkletProcessor {
       }
       
     }
-    console.log(this.average)
     if (this.count > this.silenceCountThreshold) {
       this.port.postMessage('silence-detected');
       return false; // Stop processing audio when silence is detected
@@ -134,7 +133,7 @@ registerProcessor('my-audio-worklet-processor', MyAudioWorkletProcessor);
   
 `;
 
-export const VoiceBotButton = () => {
+export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: string }) => {
     const status = voiceBotState((state) => state.status);
     const updateStatus = voiceBotState((state) => state.updateStatus);
     const voiceBotEnabled = voiceBotState((state) => state.voiceBotEnabled);
@@ -144,7 +143,6 @@ export const VoiceBotButton = () => {
     const setStopDetected = stopState((state) => state.setStopDetected);
     const stopDetected = stopState((state) => state.stopDetected);
     const loaderRef = useRef<HTMLDivElement>(null);
-
     const statusMap: Record<string, string> = {
         loading: "Loading Speech Models...",
         inactive: "Ready",
@@ -281,10 +279,21 @@ export const VoiceBotButton = () => {
                 startListeningForActivationPhrase();
             }
         });
+        // const jsonData = {
+        //     query: "weather in canberra"
+        // };
+        // const request = new Request(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio`, {
+        //     method: 'POST',
+        //     body:JSON.stringify(jsonData)
+        // });
+        // fetch(request)
+        // http://localhost:29316/_matrix/maubot/plugin/1/stream
     };
 
     const onCapture = async (text: string) => {
-        const res: Response = await fetch(`http://localhost:8000/api/web/search`, {
+        const content = { msgtype: "m.text", body: text } as IContent;
+        const rootId = await client.sendMessage(room, content);
+        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -292,8 +301,8 @@ export const VoiceBotButton = () => {
             body: JSON.stringify({
                 //   session_id: sessionId.current,
                 query: text,
+                eventId: rootId.event_id,
                 // audio: true,
-                audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {
                 //       role: message.role,
@@ -303,6 +312,7 @@ export const VoiceBotButton = () => {
             }),
             signal: abortController.current?.signal,
         });
+
         if (!res.body) {
             throw new Error("No ReadableStream received");
         }
@@ -344,7 +354,6 @@ export const VoiceBotButton = () => {
                     try {
                         const parsedChunk: { type: string; data: string } = JSON.parse(partialChunk);
                         if (parsedChunk.type === "audio") {
-                            //   console.log('stopDetected', stop.current)
                             if (!stop.current) {
                                 playbackAudio(parsedChunk.data);
                             }
@@ -415,7 +424,6 @@ export const VoiceBotButton = () => {
                             if (triggered) {
                                 setTriggered(false);
                                 setStopDetected(true);
-                                console.log(onStop);
                                 onStop && onStop();
                                 stopListeningForActivationPhrase();
                             } else {
@@ -532,7 +540,6 @@ export const VoiceBotButton = () => {
                 // Process the audio using the ASR pipeline
                 const transcriptionResult = await pipelineRef.current(blobUrl);
                 if (!transcriptionResult.text) throw new Error("Failed to process microphone input. Please try again.");
-                console.log(transcriptionResult.text);
                 await onCapture(transcriptionResult.text);
             }
         } catch (error: any) {
@@ -540,7 +547,7 @@ export const VoiceBotButton = () => {
         }
     };
     return (
-        <div>
+        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
             <Dialog
                 open={voiceBotEnabled}
                 onOpenChange={(open: boolean) => {
@@ -548,49 +555,36 @@ export const VoiceBotButton = () => {
                     !open && updateStatus("loading");
                 }}
             >
-                <DialogTrigger className="zexa-border-0 zexa-bg-transparent">
-                    <div
-                        className={cn(
-                            "!zexa-rounded-full zexa-bg-transparent zexa-shadow-none zexa-border-0 zexa-cursor-pointer",
-                        )}
-                    >
-                        <IconHeadphones className={cn("zexa-h-6 zexa-w-6")} />
-                    </div>
+                <DialogTrigger className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
+                    {/* <div className="!ml-0" /> */}
+                    <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" />
                 </DialogTrigger>
+
                 <DialogStyle>
                     <DialogContent
-                        className="zexa-w-[90vw] sm:zexa-w-[50vw] sm:zexa-max-w-[400px] zexa-h-[400px] !zexa-p-0 zexa-bg-white dark:zexa-bg-black zexa-overflow-hidden"
+                        className="w-[90vw] sm:w-[50vw] sm:max-w-[400px] h-[400px] !p-0 bg-white dark:bg-black overflow-hidden"
                         style={{ transform: "translate(-50%, -50%)" }}
                     >
                         <FadeTransition
                             in={status === "loading"}
                             nodeRef={loaderRef}
                             duration={300}
-                            className="zexa-z-[2] zexa-h-full zexa-w-full zexa-absolute zexa-top-0 zexa-left-0"
+                            className="z-[2] h-full w-full absolute top-0 left-0"
                         >
-                            <div className="zexa-h-full zexa-w-full zexa-bg-white dark:zexa-bg-black" ref={loaderRef}>
+                            <div className="h-full w-full bg-white dark:bg-black" ref={loaderRef}>
                                 <LoadingAnimation />
                             </div>
                         </FadeTransition>
                         <Visualizer status={status} />
-                        <div className="zexa-absolute zexa-bottom-0 zexa-left-0 zexa-mb-8 zexa-w-full zexa-z-[3]">
+                        <div className="absolute bottom-0 left-0 mb-8 w-full z-[3]">
                             <SwitchFadeTransition switcher={statusMap[status]} nodeRef={statusRef}>
                                 <p
                                     ref={statusRef}
-                                    className="animated-text zexa-text-center zexa-text-sm zexa-uppercase zexa-tracking-widest"
+                                    className="animated-text text-center text-sm uppercase tracking-widest"
                                 >
                                     {statusMap[status]}
                                 </p>
                             </SwitchFadeTransition>
-                            {/* <div className=" zexa-flex zexa-gap-1 zexa-items-center">
-                <button onClick={() => updateStatus('loading')}>loading</button>
-                <button onClick={() => updateStatus('inactive')}>
-                  inactive
-                </button>
-                <button onClick={() => updateStatus('listen')}>listen</button>
-                <button onClick={() => updateStatus('compute')}>compute</button>
-                <button onClick={() => updateStatus('speak')}>speak</button>
-              </div> */}
                         </div>
                     </DialogContent>
                 </DialogStyle>

@@ -11,10 +11,7 @@
 :where(.zebra-container) *,
 :where(.zebra-container) ::before,
 :where(.zebra-container) ::after {
-  box-sizing: border-box;
   border-width: 0;
-  border-style: solid;
-  border-color: var(--border-color);
 }
 :where(.zebra-container) {
   line-height: 1.5;
@@ -27,64 +24,18 @@
   margin: 0;
   line-height: inherit;
 }
-:where(.zebra-container) hr {
-  height: 0;
-  color: inherit;
-  border-top-width: 1px;
-}
-:where(.zebra-container) abbr:where([title]) {
-  text-decoration: underline dotted;
-}
-:where(.zebra-container) h1,
-:where(.zebra-container) h2,
-:where(.zebra-container) h3,
-:where(.zebra-container) h4,
-:where(.zebra-container) h5,
-:where(.zebra-container) h6 {
+
+
+:where(.zebra-container) h3 {
   font-size: inherit;
   font-weight: inherit;
 }
-:where(.zebra-container) a {
-  color: inherit;
-  text-decoration: inherit;
+:where(.zebra-container) h3 {
+  margin: 0;
 }
-:where(.zebra-container) b,
-:where(.zebra-container) strong {
-  font-weight: bolder;
-}
-:where(.zebra-container) code,
-:where(.zebra-container) kbd,
-:where(.zebra-container) samp,
-:where(.zebra-container) pre {
-  font-family: var(--font-mono);
-  font-size: 1em;
-}
-:where(.zebra-container) small {
-  font-size: 80%;
-}
-:where(.zebra-container) sub,
-:where(.zebra-container) sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-:where(.zebra-container) sub {
-  bottom: -0.25em;
-}
-:where(.zebra-container) sup {
-  top: -0.5em;
-}
-:where(.zebra-container) table {
-  text-indent: 0;
-  border-color: inherit;
-  border-collapse: collapse;
-}
-:where(.zebra-container) button,
-:where(.zebra-container) input,
-:where(.zebra-container) optgroup,
-:where(.zebra-container) select,
-:where(.zebra-container) textarea {
+
+
+:where(.zebra-container) button{
   font-family: inherit;
   font-size: 100%;
   line-height: inherit;
@@ -92,8 +43,8 @@
   margin: 0;
   padding: 0;
 }
-:where(.zebra-container) button,
-:where(.zebra-container) select {
+
+:where(.zebra-container) button{
   text-transform: none;
 }
 :where(.zebra-container) button,
@@ -104,93 +55,8 @@
   background-color: transparent;
   background-image: none;
 }
-:where(.zebra-container) :-moz-focusring {
-  outline: auto;
-}
-:where(.zebra-container) :-moz-ui-invalid {
-  box-shadow: none;
-}
-:where(.zebra-container) progress {
-  vertical-align: baseline;
-}
-:where(.zebra-container) ::-webkit-inner-spin-button,
-:where(.zebra-container) ::-webkit-outer-spin-button {
-  height: auto;
-}
-:where(.zebra-container) [type='search'] {
-  -webkit-appearance: textfield;
-  outline-offset: -2px;
-}
-:where(.zebra-container) ::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-:where(.zebra-container) ::-webkit-file-upload-button {
-  -webkit-appearance: button;
-  font: inherit;
-}
-:where(.zebra-container) summary {
-  display: list-item;
-}
-:where(.zebra-container) blockquote,
-:where(.zebra-container) dl,
-:where(.zebra-container) dd,
-:where(.zebra-container) h1,
-:where(.zebra-container) h2,
-:where(.zebra-container) h3,
-:where(.zebra-container) h4,
-:where(.zebra-container) h5,
-:where(.zebra-container) h6,
-:where(.zebra-container) hr,
-:where(.zebra-container) figure,
-:where(.zebra-container) p,
-:where(.zebra-container) pre {
-  margin: 0;
-}
-:where(.zebra-container) fieldset {
-  margin: 0;
-  padding: 0;
-}
-:where(.zebra-container) legend {
-  padding: 0;
-}
-:where(.zebra-container) ol,
-:where(.zebra-container) ul,
-:where(.zebra-container) menu {
-  /* list-style: none; */
-  margin: 0;
-  /* padding: 0; */
-}
-:where(.zebra-container) textarea {
-  resize: vertical;
-}
-:where(.zebra-container) input::placeholder,
-:where(.zebra-container) textarea::placeholder {
-  opacity: 1;
-  color: var(--placeholder-color);
-}
+
 :where(.zebra-container) button,
 :where(.zebra-container) [role='button'] {
   cursor: pointer;
-}
-:where(.zebra-container) :disabled {
-  cursor: default;
-}
-:where(.zebra-container) img,
-:where(.zebra-container) svg,
-:where(.zebra-container) video,
-:where(.zebra-container) canvas,
-:where(.zebra-container) audio,
-:where(.zebra-container) iframe,
-:where(.zebra-container) embed,
-:where(.zebra-container) object {
-  display: block;
-  vertical-align: middle;
-}
-:where(.zebra-container) img,
-:where(.zebra-container) video {
-  max-width: 100%;
-  height: auto;
-}
-:where(.zebra-container) [hidden] {
-  display: none;
 }
