@@ -9,6 +9,7 @@ import { Plugin, PluginActions } from "../../../plugins";
 // import { PluginIcon } from "./PluginIcon";
 
 import { cn } from "@/lib/utils";
+import { Icon } from "@/components/ui/Icon";
 
 interface PluginButtonProps extends Omit<Plugin, "MainPanel" | "LeftPanel"> {
     isPanelCollapsed: boolean;
@@ -70,7 +71,8 @@ export const PluginButton = ({
                                 className="mx_SpaceButton_icon flex justify-center items-center"
                                 style={{ backgroundColor: "var(--cpd-color-alpha-gray-300)" }}
                             >
-                                {props.icon({ className: "w-5 h-5", fill: "var(--cpd-color-text-secondary)" })}
+                                {/* {props.icon({ className: "w-5 h-5", fill: "var(--cpd-color-text-secondary)" })} */}
+                                <Icon name="Plug" className="w-5 h-5 fill-[var(--cpd-color-text-secondary)]" />
                             </div>
                         </div>
                     </div>

@@ -581,10 +581,13 @@ module.exports = (env, argv) => {
                                 // props set on the svg will override defaults
                                 expandProps: "end",
                                 svgoConfig: {
-                                    plugins: {
-                                        // generates a viewbox if missing
-                                        removeDimensions: true,
-                                    },
+                                    plugins: [
+                                        // Each plugin is an object
+                                        {
+                                            name: "removeDimensions",
+                                            active: true, // This is usually the default, so it's optional
+                                        },
+                                    ],
                                 },
                                 /**
                                  * Forwards the React ref to the root SVG element
@@ -599,6 +602,7 @@ module.exports = (env, argv) => {
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     return toPublicPath(outputPath);
                                 },
+                                throwIfNamespace: false, // ignore namespace errors
                             },
                         },
                         {

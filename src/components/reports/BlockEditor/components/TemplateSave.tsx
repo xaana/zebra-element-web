@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/core";
 
 import { Icon } from "@/components/ui/Icon";
-import { Button } from "@/components/ui/button-alt";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,

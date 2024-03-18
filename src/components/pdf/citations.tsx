@@ -3,7 +3,7 @@ import { Document, Page } from "react-pdf";
 import { useState, useRef, createRef, useEffect } from "react";
 import React from "react";
 
-import { Button } from "./../ui/button-alt";
+import { Button } from "../ui/button";
 import { IconZoomIn, IconZoomOut } from "./../ui/icons";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./../ui/select";
 import type { Citation } from "./citations-table";

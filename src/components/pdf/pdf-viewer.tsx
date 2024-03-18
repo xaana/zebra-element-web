@@ -3,7 +3,7 @@ import { Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
 
-import { Button } from "../ui/button-alt";
+import { Button } from "../ui/button";
 import { IconTable } from "../ui/icons";
 import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order

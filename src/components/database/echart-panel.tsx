@@ -1,7 +1,7 @@
 import ReactECharts from "echarts-for-react";
 import React from "react";
 
-import { Loader } from "../ui/loader";
+import { Loader } from "@/components/ui/loader";
 
 export const EChartPanel = ({
     echartsOption,

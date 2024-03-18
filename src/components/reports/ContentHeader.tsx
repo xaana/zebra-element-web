@@ -1,7 +1,7 @@
 import React from "react";
 import { useAtom } from "jotai";
 
-import { Button } from "@/components/ui/button-alt";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils";
 import { activeStepAtom } from "@/plugins/reports/stores/store";

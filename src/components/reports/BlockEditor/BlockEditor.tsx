@@ -7,7 +7,8 @@ import { TextMenu } from "../menus/TextMenu";
 import { ContentItemMenu } from "../menus/ContentItemMenu";
 import type { Editor } from "@tiptap/react";
 
-import "@/styles/index.css";
+import "@/plugins/reports/styles/editor.css";
+import "@/plugins/reports/styles/index.css";
 
 import { LinkMenu } from "@/components/reports/menus";
 import { Sidebar } from "@/components/reports/Sidebar";

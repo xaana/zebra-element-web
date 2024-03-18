@@ -14,7 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 
 import type { File } from "@/plugins/reports/types";
 
-import { Button } from "@/components/ui/button-alt";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
