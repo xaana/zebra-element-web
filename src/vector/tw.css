@@ -1,14 +1,5 @@
 @tailwind base;
-/* @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Tomorrow&display=swap');
-
-#zebra-chat {
-  font-family: 'Tomorrow', sans-serif !important;
-}
-
-#zebra-chat .font-mono {
-  font-family: 'Roboto Mono', monospace;
-} */
-
+@tailwind components;
 @tailwind utilities;
 
 .zebra-container {
@@ -111,6 +102,18 @@
     width: calc(100vw - 260px);
   }
 } */
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        /* @apply bg-background text-foreground; */
+        font-feature-settings:
+            "rlig" 1,
+            "calt" 1;
+    }
+}
 
 .scrollbar--custom::-webkit-scrollbar {
     height: 5px;

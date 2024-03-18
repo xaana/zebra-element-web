@@ -106,7 +106,7 @@ export const Home = (): JSX.Element => {
                 reverse={reverseTransition}
                 duration={400}
             >
-                <div ref={stepRef} className="max-w-[1024px] mx-auto pb-6 px-3 lg:px-0">
+                <div ref={stepRef} className="max-w-[1024px] mx-auto pb-6 px-3">
                     {activeStep?.id === 0 && (
                         <TemplateSelector templates={templates} files={files} nextStep={nextStep} prevStep={prevStep} />
                     )}

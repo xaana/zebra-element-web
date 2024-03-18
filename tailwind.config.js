@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    corePlugins: {
-        preflight: false,
-    },
+    // corePlugins: {
+    //     preflight: false,
+    // },
     // prefix: "zexa-",
     // darkMode: ["class", '[class="cpd-theme-dark"]'],
     darkMode: ["selector", ".cpd-theme-dark"],
