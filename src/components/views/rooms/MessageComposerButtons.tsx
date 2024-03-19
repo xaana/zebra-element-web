@@ -73,7 +73,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
     const { room, narrow,timelineRenderingType } = useContext(RoomContext);
     const isWysiwygLabEnabled = useSettingValue<boolean>("feature_wysiwyg_composer");
-
     if (!matrixClient || !room || props.haveRecording) {
         return null;
     }
@@ -114,7 +113,8 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             uploadButton(), // props passed via UploadButtonContext
             audioCaptureButton(),
             voiceBotButton(matrixClient,room),
-            databaseSelector(props.databaseSelect),
+            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(props.databaseSelect),
+            
         ];
         moreButtons = [
             showStickersButton(props),
