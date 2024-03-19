@@ -1,13 +1,23 @@
-import React, { useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
+import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload"
+import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
+import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
-import { IconCheckBold } from "../../ui/icons"
+// import { IconCheckBold } from "../../ui/icons"
+
 import "./style/button.css"
+
+
+
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = (props:any) => {
     const [dbList, setDbList] = useState<Array<string>>([])
     const [selectedDb, setSelectedDb] = useState<string>('')
+    const { timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false)
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -56,12 +66,14 @@ export const DatabaseSelector = (props:any) => {
                             console.log(props,typeof props.databaseSelect)
                             props.databaseSelect(dbList[index])
                             setSpacePopoverOpen(false)
+                            dis.dispatch<ComposerInsertPayload>({
+                              action: Action.ComposerInsert,
+                              text: "**"+dbList[index]+"**: ",
+                              timelineRenderingType: timelineRenderingType,
+                          });
                           }}
                         >
                           {db}
-                          {selectedDb === db && (
-                            <IconCheckBold className="ml-auto h-4 w-4" />
-                          )}
                         </CommandItem>
                       ))}
                     </CommandGroup>
