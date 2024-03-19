@@ -552,8 +552,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
             if(content&&this.props.databaseSelect){
-                content.formatted_body = this.props.databaseSelect;
-                console.log(content,'!!!!')
+                content['database'] = this.props.databaseSelect;
                 this.props.setDatabase("")
             }
             const prom = doMaybeLocalRoomAction(
