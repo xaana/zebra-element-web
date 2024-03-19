@@ -27,13 +27,13 @@ export const DatabaseSelector = (props:any) => {
 
 
     return (
-        <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px]">
+        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
-            <PopoverTrigger asChild className="zexa-border-0 zexa-flex zexa-items-center zexa-justify-center zexa-bg-transparent !zexa-w-[26px] !zexa-h-[26px]">
-                <div className="zexa-flex zexa-items-center zexa-justify-center zexa-place-content-center zexa-w-[26px] zexa-h-[26px] mx_MessageComposer_button mx_UserSettingsDialog_keyboardIcon" />
+            <PopoverTrigger asChild className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
+                <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button mx_UserSettingsDialog_keyboardIcon" />
             </PopoverTrigger>
             <PopoverContent
-            className="!zexa-p-1"
+            className="!p-1"
             side="top"
             align="start"
             sideOffset={6}
@@ -41,14 +41,14 @@ export const DatabaseSelector = (props:any) => {
             <Command>
                   <CommandInput
                     placeholder="Select Space..."
-                    className="zexa-text-xs"
+                    className="text-xs"
                   />
                   <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup>
                       {dbList.map((db, index) => (
                         <CommandItem
-                          className="zexa-text-xs"
+                          className="text-xs"
                           key={index}
                           value={db}
                           onSelect={() => {
@@ -60,7 +60,7 @@ export const DatabaseSelector = (props:any) => {
                         >
                           {db}
                           {selectedDb === db && (
-                            <IconCheckBold className="zexa-ml-auto zexa-h-4 zexa-w-4" />
+                            <IconCheckBold className="ml-auto h-4 w-4" />
                           )}
                         </CommandItem>
                       ))}
