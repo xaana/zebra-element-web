@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 import { IconCheckBold } from "../../ui/icons"
-
+import "./style/button.css"
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = (props:any) => {
     const [dbList, setDbList] = useState<Array<string>>([])
@@ -30,7 +30,7 @@ export const DatabaseSelector = (props:any) => {
         <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger asChild className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
-                <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button mx_UserSettingsDialog_keyboardIcon" />
+                <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" />
             </PopoverTrigger>
             <PopoverContent
             className="!p-1"

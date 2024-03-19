@@ -6,7 +6,7 @@ import * as speechCommands from "@tensorflow-models/speech-commands";
 import styled from "styled-components";
 import { create } from "zustand";
 import React from "react";
-import "./button.css";
+import "../style/button.css";
 import { IContent } from "matrix-js-sdk/src/models/event";
 import { MatrixClient } from "matrix-js-sdk/src/matrix";
 
