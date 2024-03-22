@@ -89,6 +89,7 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
                     )
                     .filter((ev) => ev.getContent().url || ev.getContent().file);
                 setEvents([...roomResults, ...finalResults]);
+                console.log(roomResults, finalResults);
             });
         };
 
@@ -105,6 +106,7 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
             if (!mxcUrl) return;
             if (event.isEncrypted()) {
                 const mediaHelper = new MediaEventHelper(event);
+                console.log('file from encreyption')
                 try {
                     const temp = await mediaHelper.sourceBlob.value;
                     // If the Blob type is not 'application/pdf', create a new Blob with the correct type
@@ -114,6 +116,18 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
                 } catch (err) {
                     console.log("decryption error", err);
                 }
+            }else{
+                const downloadUrl = client.mxcUrlToHttp(mxcUrl)
+                console.log('file from un encreyption')
+                if (downloadUrl){
+                    const data = await fetchResourceAsBlob(downloadUrl)
+                    if(data){
+                        const pdfUrl = URL.createObjectURL(data)
+                        console.log(pdfUrl)
+                        return { name: event.getContent().body, url: pdfUrl};
+                    }
+                }
+                
             }
         });
         if (tempPdfs) {
@@ -122,6 +136,19 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
             });
         }
     }, [events]);
+
+    async function fetchResourceAsBlob(url:string) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          const blob = await response.blob();
+          return blob;
+        } catch (error) {
+          console.error("Error fetching the blob:", error);
+        }
+      }
 
     return (
         <>
