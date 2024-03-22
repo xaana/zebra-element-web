@@ -1,0 +1,236 @@
+import React, { useContext, useEffect, useState } from "react"
+import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload"
+import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
+import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
+import { init as initRouting } from "../../../vector/routing";
+// import { IconCheckBold } from "../../ui/icons"
+
+import "./style/button.css"
+import { IconCheckBold } from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
+
+interface IProps {
+    roomId: string;
+    fileSelect: (file: DocFile[]) => void;
+}
+
+export interface DocFile{
+    mediaId: string;
+    fileName: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const FileSelector = (props:IProps) => {
+    const [events, setEvents] = useState<MatrixEvent[]>([]);
+    const [files, setFiles] = useState<DocFile[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<DocFile[]>([]);
+    const { timelineRenderingType } = useContext(RoomContext);
+    const [spacePopoverOpen, setSpacePopoverOpen] = useState(false)
+    const client = useMatrixClientContext();
+    useEffect(() => {
+        initRouting();
+    }, [client]);
+    const onClick = () => {
+        const currentRoom = client.getRoom(props.roomId)
+
+        
+        currentRoom&&fetchFileEventsServer([currentRoom]);
+    }
+
+    useEffect(() => {
+        if (events.length === 0) return;
+        const files: DocFile[] = events
+        .map((event) => {
+            const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
+            const urlSplit = mxcUrl?.split("/");
+            const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
+            const fileName = event.getContent().body;
+            return {
+                mediaId: mediaId,
+                fileName:fileName
+                
+            };
+        })
+        const uniqueList =files.filter((item, index, self) =>
+        index === self.findIndex((t) => (
+            t.mediaId === item.mediaId && t.fileName === item.fileName
+        ))
+    );
+        setFiles(uniqueList);
+    }, [events]);
+
+    useEffect(() => {
+        if(!spacePopoverOpen){
+            if (selectedFiles.length > 0) {
+                props.fileSelect(selectedFiles);
+                dis.dispatch<ComposerInsertPayload>({
+                          action: Action.ComposerInsert,
+                          text: "**"+"fileselected"+"**: ",
+                          timelineRenderingType: timelineRenderingType,
+                      });
+            }
+        }
+        else{
+            props.fileSelect([]);
+            setFiles([]);
+        }
+    },[spacePopoverOpen])
+
+
+
+    const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
+        const encryptedRooms = [];
+        const plainRooms = [];
+        for (const room of rooms) {
+            if (client.isRoomEncrypted(room.roomId)) {
+                encryptedRooms.push(room);
+            } else {
+                plainRooms.push(room);
+            }
+        }
+
+        const plainFilter = new Filter(client.getSafeUserId());
+        plainFilter.setDefinition({
+            room: {
+                timeline: {
+                    contains_url: true,
+                    types: ["m.room.message"],
+                },
+            },
+        });
+
+        plainFilter.filterId = await client.getOrCreateFilter(
+            "FILTER_FILES_PLAIN_" + client.credentials.userId,
+            plainFilter,
+        );
+        const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
+        const plainEvents = plainTimelineSets.flatMap((ts) =>
+            ts.getTimelines().flatMap(async (t) => {
+                const timeline = t.fork(Direction.Forward);
+                let next = true;
+                while (next) {
+                    await client.paginateEventTimeline(timeline, { backwards: true });
+                    next = timeline.getPaginationToken(Direction.Backward) !== null;
+                }
+                return timeline.getEvents().filter((ev) => ev.getContent().file);
+            }),
+        );
+
+        const encryptedFilter = new Filter(client.getSafeUserId());
+        encryptedFilter.setDefinition({
+            room: {
+                timeline: {
+                    types: ["m.room.encrypted"],
+                },
+            },
+        });
+
+        encryptedFilter.filterId = await client.getOrCreateFilter(
+            "FILTER_FILES_ENCRYPTED_" + client.credentials.userId,
+            encryptedFilter,
+        );
+        const encryptedTimelineSets = encryptedRooms.map((room) =>
+            room.getOrCreateFilteredTimelineSet(encryptedFilter),
+        );
+        const encryptedEvents = encryptedTimelineSets.flatMap((ts) =>
+            ts.getTimelines().flatMap(async (t) => {
+                const timeline = t.fork(Direction.Forward);
+                let next = true;
+                while (next) {
+                    await client.paginateEventTimeline(timeline, { backwards: true });
+                    next = timeline.getPaginationToken(Direction.Backward) !== null;
+                }
+                return timeline.getEvents().filter((ev) => ev.getContent().file);
+            }),
+        );
+
+        Promise.all([...plainEvents, ...encryptedEvents]).then((results) => {
+            const finalResults = results.flat();
+            const roomResults = rooms
+                .flatMap((r) =>
+                    r.getTimelineSets().flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents())),
+                )
+                .filter((ev) => ev.getContent().url || ev.getContent().file);
+            setEvents([...roomResults, ...finalResults]);
+        });
+    };
+    const onConfirm = () => {
+        setSpacePopoverOpen(false)
+    }
+    
+    return (
+        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
+        <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
+            <PopoverTrigger asChild className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
+                <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button files_button" onClick={onClick} />
+            </PopoverTrigger>
+            <PopoverContent
+            className="!p-1"
+            side="top"
+            align="start"
+            sideOffset={6}
+            >
+            <Command>
+                  <CommandInput
+                    placeholder="Search by Filename..."
+                    className="text-xs"
+                  />
+                  <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup>
+                    {files.map((file, index) => (
+                        <CommandItem
+                          className="text-xs"
+                          key={index}
+                          value={file["fileName"]}
+                          onSelect={() => {
+                            if(!selectedFiles.includes(file)){
+                            setSelectedFiles((pres) => 
+                            {  
+                                const temp = [...pres,files[index]];
+                                return temp
+                            })
+                          }else{
+                            setSelectedFiles((pres) => 
+                            {  
+                                const temp = pres.filter((f) => f["fileName"] !== file["fileName"]);
+                                return temp
+                            })
+                            // props.fileSelect(file)
+                          }
+                        }
+                        }
+                        >
+                        
+                        {file["fileName"]}
+                        {selectedFiles.includes(file) && (
+                            <div className="float-right">
+                            <IconCheckBold className="ml-auto h-4 w-4 mr-0" />
+                            </div>
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+                {files.length>0?<Button className="font-normal" onClick={onConfirm}>confirm</Button>:''}
+                
+            </PopoverContent>
+        </Popover>
+        </div>
+    )
+}
+        
+        
+        
+        
+        
+        
+        
+        

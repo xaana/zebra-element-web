@@ -69,6 +69,7 @@ import { Caret } from "matrix-react-sdk/src/editor/caret";
 import { IDiff } from "matrix-react-sdk/src/editor/diff";
 import { getBlobSafeMimeType } from "matrix-react-sdk/src/utils/blobs";
 import { data } from "@tensorflow/tfjs";
+import { DocFile } from "./FileSelector";
 
 /**
  * Build the mentions information based on the editor model (and any related events):
@@ -250,6 +251,8 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     includeReplyLegacyFallback?: boolean;
     toggleStickerPickerOpen: () => void;
     databaseSelect:string;
+    fileSelect: DocFile[];
+    setFile: (arg0: DocFile[]) => void;
     setDatabase: (arg0: string) => void;
 }
 
@@ -446,7 +449,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
     public async sendMessage(): Promise<void> {
         const model = this.model;
-        // console.log('!!!!',databaseSelected)
         if (model.isEmpty) {
             return;
         }
@@ -554,6 +556,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             if(content&&this.props.databaseSelect){
                 content['database'] = this.props.databaseSelect;
                 this.props.setDatabase("")
+            }
+            if(content&&this.props.fileSelect.length>0){
+                content['fileSelected'] = this.props.fileSelect.map(docFile => docFile.mediaId);
+                this.props.setFile([] as DocFile[]);
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,
@@ -715,7 +721,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 !imgDoc.querySelector("img")?.src.startsWith("blob:") ||
                 imgDoc.childNodes.length !== 1
             ) {
-                console.log("Failed to handle pasted content as Safari inserted content");
+                console.error("Failed to handle pasted content as Safari inserted content");
 
                 // Fallback to internal onPaste handler
                 return false;
@@ -741,12 +747,12 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                             );
                         },
                         (error) => {
-                            console.log(error);
+                            console.error(error);
                         },
                     );
                 },
                 (error) => {
-                    console.log(error);
+                    console.error(error);
                 },
             );
 

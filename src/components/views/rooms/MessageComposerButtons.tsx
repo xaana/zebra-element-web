@@ -45,11 +45,13 @@ import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { AudioCapture } from "./audio-capture";
 import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
 import { DatabaseSelector } from "./DatabaseSelector";
+import { DocFile, FileSelector } from "./FileSelector"
 
 interface IProps {
     addEmoji: (emoji: string) => boolean;
     haveRecording: boolean;
     databaseSelect: (dbName: string) => void;
+    fileSelect: (file: DocFile[]) => void;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     menuPosition?: MenuProps;
@@ -114,6 +116,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             audioCaptureButton(),
             voiceBotButton(matrixClient,room),
             (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(props.databaseSelect),
+            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId,props.fileSelect),
             
         ];
         moreButtons = [
@@ -190,6 +193,10 @@ function uploadButton(): ReactElement {
 
 function databaseSelector(databaseSelect: (arg0: string) => void): ReactElement {
     return <DatabaseSelector key="controls_databaseSelector" databaseSelect={databaseSelect} />;
+}
+
+function filesSelector(roomId: string, fileSelect: (file: DocFile[]) => void): ReactElement {
+    return <FileSelector key="controls_filesSelector" roomId={roomId} fileSelect={fileSelect} />;
 }
 
 function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {

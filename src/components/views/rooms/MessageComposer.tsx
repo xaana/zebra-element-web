@@ -65,6 +65,7 @@ import { formatTimeLeft } from "matrix-react-sdk/src/DateUtils";
 import MessageComposerButtons from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
 import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } from "./SendMessageComposer";
+import { DocFile } from "./FileSelector";
 
 let instanceCount = 0;
 
@@ -109,6 +110,7 @@ interface IState {
     isRichTextEnabled: boolean;
     initialComposerContent: string;
     databaseSelected: string;
+    fileSelected: DocFile[];
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -148,6 +150,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             isRichTextEnabled: true,
             initialComposerContent: "",
             databaseSelected: "",
+            fileSelected: [],
         };
 
         this.instanceId = instanceCount++;
@@ -477,6 +480,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
     private setDatabase  = (dbName: string):void => {
         this.setState({databaseSelected: dbName});
     }
+    private setFile = (file:DocFile[]):void =>{
+        this.setState({fileSelected: file});
+    }
 
     public render(): React.ReactNode {
         const hasE2EIcon = Boolean(!this.state.isWysiwygLabEnabled && this.props.e2eStatus);
@@ -519,7 +525,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         disabled={this.state.haveRecording}
                         toggleStickerPickerOpen={this.toggleStickerPickerOpen}
                         databaseSelect={this.state.databaseSelected}
+                        fileSelect={this.state.fileSelected}
                         setDatabase={this.setDatabase}
+                        setFile={this.setFile}
                     />
                 );
             }
@@ -629,6 +637,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                 <MessageComposerButtons
                                     addEmoji={this.addEmoji}
                                     databaseSelect={this.setDatabase}
+                                    fileSelect={this.setFile}
                                     haveRecording={this.state.haveRecording}
                                     isMenuOpen={this.state.isMenuOpen}
                                     isStickerPickerOpen={this.state.isStickerPickerOpen}
