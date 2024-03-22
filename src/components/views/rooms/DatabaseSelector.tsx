@@ -10,13 +10,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 
 import "./style/button.css"
 
-
+interface IProps{
+  databaseSelect: (dbName: string) => void;
+}
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const DatabaseSelector = (props:any) => {
+export const DatabaseSelector = (props:IProps) => {
     const [dbList, setDbList] = useState<Array<string>>([])
-    const [selectedDb, setSelectedDb] = useState<string>('')
+    // const [selectedDb, setSelectedDb] = useState<string>('')
     const { timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false)
     useEffect(() => {
@@ -31,10 +33,6 @@ export const DatabaseSelector = (props:any) => {
         }
           ,[])
         
-    useEffect(() => {
-        console.log(selectedDb)
-    },[selectedDb])
-
 
     return (
         <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
@@ -50,7 +48,7 @@ export const DatabaseSelector = (props:any) => {
             >
             <Command>
                   <CommandInput
-                    placeholder="Select Space..."
+                    placeholder="Search by Database Name..."
                     className="text-xs"
                   />
                   <CommandList>
@@ -62,8 +60,7 @@ export const DatabaseSelector = (props:any) => {
                           key={index}
                           value={db}
                           onSelect={() => {
-                            setSelectedDb(() => dbList[index])
-                            console.log(props,typeof props.databaseSelect)
+                            // setSelectedDb(() => dbList[index])
                             props.databaseSelect(dbList[index])
                             setSpacePopoverOpen(false)
                             dis.dispatch<ComposerInsertPayload>({
