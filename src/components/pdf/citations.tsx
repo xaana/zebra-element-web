@@ -5,7 +5,7 @@ import React from "react";
 
 import { Button } from "../ui/button";
 import { IconZoomIn, IconZoomOut } from "./../ui/icons";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/PdfSelector/select";
 import type { Citation } from "./citations-table";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import { CitationsTable } from "./citations-table";
@@ -19,7 +19,6 @@ import type { BoundingBox } from "./citations-table";
 
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
-import BaseCard from "../views/BaseCard";
 import { Loader } from "../ui/loader";
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -136,6 +135,7 @@ export function Citations({
     };
     {
         console.log(pdfUrls, citations);
+        Array.from(pdfUrls).map((file) => console.log(file.name));
     }
     return (
         <>
@@ -151,7 +151,7 @@ export function Citations({
                                     <SelectTrigger className="file__select h-auto py-2 text-xs">
                                         <SelectValue placeholder="Select PDF File" />
                                     </SelectTrigger>
-                                    <SelectContent asChild>
+                                    <SelectContent asChild className="h-auto">
                                         {pdfUrls &&
                                             Array.from(pdfUrls).map((file, index) => (
                                                 <SelectItem key={index} value={String(index)} className="text-xs">
