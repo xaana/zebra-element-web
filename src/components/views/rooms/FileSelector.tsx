@@ -79,6 +79,7 @@ export const FileSelector = (props:IProps) => {
         else{
             props.fileSelect([]);
             setFiles([]);
+            setSelectedFiles([]);
         }
     },[spacePopoverOpen])
 
