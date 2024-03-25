@@ -9,10 +9,11 @@ import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
 import { init as initRouting } from "../../vector/routing";
-export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: any[] }) => {
+export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citations: any[];rootId: string }) => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     const [events, setEvents] = useState<MatrixEvent[]>([]);
+    const [urls,setUrls] = useState<string[]>([]);
     const client = useMatrixClientContext();
     useEffect(() => {
         const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
@@ -89,7 +90,6 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
                     )
                     .filter((ev) => ev.getContent().url || ev.getContent().file);
                 setEvents([...roomResults, ...finalResults]);
-                console.log(roomResults, finalResults);
             });
         };
 
@@ -97,42 +97,50 @@ export const PdfViewer = ({ roomId, citations }: { roomId: string; citations: an
         
         const currentRoom = client.getRoom(roomId);
 
-        currentRoom&&fetchFileEventsServer([currentRoom]);
+        if(currentRoom){
+            fetchFileEventsServer([currentRoom]);
+            const files = currentRoom.findEventById(rootId)?.getContent()
+            if(files){
+                setUrls(files["fileSelected"])
+            }
+        }
     }, [client]);
     useEffect(() => {
         if (events.length === 0) return;
         const tempPdfs = events.map(async (event) => {
             const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-            if (!mxcUrl) return;
-            if (event.isEncrypted()) {
-                const mediaHelper = new MediaEventHelper(event);
-                console.log('file from encreyption')
-                try {
-                    const temp = await mediaHelper.sourceBlob.value;
-                    // If the Blob type is not 'application/pdf', create a new Blob with the correct type
-                    const Pdf = new Blob([temp], { type: "application/pdf" });
-                    const pdfUrl = URL.createObjectURL(Pdf);
-                    return { name: event.getContent().body, url: pdfUrl };
-                } catch (err) {
-                    console.log("decryption error", err);
-                }
-            }else{
-                const downloadUrl = client.mxcUrlToHttp(mxcUrl)
-                console.log('file from un encreyption')
-                if (downloadUrl){
-                    const data = await fetchResourceAsBlob(downloadUrl)
-                    if(data){
-                        const pdfUrl = URL.createObjectURL(data)
-                        console.log(pdfUrl)
-                        return { name: event.getContent().body, url: pdfUrl};
+            if (mxcUrl&&urls.includes(mxcUrl)){
+                if (event.isEncrypted()) {
+                    const mediaHelper = new MediaEventHelper(event);
+                    console.log('file from encreyption')
+                    try {
+                        const temp = await mediaHelper.sourceBlob.value;
+                        // If the Blob type is not 'application/pdf', create a new Blob with the correct type
+                        const Pdf = new Blob([temp], { type: "application/pdf" });
+                        const pdfUrl = URL.createObjectURL(Pdf);
+                        
+                        return { name: event.getContent().body, url: pdfUrl };
+                    } catch (err) {
+                        console.log("decryption error", err);
                     }
-                }
+                }else{
+                    const downloadUrl = client.mxcUrlToHttp(mxcUrl)
+                    console.log('file from un encreyption')
+                    if (downloadUrl){
+                        const data = await fetchResourceAsBlob(downloadUrl)
+                        if(data){
+                            const pdfUrl = URL.createObjectURL(data)
+                            return { name: event.getContent().body, url: pdfUrl};
+                        }
+                    }
+            }
+            
                 
             }
         });
         if (tempPdfs) {
             Promise.all(tempPdfs).then((res) => {
-                setPdfUrls(res);
+                setPdfUrls(res.filter(element => element !== undefined));
             });
         }
     }, [events]);

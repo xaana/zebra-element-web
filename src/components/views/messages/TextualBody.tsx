@@ -605,17 +605,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (pdfResponse && roomId) {
+        if (pdfResponse && roomId&&rootId) {
             body = (
                 <>
                     {body}
-                    <PdfViewer roomId={roomId} citations={citations} />
+                    <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                 </>
             );
         }
         if (echartsOption && echartsQuery) {
-            console.log(echartsOption, echartsQuery);
-
             body = (
                 <>
                     {body}
