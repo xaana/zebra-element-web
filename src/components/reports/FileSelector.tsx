@@ -12,7 +12,7 @@ import {
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 
-import type { File } from "@/plugins/reports/types";
+import type { File } from "@/plugins/files/types";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -67,22 +67,22 @@ export const columns: ColumnDef<File>[] = [
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "owner",
+        accessorKey: "sender",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-                    Owner
+                    Sender
                     <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("owner")}</div>,
+        cell: ({ row }) => <div className="lowercase">{row.getValue("sender")}</div>,
     },
     {
-        accessorKey: "createdAt",
+        accessorKey: "timestamp",
         header: () => <div className="text-right">Date Uploaded</div>,
         cell: ({ row }) => {
-            const uploadDate: Date = row.getValue("createdAt");
+            const uploadDate: Date = row.getValue("timestamp");
 
             // Format the amount as a dollar amount
             const formatted = formatDistanceToNow(new Date(uploadDate), {
