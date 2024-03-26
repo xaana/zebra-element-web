@@ -4,11 +4,12 @@ import { SpaceKey } from "matrix-react-sdk/src/stores/spaces";
 import { VideoPlugin } from "./video";
 import { FilesPlugin } from "./files";
 import { ReportsPlugin } from "./reports";
+import { AlgologyIntegrationPlugin } from "./algology-integration";
 import type { Plugin } from "./plugin";
 
 export * from "./plugin";
 
-export const pluginList: Plugin[] = [VideoPlugin, FilesPlugin, ReportsPlugin];
+export const pluginList: Plugin[] = [VideoPlugin, FilesPlugin, ReportsPlugin, AlgologyIntegrationPlugin];
 
 export interface PluginActionPayload extends ActionPayload {
     plugin: string;
