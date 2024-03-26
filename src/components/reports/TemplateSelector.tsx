@@ -15,7 +15,9 @@ import {
     previousTemplateAtom,
     editorStateAtom,
     selectedFilesAtom,
+    apiUrlAtom,
 } from "@/plugins/reports/stores/store";
+import { reportsStore } from "@/plugins/reports/MainPanel";
 
 interface TemplateSelectorProps {
     files: File[];
@@ -33,7 +35,27 @@ export const TemplateSelector = ({ files, templates, nextStep, prevStep }: Templ
         selectedFiles ? Object.fromEntries(selectedFiles.map((obj) => [obj.id, true])) : {},
     );
 
-    const proceedToEditTemplate = () => {
+    const fetchTemplateContent = async (): Promise<void> => {
+        const templateId: string = selectedTemplate?.id ?? "";
+        try {
+            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/get_template`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ template_id: templateId }),
+            });
+            const data = await response.json();
+            setSelectedTemplate((prev) => {
+                return prev ? { ...prev, content: data.content } : undefined;
+            });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    const proceedToEditTemplate = async () => {
+        selectedTemplate && (await fetchTemplateContent());
         // check of rowSelection has more than one item
         if (Object.keys(rowSelection).length > 0) {
             setSelectedFiles(() => files.filter((file: File) => rowSelection[file.id]));
@@ -63,7 +85,7 @@ export const TemplateSelector = ({ files, templates, nextStep, prevStep }: Templ
             <div className="text-lg font-semibold mt-4 mb-2">Select Template</div>
 
             <div className="rounded-lg border bg-card p-4 w-full">
-                <div className="w-full grid grid-cols-4 gap-4">
+                <div className="w-full grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <div
                         key="new-template"
                         className={cn(

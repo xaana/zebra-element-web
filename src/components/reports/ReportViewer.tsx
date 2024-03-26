@@ -31,7 +31,7 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Ele
 
     const fetchPdf = async (formData: FormData): Promise<void> => {
         try {
-            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/pdf`, {
+            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/generate-pdf/generate`, {
                 method: "POST",
                 body: formData,
             });

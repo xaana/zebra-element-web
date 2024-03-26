@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import type { Editor } from "@tiptap/core";
 
@@ -27,6 +28,8 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const client = useMatrixClientContext();
+    const userId: string = client.getSafeUserId();
 
     useEffect(() => {
         if (!dialogOpen) {
@@ -38,15 +41,16 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
 
     const handleSubmit = async (): Promise<void> => {
         setLoading(true);
-        const response = await fetch(`${reportsStore.get(apiUrlAtom)}/template`, {
+        const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/create_template`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                name: name,
-                description: description.substring(0, 300),
-                content: JSON.stringify(editor.getJSON()),
+                user_id: userId,
+                template_name: name,
+                template_description: description.substring(0, 300),
+                template_data: JSON.stringify(editor.getJSON()),
             }),
         });
         if (response.ok) {
@@ -106,7 +110,7 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button disabled={name.length < 3} type="submit" onClick={handleSubmit}>
+                            <Button variant="default" disabled={name.length < 3} type="submit" onClick={handleSubmit}>
                                 Save Template
                             </Button>
                         </DialogFooter>

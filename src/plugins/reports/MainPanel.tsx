@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Provider, createStore } from "jotai";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { init as initRouting } from "../../vector/routing";
 import { getVectorConfig } from "../../vector/getconfig";
@@ -18,15 +19,38 @@ export const MainPanel = (): JSX.Element => {
     const [files, setFiles] = useState<File[]>([]);
     const [templates, setTemplates] = useState<Template[]>([]);
     const { getUserFiles } = useFiles();
+    const client = useMatrixClientContext();
+    const userId: string = client.getSafeUserId();
 
     useEffect(() => {
         initRouting();
 
         const fetchTemplatesData = async (apiUrl: string): Promise<void> => {
             try {
-                const response = await fetch(`${apiUrl}/templates`);
+                const response = await fetch(`${apiUrl}/api/template/get_template_list`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_id: userId }),
+                });
                 const data = await response.json();
-                setTemplates([...data]);
+                if (data?.templates?.length === 0) return;
+                setTemplates(() =>
+                    data.templates.map(
+                        ({
+                            id: id,
+                            template_name: name,
+                            template_description: description,
+                            updated_at: createdAt,
+                        }: {
+                            id: string;
+                            template_name: string;
+                            template_description: string;
+                            updated_at: Date;
+                        }) => ({ id, name, description: description ?? "", createdAt }),
+                    ),
+                );
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
@@ -46,7 +70,7 @@ export const MainPanel = (): JSX.Element => {
         console.log("Calling getConfig()");
 
         getConfig();
-    }, [getUserFiles]);
+    }, [getUserFiles, userId]);
     return (
         <>
             <Provider store={reportsStore}>
