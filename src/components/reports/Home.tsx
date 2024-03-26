@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAtom } from "jotai";
 
-import type { Template, File, StepItem } from "@/plugins/reports/types";
+import type { Template, StepItem } from "@/plugins/reports/types";
+import type { File } from "@/plugins/files/types";
 
 import { Stepper } from "@/components/reports/Stepper";
 import { SwitchFadeTransition } from "@/components/ui/transitions/switch-fade-transition";
@@ -36,10 +37,6 @@ const steps: StepItem[] = [
 ];
 
 export const Home = ({ files, templates }: { files: File[]; templates: Template[] }): JSX.Element => {
-    // State to store files and templates
-    // const [files, setFiles] = useState<File[]>([]);
-    // const [templates, setTemplates] = useState<Template[]>([]);
-
     // Use stored state for active step
     const [activeStep, setActiveStep] = useAtom(activeStepAtom);
 

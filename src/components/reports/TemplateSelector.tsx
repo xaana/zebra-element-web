@@ -5,7 +5,8 @@ import { RowSelectionState } from "@tanstack/table-core";
 import { ContentHeader } from "./ContentHeader";
 import { FileSelector, FileSelectorHandle } from "./FileSelector";
 import { TemplateCard } from "./TemplateCard";
-import type { File, Template } from "@/plugins/reports/types";
+import type { Template } from "@/plugins/reports/types";
+import type { File } from "@/plugins/files/types";
 
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils";
