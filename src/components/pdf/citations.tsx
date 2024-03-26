@@ -61,6 +61,20 @@ export function Citations({
                 setPendingCitationView(() => null);
             }
         }, 500);
+        if(citations.length > 0) { // Ensure there is at least one citation
+        const firstCitation = citations[0]; // Access the first citation
+        handleViewCitation(
+            firstCitation.doc_name,
+            String(firstCitation.page_num),
+            parseBoundingBoxes(firstCitation.bboxes)
+        );
+    }
+    };
+    const parseBoundingBoxes = (bboxes: string): BoundingBox[] => {
+        return bboxes.split(";").map((bbox) => {
+            const [x1, y1, x2, y2] = bbox.split(" ").map(parseFloat);
+            return { x1, y1, x2, y2 };
+        });
     };
 
     useEffect(() => {
