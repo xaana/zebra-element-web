@@ -55,6 +55,7 @@ import { CollapsibleMessage } from "../../../components/database/collapsible-mes
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
+import { Button } from "@/components/ui/button";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -594,6 +595,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const echartsQuery = content.echartsQuery;
         const pdfResponse = content.pdfResponse;
         const citations = content.citations;
+        const approvalId = content.approvalId;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -605,7 +607,44 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (pdfResponse && roomId&&rootId) {
+        if (approvalId){
+            body = (
+                <div>
+                    {body}
+                    <div className="flex gap-2 justify-end">
+                        <Button onClick={()=>{
+                            const payload = {
+                                approvalId: approvalId}
+                            const url = "http://localhost:29316/_matrix/maubot/plugin/1/approve"
+                            const request = new Request(url, {
+                                method: "POST",
+                                body: JSON.stringify(payload),
+                            });
+                            fetch(request).then((response) => response.json()).then((data) => {
+                                console.log(data)
+                            });
+                        }
+                        
+                        }>Approve</Button>
+                        <Button onClick={()=>{
+                            const payload = {
+                                approvalId: approvalId}
+                            const url = "http://localhost:29316/_matrix/maubot/plugin/1/reject"
+                            const request = new Request(url, {
+                                method: "POST",
+                                body: JSON.stringify(payload),
+                            });
+                            fetch(request).then((data) => {
+                                console.log(data.json())
+                            });
+                        }
+                        
+                        }>Reject</Button>
+                    </div>
+                </div>
+            );
+        }
+        if (pdfResponse&&roomId&&rootId) {
             body = (
                 <>
                     {body}
