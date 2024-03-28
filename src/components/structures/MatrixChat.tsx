@@ -14,139 +14,139 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { createRef } from "react";
-import {
-    ClientEvent,
-    createClient,
-    EventType,
-    HttpApiEvent,
-    MatrixClient,
-    MatrixEventEvent,
-    MatrixEvent,
-    RoomType,
-    SyncStateData,
-    SyncState,
-} from "matrix-js-sdk/src/matrix";
-import { InvalidStoreError } from "matrix-js-sdk/src/errors";
-import { defer, IDeferred, QueryDict } from "matrix-js-sdk/src/utils";
-import { logger } from "matrix-js-sdk/src/logger";
 import { throttle } from "lodash";
 import { CryptoEvent } from "matrix-js-sdk/src/crypto";
 import { DecryptionError } from "matrix-js-sdk/src/crypto/algorithms";
 import { IKeyBackupInfo } from "matrix-js-sdk/src/crypto/keybackup";
+import { InvalidStoreError } from "matrix-js-sdk/src/errors";
+import { logger } from "matrix-js-sdk/src/logger";
+import {
+    ClientEvent,
+    EventType,
+    HttpApiEvent,
+    MatrixClient,
+    MatrixEvent,
+    MatrixEventEvent,
+    RoomType,
+    SyncState,
+    SyncStateData,
+    createClient,
+} from "matrix-js-sdk/src/matrix";
+import { IDeferred, QueryDict, defer } from "matrix-js-sdk/src/utils";
+import React, { createRef } from "react";
 
 // what-input helps improve keyboard accessibility
 import "what-input";
 
-import type NewRecoveryMethodDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/NewRecoveryMethodDialog";
-import type RecoveryMethodRemovedDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/RecoveryMethodRemovedDialog";
-import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import { DecryptionFailureTracker } from "matrix-react-sdk/src/DecryptionFailureTracker";
+import * as Lifecycle from "matrix-react-sdk/src/Lifecycle";
 import { IMatrixClientCreds, MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
-import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
-import SdkConfig, { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
-import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import Notifier from "matrix-react-sdk/src/Notifier";
 import Modal from "matrix-react-sdk/src/Modal";
+import Notifier from "matrix-react-sdk/src/Notifier";
+import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
+import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import { showRoomInviteDialog, showStartChatInviteDialog } from "matrix-react-sdk/src/RoomInvite";
 import * as Rooms from "matrix-react-sdk/src/Rooms";
-import * as Lifecycle from "matrix-react-sdk/src/Lifecycle";
+import SdkConfig, { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
+import type NewRecoveryMethodDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/NewRecoveryMethodDialog";
+import type RecoveryMethodRemovedDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/RecoveryMethodRemovedDialog";
+import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 // LifecycleStore is not used but does listen to and dispatch actions
-import "matrix-react-sdk/src/stores/LifecycleStore";
-import "matrix-react-sdk/src/stores/AutoRageshakeStore";
+import { Linkify } from "matrix-react-sdk/src/HtmlUtils";
+import LegacyCallHandler from "matrix-react-sdk/src/LegacyCallHandler";
 import PageType from "matrix-react-sdk/src/PageTypes";
-import createRoom, { IOpts } from "matrix-react-sdk/src/createRoom";
-import { _t, _td, getCurrentLanguage } from "matrix-react-sdk/src/languageHandler";
-import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import ThemeController from "matrix-react-sdk/src/settings/controllers/ThemeController";
+import { PosthogAnalytics } from "matrix-react-sdk/src/PosthogAnalytics";
 import { startAnyRegistrationFlow } from "matrix-react-sdk/src/Registration";
-import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
-import AutoDiscoveryUtils from "matrix-react-sdk/src/utils/AutoDiscoveryUtils";
-import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
-import ThemeWatcher from "matrix-react-sdk/src/settings/watchers/ThemeWatcher";
-import { FontWatcher } from "matrix-react-sdk/src/settings/watchers/FontWatcher";
 import { storeRoomAliasInCache } from "matrix-react-sdk/src/RoomAliasCache";
-import ToastStore from "matrix-react-sdk/src/stores/ToastStore";
-import * as StorageManager from "matrix-react-sdk/src/utils/StorageManager";
-import { UseCase } from "matrix-react-sdk/src/settings/enums/UseCase";
+import Views from "matrix-react-sdk/src/Views";
+import { IRoomStateEventsActionPayload } from "matrix-react-sdk/src/actions/MatrixActionCreators";
+import { viewUserDeviceSettings } from "matrix-react-sdk/src/actions/handlers/viewUserDeviceSettings";
 import type LoggedInViewType from "matrix-react-sdk/src/components/structures/LoggedInView";
-import LoggedInView from "./LoggedInView";
-import { Action } from "matrix-react-sdk/src/dispatcher/actions";
-import { hideToast as hideAnalyticsToast, showToast as showAnalyticsToast } from "matrix-react-sdk/src/toasts/AnalyticsToast";
-import { showToast as showNotificationsToast } from "matrix-react-sdk/src/toasts/DesktopNotificationsToast";
-import { OpenToTabPayload } from "matrix-react-sdk/src/dispatcher/payloads/OpenToTabPayload";
+import LoggedInView from "matrix-react-sdk/src/components/structures/LoggedInView";
+import CompleteSecurity from "matrix-react-sdk/src/components/structures/auth/CompleteSecurity";
+import { ConfirmSessionLockTheftView } from "matrix-react-sdk/src/components/structures/auth/ConfirmSessionLockTheftView";
+import E2eSetup from "matrix-react-sdk/src/components/structures/auth/E2eSetup";
+import ForgotPassword from "matrix-react-sdk/src/components/structures/auth/ForgotPassword";
+import Login from "matrix-react-sdk/src/components/structures/auth/Login";
+import { LoginSplashView } from "matrix-react-sdk/src/components/structures/auth/LoginSplashView";
+import Registration from "matrix-react-sdk/src/components/structures/auth/Registration";
+import { SessionLockStolenView } from "matrix-react-sdk/src/components/structures/auth/SessionLockStolenView";
+import SoftLogout from "matrix-react-sdk/src/components/structures/auth/SoftLogout";
+import Welcome from "matrix-react-sdk/src/components/views/auth/Welcome";
+import CreateRoomDialog from "matrix-react-sdk/src/components/views/dialogs/CreateRoomDialog";
 import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
+import IncomingSasDialog from "matrix-react-sdk/src/components/views/dialogs/IncomingSasDialog";
+import KeySignatureUploadFailedDialog from "matrix-react-sdk/src/components/views/dialogs/KeySignatureUploadFailedDialog";
+import QuestionDialog from "matrix-react-sdk/src/components/views/dialogs/QuestionDialog";
+import UserSettingsDialog from "matrix-react-sdk/src/components/views/dialogs/UserSettingsDialog";
+import { UserTab } from "matrix-react-sdk/src/components/views/dialogs/UserTab";
+import { Filter } from "matrix-react-sdk/src/components/views/dialogs/spotlight/Filter";
+import RovingSpotlightDialog from "matrix-react-sdk/src/components/views/dialogs/spotlight/SpotlightDialog";
+import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+import ErrorBoundary from "matrix-react-sdk/src/components/views/elements/ErrorBoundary";
+import Spinner from "matrix-react-sdk/src/components/views/elements/Spinner";
+import { UseCaseSelection } from "matrix-react-sdk/src/components/views/elements/UseCaseSelection";
+import GenericToast from "matrix-react-sdk/src/components/views/toasts/GenericToast";
+import VerificationRequestToast from "matrix-react-sdk/src/components/views/toasts/VerificationRequestToast";
+import DialPadModal from "matrix-react-sdk/src/components/views/voip/DialPadModal";
+import { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
+import { SDKContext, SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+import createRoom, { IOpts } from "matrix-react-sdk/src/createRoom";
+import SecurityCustomisations from "matrix-react-sdk/src/customisations/Security";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
+import { AfterLeaveRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/AfterLeaveRoomPayload";
+import { DoAfterSyncPreparedPayload } from "matrix-react-sdk/src/dispatcher/payloads/DoAfterSyncPreparedPayload";
+import { OpenToTabPayload } from "matrix-react-sdk/src/dispatcher/payloads/OpenToTabPayload";
+import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
+import { ViewHomePagePayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewHomePagePayload";
+import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
+import { ViewStartChatOrReusePayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewStartChatOrReusePayload";
+import { _t, _td, getCurrentLanguage } from "matrix-react-sdk/src/languageHandler";
+import PerformanceMonitor, { PerformanceEntryNames } from "matrix-react-sdk/src/performance";
+import { initSentry } from "matrix-react-sdk/src/sentry";
+import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
+import ThemeController from "matrix-react-sdk/src/settings/controllers/ThemeController";
+import { UseCase } from "matrix-react-sdk/src/settings/enums/UseCase";
+import { FontWatcher } from "matrix-react-sdk/src/settings/watchers/FontWatcher";
+import ThemeWatcher from "matrix-react-sdk/src/settings/watchers/ThemeWatcher";
+import "matrix-react-sdk/src/stores/AutoRageshakeStore";
+import { CallStore } from "matrix-react-sdk/src/stores/CallStore";
+import "matrix-react-sdk/src/stores/LifecycleStore";
+import ThreepidInviteStore, { IThreepidInvite, IThreepidInviteWireFormat } from "matrix-react-sdk/src/stores/ThreepidInviteStore";
+import ToastStore from "matrix-react-sdk/src/stores/ToastStore";
+import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
+import { NotificationColor } from "matrix-react-sdk/src/stores/notifications/NotificationColor";
 import {
     RoomNotificationStateStore,
     UPDATE_STATUS_INDICATOR,
 } from "matrix-react-sdk/src/stores/notifications/RoomNotificationStateStore";
-import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
-import ThreepidInviteStore, { IThreepidInvite, IThreepidInviteWireFormat } from "matrix-react-sdk/src/stores/ThreepidInviteStore";
-import { UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
-import DialPadModal from "matrix-react-sdk/src/components/views/voip/DialPadModal";
-import { showToast as showMobileGuideToast } from "matrix-react-sdk/src/toasts/MobileGuideToast";
-import { shouldUseLoginForWelcome } from "matrix-react-sdk/src/utils/pages";
+import { SummarizedNotificationState } from "matrix-react-sdk/src/stores/notifications/SummarizedNotificationState";
+import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
+import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 import RoomListStore from "matrix-react-sdk/src/stores/room-list/RoomListStore";
 import { RoomUpdateCause } from "matrix-react-sdk/src/stores/room-list/models";
-import SecurityCustomisations from "matrix-react-sdk/src/customisations/Security";
-import Spinner from "matrix-react-sdk/src/components/views/elements/Spinner";
-import QuestionDialog from "matrix-react-sdk/src/components/views/dialogs/QuestionDialog";
-import UserSettingsDialog from "matrix-react-sdk/src/components/views/dialogs/UserSettingsDialog";
-import CreateRoomDialog from "matrix-react-sdk/src/components/views/dialogs/CreateRoomDialog";
-import KeySignatureUploadFailedDialog from "matrix-react-sdk/src/components/views/dialogs/KeySignatureUploadFailedDialog";
-import IncomingSasDialog from "matrix-react-sdk/src/components/views/dialogs/IncomingSasDialog";
-import CompleteSecurity from "matrix-react-sdk/src/components/structures/auth/CompleteSecurity";
-import Welcome from "matrix-react-sdk/src/components/views/auth/Welcome";
-import ForgotPassword from "matrix-react-sdk/src/components/structures/auth/ForgotPassword";
-import E2eSetup from "matrix-react-sdk/src/components/structures/auth/E2eSetup";
-import Registration from "matrix-react-sdk/src/components/structures/auth/Registration";
-import Login from "matrix-react-sdk/src/components/structures/auth/Login";
-import ErrorBoundary from "matrix-react-sdk/src/components/views/elements/ErrorBoundary";
-import VerificationRequestToast from "matrix-react-sdk/src/components/views/toasts/VerificationRequestToast";
-import PerformanceMonitor, { PerformanceEntryNames } from "matrix-react-sdk/src/performance";
-import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
-import SoftLogout from "matrix-react-sdk/src/components/structures/auth/SoftLogout";
-import { makeRoomPermalink } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
-import { copyPlaintext } from "matrix-react-sdk/src/utils/strings";
-import { PosthogAnalytics } from "matrix-react-sdk/src/PosthogAnalytics";
-import { initSentry } from "matrix-react-sdk/src/sentry";
-import LegacyCallHandler from "matrix-react-sdk/src/LegacyCallHandler";
-import { showSpaceInvite } from "matrix-react-sdk/src/utils/space";
-import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
-import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
-import { SummarizedNotificationState } from "matrix-react-sdk/src/stores/notifications/SummarizedNotificationState";
-import Views from "matrix-react-sdk/src/Views";
-import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
-import { ViewHomePagePayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewHomePagePayload";
-import { AfterLeaveRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/AfterLeaveRoomPayload";
-import { DoAfterSyncPreparedPayload } from "matrix-react-sdk/src/dispatcher/payloads/DoAfterSyncPreparedPayload";
-import { ViewStartChatOrReusePayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewStartChatOrReusePayload";
-import { SnakedObject } from "matrix-react-sdk/src/utils/SnakedObject";
-import { leaveRoomBehaviour } from "matrix-react-sdk/src/utils/leave-behaviour";
-import { CallStore } from "matrix-react-sdk/src/stores/CallStore";
-import { IRoomStateEventsActionPayload } from "matrix-react-sdk/src/actions/MatrixActionCreators";
-import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
-import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
-import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
-import { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
-import { UseCaseSelection } from "matrix-react-sdk/src/components/views/elements/UseCaseSelection";
-import { ValidatedServerConfig } from "matrix-react-sdk/src/utils/ValidatedServerConfig";
-import { isLocalRoom } from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
-import { SdkContextClass, SDKContext } from "matrix-react-sdk/src/contexts/SDKContext";
-import { viewUserDeviceSettings } from "matrix-react-sdk/src/actions/handlers/viewUserDeviceSettings";
-import { cleanUpBroadcasts, VoiceBroadcastResumer } from "matrix-react-sdk/src/voice-broadcast";
-import GenericToast from "matrix-react-sdk/src/components/views/toasts/GenericToast";
-import RovingSpotlightDialog from "matrix-react-sdk/src/components/views/dialogs/spotlight/SpotlightDialog";
-import { findDMForUser } from "matrix-react-sdk/src/utils/dm/findDMForUser";
-import { Linkify } from "matrix-react-sdk/src/HtmlUtils";
-import { NotificationColor } from "matrix-react-sdk/src/stores/notifications/NotificationColor";
-import { UserTab } from "matrix-react-sdk/src/components/views/dialogs/UserTab";
-import { shouldSkipSetupEncryption } from "matrix-react-sdk/src/utils/crypto/shouldSkipSetupEncryption";
-import { Filter } from "matrix-react-sdk/src/components/views/dialogs/spotlight/Filter";
+import { hideToast as hideAnalyticsToast, showToast as showAnalyticsToast } from "matrix-react-sdk/src/toasts/AnalyticsToast";
+import { showToast as showNotificationsToast } from "matrix-react-sdk/src/toasts/DesktopNotificationsToast";
+import { showToast as showMobileGuideToast } from "matrix-react-sdk/src/toasts/MobileGuideToast";
+import AutoDiscoveryUtils from "matrix-react-sdk/src/utils/AutoDiscoveryUtils";
+import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
+import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import { checkSessionLockFree, getSessionLock } from "matrix-react-sdk/src/utils/SessionLock";
-import { SessionLockStolenView } from "matrix-react-sdk/src/components/structures/auth/SessionLockStolenView";
-import { ConfirmSessionLockTheftView } from "matrix-react-sdk/src/components/structures/auth/ConfirmSessionLockTheftView";
-import { LoginSplashView } from "matrix-react-sdk/src/components/structures/auth/LoginSplashView";
+import { SnakedObject } from "matrix-react-sdk/src/utils/SnakedObject";
+import * as StorageManager from "matrix-react-sdk/src/utils/StorageManager";
+import { ValidatedServerConfig } from "matrix-react-sdk/src/utils/ValidatedServerConfig";
+import { shouldSkipSetupEncryption } from "matrix-react-sdk/src/utils/crypto/shouldSkipSetupEncryption";
+import { findDMForUser } from "matrix-react-sdk/src/utils/dm/findDMForUser";
+import { leaveRoomBehaviour } from "matrix-react-sdk/src/utils/leave-behaviour";
+import { isLocalRoom } from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
+import { shouldUseLoginForWelcome } from "matrix-react-sdk/src/utils/pages";
+import { makeRoomPermalink } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
+import { showSpaceInvite } from "matrix-react-sdk/src/utils/space";
+import { copyPlaintext } from "matrix-react-sdk/src/utils/strings";
+import { VoiceBroadcastResumer, cleanUpBroadcasts } from "matrix-react-sdk/src/voice-broadcast";
 
 // legacy export
 export { default as Views } from "matrix-react-sdk/src/Views";
@@ -448,7 +448,8 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             if (SecurityCustomisations.SHOW_ENCRYPTION_SETUP_UI === false) {
                 this.onLoggedIn();
             } else {
-                this.setStateForNewView({ view: Views.COMPLETE_SECURITY });
+                this.onCompleteSecurityE2eSetupFinished();
+                this.setStateForNewView({ view: Views.LOGGED_IN });
             }
         } else if (
             (await cli.doesServerSupportUnstableFeature("org.matrix.e2e_cross_signing")) &&
