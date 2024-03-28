@@ -48,11 +48,11 @@ export const FileSelector = (props:IProps) => {
         const files: DocFile[] = events
         .map((event) => {
             const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-            const urlSplit = mxcUrl?.split("/");
-            const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
+            // const urlSplit = mxcUrl?.split("/");
+            // const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
             const fileName = event.getContent().body;
             return {
-                mediaId: mediaId,
+                mediaId: mxcUrl,
                 fileName:fileName
                 
             };
@@ -172,7 +172,7 @@ export const FileSelector = (props:IProps) => {
                 <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button files_button" onClick={onClick} />
             </PopoverTrigger>
             <PopoverContent
-            className="!p-1"
+            className="!p-1 relative"
             side="top"
             align="start"
             sideOffset={6}
@@ -211,9 +211,7 @@ export const FileSelector = (props:IProps) => {
                         
                         {file["fileName"]}
                         {selectedFiles.includes(file) && (
-                            <div className="float-right">
-                            <IconCheckBold className="ml-auto h-4 w-4 mr-0" />
-                            </div>
+                            <IconCheckBold className="ml-auto h-4 w-4" />
                           )}
                         </CommandItem>
                       ))}

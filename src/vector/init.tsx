@@ -24,6 +24,7 @@ import Olm from "@matrix-org/olm";
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 import * as languageHandler from "matrix-react-sdk/src/languageHandler";
+import { createRoot } from "react-dom/client";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
@@ -151,7 +152,8 @@ export async function loadApp(fragParams: {}): Promise<void> {
     function setWindowMatrixChat(matrixChat: MatrixChat): void {
         window.matrixChat = matrixChat;
     }
-    ReactDOM.render(await module.loadApp(fragParams, setWindowMatrixChat), document.getElementById("matrixchat"));
+    // ReactDOM.render(await module.loadApp(fragParams, setWindowMatrixChat), document.getElementById("matrixchat"));
+    createRoot(document.getElementById("matrixchat")!).render(await module.loadApp(fragParams, setWindowMatrixChat));
 }
 
 // export async function showError(title: string, messages?: string[]): Promise<void> {
