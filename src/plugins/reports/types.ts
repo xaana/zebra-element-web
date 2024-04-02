@@ -8,11 +8,11 @@ export type StepItem = {
 };
 
 export type Template = {
+    id: string;
     name: string;
     description: string;
-    id: string;
     createdAt: Date;
-    content: Object;
+    content?: Object;
 };
 
 export type File = {

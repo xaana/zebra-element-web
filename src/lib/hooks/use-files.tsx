@@ -8,6 +8,11 @@ import type { File } from "@/plugins/files/types";
 export function useFiles(): { getUserFiles: () => Promise<File[]> } {
     const client = useMatrixClientContext();
 
+    /**
+     * Returns an array of files obtained by fetching files from both encrypted and plain rooms.
+     *
+     * @return {Promise<File[]>} Array of unique files extracted from events in the rooms
+     */
     const getUserFiles = useCallback(async (): Promise<File[]> => {
         const rooms: Room[] = client.getVisibleRooms(false);
 
