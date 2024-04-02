@@ -55,6 +55,7 @@ import { CollapsibleMessage } from "../../../components/database/collapsible-mes
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
+import AlertMessagePanel from "@/components/alert/AlertMessage";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -594,6 +595,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const echartsQuery = content.echartsQuery;
         const pdfResponse = content.pdfResponse;
         const citations = content.citations;
+        const alertContent = content.alertContent;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -620,6 +622,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
                 </>
             );
+        }
+        if (alertContent) {
+            console.log("abc");
+            body = (
+                <>
+                    {body}
+                    <AlertMessagePanel content={alertContent} />
+                </>
+            )
         }
         if (database && roomId) {
             const tableJson = JSON.parse(database);
