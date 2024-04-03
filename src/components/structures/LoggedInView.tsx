@@ -692,10 +692,7 @@ class LoggedInView extends React.Component<IProps, IState> {
 
             case PageTypes.HomePage:
                 pageElement = <UserOnboardingPage justRegistered={this.props.justRegistered} />;
-                console.log("going to home page");
-                console.log(this.props.initialScreenAfterLogin)
-                console.log(window.location.hash==="#/home",window.location.hash==="#/login")
-                if((window.location.hash==="#/login"||window.location.hash==="#/home")){
+                if((window.location.hash==="#/login")){
                     console.log("redirecting to zebra chat");
                     const NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
                     startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
