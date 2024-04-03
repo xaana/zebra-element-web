@@ -10,11 +10,13 @@ export const ContentHeader = ({
     prevStepAction,
     nextStepDisabled = false,
     className,
+    nextStepNode,
 }: {
     nextStepAction: () => void;
     prevStepAction: () => void;
     nextStepDisabled?: boolean;
     className?: string;
+    nextStepNode?: React.ReactNode;
 }) => {
     const [activeStep] = useAtom(activeStepAtom);
     return (
@@ -35,15 +37,19 @@ export const ContentHeader = ({
                 </Button>
                 {/* {activeStep && activeStep.id > 0 && (
                 )} */}
-                <Button
-                    className="font-semibold"
-                    onClick={() => nextStepAction()}
-                    size="sm"
-                    disabled={nextStepDisabled}
-                >
-                    {activeStep?.nextStepTitle}
-                    <Icon name="ArrowRight" className="ml-2" />
-                </Button>
+                {nextStepNode ? (
+                    nextStepNode
+                ) : (
+                    <Button
+                        className="font-semibold"
+                        onClick={() => nextStepAction()}
+                        size="sm"
+                        disabled={nextStepDisabled}
+                    >
+                        {activeStep?.nextStepTitle}
+                        <Icon name="ArrowRight" className="ml-2" />
+                    </Button>
+                )}
             </div>
         </div>
     );

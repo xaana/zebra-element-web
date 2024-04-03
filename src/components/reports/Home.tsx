@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAtom } from "jotai";
 
-import type { Template, StepItem } from "@/plugins/reports/types";
-import type { File } from "@/plugins/files/types";
+import type { StepItem } from "@/plugins/reports/types";
 import type { Report } from "@/components/reports/ReportsManager";
 
 import { Stepper } from "@/components/reports/Stepper";
@@ -14,7 +13,7 @@ import { ReportViewer } from "@/components/reports/ReportViewer";
 import { ReportsManager } from "@/components/reports/ReportsManager";
 import { reportsStore } from "@/plugins/reports/MainPanel";
 
-const steps: StepItem[] = [
+export const steps: StepItem[] = [
     {
         id: 0,
         text: "Select a Template",
@@ -38,15 +37,7 @@ const steps: StepItem[] = [
     },
 ];
 
-export const Home = ({
-    files,
-    templates,
-    reports,
-}: {
-    files: File[];
-    templates: Template[];
-    reports: Report[];
-}): JSX.Element => {
+export const Home = (): JSX.Element => {
     // Use stored state for active step
     const [activeStep, setActiveStep] = useAtom(activeStepAtom);
     const [showHome, setShowHome] = useAtom(showHomeAtom);
@@ -90,7 +81,7 @@ export const Home = ({
     return (
         <div className="h-full overflow-auto">
             {showHome ? (
-                <ReportsManager reports={reports} onNewReport={() => setShowHome(false)} onEditReport={onEditReport} />
+                <ReportsManager onNewReport={() => setShowHome(false)} onEditReport={onEditReport} />
             ) : (
                 <>
                     <Stepper steps={steps} />
@@ -102,14 +93,7 @@ export const Home = ({
                         duration={400}
                     >
                         <div ref={stepRef} className="max-w-screen-lg mx-auto pb-6 px-3">
-                            {activeStep?.id === 0 && (
-                                <TemplateSelector
-                                    templates={templates}
-                                    files={files}
-                                    nextStep={nextStep}
-                                    prevStep={prevStep}
-                                />
-                            )}
+                            {activeStep?.id === 0 && <TemplateSelector nextStep={nextStep} prevStep={prevStep} />}
                             {activeStep?.id === 1 && <ReportEditor nextStep={nextStep} prevStep={prevStep} />}
                             {activeStep?.id === 2 && <ReportViewer nextStep={nextStep} prevStep={prevStep} />}
                         </div>

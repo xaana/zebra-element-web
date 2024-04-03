@@ -2,12 +2,11 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import toast from "react-hot-toast";
-
-import type { Editor } from "@tiptap/core";
+import { useAtom, useSetAtom } from "jotai";
 
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
-import { apiUrlAtom } from "@/plugins/reports/stores/store";
+import { apiUrlAtom, showHomeAtom } from "@/plugins/reports/stores/store";
 import {
     Dialog,
     DialogContent,
@@ -21,14 +20,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
 import { reportsStore } from "@/plugins/reports/MainPanel";
+import {
+    editorStateAtom,
+    // editorContentAtom,
+} from "@/plugins/reports/stores/store";
 
-export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
+export function ReportSave(): JSX.Element {
     const [name, setName] = useState("");
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const client = useMatrixClientContext();
     const userId: string = client.getSafeUserId();
+    const [editorState, setEditorState] = useAtom(editorStateAtom);
+    const setShowHome = useSetAtom(showHomeAtom);
 
     useEffect(() => {
         if (!dialogOpen) {
@@ -47,7 +52,7 @@ export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
             body: JSON.stringify({
                 user_id: userId,
                 document_name: name,
-                document_data: JSON.stringify(editor.getJSON()),
+                document_data: JSON.stringify(editorState),
             }),
         });
         if (response.ok) {
@@ -55,6 +60,8 @@ export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
             setLoading(false);
             setDialogOpen(false);
             toast.success("Report saved successfully!");
+            setShowHome(true);
+            setEditorState(undefined);
         } else {
             setSaveResult("Failed to save template. Please try again later.");
             setLoading(false);

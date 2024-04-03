@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom, useAtom } from "jotai";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RowSelectionState } from "@tanstack/table-core";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { ContentHeader } from "./ContentHeader";
 import { FileSelector, FileSelectorHandle } from "./FileSelector";
@@ -19,14 +20,15 @@ import {
     showHomeAtom,
 } from "@/plugins/reports/stores/store";
 import { reportsStore } from "@/plugins/reports/MainPanel";
+import { useFiles } from "@/lib/hooks/use-files";
 
 interface TemplateSelectorProps {
-    files: File[];
-    templates: Template[];
     nextStep: () => void;
     prevStep: () => void;
 }
-export const TemplateSelector = ({ files, templates, nextStep, prevStep }: TemplateSelectorProps) => {
+export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps) => {
+    const client = useMatrixClientContext();
+    const userId: string = client.getSafeUserId();
     const [selectedTemplate, setSelectedTemplate] = useAtom(selectedTemplateAtom);
     const setShowHome = useSetAtom(showHomeAtom);
     const previousTemplate = useAtomValue(previousTemplateAtom);
@@ -36,6 +38,51 @@ export const TemplateSelector = ({ files, templates, nextStep, prevStep }: Templ
     const [rowSelection, setRowSelection] = useState<RowSelectionState>(
         selectedFiles ? Object.fromEntries(selectedFiles.map((obj) => [obj.id, true])) : {},
     );
+
+    const [templates, setTemplates] = useState<Template[]>([]);
+    const { getUserFiles } = useFiles();
+    const [files, setFiles] = useState<File[]>([]);
+
+    useEffect(() => {
+        const fetchTemplatesData = async (): Promise<void> => {
+            try {
+                const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/get_template_list`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_id: userId }),
+                });
+                const data = await response.json();
+                if (data?.templates?.length === 0) return;
+                setTemplates(() =>
+                    data.templates.map(
+                        ({
+                            id: id,
+                            template_name: name,
+                            template_description: description,
+                            updated_at: createdAt,
+                        }: {
+                            id: string;
+                            template_name: string;
+                            template_description: string;
+                            updated_at: Date;
+                        }) => ({ id, name, description: description ?? "", createdAt }),
+                    ),
+                );
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        const fetchData = async (): Promise<void> => {
+            const fetchedFiles = await getUserFiles();
+            setFiles(() => fetchedFiles.filter((file) => file.name.endsWith(".pdf")));
+            await fetchTemplatesData();
+        };
+
+        fetchData();
+    }, [getUserFiles, userId]);
 
     const fetchTemplateContent = async (): Promise<void> => {
         const templateId: string = selectedTemplate?.id ?? "";
