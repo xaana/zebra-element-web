@@ -51,8 +51,11 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
-            "api": "http://localhost:29316/_matrix/maubot/plugin/zebra"
+            "api": "https://dev-api-2.securezebra.com"
+        },
+        "algology": {
+            "url": "https://algology-dev.securezebra.com"
         }
     },
-    "bot_api": "http://localhost:29316/_matrix/maubot/plugin/zebra"
+    "bot_api": "https://dev-api-1.securezebra.com/_matrix/maubot/plugin/zebra"
 }
