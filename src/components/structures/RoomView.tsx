@@ -90,7 +90,6 @@ import EditorStateTransfer from "matrix-react-sdk/src/utils/EditorStateTransfer"
 import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import UploadBar from "matrix-react-sdk/src/components/structures/UploadBar";
 import RoomStatusBar from "matrix-react-sdk/src/components/structures/RoomStatusBar";
-import MessageComposer from "matrix-react-sdk/src/components/views/rooms/MessageComposer";
 import JumpToBottomButton from "matrix-react-sdk/src/components/views/rooms/JumpToBottomButton";
 import TopUnreadMessagesBar from "matrix-react-sdk/src/components/views/rooms/TopUnreadMessagesBar";
 import { fetchInitialEvent } from "matrix-react-sdk/src/utils/EventUtils";
@@ -132,6 +131,8 @@ import { onView3pidInvite } from "matrix-react-sdk/src/stores/right-panel/action
 import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 
 import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
+import { DocFile } from "../views/rooms/FileSelector";
+import MessageComposer from "../views/rooms/MessageComposer";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -253,6 +254,8 @@ export interface IRoomState {
     promptAskToJoin: boolean;
 
     viewRoomOpts: ViewRoomOpts;
+    database?: string;
+    files?: DocFile[];
 }
 
 interface LocalRoomViewProps {
@@ -672,6 +675,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
             activeCall: roomId ? CallStore.instance.getActiveCall(roomId) : null,
             promptAskToJoin: this.context.roomViewStore.promptAskToJoin(),
             viewRoomOpts: this.context.roomViewStore.getViewRoomOpts(),
+            database: this.context.roomViewStore.getDatabase()?? undefined,
+            files: this.context.roomViewStore.getFiles()?? undefined,
         };
 
         if (
@@ -2442,6 +2447,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     resizeNotifier={this.props.resizeNotifier}
                     replyToEvent={this.state.replyToEvent}
                     permalinkCreator={this.permalinkCreator}
+                    database={this.state.database}
+                    files={this.state.files}
                 />
             );
         }

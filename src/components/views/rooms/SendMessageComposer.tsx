@@ -41,7 +41,6 @@ import {
     textSerialize,
     unescapeMessage,
 } from "matrix-react-sdk/src/editor/serialize";
-import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/components/views/rooms/BasicMessageComposer";
 import { CommandPartCreator, Part, PartCreator, SerializedPart, Type } from "matrix-react-sdk/src/editor/parts";
 import { findEditableEvent } from "matrix-react-sdk/src/utils/EventUtils";
 import SendHistoryManager from "matrix-react-sdk/src/SendHistoryManager";
@@ -68,8 +67,11 @@ import { doMaybeLocalRoomAction } from "matrix-react-sdk/src/utils/local-room";
 import { Caret } from "matrix-react-sdk/src/editor/caret";
 import { IDiff } from "matrix-react-sdk/src/editor/diff";
 import { getBlobSafeMimeType } from "matrix-react-sdk/src/utils/blobs";
+import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/components/views/rooms/BasicMessageComposer";
 import { data } from "@tensorflow/tfjs";
-import { DocFile } from "./FileSelector";
+
+
 
 /**
  * Build the mentions information based on the editor model (and any related events):
@@ -250,10 +252,6 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     onChange?(model: EditorModel): void;
     includeReplyLegacyFallback?: boolean;
     toggleStickerPickerOpen: () => void;
-    databaseSelect:string;
-    fileSelect: DocFile[];
-    setFile: (arg0: DocFile[]) => void;
-    setDatabase: (arg0: string) => void;
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -266,7 +264,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     private currentlyComposedEditorState: SerializedPart[] | null = null;
     private dispatcherRef: string;
     private sendHistoryManager: SendHistoryManager;
-
+    private sdkContext=SdkContextClass.instance;
     public static defaultProps = {
         includeReplyLegacyFallback: true,
     };
@@ -274,7 +272,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     public constructor(props: ISendMessageComposerProps, context: React.ContextType<typeof RoomContext>) {
         super(props, context);
         this.context = context; // otherwise React will only set it prior to render due to type def above
-
         if (this.props.mxClient.isCryptoEnabled() && this.props.mxClient.isRoomEncrypted(this.props.room.roomId)) {
             this.prepareToEncrypt = throttle(
                 () => {
@@ -452,7 +449,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         if (model.isEmpty) {
             return;
         }
-
+        console.log(this.sdkContext.roomViewStore)
         const posthogEvent: ComposerEvent = {
             eventName: "Composer",
             isEditing: false,
@@ -553,13 +550,23 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
-            if(content&&this.props.databaseSelect){
-                content['database'] = this.props.databaseSelect;
-                this.props.setDatabase("")
+            if(content&&this.sdkContext.roomViewStore.getDatabase()){
+                content['database'] = this.sdkContext.roomViewStore.getDatabase();
+                dis.dispatch({
+                    action: "select_database",
+                    database: "",
+                    context: this.context.timelineRenderingType,
+                });
+                console.log(content)
             }
-            if(content&&this.props.fileSelect.length>0){
-                content['fileSelected'] = this.props.fileSelect.map(docFile => docFile.mediaId);
-                this.props.setFile([] as DocFile[]);
+            if(content&&this.sdkContext.roomViewStore.getFiles().length>0){
+                content['fileSelected'] = this.sdkContext.roomViewStore.getFiles();
+                dis.dispatch({
+                    action: "select_files",
+                    files: [],
+                    context: this.context.timelineRenderingType,
+                });
+                console.log(content)
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,
@@ -688,6 +695,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                     this.editorRef.current?.insertQuotedMessage(payload.event);
                 } else if (payload.text) {
                     this.editorRef.current?.insertPlaintext(payload.text);
+                }
+                else if(payload.database){
+                    this.editorRef.current?.insertDatabase(payload.database)
                 }
                 break;
         }

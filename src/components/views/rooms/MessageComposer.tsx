@@ -66,6 +66,8 @@ import MessageComposerButtons from "matrix-react-sdk/src/components/views/rooms/
 
 import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } from "./SendMessageComposer";
 import { DocFile } from "./FileSelector";
+import DatabasePill from "@/components/ui/databasePill";
+import FilesPill from "@/components/ui/FilesPill";
 
 let instanceCount = 0;
 
@@ -93,6 +95,8 @@ interface IProps extends MatrixClientProps {
     relation?: IEventRelation;
     e2eStatus?: E2EStatus;
     compact?: boolean;
+    database?:string;
+    files?: DocFile[];
 }
 
 interface IState {
@@ -109,8 +113,6 @@ interface IState {
     isWysiwygLabEnabled: boolean;
     isRichTextEnabled: boolean;
     initialComposerContent: string;
-    databaseSelected: string;
-    fileSelected: DocFile[];
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -149,8 +151,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
             isWysiwygLabEnabled: SettingsStore.getValue<boolean>("feature_wysiwyg_composer"),
             isRichTextEnabled: true,
             initialComposerContent: "",
-            databaseSelected: "",
-            fileSelected: [],
         };
 
         this.instanceId = instanceCount++;
@@ -305,6 +305,12 @@ export class MessageComposer extends React.Component<IProps, IState> {
     };
 
     private renderPlaceholderText = (): string => {
+        if(this.props.database){
+            return "Send message to query database...";
+        }
+        if(this.props.files&&this.props.files.length>0){
+            return "Send message to query documents...";
+        }
         if (this.props.replyToEvent) {
             const replyingToThread = this.props.relation?.rel_type === THREAD_RELATION_TYPE.name;
             if (replyingToThread && this.props.e2eStatus) {
@@ -477,13 +483,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
         }
     };
 
-    private setDatabase  = (dbName: string):void => {
-        this.setState({databaseSelected: dbName});
-    }
-    private setFile = (file:DocFile[]):void =>{
-        this.setState({fileSelected: file});
-    }
-
     public render(): React.ReactNode {
         const hasE2EIcon = Boolean(!this.state.isWysiwygLabEnabled && this.props.e2eStatus);
         const e2eIcon = hasE2EIcon && (
@@ -524,10 +523,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         onChange={this.onChange}
                         disabled={this.state.haveRecording}
                         toggleStickerPickerOpen={this.toggleStickerPickerOpen}
-                        databaseSelect={this.state.databaseSelected}
-                        fileSelect={this.state.fileSelected}
-                        setDatabase={this.setDatabase}
-                        setFile={this.setFile}
                     />
                 );
             }
@@ -628,6 +623,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
                     />
+                    <DatabasePill database={this.props.database} timelineRenderingType={this.context.timelineRenderingType} />
+                    <FilesPill files={this.props.files} timelineRenderingType={this.context.timelineRenderingType} />
                     <div className="mx_MessageComposer_row">
                         {e2eIcon}
                         {composer}
@@ -636,8 +633,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
                             {canSendMessages && (
                                 <MessageComposerButtons
                                     addEmoji={this.addEmoji}
-                                    databaseSelect={this.setDatabase}
-                                    fileSelect={this.setFile}
                                     haveRecording={this.state.haveRecording}
                                     isMenuOpen={this.state.isMenuOpen}
                                     isStickerPickerOpen={this.state.isStickerPickerOpen}
