@@ -1,7 +1,8 @@
 import { atom } from "jotai";
 import { JSONContent } from "@tiptap/core";
 
-import type { File, Template, StepItem } from "@/plugins/reports/types";
+import type { Template, StepItem } from "@/plugins/reports/types";
+import type { File } from "@/plugins/files/types";
 
 // State to store API URL
 export const apiUrlAtom = atom<string>("");

@@ -3,6 +3,7 @@ import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClie
 
 import { getVectorConfig } from "@/vector/getconfig";
 import { Loader } from "@/components/ui/loader";
+import { IMatrixClientCreateOpts } from 'matrix-js-sdk/src/client';
 
 export const MainPanel = () => {
     const [config, setConfig] = useState<Record<string, any>>();
@@ -25,10 +26,26 @@ export const MainPanel = () => {
     if (isLoading || !config?.url) {
         return <Loader />;
     }
+  if (isLoading || !config?.url) {
+    return <Loader />
+  }
 
-    const url = new URL(config.url);
-    url.searchParams.set("userId", client.getUserId() ?? "");
-    url.searchParams.set("accessToken", client.getAccessToken() ?? "");
+  const creds: IMatrixClientCreateOpts = {
+    baseUrl: client.getHomeserverUrl(),
+    idBaseUrl: client.getIdentityServerUrl(),
+    accessToken: client.getAccessToken()?? '',
+    refreshToken: client.getRefreshToken()?? '',
+    userId: client.getUserId()?? '',
+    deviceId: client.getDeviceId()?? '',
+  };
 
-    return <iframe src={url.toString()} style={{ height: "100%", width: "100%", border: "none" }} />;
-};
+  const credsStr = window.btoa(JSON.stringify(creds));
+
+  const url = new URL(config.url);
+  url.searchParams.set("creds", credsStr);
+      
+  return (
+    <iframe src={url.toString()} style={{ height: "100%", width: "100%", border: "none" }}>
+    </iframe>
+  );
+}

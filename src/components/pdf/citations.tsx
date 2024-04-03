@@ -5,7 +5,7 @@ import React from "react";
 
 import { Button } from "../ui/button";
 import { IconZoomIn, IconZoomOut } from "./../ui/icons";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/PdfSelector/select";
 import type { Citation } from "./citations-table";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import { CitationsTable } from "./citations-table";
@@ -19,7 +19,6 @@ import type { BoundingBox } from "./citations-table";
 
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
-import BaseCard from "../views/BaseCard";
 import { Loader } from "../ui/loader";
 
 // pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -62,6 +61,20 @@ export function Citations({
                 setPendingCitationView(() => null);
             }
         }, 500);
+        if(citations.length > 0) { // Ensure there is at least one citation
+        const firstCitation = citations[0]; // Access the first citation
+        handleViewCitation(
+            firstCitation.doc_name,
+            String(firstCitation.page_num),
+            parseBoundingBoxes(firstCitation.bboxes)
+        );
+    }
+    };
+    const parseBoundingBoxes = (bboxes: string): BoundingBox[] => {
+        return bboxes.split(";").map((bbox) => {
+            const [x1, y1, x2, y2] = bbox.split(" ").map(parseFloat);
+            return { x1, y1, x2, y2 };
+        });
     };
 
     useEffect(() => {
@@ -134,9 +147,6 @@ export function Citations({
             setHighlights(() => bboxes.map((box) => ({ ...box, page: parseInt(pageNumber) })));
         }
     };
-    {
-        console.log(pdfUrls, citations);
-    }
     return (
         <>
             {pdfUrls && citations ? (
@@ -151,7 +161,7 @@ export function Citations({
                                     <SelectTrigger className="file__select h-auto py-2 text-xs">
                                         <SelectValue placeholder="Select PDF File" />
                                     </SelectTrigger>
-                                    <SelectContent asChild>
+                                    <SelectContent asChild className="h-auto">
                                         {pdfUrls &&
                                             Array.from(pdfUrls).map((file, index) => (
                                                 <SelectItem key={index} value={String(index)} className="text-xs">

@@ -44,6 +44,8 @@ import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 
 import { AudioCapture } from "./audio-capture";
 import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
+import { DatabaseSelector } from "./DatabaseSelector";
+import { DocFile, FileSelector } from "./FileSelector"
 
 interface IProps {
     addEmoji: (emoji: string) => boolean;
@@ -69,11 +71,8 @@ export const OverflowMenuContext = createContext<OverflowMenuCloser | null>(null
 
 const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
-        const { room, narrow } = useContext(RoomContext);
-    const context = useContext(RoomContext);
-
+    const { room, narrow,timelineRenderingType } = useContext(RoomContext);
     const isWysiwygLabEnabled = useSettingValue<boolean>("feature_wysiwyg_composer");
-
     if (!matrixClient || !room || props.haveRecording) {
         return null;
     }
@@ -89,7 +88,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                     onClick={props.onComposerModeClick}
                 />
             ) : (
-                (emojiButton(props), voiceBotButton(matrixClient,room))
+                (emojiButton(props))
             ),
         ];
         moreButtons = [
@@ -114,6 +113,9 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             uploadButton(), // props passed via UploadButtonContext
             audioCaptureButton(),
             voiceBotButton(matrixClient,room),
+            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(),
+            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId),
+            
         ];
         moreButtons = [
             showStickersButton(props),
@@ -131,7 +133,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                     dis.dispatch<ComposerInsertPayload>({
                         action: Action.ComposerInsert,
                         text: text,
-                        timelineRenderingType: context.timelineRenderingType,
+                        timelineRenderingType: timelineRenderingType,
                     });
                 }}
             />
@@ -185,6 +187,14 @@ function emojiButton(props: IProps): ReactElement {
 
 function uploadButton(): ReactElement {
     return <UploadButton key="controls_upload" />;
+}
+
+function databaseSelector(): ReactElement {
+    return <DatabaseSelector key="controls_databaseSelector" />;
+}
+
+function filesSelector(roomId: string): ReactElement {
+    return <FileSelector key="controls_filesSelector" roomId={roomId} />;
 }
 
 function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {

@@ -15,8 +15,6 @@ import { logger } from "matrix-js-sdk/src/logger";
 import Modal from "matrix-react-sdk/src/Modal";
 import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
-import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
-import { Room } from "matrix-js-sdk/src/matrix";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
@@ -24,18 +22,7 @@ import { Button } from "../../components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
 import { PluginActions } from "..";
 import { Input } from "../../components/ui/input";
-
-export type File = {
-    id: string;
-    name: string;
-    downloadUrl: string;
-    timestamp: Date;
-    sender: string;
-    roomId: string;
-    room?: Room;
-    isEncrypted: boolean;
-    mediaHelper: MediaEventHelper;
-};
+import type { File } from "./types";
 
 const downloadFile = async (e: SyntheticEvent, file: File) => {
     if (file.isEncrypted) {

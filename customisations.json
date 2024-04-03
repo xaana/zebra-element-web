@@ -6,8 +6,15 @@
     "src/components/structures/RoomView.tsx": "src/components/structures/RoomView.tsx",
     "src/components/views/messages/TextualBody.tsx": "src/components/views/messages/TextualBody.tsx",
     "src/components/views/right_panel/BaseCard.tsx": "src/components/views/BaseCard.tsx",
+    "src/components/views/rooms/LegacyRoomHeader.tsx": "src/components/views/rooms/LegacyRoomHeader.tsx",
     "src/components/views/rooms/MessageComposerButtons.tsx": "src/components/views/rooms/MessageComposerButtons.tsx",
     "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx",
     "src/stores/right-panel/RightPanelStorePhases.ts": "src/stores/right-panel/RightPanelStorePhases.ts",
-    "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts"
+    "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
+    "src/components/views/rooms/MessageComposer.tsx": "src/components/views/rooms/MessageComposer.tsx",
+    "src/components/views/rooms/SendMessageComposer.tsx": "src/components/views/rooms/SendMessageComposer.tsx",
+    "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
+    "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx",
+    "src/Lifecycle.ts": "src/Lifecycle.ts",
+    "src/components/structures/UserMenu.tsx": "src/components/structures/UserMenu.tsx"
 }

@@ -1,4 +1,0 @@
-.voice_bot_button::before {
-    -webkit-mask-image: url("button.svg") !important;
-    mask-image: url("button.svg") !important;
-}
