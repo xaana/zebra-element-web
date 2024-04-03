@@ -55,6 +55,7 @@ import { CollapsibleMessage } from "../../../components/database/collapsible-mes
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
+import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
@@ -597,6 +598,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const echartsQuery = content.echartsQuery;
         const pdfResponse = content.pdfResponse;
         const citations = content.citations;
+        const alertContent = content.alertContent;
         const approvalId = content.approvalId;
         const database = content.database;
         const fileSelected = content.fileSelected;
@@ -680,6 +682,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
                 </>
             );
+        }
+        if (alertContent) {
+            console.log("abc");
+            body = (
+                <>
+                    {body}
+                    <AlertMessagePanel content={alertContent} />
+                </>
+            )
         }
         if (databaseTable && roomId) {
             const tableJson = JSON.parse(databaseTable);
