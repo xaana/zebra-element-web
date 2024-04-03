@@ -42,7 +42,7 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
     // const [threadInfos, setThreadInfos] = React.useState<ThreadInfoProps[]>([]);
     const [value, setValue] = React.useState("");
     const [threads, setThreads]= React.useState(()=>props.room.getThreads());
-
+    
     React.useEffect(()=>{
         const updatedThreads = props.room.getThreads();
         setThreads(updatedThreads);
@@ -97,6 +97,11 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                     role="combobox"
                     aria-expanded={open}
                     className="w-[200px] justify-between"
+                    onClick={()=>{
+                        if (props.room.getThreads()!==threads){
+                            setThreads(props.room.getThreads().reverse());
+                        }
+                    }}
                 >
                     {value
                         ? threads.find((thread) => thread.id === value)?.id
@@ -126,7 +131,7 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                                             value === item.id ? "opacity-100" : "opacity-0"
                                             )}
                                         />
-                                        {item.id}
+                                        {item.rootEvent?.getContent().body}
                                     </CommandItem>
                                 )
                             })}
