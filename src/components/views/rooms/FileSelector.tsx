@@ -89,6 +89,11 @@ export const FileSelector = (props:IProps) => {
                 files: [],
                 context: timelineRenderingType,
             });
+            dis.dispatch({
+                action: "select_database",
+                database: "",
+                context: timelineRenderingType,
+            });
         }
     },[spacePopoverOpen])
 

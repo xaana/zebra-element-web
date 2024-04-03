@@ -21,12 +21,12 @@ const DatabasePill = ({ database,timelineRenderingType}:{database:string|undefin
 
   if (!database) return null;
   return (
-    <div className="py-2 px-4 bg-gray-300 rounded-full gap-2 inline-block">
-        <div className='flex flex-row items-center'>
-        <Database />
+    <div className="py-2 bg-gray-200 rounded-lg gap-2 inline-block">
+        <div className='flex flex-row items-center text-xs'>
+        <Database size={16} />
       <span>{database}</span>
 
-      <X onClick={()=>cancelQuoting()} className='cursor-pointer' />
+      <X onClick={()=>cancelQuoting()} className='cursor-pointer' size={16} />
 
       </div>
     </div>

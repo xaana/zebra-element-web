@@ -42,6 +42,11 @@ export const DatabaseSelector = () => {
                 database: "",
                 context: timelineRenderingType,
             });
+            dis.dispatch({
+              action: "select_files",
+              files: [],
+              context: timelineRenderingType,
+          });
             }}>
                 <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" />
             </PopoverTrigger>
