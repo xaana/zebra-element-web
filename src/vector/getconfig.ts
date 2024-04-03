@@ -18,6 +18,7 @@ import type { IConfigOptions } from "matrix-react-sdk/src/IConfigOptions";
 
 export interface IExtendedConfigOptions extends IConfigOptions {
     plugins: Record<string, Record<string, any>>;
+    bot_api: string;
 }
 
 // Load the config file. First try to load up a domain-specific config of the

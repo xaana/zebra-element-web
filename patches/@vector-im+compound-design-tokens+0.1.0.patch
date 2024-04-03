@@ -7,7 +7,7 @@ index 936f3d8..6acbcc9 100644
    --cpd-font-weight-regular: 400;
    --cpd-font-family-mono: Inconsolata;
 -  --cpd-font-family-sans: Inter;
-+  --cpd-font-family-sans: Tomorrow;
++  --cpd-font-family-sans: Rubik;
    --cpd-border-width-0-5: 0.5px;
    --cpd-border-width-4: 4px;
    --cpd-border-width-2: 2px;

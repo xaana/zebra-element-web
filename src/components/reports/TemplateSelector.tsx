@@ -16,6 +16,7 @@ import {
     editorStateAtom,
     selectedFilesAtom,
     apiUrlAtom,
+    showHomeAtom,
 } from "@/plugins/reports/stores/store";
 import { reportsStore } from "@/plugins/reports/MainPanel";
 
@@ -27,6 +28,7 @@ interface TemplateSelectorProps {
 }
 export const TemplateSelector = ({ files, templates, nextStep, prevStep }: TemplateSelectorProps) => {
     const [selectedTemplate, setSelectedTemplate] = useAtom(selectedTemplateAtom);
+    const setShowHome = useSetAtom(showHomeAtom);
     const previousTemplate = useAtomValue(previousTemplateAtom);
     const [selectedFiles, setSelectedFiles] = useAtom(selectedFilesAtom);
     const fileSelector = useRef<FileSelectorHandle>(null);
@@ -70,7 +72,7 @@ export const TemplateSelector = ({ files, templates, nextStep, prevStep }: Templ
             <ContentHeader
                 nextStepDisabled={selectedTemplate === null || Object.keys(rowSelection).length === 0}
                 nextStepAction={proceedToEditTemplate}
-                prevStepAction={prevStep}
+                prevStepAction={() => setShowHome(true)}
             />
 
             <div className="text-lg font-semibold">Select Files</div>

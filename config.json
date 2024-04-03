@@ -53,5 +53,6 @@
         "reports": {
             "api": "http://localhost:8000"
         }
-    }
+    },
+    "bot_api": "http://localhost:29316/_matrix/maubot/plugin/zebra"
 }

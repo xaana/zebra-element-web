@@ -201,7 +201,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
     return (
         <div>
-            <div className="flex justify-end py-4 px-2">
+            <div className="py-4">
                 <Input
                     placeholder="Filter file name..."
                     value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
