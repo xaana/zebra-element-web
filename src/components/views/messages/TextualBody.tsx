@@ -55,7 +55,10 @@ import { CollapsibleMessage } from "../../../components/database/collapsible-mes
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
+import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
+import DatabasePrefix from "@/components/ui/DatabasePrefix";
+import FilesPrefix from "@/components/ui/FilesPrefix";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -585,7 +588,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const content = mxEvent.getContent();
         let isNotice = false;
         let isEmote = false;
-        const database = content.database_table;
+        const databaseTable = content.database_table;
         const fetchedDataLen = content.fetched_data_len;
         const query = content.query;
         const roomId = mxEvent.getRoomId();
@@ -595,7 +598,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const echartsQuery = content.echartsQuery;
         const pdfResponse = content.pdfResponse;
         const citations = content.citations;
+        const alertContent = content.alertContent;
         const approvalId = content.approvalId;
+        const database = content.database;
+        const fileSelected = content.fileSelected;
+        // const databaseSelected = content.database;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
         isEmote = content.msgtype === MsgType.Emote;
@@ -607,6 +614,22 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if (database){
+            body=(
+                <div className="flex items-center">
+                <DatabasePrefix database={database} />
+                {body}
+                </div>
+            )
+        }
+        if (fileSelected){
+            body=(
+                <div className="flex items-center">
+                    <FilesPrefix files={fileSelected} />
+                    {body}
+                </div>
+            )
+        }
         if (approvalId){
             body = (
                 <div>
@@ -660,8 +683,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             );
         }
-        if (database && roomId) {
-            const tableJson = JSON.parse(database);
+        if (alertContent) {
+            console.log("abc");
+            body = (
+                <>
+                    {body}
+                    <AlertMessagePanel content={alertContent} />
+                </>
+            )
+        }
+        if (databaseTable && roomId) {
+            const tableJson = JSON.parse(databaseTable);
             body = (
                 <>
                     {body}

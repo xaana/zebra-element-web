@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+// import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
@@ -18,7 +18,6 @@ interface IProps {
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = (props: IProps) => {
     const [dbList, setDbList] = useState<Array<string>>([]);
-    // const [selectedDb, setSelectedDb] = useState<string>('')
     const { timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
 
@@ -55,6 +54,18 @@ export const DatabaseSelector = (props: IProps) => {
                 <PopoverTrigger
                     asChild
                     className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]"
+                    onClick={() => {
+                        dis.dispatch({
+                            action: "select_database",
+                            database: "",
+                            context: timelineRenderingType,
+                        });
+                        dis.dispatch({
+                            action: "select_files",
+                            files: [],
+                            context: timelineRenderingType,
+                        });
+                    }}
                 >
                     <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" />
                 </PopoverTrigger>
@@ -71,12 +82,20 @@ export const DatabaseSelector = (props: IProps) => {
                                         value={db}
                                         onSelect={() => {
                                             // setSelectedDb(() => dbList[index])
-                                            props.databaseSelect(dbList[index]);
                                             setSpacePopoverOpen(false);
-                                            dis.dispatch<ComposerInsertPayload>({
-                                                action: Action.ComposerInsert,
-                                                text: "**" + dbList[index] + "**: ",
-                                                timelineRenderingType: timelineRenderingType,
+                                            //   dis.dispatch({
+                                            //     action: Action.ComposerInsert,
+                                            //     text: dbList[index],
+                                            //     timelineRenderingType: timelineRenderingType,
+                                            // });
+                                            dis.dispatch({
+                                                action: "select_database",
+                                                database: dbList[index],
+                                                context: timelineRenderingType,
+                                            });
+                                            dis.dispatch({
+                                                action: Action.FocusAComposer,
+                                                context: timelineRenderingType,
                                             });
                                         }}
                                     >

@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
 import { init as initRouting } from "../../vector/routing";
+import { DocFile } from "../views/rooms/FileSelector";
 export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citations: any[];rootId: string }) => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
@@ -101,7 +102,7 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
             fetchFileEventsServer([currentRoom]);
             const files = currentRoom.findEventById(rootId)?.getContent()
             if(files){
-                setUrls(files["fileSelected"])
+                setUrls(files["fileSelected"].map((file: DocFile)=>file.mediaId))
             }
         }
     }, [client]);
@@ -110,9 +111,9 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
         const tempPdfs = events.map(async (event) => {
             const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
             if (mxcUrl&&urls.includes(mxcUrl)){
+                
                 if (event.isEncrypted()) {
                     const mediaHelper = new MediaEventHelper(event);
-                    console.log('file from encreyption')
                     try {
                         const temp = await mediaHelper.sourceBlob.value;
                         // If the Blob type is not 'application/pdf', create a new Blob with the correct type
@@ -121,11 +122,10 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
                         
                         return { name: event.getContent().body, url: pdfUrl };
                     } catch (err) {
-                        console.log("decryption error", err);
+                        console.error("decryption error", err);
                     }
                 }else{
                     const downloadUrl = client.mxcUrlToHttp(mxcUrl)
-                    console.log('file from un encreyption')
                     if (downloadUrl){
                         const data = await fetchResourceAsBlob(downloadUrl)
                         if(data){

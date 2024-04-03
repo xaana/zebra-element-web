@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react"
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload"
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
-import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
@@ -17,7 +16,6 @@ import { Button } from "@/components/ui/button";
 
 interface IProps {
     roomId: string;
-    fileSelect: (file: DocFile[]) => void;
 }
 
 export interface DocFile{
@@ -38,9 +36,12 @@ export const FileSelector = (props:IProps) => {
     }, [client]);
     const onClick = () => {
         const currentRoom = client.getRoom(props.roomId)
-
-        
         currentRoom&&fetchFileEventsServer([currentRoom]);
+        dis.dispatch({
+            action: "select_files",
+            database: [],
+            timelineRenderingType,
+        });
     }
 
     useEffect(() => {
@@ -68,18 +69,31 @@ export const FileSelector = (props:IProps) => {
     useEffect(() => {
         if(!spacePopoverOpen){
             if (selectedFiles.length > 0) {
-                props.fileSelect(selectedFiles);
-                dis.dispatch<ComposerInsertPayload>({
-                          action: Action.ComposerInsert,
-                          text: "**"+"fileselected"+"**: ",
-                          timelineRenderingType: timelineRenderingType,
-                      });
+
+                dis.dispatch({
+                    action: "select_files",
+                    files: selectedFiles,
+                    context: timelineRenderingType,
+                });
+                dis.dispatch({
+                    action: Action.FocusAComposer,
+                    context: timelineRenderingType,
+                });
             }
         }
         else{
-            props.fileSelect([]);
             setFiles([]);
             setSelectedFiles([]);
+            dis.dispatch({
+                action: "select_files",
+                files: [],
+                context: timelineRenderingType,
+            });
+            dis.dispatch({
+                action: "select_database",
+                database: "",
+                context: timelineRenderingType,
+            });
         }
     },[spacePopoverOpen])
 
