@@ -29,12 +29,12 @@ export const ContentHeader = ({
                 <p className="text-muted-foreground text-sm">{activeStep?.description}</p>
             </div>
             <div className="flex items-center gap-2">
-                {activeStep && activeStep.id > 0 && (
-                    <Button onClick={() => prevStepAction()} variant="outline" size="sm">
-                        <Icon name="ArrowLeft" className="mr-2" />
-                        Go Back
-                    </Button>
-                )}
+                <Button onClick={() => prevStepAction()} variant="outline" size="sm">
+                    <Icon name="ArrowLeft" className="mr-2" />
+                    Go Back
+                </Button>
+                {/* {activeStep && activeStep.id > 0 && (
+                )} */}
                 <Button
                     className="font-semibold"
                     onClick={() => nextStepAction()}

@@ -5,6 +5,8 @@ import type { Template, StepItem } from "@/plugins/reports/types";
 import type { File } from "@/plugins/files/types";
 
 // State to store API URL
+export const showHomeAtom = atom<boolean>(true);
+// State to store API URL
 export const apiUrlAtom = atom<string>("");
 // State to store selected files
 export const selectedFilesAtom = atom<File[]>([]);
