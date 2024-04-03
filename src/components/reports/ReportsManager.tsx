@@ -23,23 +23,23 @@ export type Report = {
     timestamp: string;
 };
 
-const reportsData: Report[] = [
-    {
-        id: "1",
-        title: "Report 1",
-        timestamp: new Date().toISOString(),
-    },
-    {
-        id: "2",
-        title: "Report 2",
-        timestamp: new Date().toISOString(),
-    },
-    {
-        id: "3",
-        title: "Report 3",
-        timestamp: new Date().toISOString(),
-    },
-];
+// const reportsData: Report[] = [
+//     {
+//         id: "1",
+//         title: "Report 1",
+//         timestamp: new Date().toISOString(),
+//     },
+//     {
+//         id: "2",
+//         title: "Report 2",
+//         timestamp: new Date().toISOString(),
+//     },
+//     {
+//         id: "3",
+//         title: "Report 3",
+//         timestamp: new Date().toISOString(),
+//     },
+// ];
 
 export const columns: ColumnDef<Report>[] = [
     {
@@ -86,14 +86,16 @@ export const columns: ColumnDef<Report>[] = [
 ];
 
 export const ReportsManager = ({
+    reports,
     onNewReport,
     onEditReport,
 }: {
+    reports: Report[];
     onNewReport: () => void;
     onEditReport: (report: Report) => void;
 }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [reports, setReports] = useState<Report[]>(reportsData);
+    // const [reports, setReports] = useState<Report[]>(reportsData);
     const table = useReactTable({
         data: reports,
         columns,
@@ -109,7 +111,7 @@ export const ReportsManager = ({
     });
     return (
         <div className="max-w-screen-lg mx-auto px-3 py-6">
-            <div className="w-full flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+            <div className="w-full flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-4">
                 <div>
                     <h2 className="text-2xl font-semibold mb-2">Reports Manager</h2>
                     <p className="text-muted-foreground text-base">

@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 
 import type { Template, StepItem } from "@/plugins/reports/types";
 import type { File } from "@/plugins/files/types";
+import type { Report } from "@/components/reports/ReportsManager";
 
 import { Stepper } from "@/components/reports/Stepper";
 import { SwitchFadeTransition } from "@/components/ui/transitions/switch-fade-transition";
@@ -37,7 +38,15 @@ const steps: StepItem[] = [
     },
 ];
 
-export const Home = ({ files, templates }: { files: File[]; templates: Template[] }): JSX.Element => {
+export const Home = ({
+    files,
+    templates,
+    reports,
+}: {
+    files: File[];
+    templates: Template[];
+    reports: Report[];
+}): JSX.Element => {
     // Use stored state for active step
     const [activeStep, setActiveStep] = useAtom(activeStepAtom);
     const [showHome, setShowHome] = useAtom(showHomeAtom);
@@ -81,7 +90,7 @@ export const Home = ({ files, templates }: { files: File[]; templates: Template[
     return (
         <div className="h-full overflow-auto">
             {showHome ? (
-                <ReportsManager onNewReport={() => setShowHome(false)} onEditReport={onEditReport} />
+                <ReportsManager reports={reports} onNewReport={() => setShowHome(false)} onEditReport={onEditReport} />
             ) : (
                 <>
                     <Stepper steps={steps} />

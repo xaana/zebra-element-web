@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
 import { useCallback, useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { toast } from "sonner";
 
 import { QueryResultTable, DataItem } from "./QueryResultTable";
 
@@ -33,7 +34,8 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
         language: undefined,
     });
     const [api, setApi] = useState<string | undefined>(undefined);
-
+    const client = useMatrixClientContext();
+    const userId = client.getSafeUserId();
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
     const [isFetching, setIsFetching] = useState(false);
     const textareaId = useMemo(() => uuid(), []);
@@ -76,6 +78,7 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
+                    user_id: userId || "user_id",
                 }),
             });
 
@@ -95,17 +98,21 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
             setIsFetching(false);
             toast.error(message);
         }
-    }, [data, api]);
+    }, [data, api, userId]);
 
     const insert = useCallback(() => {
         const from = getPos();
         const to = from + node.nodeSize;
 
-        console.log(arrayToTableObject(fetchedData));
+        if (!fetchedData) {
+            editor.chain().focus().insertContentAt({ from, to }, previewText).run();
+            return;
+        }
 
-        // editor.chain().focus().insertContentAt({ from, to }, previewText).run();
-        editor.chain().focus().insertContentAt({ from, to }, arrayToTableObject(fetchedData)).run();
-    }, [editor, getPos, node.nodeSize, fetchedData]);
+        const tableContent = arrayToHTMLTable(fetchedData);
+
+        editor.chain().focus().insertContentAt({ from, to }, tableContent).run();
+    }, [editor, getPos, node.nodeSize, fetchedData, previewText]);
 
     const discard = useCallback(() => {
         deleteNode();
@@ -134,65 +141,28 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
         [updateAttributes],
     );
 
-    const arrayToTableObject = (arr: DataItem[]) => {
+    function arrayToHTMLTable(arr: DataItem[]): string {
         // Check if the array is empty
         if (arr.length === 0) {
-            return {
-                type: "table",
-                content: [],
-            };
+            return "<p>No data to display.</p>";
         }
 
         // Extract column names from the first object's keys
         const columnNames = Object.keys(arr[0]);
 
-        // Function to create a table cell object
-        const createTableCell = (content: any, isHeader = false) => ({
-            type: "tableCell",
-            attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null,
-                style: null,
-            },
-            content: [
-                {
-                    type: "paragraph",
-                    attrs: {
-                        class: null,
-                        textAlign: "left",
-                    },
-                    content: [
-                        {
-                            type: isHeader ? "text" : "paragraph",
-                            marks: isHeader ? [{ type: "bold" }] : [],
-                            text: content,
-                        },
-                    ],
-                },
-            ],
+        // Start the table and add a header row
+        let tableHTML = `<table><tr style="font-weight: 600;">${columnNames.map((columnName) => `<td>${columnName}</td>`).join("")}</tr>`;
+
+        // Add the data rows
+        arr.forEach((row) => {
+            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName]}</td>`).join("")}</tr>`;
         });
 
-        // Create the header row
-        const headerRow = {
-            type: "tableRow",
-            content: columnNames.map((columnName) => createTableCell(columnName, true)),
-        };
+        // Close the table
+        tableHTML += "</table>";
 
-        // Create the content rows
-        const contentRows = arr.map((row) => ({
-            type: "tableRow",
-            content: columnNames.map((columnName) => createTableCell(row[columnName])),
-        }));
-
-        // Combine the header and content rows
-        const tableContent = [headerRow, ...contentRows];
-
-        return {
-            type: "table",
-            content: tableContent,
-        };
-    };
+        return tableHTML;
+    }
 
     return (
         <NodeViewWrapper data-drag-handle>
