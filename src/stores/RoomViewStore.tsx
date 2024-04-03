@@ -383,7 +383,6 @@ export class RoomViewStore extends EventEmitter {
                         metricsTrigger: undefined, // room doesn't change
                     });
                 } else {
-                    console.log(payload.database,'database in payload');
                     this.setState({
                         database: payload.database,
                     });

@@ -101,7 +101,6 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
         if(currentRoom){
             fetchFileEventsServer([currentRoom]);
             const files = currentRoom.findEventById(rootId)?.getContent()
-            console.log(files)
             if(files){
                 setUrls(files["fileSelected"].map((file: DocFile)=>file.mediaId))
             }
@@ -109,11 +108,8 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
     }, [client]);
     useEffect(() => {
         if (events.length === 0) return;
-        console.log(events)
         const tempPdfs = events.map(async (event) => {
             const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-            console.log(mxcUrl)
-            console.log(urls)
             if (mxcUrl&&urls.includes(mxcUrl)){
                 
                 if (event.isEncrypted()) {

@@ -449,7 +449,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         if (model.isEmpty) {
             return;
         }
-        console.log(this.sdkContext.roomViewStore)
         const posthogEvent: ComposerEvent = {
             eventName: "Composer",
             isEditing: false,
@@ -557,7 +556,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                     database: "",
                     context: this.context.timelineRenderingType,
                 });
-                console.log(content)
             }
             if(content&&this.sdkContext.roomViewStore.getFiles().length>0){
                 content['fileSelected'] = this.sdkContext.roomViewStore.getFiles();
@@ -566,7 +564,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                     files: [],
                     context: this.context.timelineRenderingType,
                 });
-                console.log(content)
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,

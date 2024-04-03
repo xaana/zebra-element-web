@@ -40,7 +40,6 @@ const ThreadSummary: React.FC<IProps> = ({ mxEvent, thread, ...props }) => {
     const roomContext = useContext(RoomContext);
     const cardContext = useContext(CardContext);
     const count = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.length);
-    console.log(thread.timeline[0]?.getContent().open)
     if(thread.timeline[0]?.getContent().open==="open"){
         defaultDispatcher.dispatch<ShowThreadPayload>({
         action: Action.ShowThread,
