@@ -147,10 +147,6 @@ export function Citations({
             setHighlights(() => bboxes.map((box) => ({ ...box, page: parseInt(pageNumber) })));
         }
     };
-    {
-        console.log(pdfUrls, citations);
-        Array.from(pdfUrls).map((file) => console.log(file.name));
-    }
     return (
         <>
             {pdfUrls && citations ? (
