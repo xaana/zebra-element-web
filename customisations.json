@@ -14,5 +14,5 @@
     "src/components/views/rooms/MessageComposer.tsx": "src/components/views/rooms/MessageComposer.tsx",
     "src/components/views/rooms/SendMessageComposer.tsx": "src/components/views/rooms/SendMessageComposer.tsx",
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
-    "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx",
+    "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx"
 }
