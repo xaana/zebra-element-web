@@ -30,16 +30,9 @@ interface Props {
     mxEvent?: MatrixEvent;
     initialOption?: string;
 }
-
-// interface ThreadInfoProps {
-//     key: number,
-//     id: string,
-//     details?: Thread
-// }
    
 export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
     const [open, setOpen] = React.useState<boolean>(false);
-    // const [threadInfos, setThreadInfos] = React.useState<ThreadInfoProps[]>([]);
     const [value, setValue] = React.useState("");
     const [threads, setThreads]= React.useState(()=>props.room.getThreads());
     
@@ -69,13 +62,6 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                 });
             }
         })
-        // threads.map((thread, index)=>{
-        //     setThreadInfos([...threadInfos, {
-        //         key: index,
-        //         id: thread.id,
-        //         details: thread,
-        //     }])
-        // })
     },[props.room])
     
     const onSelectHandler = (thread: Thread): void => {
@@ -84,7 +70,6 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                 action: Action.ShowThread,
                 rootEvent: thread.rootEvent
             });
-            console.log("Dispatcher activated");
         }
     }
     
@@ -96,7 +81,7 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[200px] justify-between"
+                    className="w-[160px] justify-between"
                     onClick={()=>{
                         if (props.room.getThreads()!==threads){
                             setThreads(props.room.getThreads().reverse());
@@ -105,14 +90,13 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                 >
                     {value
                         ? threads.find((thread) => thread.id === value)?.id
-                        : "Select framework..."}
+                        : "Select Thread..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                    <CommandList>
-                        <CommandInput placeholder="Search framework..." />
+                    {threads ? (<CommandList> 
                         <CommandEmpty>No Thread Info Found.</CommandEmpty>
                         <CommandGroup>
                             {threads.map((item,index)=>{
@@ -136,7 +120,8 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                                 )
                             })}
                         </CommandGroup>
-                    </CommandList>
+                    </CommandList>) : <CommandInput placeholder="Search Thread..." />}
+                    
                 </Command>
             </PopoverContent>
         </Popover>
