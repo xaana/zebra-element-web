@@ -448,8 +448,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             if (SecurityCustomisations.SHOW_ENCRYPTION_SETUP_UI === false) {
                 this.onLoggedIn();
             } else {
-                this.onCompleteSecurityE2eSetupFinished();
-                this.setStateForNewView({ view: Views.LOGGED_IN });
+                this.setStateForNewView({ view: Views.COMPLETE_SECURITY });
             }
         } else if (
             (await cli.doesServerSupportUnstableFeature("org.matrix.e2e_cross_signing")) &&
