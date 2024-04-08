@@ -64,7 +64,6 @@ import { E2EStatus, shieldStatusForRoom } from "matrix-react-sdk/src/utils/Shiel
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { IMatrixClientCreds } from "matrix-react-sdk/src/MatrixClientPeg";
 import ScrollPanel from "matrix-react-sdk/src/components/structures/ScrollPanel";
-import TimelinePanel from "matrix-react-sdk/src/components/structures/TimelinePanel";
 import ErrorBoundary from "matrix-react-sdk/src/components/views/elements/ErrorBoundary";
 import RoomPreviewBar from "matrix-react-sdk/src/components/views/rooms/RoomPreviewBar";
 import RoomPreviewCard from "matrix-react-sdk/src/components/views/rooms/RoomPreviewCard";
@@ -133,6 +132,7 @@ import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelS
 import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases";
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
+import TimelinePanel from "./TimelinePanel";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;

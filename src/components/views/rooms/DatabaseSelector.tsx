@@ -11,12 +11,10 @@ import { getVectorConfig } from "@/vector/getconfig";
 
 import "./style/button.css";
 
-interface IProps {
-    databaseSelect: (dbName: string) => void;
-}
+
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const DatabaseSelector = (props: IProps) => {
+export const DatabaseSelector = () => {
     const [dbList, setDbList] = useState<Array<string>>([]);
     const { timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
