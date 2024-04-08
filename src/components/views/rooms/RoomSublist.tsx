@@ -252,7 +252,6 @@ export default class RoomSublist extends React.Component<IProps, IState> {
         // on our own.
         const prevSlicedRooms = this.state.rooms.slice(0, this.numVisibleTiles);
         const nextSlicedRooms = nextState.rooms.slice(0, this.numVisibleTiles);
-        console.log(prevSlicedRooms,nextSlicedRooms, 'checking if order changed');
         if (arrayHasOrderChange(prevSlicedRooms, nextSlicedRooms)) {
             return true;
         }
@@ -328,7 +327,6 @@ export default class RoomSublist extends React.Component<IProps, IState> {
             });
         }
         if (payload.action==="update_order"){
-            console.log("force update the sublist");
             this.onListsUpdated();
         }
     };

@@ -18,6 +18,7 @@ import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
 import { SwitchFadeTransition } from "../../../ui/transitions/switch-fade-transition";
 import { useAudio } from "../../../../lib/hooks/use-audio";
+import { getVectorConfig } from "@/vector/getconfig";
 
 const DialogStyle = styled.div`
     .blob__dialog {
@@ -152,6 +153,7 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
     };
 
     const [triggered, setTriggered] = useState(false);
+    const [botApi,setBotApi] = useState("")
     const recorderRef = useRef<RecordRTC | null>(null);
     const mic = useRef<MediaStream>();
     // const scriptProcessor = useRef<ScriptProcessorNode>()
@@ -289,11 +291,36 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
         // fetch(request)
         // http://localhost:29316/_matrix/maubot/plugin/1/stream
     };
+    useEffect(() => {
+
+        const getBotApi = async (): Promise<void> => {
+            const configData = await getVectorConfig();
+            if (configData?.bot_api) {
+                setBotApi(configData?.bot_api);
+                // if (configData?.bot_api) {
+                //     const resp = await fetch(`${botApi}/database_list`);
+                //     const data = await resp.json();
+                //     if (data) setDbList(data);
+                // }
+            }
+        };
+
+        getBotApi();
+
+        // // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+        // fetch(`http://localhost:29316/_matrix/maubot/plugin/1/database_list`, {
+        //     method: "GET",
+        // }).then((response) => {
+        //     response.json().then((data) => {
+        //         setDbList(data);
+        //     });
+        // });
+    }, []);
 
     const onCapture = async (text: string) => {
         const content = { msgtype: "m.text", body: text } as IContent;
         const rootId = await client.sendMessage(room, content);
-        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/zebra/stream_audio/${room}`, {
+        const res: Response = await fetch(`${botApi}/stream_audio/${room}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

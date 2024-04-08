@@ -684,7 +684,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if (alertContent) {
-            console.log("abc");
             body = (
                 <>
                     {body}

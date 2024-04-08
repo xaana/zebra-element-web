@@ -343,7 +343,6 @@ class TimelinePanel extends React.Component<IProps, IState> {
 
     public componentDidUpdate(prevProps: Readonly<IProps>,prevState: Readonly<IState>): void {
         if (prevState.events!==this.state.events) {
-            console.log("events did update");
             dis.dispatch({action:"update_order"});
         }
         if (prevProps.timelineSet !== this.props.timelineSet) {
