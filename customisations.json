@@ -14,8 +14,6 @@
     "src/components/views/rooms/MessageComposer.tsx": "src/components/views/rooms/MessageComposer.tsx",
     "src/components/views/rooms/SendMessageComposer.tsx": "src/components/views/rooms/SendMessageComposer.tsx",
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
-    "src/Lifecycle.ts": "src/Lifecycle.ts",
-    "src/components/structures/UserMenu.tsx": "src/components/structures/UserMenu.tsx",
     "src/components/views/rooms/RoomList.tsx": "src/components/views/rooms/RoomList.tsx",
     "src/components/views/rooms/RoomSublist.tsx": "src/components/views/rooms/RoomSublist.tsx",
     "src/components/structures/TimelinePanel.tsx": "src/components/structures/TimelinePanel.tsx",
