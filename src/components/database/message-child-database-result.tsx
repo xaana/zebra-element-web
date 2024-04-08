@@ -109,9 +109,9 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                             {data.length} of {totalEntries} rows displayed
                                         </div>
                                     )}
-                                    <Button onClick={handleViewCharts} className="font-normal">
-                                        <IconChartDonut className="h-4 w-4 mr-2" />
-                                        Visualise Results
+                                    <Button onClick={handleViewCharts} size="sm" className="text-xs gap-0 w-auto h-auto">
+                                        <IconChartDonut className="h-3 w-3 mr-1" />
+                                        Visualise
                                     </Button>
                                 </div>
                             </div>

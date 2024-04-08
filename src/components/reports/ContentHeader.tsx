@@ -10,11 +10,13 @@ export const ContentHeader = ({
     prevStepAction,
     nextStepDisabled = false,
     className,
+    nextStepNode,
 }: {
     nextStepAction: () => void;
     prevStepAction: () => void;
     nextStepDisabled?: boolean;
     className?: string;
+    nextStepNode?: React.ReactNode;
 }) => {
     const [activeStep] = useAtom(activeStepAtom);
     return (
@@ -29,21 +31,25 @@ export const ContentHeader = ({
                 <p className="text-muted-foreground text-sm">{activeStep?.description}</p>
             </div>
             <div className="flex items-center gap-2">
-                {activeStep && activeStep.id > 0 && (
-                    <Button onClick={() => prevStepAction()} variant="outline" size="sm">
-                        <Icon name="ArrowLeft" className="mr-2" />
-                        Go Back
+                <Button onClick={() => prevStepAction()} variant="outline" size="sm">
+                    <Icon name="ArrowLeft" className="mr-2" />
+                    Go Back
+                </Button>
+                {/* {activeStep && activeStep.id > 0 && (
+                )} */}
+                {nextStepNode ? (
+                    nextStepNode
+                ) : (
+                    <Button
+                        className="font-semibold"
+                        onClick={() => nextStepAction()}
+                        size="sm"
+                        disabled={nextStepDisabled}
+                    >
+                        {activeStep?.nextStepTitle}
+                        <Icon name="ArrowRight" className="ml-2" />
                     </Button>
                 )}
-                <Button
-                    className="font-semibold"
-                    onClick={() => nextStepAction()}
-                    size="sm"
-                    disabled={nextStepDisabled}
-                >
-                    {activeStep?.nextStepTitle}
-                    <Icon name="ArrowRight" className="ml-2" />
-                </Button>
             </div>
         </div>
     );

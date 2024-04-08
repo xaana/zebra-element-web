@@ -1,7 +1,7 @@
 import React from "react";
 import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
 import { useCallback, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import { useAtomValue } from "jotai";
@@ -103,15 +103,22 @@ export const AiWriterView = ({ editor, node, getPos, deleteNode, updateAttribute
         }
 
         try {
-            const res: Response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/generate/`, {
+            const extractedFilenames = selectedFiles.map((file) => file?.downloadUrl?.match(/[^/]+$/)?.[0] ?? null);
+            if (
+                !extractedFilenames ||
+                extractedFilenames.length === 0 ||
+                extractedFilenames.every((element) => element === null)
+            )
+                throw new Error("No attached files found");
+            const res: Response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/matrix_pdf/generate_pdf`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    question: payload.text,
-                    tone: payload.tone || "",
-                    files: selectedFiles.map((file) => file.id),
+                    user_requirement: payload.text,
+                    // tone: payload.tone || "",
+                    media_ids: extractedFilenames,
                 }),
             });
 

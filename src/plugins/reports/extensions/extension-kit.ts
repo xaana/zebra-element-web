@@ -10,6 +10,7 @@ import { common, createLowlight } from "lowlight";
 
 import {
     AiWriter,
+    AiDataQuery,
     // AiImage,
     BlockquoteFigure,
     CharacterCount,
@@ -75,6 +76,7 @@ export const ExtensionKit = ({ userId, userName = "Zebra" }: ExtensionKitProps) 
         authorId: userId,
         authorName: userName,
     }),
+    AiDataQuery.configure({}),
     Column,
     Selection,
     Heading.configure({

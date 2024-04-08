@@ -293,7 +293,7 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
     const onCapture = async (text: string) => {
         const content = { msgtype: "m.text", body: text } as IContent;
         const rootId = await client.sendMessage(room, content);
-        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/1/stream_audio/${room}`, {
+        const res: Response = await fetch(`http://localhost:29316/_matrix/maubot/plugin/zebra/stream_audio/${room}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -302,6 +302,7 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
                 //   session_id: sessionId.current,
                 query: text,
                 eventId: rootId.event_id,
+                user_id: client.getUserId(),
                 // audio: true,
                 //   previous_messages: messages.map(message => {
                 //     return {

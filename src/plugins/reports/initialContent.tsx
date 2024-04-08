@@ -505,7 +505,7 @@ export const sampleTemplate = {
 };
 
 const logTemplate = {
-    name: "Log   Report",
+    name: "Log Report",
     description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hicconsequatur ab animi sunt sed voluptas corporis et ad at saepe.",
     id: "1",

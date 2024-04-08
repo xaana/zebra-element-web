@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { ContentHeader } from "./ContentHeader";
+import { ReportSave } from "./ReportSave";
 
 import { editorContentAtom, apiUrlAtom } from "@/plugins/reports/stores/store";
 import { reportsStore } from "@/plugins/reports/MainPanel";
@@ -81,7 +82,7 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Ele
     }, []);
     return (
         <>
-            <ContentHeader nextStepAction={nextStep} prevStepAction={prevStep} />
+            <ContentHeader nextStepAction={nextStep} prevStepAction={prevStep} nextStepNode={<ReportSave />} />
             {pdfUrl.length > 0 && (
                 <div>
                     <iframe title="pdf" src={pdfUrl} width="100%" height="800px" />

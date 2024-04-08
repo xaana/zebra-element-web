@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { toast } from "sonner";
 
 import type { Editor } from "@tiptap/core";
 
@@ -56,9 +57,12 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
         if (response.ok) {
             setName("");
             setLoading(false);
+            setDialogOpen(false);
+            toast.success("Template saved successfully!");
         } else {
             setSaveResult("Failed to save template. Please try again later.");
             setLoading(false);
+            toast.error("Failed to save template. Please try again later.");
         }
     };
     return (

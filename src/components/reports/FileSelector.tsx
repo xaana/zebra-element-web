@@ -80,7 +80,15 @@ export const columns: ColumnDef<File>[] = [
     },
     {
         accessorKey: "timestamp",
-        header: () => <div className="text-right">Date Uploaded</div>,
+        // header: () => <div className="text-right">Date Uploaded</div>,
+        header: ({ column }) => {
+            return (
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    Date Uploaded
+                    <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
+                </Button>
+            );
+        },
         cell: ({ row }) => {
             const uploadDate: Date = row.getValue("timestamp");
 
@@ -89,7 +97,7 @@ export const columns: ColumnDef<File>[] = [
                 addSuffix: true,
             });
 
-            return <div className="text-right font-medium">{formatted}</div>;
+            return <div className="">{formatted}</div>;
         },
     },
 ];

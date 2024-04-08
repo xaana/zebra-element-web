@@ -709,6 +709,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             query_description: queryDescription,
                                             echartsData: tableJson,
                                             eventId: rootId,
+                                            user_id: mxEvent.getSender(),
                                         };
                                         const request = new Request(`${content.webappUrl}/data/${roomId}`, {
                                             method: "POST",
