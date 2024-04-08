@@ -24,7 +24,7 @@ import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { MessagePreviewStore } from "matrix-react-sdk/src/stores/room-list/MessagePreviewStore";
 import MemberAvatar from "matrix-react-sdk/src/components/views/avatars/MemberAvatar";
 import { useAsyncMemo } from "matrix-react-sdk/src/hooks/useAsyncMemo";
-import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import MatrixClientContext, { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
@@ -39,8 +39,9 @@ interface IProps {
 const ThreadSummary: React.FC<IProps> = ({ mxEvent, thread, ...props }) => {
     const roomContext = useContext(RoomContext);
     const cardContext = useContext(CardContext);
+    const client = useMatrixClientContext();
     const count = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.length);
-    if(thread.timeline[0]?.getContent().open==="open"){
+    if(thread.timeline[0]?.getContent().open==="open"&&client.getUserId()===thread.timeline[0].getContent().user_id){
         defaultDispatcher.dispatch<ShowThreadPayload>({
         action: Action.ShowThread,
         rootEvent: mxEvent,
