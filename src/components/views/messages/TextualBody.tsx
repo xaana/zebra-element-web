@@ -705,16 +705,18 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId) {
             const tableJson = JSON.parse(databaseTable);
+            console.log(tableJson)
             body = (
                 <>
                     {body}
                     <div className="flex flex-col gap-y-2">
-                        {tableJson && tableJson.length > 0 && query && this.state.botApi && (
+                        {tableJson && tableJson.length > 0 && query  &&(
                             <>
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}
                                     totalEntries={fetchedDataLen}
                                     handleViewCharts={() => {
+                                        console.log(this.state.botApi);
                                         const jsonData = {
                                             query: query,
                                             query_description: queryDescription,
