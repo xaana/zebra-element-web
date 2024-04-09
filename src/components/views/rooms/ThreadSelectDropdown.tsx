@@ -81,20 +81,21 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[160px] justify-between"
+                    className="h-8 w-[160px] justify-between text-sm"
                     onClick={()=>{
                         if (props.room.getThreads()!==threads){
                             setThreads(props.room.getThreads().reverse());
                         }
                     }}
-                >
-                    {value
+                >   
+                    Select Thread...
+                    {/* {value
                         ? threads.find((thread) => thread.id === value)?.id
-                        : "Select Thread..."}
+                        : "Select Thread..."} */}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="w-[160px] p-0">
                 <Command>
                     {threads ? (<CommandList> 
                         <CommandEmpty>No Thread Info Found.</CommandEmpty>
@@ -102,20 +103,17 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                             {threads.map((item,index)=>{
                                 return (
                                     <CommandItem
-                                    key={index}
-                                    value={item.id}
-                                    onSelect={(currentId)=>{
-                                        onSelectHandler(item);
-                                        setValue(currentId===value?"":currentId);
-                                        setOpen(false);
-                                    }}>
-                                        <Check 
-                                            className={cn(
-                                            "mr-2 h-4 w-4",
-                                            value === item.id ? "opacity-100" : "opacity-0"
-                                            )}
-                                        />
-                                        {item.rootEvent?.getContent().body}
+                                        className=" text-gray-900 hover:text-gray-100"
+                                        key={index}
+                                        value={item.id}
+                                        onSelect={(currentId)=>{
+                                            onSelectHandler(item);
+                                            setValue(currentId===value?"":currentId);
+                                            setOpen(false);
+                                        }}>
+                                        {console.log(item.rootEvent?.getContent())}
+                                        {/* {item.rootEvent?.getContent().msgtype === "m.bad.encrypted" ? "Undecrypted Message" : item.rootEvent?.getContent().body } */}
+                                        <ThreadSelectItem thread={item} />
                                     </CommandItem>
                                 )
                             })}
@@ -125,5 +123,51 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                 </Command>
             </PopoverContent>
         </Popover>
+    )
+}
+
+const ThreadSelectItem: React.ReactNode = (props: {thread: Thread}) => {
+    const {thread} = props;
+    const messageContent = thread.rootEvent?.getContent();
+    const date = new Date(thread.rootEvent?.localTimestamp);
+    let messageText;
+
+    switch (messageContent?.msgtype) {
+        case "m.text":
+            messageText = messageContent.body; // Message (In str format)
+            break;
+        case "m.notice":
+            messageText = 
+                messageContent.alertContent 
+                ? messageContent.alertContent.title // Alert Card Title
+                : messageContent.body; // General Content
+            break;
+        case "m.image":
+            break;
+        case "m.sticker":
+            break;
+        case "m.video":
+            break;
+        case "m.audio":
+            messageText = messageContent.body; // Voice Message
+            break;
+        case "m.file":
+            messageText = messageContent.body; // Filename
+            break;
+        case "m.location":
+            break;
+        case "m.bad.encrypted":
+            messageText = "Undecrypted Message";
+            break;
+        default:
+            messageText = messageContent.body
+            break;
+    }
+
+    return (
+        <div className="bg-transparent">
+            <p>{messageText}</p>
+            <p>{date.toLocaleString}</p>
+        </div>
     )
 }
