@@ -16,7 +16,7 @@ import "./style/button.css";
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = () => {
     const [dbList, setDbList] = useState<Array<string>>([]);
-    const { timelineRenderingType } = useContext(RoomContext);
+    const { roomId,timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
 
     useEffect(() => {
@@ -56,11 +56,13 @@ export const DatabaseSelector = () => {
                         dis.dispatch({
                             action: "select_database",
                             database: "",
+                            roomId: roomId,
                             context: timelineRenderingType,
                         });
                         dis.dispatch({
                             action: "select_files",
                             files: [],
+                            roomId: roomId,
                             context: timelineRenderingType,
                         });
                     }}
@@ -89,6 +91,7 @@ export const DatabaseSelector = () => {
                                             dis.dispatch({
                                                 action: "select_database",
                                                 database: dbList[index],
+                                                roomId: roomId,
                                                 context: timelineRenderingType,
                                             });
                                             dis.dispatch({

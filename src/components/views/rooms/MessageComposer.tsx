@@ -523,6 +523,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         onChange={this.onChange}
                         disabled={this.state.haveRecording}
                         toggleStickerPickerOpen={this.toggleStickerPickerOpen}
+                        database={this.props.database}
+                        files={this.props.files}
                     />
                 );
             }
@@ -623,8 +625,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
                     />
-                    <DatabasePill database={this.props.database} timelineRenderingType={this.context.timelineRenderingType} />
-                    <FilesPill files={this.props.files} timelineRenderingType={this.context.timelineRenderingType} />
+                    <DatabasePill database={this.props.database} timelineRenderingType={this.context.timelineRenderingType} roomId={this.context.roomId} />
+                    <FilesPill files={this.props.files} timelineRenderingType={this.context.timelineRenderingType} roomId={this.context.roomId} />
                     <div className="mx_MessageComposer_row">
                         {e2eIcon}
                         {composer}

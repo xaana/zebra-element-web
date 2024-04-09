@@ -70,6 +70,7 @@ import { getBlobSafeMimeType } from "matrix-react-sdk/src/utils/blobs";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/components/views/rooms/BasicMessageComposer";
 import { data } from "@tensorflow/tfjs";
+import { DocFile } from "./FileSelector";
 
 
 
@@ -252,6 +253,8 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     onChange?(model: EditorModel): void;
     includeReplyLegacyFallback?: boolean;
     toggleStickerPickerOpen: () => void;
+    database?:string;
+    files?: DocFile[];
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -549,19 +552,21 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
-            if(content&&this.sdkContext.roomViewStore.getDatabase()){
-                content['database'] = this.sdkContext.roomViewStore.getDatabase();
+            if(content&&this.props.database){
+                content['database'] = this.props.database;
                 dis.dispatch({
                     action: "select_database",
                     database: "",
+                    roomId: roomId,
                     context: this.context.timelineRenderingType,
                 });
             }
-            if(content&&this.sdkContext.roomViewStore.getFiles().length>0){
-                content['fileSelected'] = this.sdkContext.roomViewStore.getFiles();
+            if(content&&this.props.files&&this.props.files?.length>0){
+                content['fileSelected'] = this.props.files;
                 dis.dispatch({
                     action: "select_files",
                     files: [],
+                    roomId: roomId,
                     context: this.context.timelineRenderingType,
                 });
             }
@@ -627,6 +632,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
     private clearStoredEditorState(): void {
         localStorage.removeItem(this.editorStateKey);
+        localStorage.removeItem(`mx_database_${this.context.roomId}`);
+        localStorage.removeItem(`mx_files_${this.context.roomId}`);
     }
 
     private restoreStoredEditorState(partCreator: PartCreator): Part[] | null {
@@ -636,6 +643,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
 
         const json = localStorage.getItem(this.editorStateKey);
+        const database = localStorage.getItem(`mx_database_${this.context.roomId}`)
+        const files = localStorage.getItem(`mx_files_${this.context.roomId}`)
         if (json) {
             try {
                 const { parts: serializedParts, replyEventId } = JSON.parse(json);
@@ -652,7 +661,22 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 logger.error(e);
             }
         }
-
+        if (database){
+            dis.dispatch({
+                action: "select_database",
+                database: database,
+                roomId: this.context.roomId,
+                context: this.context.timelineRenderingType,
+            });
+        }
+        if (files&&files?.length>0){
+            dis.dispatch({
+                action: "select_files",
+                files: JSON.parse(files),
+                roomId: this.context.roomId,
+                context: this.context.timelineRenderingType,
+            });
+        }
         return null;
     }
 
@@ -662,10 +686,21 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     };
 
     private saveStoredEditorState = (): void => {
+        let clear=true;
         if (this.shouldSaveStoredEditorState()) {
             const item = SendHistoryManager.createItem(this.model, this.props.replyToEvent);
             localStorage.setItem(this.editorStateKey, JSON.stringify(item));
-        } else {
+            clear=false
+        } 
+        if (this.props.files&&this.props.files.length>0){
+            localStorage.setItem(`mx_files_${this.context.roomId}`,JSON.stringify(this.props.files))
+            clear=false
+        }
+        if (this.props.database){
+            localStorage.setItem(`mx_database_${this.context.roomId}`,this.props.database)
+            clear=false
+        }
+        if (clear){
             this.clearStoredEditorState();
         }
     };
@@ -692,9 +727,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                     this.editorRef.current?.insertQuotedMessage(payload.event);
                 } else if (payload.text) {
                     this.editorRef.current?.insertPlaintext(payload.text);
-                }
-                else if(payload.database){
-                    this.editorRef.current?.insertDatabase(payload.database)
                 }
                 break;
         }

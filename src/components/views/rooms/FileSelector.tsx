@@ -13,6 +13,7 @@ import { init as initRouting } from "../../../vector/routing";
 import "./style/button.css"
 import { IconCheckBold } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
+import { useFiles } from "@/lib/hooks/use-files";
 
 interface IProps {
     roomId: string;
@@ -30,41 +31,54 @@ export const FileSelector = (props:IProps) => {
     const [selectedFiles, setSelectedFiles] = useState<DocFile[]>([]);
     const { timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false)
+    const { getUserFiles } = useFiles();
     const client = useMatrixClientContext();
     useEffect(() => {
         initRouting();
     }, [client]);
     const onClick = () => {
+        setFiles([])
         const currentRoom = client.getRoom(props.roomId)
-        currentRoom&&fetchFileEventsServer([currentRoom]);
+        currentRoom&&fetchFiles();
         dis.dispatch({
             action: "select_files",
             database: [],
+            roomId: props.roomId,
             timelineRenderingType,
         });
     }
-
-    useEffect(() => {
-        if (events.length === 0) return;
-        const files: DocFile[] = events
-        .map((event) => {
-            const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-            // const urlSplit = mxcUrl?.split("/");
-            // const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
-            const fileName = event.getContent().body;
-            return {
-                mediaId: mxcUrl,
-                fileName:fileName
-                
-            };
-        })
-        const uniqueList =files.filter((item, index, self) =>
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = await getUserFiles();
+        const temp = fetchedFiles.map((file)=>{return {mediaId:file.mediaId,fileName:file.name}});
+        const uniqueList =temp.filter((item, index, self) =>
         index === self.findIndex((t) => (
             t.mediaId === item.mediaId && t.fileName === item.fileName
         ))
     );
-        setFiles(uniqueList);
-    }, [events]);
+        setFiles([...uniqueList].reverse());
+    };
+
+    // useEffect(() => {
+    //     if (events.length === 0) return;
+    //     const files: DocFile[] = events
+    //     .map((event) => {
+    //         const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
+    //         // const urlSplit = mxcUrl?.split("/");
+    //         // const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
+    //         const fileName = event.getContent().body;
+    //         return {
+    //             mediaId: mxcUrl,
+    //             fileName:fileName
+                
+    //         };
+    //     })
+    //     const uniqueList =files.filter((item, index, self) =>
+    //     index === self.findIndex((t) => (
+    //         t.mediaId === item.mediaId && t.fileName === item.fileName
+    //     ))
+    // );
+    //     setFiles(uniqueList);
+    // }, [events]);
 
     useEffect(() => {
         if(!spacePopoverOpen){
@@ -73,6 +87,7 @@ export const FileSelector = (props:IProps) => {
                 dis.dispatch({
                     action: "select_files",
                     files: selectedFiles,
+                    roomId: props.roomId,
                     context: timelineRenderingType,
                 });
                 dis.dispatch({
@@ -87,11 +102,13 @@ export const FileSelector = (props:IProps) => {
             dis.dispatch({
                 action: "select_files",
                 files: [],
+                roomId: props.roomId,
                 context: timelineRenderingType,
             });
             dis.dispatch({
                 action: "select_database",
                 database: "",
+                roomId: props.roomId,
                 context: timelineRenderingType,
             });
         }
@@ -99,82 +116,82 @@ export const FileSelector = (props:IProps) => {
 
 
 
-    const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
-        const encryptedRooms = [];
-        const plainRooms = [];
-        for (const room of rooms) {
-            if (client.isRoomEncrypted(room.roomId)) {
-                encryptedRooms.push(room);
-            } else {
-                plainRooms.push(room);
-            }
-        }
+    // const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
+    //     const encryptedRooms = [];
+    //     const plainRooms = [];
+    //     for (const room of rooms) {
+    //         if (client.isRoomEncrypted(room.roomId)) {
+    //             encryptedRooms.push(room);
+    //         } else {
+    //             plainRooms.push(room);
+    //         }
+    //     }
 
-        const plainFilter = new Filter(client.getSafeUserId());
-        plainFilter.setDefinition({
-            room: {
-                timeline: {
-                    contains_url: true,
-                    types: ["m.room.message"],
-                },
-            },
-        });
+    //     const plainFilter = new Filter(client.getSafeUserId());
+    //     plainFilter.setDefinition({
+    //         room: {
+    //             timeline: {
+    //                 contains_url: true,
+    //                 types: ["m.room.message"],
+    //             },
+    //         },
+    //     });
 
-        plainFilter.filterId = await client.getOrCreateFilter(
-            "FILTER_FILES_PLAIN_" + client.credentials.userId,
-            plainFilter,
-        );
-        const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
-        const plainEvents = plainTimelineSets.flatMap((ts) =>
-            ts.getTimelines().flatMap(async (t) => {
-                const timeline = t.fork(Direction.Forward);
-                let next = true;
-                while (next) {
-                    await client.paginateEventTimeline(timeline, { backwards: true });
-                    next = timeline.getPaginationToken(Direction.Backward) !== null;
-                }
-                return timeline.getEvents().filter((ev) => ev.getContent().file);
-            }),
-        );
+    //     plainFilter.filterId = await client.getOrCreateFilter(
+    //         "FILTER_FILES_PLAIN_" + client.credentials.userId,
+    //         plainFilter,
+    //     );
+    //     const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
+    //     const plainEvents = plainTimelineSets.flatMap((ts) =>
+    //         ts.getTimelines().flatMap(async (t) => {
+    //             const timeline = t.fork(Direction.Forward);
+    //             let next = true;
+    //             while (next) {
+    //                 await client.paginateEventTimeline(timeline, { backwards: true });
+    //                 next = timeline.getPaginationToken(Direction.Backward) !== null;
+    //             }
+    //             return timeline.getEvents().filter((ev) => ev.getContent().file);
+    //         }),
+    //     );
 
-        const encryptedFilter = new Filter(client.getSafeUserId());
-        encryptedFilter.setDefinition({
-            room: {
-                timeline: {
-                    types: ["m.room.encrypted"],
-                },
-            },
-        });
+    //     const encryptedFilter = new Filter(client.getSafeUserId());
+    //     encryptedFilter.setDefinition({
+    //         room: {
+    //             timeline: {
+    //                 types: ["m.room.encrypted"],
+    //             },
+    //         },
+    //     });
 
-        encryptedFilter.filterId = await client.getOrCreateFilter(
-            "FILTER_FILES_ENCRYPTED_" + client.credentials.userId,
-            encryptedFilter,
-        );
-        const encryptedTimelineSets = encryptedRooms.map((room) =>
-            room.getOrCreateFilteredTimelineSet(encryptedFilter),
-        );
-        const encryptedEvents = encryptedTimelineSets.flatMap((ts) =>
-            ts.getTimelines().flatMap(async (t) => {
-                const timeline = t.fork(Direction.Forward);
-                let next = true;
-                while (next) {
-                    await client.paginateEventTimeline(timeline, { backwards: true });
-                    next = timeline.getPaginationToken(Direction.Backward) !== null;
-                }
-                return timeline.getEvents().filter((ev) => ev.getContent().file);
-            }),
-        );
+    //     encryptedFilter.filterId = await client.getOrCreateFilter(
+    //         "FILTER_FILES_ENCRYPTED_" + client.credentials.userId,
+    //         encryptedFilter,
+    //     );
+    //     const encryptedTimelineSets = encryptedRooms.map((room) =>
+    //         room.getOrCreateFilteredTimelineSet(encryptedFilter),
+    //     );
+    //     const encryptedEvents = encryptedTimelineSets.flatMap((ts) =>
+    //         ts.getTimelines().flatMap(async (t) => {
+    //             const timeline = t.fork(Direction.Forward);
+    //             let next = true;
+    //             while (next) {
+    //                 await client.paginateEventTimeline(timeline, { backwards: true });
+    //                 next = timeline.getPaginationToken(Direction.Backward) !== null;
+    //             }
+    //             return timeline.getEvents().filter((ev) => ev.getContent().file);
+    //         }),
+    //     );
 
-        Promise.all([...plainEvents, ...encryptedEvents]).then((results) => {
-            const finalResults = results.flat();
-            const roomResults = rooms
-                .flatMap((r) =>
-                    r.getTimelineSets().flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents())),
-                )
-                .filter((ev) => ev.getContent().url || ev.getContent().file);
-            setEvents([...roomResults, ...finalResults]);
-        });
-    };
+    //     Promise.all([...plainEvents, ...encryptedEvents]).then((results) => {
+    //         const finalResults = results.flat();
+    //         const roomResults = rooms
+    //             .flatMap((r) =>
+    //                 r.getTimelineSets().flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents())),
+    //             )
+    //             .filter((ev) => ev.getContent().url || ev.getContent().file);
+    //         setEvents([...roomResults, ...finalResults]);
+    //     });
+    // };
     const onConfirm = () => {
         setSpacePopoverOpen(false)
     }
