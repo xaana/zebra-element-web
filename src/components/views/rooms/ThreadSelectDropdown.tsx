@@ -95,7 +95,7 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[160px] p-0">
+            <PopoverContent className="w-[240px] p-0">
                 <Command>
                     {threads ? (<CommandList> 
                         <CommandEmpty>No Thread Info Found.</CommandEmpty>
@@ -165,9 +165,9 @@ const ThreadSelectItem: React.ReactNode = (props: {thread: Thread}) => {
     }
 
     return (
-        <div className="bg-transparent">
-            <p>{messageText}</p>
-            <p>{date.toLocaleString}</p>
+        <div className="flex flex-row flex-grow bg-transparent justify-end w-full">
+            <p className="flex-1 truncate">{messageText}</p>
+            <p className="flex-none w-[100px]">{date.toLocaleString()}</p>
         </div>
     )
 }

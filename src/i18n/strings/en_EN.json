@@ -7,6 +7,7 @@
         "sign_in": "Sign in"
     },
     "auth": {
+        "server_picker_description": "You can use the custom server options to sign into other Matrix servers by specifying a different homeserver URL.",
         "sso_complete_in_browser_dialog_title": "Go to your browser to complete Sign In"
     },
     "desktop_default_device_name": "%(brand)s Desktop: %(platformName)s",
@@ -34,6 +35,10 @@
     "invite":{
         "name_email_mxid_share_room": "Invite someone using their name, email address or username (like <userId/>).",
         "name_email_mxid_share_space": "Invite someone using their name, email address or username (like <userId/>)."
+    },
+    "seshat":{
+        "warning_kind_files_app": "",
+        "warning_kind_search_app": ""
     },
     "settings": {
         "prompt_invite": "Prompt before sending invites to potentially invalid IDs"
