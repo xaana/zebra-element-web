@@ -3,13 +3,14 @@ import React from "react";
 import {
     Card,
     CardContent,
-    CardFooter,
     CardHeader,
-    CardTitle,
   } from "../ui/card";
 import { generateAlertBody } from "./AlertHelper";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
+
+const BUTTON_STYLE = "bg-gray-300 hover:bg-gray-500 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center h-8";
+const OPTION_COLUMN_STYLE = "";
 
 const AlertMessagePanel = (props:any) => {
     const {content} = props;
@@ -37,11 +38,13 @@ const AlertMessagePanel = (props:any) => {
                         <TableRow key={index}>
                             <TableCell>{index}</TableCell>
                             <TableCell>{item.name}</TableCell>
-                            <TableCell>{item.value}</TableCell>
                             <TableCell>
-                                {item.alertURL ?? (<a href={item.alertURL}><Button>View Alert</Button></a>)}
-                                {item.panelURL ?? (<a href={item.panelURL}><Button>View Panel</Button></a>)}
-                                {item.dashboardURL ?? (<a href={item.dashboardURL}><Button>View Dashboard</Button></a>)}
+                                {item.value.length > 40 ? item.value.substring(0,37)+"...": item.value}
+                            </TableCell>
+                            <TableCell>
+                                {item.alertURL ? (<a href={item.alertURL}><Button className={BUTTON_STYLE}>View Alert</Button></a>): null}
+                                {item.panelURL ? (<a href={item.panelURL}><Button className={BUTTON_STYLE}>View Panel</Button></a>): null}
+                                {item.dashboardURL ? (<a href={item.dashboardURL}><Button className={BUTTON_STYLE}>View Dashboard</Button></a>):null}
                             </TableCell>
                         </TableRow>
                     ))}
@@ -49,9 +52,6 @@ const AlertMessagePanel = (props:any) => {
                 </Table>)
 }                                      
             </CardContent>
-            {/* <CardFooter>
-
-            </CardFooter> */}
         </Card>
     )
 }
