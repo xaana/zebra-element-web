@@ -1,7 +1,7 @@
-import { useCallback } from "react";
 import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
-import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
+import { useCallback } from "react";
 
 import type { File } from "@/plugins/files/types";
 
@@ -21,9 +21,9 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         for (const room of rooms) {
             if (client.isRoomEncrypted(room.roomId)) {
                 encryptedRooms.push(room);
-            } else {
-                plainRooms.push(room);
             }
+
+            plainRooms.push(room);
         }
 
         const plainFilter = new Filter(client.getSafeUserId());
@@ -97,7 +97,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
                 const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
                 return {
                     id: event.getId() ?? "",
-                    name: event.getContent().body,
+                    name: event.getContent().body?? event.getClearContent()?.body,
                     downloadUrl: client.mxcUrlToHttp(mxcUrl) ?? "",
                     timestamp: new Date(event.localTimestamp),
                     roomId: event.getRoomId() ?? "",
