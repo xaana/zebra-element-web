@@ -9,12 +9,13 @@ import { DocFile } from '../views/rooms/FileSelector';
 
 
 // Define a functional component
-const FilesPill = ({ files,timelineRenderingType}:{files:DocFile[]|undefined,timelineRenderingType:TimelineRenderingType}) : React.JSX.Element | null =>  {
+const FilesPill = ({ files,timelineRenderingType,roomId}:{files:DocFile[]|undefined,timelineRenderingType:TimelineRenderingType,roomId?:string}) : React.JSX.Element | null =>  {
   // Styles for the pill container
   const cancelQuoting=(): void =>  {
     dis.dispatch({
         action: "select_files",
         files: [],
+        roomId:roomId,
         timelineRenderingType,
     });
 }

@@ -9,12 +9,13 @@ import { Database, X } from 'lucide-react';
 
 
 // Define a functional component
-const DatabasePill = ({ database,timelineRenderingType}:{database:string|undefined,timelineRenderingType:TimelineRenderingType}) : React.JSX.Element | null =>  {
+const DatabasePill = ({ database,timelineRenderingType,roomId}:{database:string|undefined,timelineRenderingType:TimelineRenderingType,roomId?:string}) : React.JSX.Element | null =>  {
   // Styles for the pill container
   const cancelQuoting=(): void =>  {
     dis.dispatch({
         action: "select_database",
         database: "",
+        roomId: roomId,
         timelineRenderingType,
     });
 }

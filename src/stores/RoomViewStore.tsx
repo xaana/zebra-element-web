@@ -383,9 +383,10 @@ export class RoomViewStore extends EventEmitter {
                         metricsTrigger: undefined, // room doesn't change
                     });
                 } else {
+                    if (payload.roomId===this.state.roomId){
                     this.setState({
                         database: payload.database,
-                    });
+                    });}
                 }
             }
             break;
@@ -402,9 +403,10 @@ export class RoomViewStore extends EventEmitter {
                         metricsTrigger: undefined, // room doesn't change
                     });
                 } else {
+                    if (payload.roomId===this.state.roomId){
                     this.setState({
                         files: payload.files,
-                    });
+                    });}
                 }
             }
             break;
@@ -510,6 +512,8 @@ export class RoomViewStore extends EventEmitter {
                         ? this.state.viewingCall
                         : CallStore.instance.getActiveCall(payload.room_id) !== null),
                 viewRoomOpts,
+                database:'',
+                files:[],
             };
 
             // Allow being given an event to be replied to when switching rooms but sanity check its for this room

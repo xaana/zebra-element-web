@@ -59,6 +59,7 @@ import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
+import { getVectorConfig } from "@/vector/getconfig";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -70,6 +71,7 @@ interface IState {
     widgetHidden: boolean;
     pdfUrls: any[];
     citations: Citation[];
+    botApi: null | string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -90,6 +92,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             widgetHidden: false,
             pdfUrls: [],
             citations: [],
+            botApi: null,
         };
     }
 
@@ -97,7 +100,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (!this.props.editState) {
             this.applyFormatting();
         }
+        this.getBotApi();
     }
+
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    private getBotApi = async () => {
+        const configData = await getVectorConfig();
+        if (configData?.bot_api) {
+            this.setState({ botApi: configData.bot_api });
+        }
+    };
 
     private applyFormatting(): void {
         // Function is only called from render / componentDidMount → contentRef is set
@@ -697,7 +709,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <div className="flex flex-col gap-y-2">
-                        {tableJson && tableJson.length > 0 && query && (
+                        {tableJson && tableJson.length > 0 && query && this.state.botApi && (
                             <>
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}
@@ -710,7 +722,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             eventId: rootId,
                                             user_id: mxEvent.getSender(),
                                         };
-                                        const request = new Request(`${content.webappUrl}/data/${roomId}`, {
+                                        const request = new Request(`${this.state.botApi}/data/${roomId}`, {
                                             method: "POST",
                                             mode: "no-cors", // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),

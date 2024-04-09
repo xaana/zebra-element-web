@@ -95,7 +95,6 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         const files: File[] = events
             .map((event) => {
                 const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-                console.log({ event });
                 return {
                     id: event.getId() ?? "",
                     name: event.getContent().body?? event.getClearContent()?.body,
@@ -106,6 +105,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
                     sender: event.getSender() ?? "",
                     isEncrypted: event.isEncrypted(),
                     mediaHelper: new MediaEventHelper(event),
+                    mediaId:mxcUrl
                 };
             })
             .filter((file, index, self) => index === self.findIndex((f) => f.id === file.id));

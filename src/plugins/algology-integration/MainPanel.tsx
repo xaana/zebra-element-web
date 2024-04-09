@@ -18,7 +18,7 @@ export const MainPanel = (): JSX.Element => {
     const [token, setToken] = useState("");
     const client = useMatrixClientContext();
     useEffect(() => {
-        fetch("http://localhost:8000/api/algology_login", {
+        fetch("https://dev-api-2.securezebra.com/api/algology_login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

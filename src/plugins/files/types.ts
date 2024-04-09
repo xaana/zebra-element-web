@@ -11,4 +11,5 @@ export type File = {
     room?: Room;
     isEncrypted: boolean;
     mediaHelper: MediaEventHelper;
+    mediaId: string;
 };
