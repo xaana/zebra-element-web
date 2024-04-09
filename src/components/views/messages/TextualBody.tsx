@@ -709,7 +709,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <div className="flex flex-col gap-y-2">
-                        {tableJson && tableJson.length > 0 && query && (
+                        {tableJson && tableJson.length > 0 && query && this.state.botApi && (
                             <>
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}

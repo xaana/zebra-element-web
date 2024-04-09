@@ -105,6 +105,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
                     sender: event.getSender() ?? "",
                     isEncrypted: event.isEncrypted(),
                     mediaHelper: new MediaEventHelper(event),
+                    mediaId:mxcUrl
                 };
             })
             .filter((file, index, self) => index === self.findIndex((f) => f.id === file.id));
