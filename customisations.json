@@ -18,5 +18,6 @@
     "src/components/views/rooms/RoomSublist.tsx": "src/components/views/rooms/RoomSublist.tsx",
     "src/components/structures/TimelinePanel.tsx": "src/components/structures/TimelinePanel.tsx",
     "src/components/views/rooms/MessageComposerFormatBar.tsx": "src/components/views/rooms/MessageComposerFormatBar.tsx",
-    "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx"
+    "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx",
+    "src/components/views/settings/tabs/user/VoiceUserSettingsTab.tsx": "src/components/views/settings/VoiceUserSettingsTab.tsx"
 }
