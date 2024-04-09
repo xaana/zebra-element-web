@@ -141,6 +141,7 @@
         "@tiptap/react": "^2.2.4",
         "@tiptap/starter-kit": "^2.2.4",
         "@tiptap/suggestion": "^2.2.4",
+        "@vector-im/compound-design-tokens": "0.1.0",
         "@vector-im/compound-web": "2.0.0",
         "@xenova/transformers": "^2.9.0",
         "apexcharts": "^3.45.2",

@@ -700,7 +700,6 @@ class LoggedInView extends React.Component<IProps, IState> {
                 // if (this.props.initialScreenAfterLogin?.screen=="home"){
 
                 // getInitialScreenAfterLogin(window.location);
-                // console.log('!!!!!!!!!!')
                 // NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
                 // startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
                 //     }

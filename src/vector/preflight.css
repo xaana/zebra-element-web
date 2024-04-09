@@ -24,9 +24,6 @@
   margin: 0;
   line-height: inherit;
 }
-
-
-
 :where(.zebra-container) button{
   font-family: inherit;
   font-size: 100%;

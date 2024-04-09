@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
-// import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { getVectorConfig } from "@/vector/getconfig";
 // import * as jose from jose;
@@ -16,24 +16,34 @@ export const MainPanel = (): JSX.Element => {
     // const [events, setEvents] = useState<MatrixEvent[]>([]);
     const [iframeUrl, setIframeUrl] = useState<string | undefined>(undefined);
     const [token, setToken] = useState("");
-    // const client = useMatrixClientContext();
-    // const currentUser = client.getUser(client.getUserId());
+    const client = useMatrixClientContext();
     useEffect(() => {
-        let apiUrl;
-
-        const getUrl = async (): Promise<void> => {
+        fetch("http://localhost:8000/api/algology_login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({user_id: client.getUserId()})
+        })
+        .then(res=> res.json())
+        .then(async res=>{
             const configData = await getVectorConfig();
             if (configData?.plugins["reports"]) {
-                apiUrl = configData?.plugins["algology"].url;
-                setIframeUrl(apiUrl);
+                setIframeUrl(configData?.plugins["algology"].url);
             }
-        };
-
-        getUrl();
-        // Simulating lag
-        setTimeout(() => {
+           setToken(res.token)
+        })
+        .catch(error=>{
+            console.log(error);
+            setIframeUrl("http://localhost:3001")
             setToken(STATIC_JWT_TOKEN);
-        }, 500);
+        })
+        
+        // Simulating lag
+        // setTimeout(() => {
+        //     setToken(STATIC_JWT_TOKEN);
+        //     console.log(client)
+        // }, 500);
     }, []);
 
     return (
