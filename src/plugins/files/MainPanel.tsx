@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import { columns, DataTable } from "./DataTable";
 import { init as initRouting } from "../../vector/routing";
+import { columns, DataTable } from "./DataTable";
 import type { File } from "./types";
 
 import { useFiles } from "@/lib/hooks/use-files";
@@ -22,7 +22,7 @@ export const MainPanel = (): JSX.Element => {
     }, [getUserFiles]);
 
     return (
-        <div className="h-full w-full flex justify-center py-6 px-3">
+        <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
             <div className="flex-1 max-w-screen-lg">
                 <div>
                     <h2 className="text-2xl font-semibold mb-2">File Manager</h2>

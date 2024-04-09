@@ -95,7 +95,6 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         const files: File[] = events
             .map((event) => {
                 const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-                console.log({ event });
                 return {
                     id: event.getId() ?? "",
                     name: event.getContent().body?? event.getClearContent()?.body,
