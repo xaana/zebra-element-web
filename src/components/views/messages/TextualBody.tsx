@@ -648,9 +648,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     {body}
                     <div className="flex gap-2 justify-end">
                         <Button onClick={()=>{
+                            content["approvalId"] = null
+                            const temp = content
+                            mxEvent.setContent(temp)
                             const payload = {
                                 approvalId: approvalId}
-                            const url = "http://localhost:29316/_matrix/maubot/plugin/1/approve"
+                            const url = `${this.state.botApi}/approve`
                             const request = new Request(url, {
                                 method: "POST",
                                 body: JSON.stringify(payload),
@@ -662,9 +665,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         
                         }>Approve</Button>
                         <Button onClick={()=>{
+                            content["approvalId"] = null
+                            const temp = content
+                            mxEvent.setContent(temp)
                             const payload = {
                                 approvalId: approvalId}
-                            const url = "http://localhost:29316/_matrix/maubot/plugin/1/reject"
+                            const url = `${this.state.botApi}/reject`
                             const request = new Request(url, {
                                 method: "POST",
                                 body: JSON.stringify(payload),
