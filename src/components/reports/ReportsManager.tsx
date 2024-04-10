@@ -11,6 +11,7 @@ export type Report = {
     id: string;
     title: string;
     timestamp: string;
+    status: string;
 };
 
 export const ReportsManager = ({
@@ -40,6 +41,7 @@ export const ReportsManager = ({
                     body: JSON.stringify({ user_id: userId }),
                 });
                 const data = await response.json();
+                console.log(data,'data')
                 if (data?.document?.length === 0) return;
                 setReports(() =>
                     data.document.map(
@@ -47,11 +49,13 @@ export const ReportsManager = ({
                             id: id,
                             document_name: title,
                             updated_at: timestamp,
+                            status: status
                         }: {
                             id: string;
                             document_name: string;
                             updated_at: string;
-                        }) => ({ id, title, timestamp }),
+                            status: string;
+                        }) => ({ id, title, timestamp,status }),
                     ),
                 );
             } catch (error) {

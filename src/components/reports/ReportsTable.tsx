@@ -24,21 +24,21 @@ export const columns: ColumnDef<Report>[] = [
         accessorKey: "title",
         header: ({ column }): JSX.Element => {
             return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="w-auto">
                     Title
                     <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
-        cell: ({ row }) => <div>{row.getValue("title")}</div>,
+        cell: ({ row }) => <div className="ml-5">{row.getValue("title")}</div>,
     },
     {
         accessorKey: "timestamp",
         // header: () => <div className="text-right">Last Modified</div>,
         header: ({ column }): JSX.Element => {
             return (
-                <div className="w-full text-right">
-                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                <div className="w-fit text-left">
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="text-left">
                         Last Modified
                         <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
                     </Button>
@@ -51,9 +51,18 @@ export const columns: ColumnDef<Report>[] = [
 
             const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
 
-            return <div className="text-right">{formatted}</div>;
+            return <div className="text-left ml-10">{formatted}</div>;
             // return <div className="text-right">{row.getValue("timestamp")}</div>;
         },
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }): JSX.Element => {
+            return (
+                <div>status</div>
+            );
+        },
+        cell: ({ row }) => <div>{row.getValue("status")}</div>,
     },
     {
         id: "actions",
