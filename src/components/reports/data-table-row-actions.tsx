@@ -98,7 +98,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                         <CommandList>
                             <CommandEmpty>No results found.</CommandEmpty>
                             <CommandGroup>
-                                {["@zebra_admin:securezebra.com","@test:securezebra.com","@Matt:securezebra.com","@ROB:securezebra.com","@SONIA:securezebra.com"].filter(item => item !== cli.getSafeUserId()).map((userId, index) => (
+                                {["@zebra_admin:securezebra.com","@test:securezebra.com","@matt:securezebra.com","@rob:securezebra.com","@sonia:securezebra.com"].filter(item => item !== cli.getSafeUserId()).map((userId, index) => (
                                     <CommandItem
                                         className="text-xs"
                                         key={index}
