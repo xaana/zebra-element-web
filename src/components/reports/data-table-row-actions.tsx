@@ -85,7 +85,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                 >
                      <AccessibleTooltipButton 
             className="p-2" 
-            title="Send to Manager" 
+            title="Submit for approval" 
             alignment={Alignment.Top} 
             onClick={() => {
             }}>
@@ -115,7 +115,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                                             const headers = {
                                                 "Content-Type": "application/json",
                                             }
-                                            const request = new Request("http://localhost:8000/api/approval/send_request_message", {
+                                            const request = new Request(`${reportsStore.get(apiUrlAtom)}/api/approval/send_request_message`, {
                                                 method: "POST",
                                                 body: JSON.stringify(payload),
                                                 headers: headers
