@@ -85,7 +85,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                 >
                      <AccessibleTooltipButton 
             className="p-2" 
-            title="Send to Manager" 
+            title="Submit for approval" 
             alignment={Alignment.Top} 
             onClick={() => {
             }}>
@@ -98,7 +98,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                         <CommandList>
                             <CommandEmpty>No results found.</CommandEmpty>
                             <CommandGroup>
-                                {["@zebra_admin:securezebra.com","@test:securezebra.com","@Matt:securezebra.com","@ROB:securezebra.com","@SONIA:securezebra.com"].filter(item => item !== cli.getSafeUserId()).map((userId, index) => (
+                                {["@zebra_admin:securezebra.com","@test:securezebra.com","@matt:securezebra.com","@rob:securezebra.com","@sonia:securezebra.com"].filter(item => item !== cli.getSafeUserId()).map((userId, index) => (
                                     <CommandItem
                                         className="text-xs"
                                         key={index}
@@ -115,7 +115,7 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                                             const headers = {
                                                 "Content-Type": "application/json",
                                             }
-                                            const request = new Request("http://localhost:8000/api/approval/send_request_message", {
+                                            const request = new Request(`${reportsStore.get(apiUrlAtom)}/api/approval/send_request_message`, {
                                                 method: "POST",
                                                 body: JSON.stringify(payload),
                                                 headers: headers
