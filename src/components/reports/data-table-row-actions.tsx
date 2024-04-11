@@ -23,7 +23,7 @@ import {
 import { reportsStore } from "@/plugins/reports/MainPanel";
 import { editorStateAtom, apiUrlAtom, showHomeAtom, activeStepAtom } from "@/plugins/reports/stores/store";
 import { getVectorConfig } from "@/vector/getconfig";
-import toast from "react-hot-toast";
+import { Toaster, toast } from "sonner";
 
 
 export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
@@ -120,8 +120,8 @@ export function DataTableRowActions({ row }: { row: Report }): JSX.Element {
                                                 body: JSON.stringify(payload),
                                                 headers: headers
                                             });
-                                            fetch(request);
-                                            toast.success("Report sent successfully");
+                                            fetch(request).then((res)=>res.json()).then((data)=>{toast.success(`Approval send successfully to ${data.receiver_id}`)}).catch((err)=>toast.error(err))
+                                            
                                         
                                         }}
                                     >
