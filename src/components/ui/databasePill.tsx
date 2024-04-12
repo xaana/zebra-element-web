@@ -16,7 +16,7 @@ const DatabasePill = ({ database,timelineRenderingType,roomId}:{database:string|
         action: "select_database",
         database: "",
         roomId: roomId,
-        timelineRenderingType,
+        context:timelineRenderingType,
     });
 }
 
