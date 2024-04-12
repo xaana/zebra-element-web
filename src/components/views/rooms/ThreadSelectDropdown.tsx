@@ -111,7 +111,6 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                                             setValue(currentId===value?"":currentId);
                                             setOpen(false);
                                         }}>
-                                        {console.log(item.rootEvent?.getContent())}
                                         {/* {item.rootEvent?.getContent().msgtype === "m.bad.encrypted" ? "Undecrypted Message" : item.rootEvent?.getContent().body } */}
                                         <ThreadSelectItem thread={item} />
                                     </CommandItem>
