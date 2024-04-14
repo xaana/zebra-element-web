@@ -95,11 +95,10 @@ export default class MainSplit extends React.Component<IProps> {
         if (hasResizer) {
             children = (
                 <Resizable
-                    className="shadow-2xl"
                     key={this.props.sizeKey}
                     defaultSize={this.loadSidePanelSize()}
                     minWidth={264}
-                    maxWidth="65%"
+                    maxWidth="70%"
                     enable={{
                         top: false,
                         right: false,
@@ -113,7 +112,7 @@ export default class MainSplit extends React.Component<IProps> {
                     onResizeStart={this.onResizeStart}
                     onResize={this.onResize}
                     onResizeStop={this.onResizeStop}
-                    className="mx_RightPanel_ResizeWrapper"
+                    className="mx_RightPanel_ResizeWrapper shadow-2xl"
                     handleClasses={{ left: "mx_ResizeHandle--horizontal" }}
                 >
                     {panelView}

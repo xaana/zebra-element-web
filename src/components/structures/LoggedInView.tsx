@@ -321,10 +321,11 @@ class LoggedInView extends React.Component<IProps, IState> {
     }
 
     private loadResizerPreferences(): void {
-        let lhsSize = parseInt(window.localStorage.getItem("mx_lhs_size")!, 10);
-        if (isNaN(lhsSize)) {
-            lhsSize = 350;
-        }
+        const lhsSize = 200;
+        // let lhsSize = parseInt(window.localStorage.getItem("mx_lhs_size")!, 10);
+        // if (isNaN(lhsSize)) {
+        //     lhsSize = 350;
+        // }
         this.resizer?.forHandleWithId("lp-resizer")?.resize(lhsSize);
     }
 
@@ -768,8 +769,8 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 )}
                             </div>
                         </div>
-                        <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" />
-                        <div className="mx_RoomView_wrapper">{pageElement}</div>
+                        {/* <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" /> */}
+                        <div className="mx_RoomView_wrapper shadow-xl">{pageElement}</div>
                     </div>
                 </div>
                 <PipContainer />
