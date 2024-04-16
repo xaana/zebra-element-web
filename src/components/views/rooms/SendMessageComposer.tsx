@@ -267,7 +267,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     private currentlyComposedEditorState: SerializedPart[] | null = null;
     private dispatcherRef: string;
     private sendHistoryManager: SendHistoryManager;
-    private sdkContext=SdkContextClass.instance;
+    // private sdkContext=SdkContextClass.instance;
     public static defaultProps = {
         includeReplyLegacyFallback: true,
     };
@@ -462,6 +462,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         if (posthogEvent.inThread && this.props.relation!.event_id) {
             const threadRoot = this.props.room.findEventById(this.props.relation!.event_id);
             posthogEvent.startsThread = threadRoot?.getThread()?.events.length === 1;
+            for (const event of threadRoot?.getThread()?.events || []) {
+                console.log(event.getContent(),'event in thread');
+            }
         }
         PosthogAnalytics.instance.trackEvent<ComposerEvent>(posthogEvent);
 
@@ -632,8 +635,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
     private clearStoredEditorState(): void {
         localStorage.removeItem(this.editorStateKey);
-        localStorage.removeItem(`mx_database_${this.context.roomId}`);
-        localStorage.removeItem(`mx_files_${this.context.roomId}`);
+        localStorage.removeItem(`database_${this.editorStateKey}`);
+        localStorage.removeItem(`files_${this.editorStateKey}`);
     }
 
     private restoreStoredEditorState(partCreator: PartCreator): Part[] | null {
@@ -643,8 +646,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
 
         const json = localStorage.getItem(this.editorStateKey);
-        const database = localStorage.getItem(`mx_database_${this.context.roomId}`)
-        const files = localStorage.getItem(`mx_files_${this.context.roomId}`)
+        const database = localStorage.getItem(`database_${this.editorStateKey}`)
+        const files = localStorage.getItem(`files_${this.editorStateKey}`)
         if (json) {
             try {
                 const { parts: serializedParts, replyEventId } = JSON.parse(json);
@@ -693,11 +696,11 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             clear=false
         } 
         if (this.props.files&&this.props.files.length>0){
-            localStorage.setItem(`mx_files_${this.context.roomId}`,JSON.stringify(this.props.files))
+            localStorage.setItem(`files_${this.editorStateKey}`,JSON.stringify(this.props.files))
             clear=false
         }
         if (this.props.database){
-            localStorage.setItem(`mx_database_${this.context.roomId}`,this.props.database)
+            localStorage.setItem(`database_${this.editorStateKey}`,this.props.database)
             clear=false
         }
         if (clear){

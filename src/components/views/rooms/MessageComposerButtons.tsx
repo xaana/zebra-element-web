@@ -113,8 +113,10 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             uploadButton(), // props passed via UploadButtonContext
             audioCaptureButton(),
             voiceBotButton(matrixClient,room),
-            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(),
-            (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId),
+            // (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(),
+            // (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId),
+            databaseSelector(),
+            filesSelector(room.roomId),
             
         ];
         moreButtons = [

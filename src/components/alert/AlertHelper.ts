@@ -14,12 +14,13 @@ export const generateAlertBody = (content:{
         // } 
     ]
     for (const alert of content.alerts) {
+        const subUriPos = alert.generatorURL.indexOf('/',10);
         result.push({
             name: alert.labels.alertname,
-            value: alert.value || alert.valueString || "No values available.",
-            alertURL: alert.generatorURL,
-            panelURL: alert.panelURL,
-            dashboardURL: alert.dashboardURL
+            value: alert.values || alert.valueString || "No values available.",
+            alertURL: alert.generatorURL || subUriPos === -1 ? alert.generatorURL.substring(subUriPos+1) : null,
+            panelURL: alert.panelURL ? alert.panelURL.substring(subUriPos+1) : null,
+            dashboardURL: alert.panelURL ? alert.dashboardURL.substring(subUriPos+1) : null
         })
     }
     return result;

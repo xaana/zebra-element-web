@@ -43,12 +43,14 @@ export function Citations({
     const [scale, setScale] = useState(-1);
     const [highlights, setHighlights] = useState<BoundingBox[]>([]);
     const [selectedFileIndex, setSelectedFileIndex] = useState<string>("0");
+    const [firstOpen,setFirstOpen] = useState<boolean>(true)
     const containerRef = useRef<HTMLDivElement>(null);
     const [pendingCitationView, setPendingCitationView] = useState<{
         page: number;
         highlights: BoundingBox[];
     } | null>(null);
     const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
+        console.log('Successfully loaded document');
         setNumPages(numPages);
         pageRefs.current = Array(numPages)
             .fill(null)
@@ -63,11 +65,16 @@ export function Citations({
         }, 500);
         if(citations.length > 0) { // Ensure there is at least one citation
         const firstCitation = citations[0]; // Access the first citation
-        handleViewCitation(
-            firstCitation.doc_name,
-            String(firstCitation.page_num),
-            parseBoundingBoxes(firstCitation.bboxes)
-        );
+        // when open the citation jump to the last citation automatically
+        if(firstOpen){
+            handleViewCitation(
+                firstCitation.doc_name,
+                String(firstCitation.page_num),
+                parseBoundingBoxes(firstCitation.bboxes)
+            );
+            setFirstOpen(false)
+        }
+        
     }
     };
     const parseBoundingBoxes = (bboxes: string): BoundingBox[] => {

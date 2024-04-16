@@ -43,6 +43,12 @@
     "settings": {
         "prompt_invite": "Prompt before sending invites to potentially invalid IDs"
     },
+    "spotlight":{
+        "public_rooms":{
+            "network_dropdown_selected_label": "Show: Zebra rooms",
+            "network_dropdown_selected_label_instance": "Show: Zebra rooms (%(server)s)"
+        }
+    },
     "powered_by_matrix": "Powered by Turium",
     "powered_by_matrix_with_logo": "Decentralised, encrypted chat &amp; collaboration powered by $matrixLogo",
     "unknown_device": "Unknown device",

@@ -60,6 +60,7 @@ import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { getVectorConfig } from "@/vector/getconfig";
+import { Loader } from "@/components/ui/loader";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -692,8 +693,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                 </>
             );
+        
         }
-        if (echartsOption && echartsQuery) {
+        if ((echartsOption && echartsQuery) || content.generating) {
             body = (
                 <>
                     {body}
@@ -730,9 +732,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             eventId: rootId,
                                             user_id: mxEvent.getSender(),
                                         };
-                                        const request = new Request(`${this.state.botApi}/data/${roomId}`, {
+                                        const request = new Request(`${this.state.botApi}/echarts/${roomId}`, {
                                             method: "POST",
-                                            mode: "no-cors", // This is the part that tries to bypass CORS, but it has limitations
+                                     // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),
                                         });
                                         fetch(request);

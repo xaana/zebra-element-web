@@ -16,7 +16,7 @@ const FilesPill = ({ files,timelineRenderingType,roomId}:{files:DocFile[]|undefi
         action: "select_files",
         files: [],
         roomId:roomId,
-        timelineRenderingType,
+        context:timelineRenderingType,
     });
 }
 
