@@ -23,7 +23,7 @@ const FilesPill = ({ files,timelineRenderingType,roomId}:{files:DocFile[]|undefi
   if (!files||(files&&files.length===0)) return null;
   
   return (
-    <div className="py-2 px-4 bg-gray-200 rounded-lg gap-2">
+    <div className="py-2 px-4 bg-muted rounded-lg gap-2">
         <div className="relative">
           <X onClick={()=>cancelQuoting()} className='cursor-pointer top-0 right-0 absolute text-xs' />
         </div>
