@@ -73,6 +73,7 @@ import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
 
 import { ThreadSelectDropdown } from "./ThreadSelectDropdown";
 import type { MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+import ModelSelectDropdown from "./ModelSelectDropdown";
 
 class DisabledWithReason {
     public constructor(public readonly reason: string) {}
@@ -851,7 +852,10 @@ export default class RoomHeader extends React.Component<IProps, IState> {
                     <div className="mx_LegacyRoomHeader_avatar">{roomAvatar}</div>
                     {icon}
                     {name}
-                    {this.props.room && <ThreadSelectDropdown room={this.props.room} />}
+                    <div className="m-3">
+                        {this.props.room && <ThreadSelectDropdown room={this.props.room} />}
+                        {/* {this.props.room && <ModelSelectDropdown />} */}
+                    </div>
                     {searchStatus}
                     {topicElement}
                     {betaPill}

@@ -32,7 +32,7 @@ interface Props {
     initialOption?: string;
 }
    
-export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
+export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [value, setValue] = React.useState("");
     const [threads, setThreads]= React.useState(()=>props.room.getThreads());
@@ -86,7 +86,7 @@ export const ThreadSelectDropdown: React.ReactNode = (props: Props) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="h-8 w-[160px] justify-between text-sm"
+                    className="h-7 w-[160px] justify-between text-sm"
                     onClick={()=>{
                         if (props.room.getThreads()!==threads){
                             setThreads(props.room.getThreads().sort((a,b)=>getLatestTimestamp(a) - getLatestTimestamp(b)));
