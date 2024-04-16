@@ -26,7 +26,7 @@ export interface DocFile{
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const FileSelector = (props:IProps) => {
-    const [events, setEvents] = useState<MatrixEvent[]>([]);
+    // const [events, setEvents] = useState<MatrixEvent[]>([]);
     const [files, setFiles] = useState<DocFile[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<DocFile[]>([]);
     const { timelineRenderingType } = useContext(RoomContext);
@@ -37,9 +37,9 @@ export const FileSelector = (props:IProps) => {
         initRouting();
     }, [client]);
     const onClick = () => {
-        setFiles([])
-        const currentRoom = client.getRoom(props.roomId)
-        currentRoom&&fetchFiles();
+        // setFiles([])
+        // const currentRoom = client.getRoom(props.roomId)
+        fetchFiles();
         dis.dispatch({
             action: "select_files",
             database: [],
@@ -114,6 +114,13 @@ export const FileSelector = (props:IProps) => {
         }
     },[spacePopoverOpen])
 
+    const abbreviateFilename = (filename:string):string => {
+        const maxLength = 40;  // Maximum length of displayed filename
+        if (filename.length > maxLength) {
+            return filename.substring(0, maxLength - 3) + '...';  // Cut the filename and append '...'
+        }
+        return filename;
+    };
 
 
     // const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
@@ -240,7 +247,7 @@ export const FileSelector = (props:IProps) => {
                         }
                         >
                         
-                        {file["fileName"]}
+                        {abbreviateFilename(file["fileName"])}
                         {selectedFiles.includes(file) && (
                             <IconCheckBold className="ml-auto h-4 w-4" />
                           )}
@@ -249,7 +256,9 @@ export const FileSelector = (props:IProps) => {
                     </CommandGroup>
                   </CommandList>
                 </Command>
-                {files.length>0?<Button className="font-normal" onClick={onConfirm}>confirm</Button>:''}
+                <div className="flex justify-end">
+                    {files.length>0?<Button className="text-xs h-7" size="sm" variant="default" onClick={onConfirm}>confirm</Button>:''}
+                </div>
                 
             </PopoverContent>
         </Popover>
