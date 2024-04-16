@@ -31,5 +31,6 @@
     "src/components/views/settings/tabs/user/SidebarUserSettingsTab.tsx": "src/components/views/settings/SidebarUserSettingsTab.tsx",
     "src/components/structures/MainSplit.tsx": "src/components/structures/MainSplit.tsx",
     "src/ContentMessages.ts": "src/ContentMessages.ts",
-    "src/components/structures/ThreadView.tsx": "src/components/structures/ThreadView.tsx"
+    "src/components/structures/ThreadView.tsx": "src/components/structures/ThreadView.tsx",
+    "src/components/views/dialogs/spotlight/SpotlightDialog.tsx":"src/components/views/dialogs/spotlight/SpotlightDialog.tsx"
 }
