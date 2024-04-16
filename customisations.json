@@ -32,5 +32,7 @@
     "src/components/structures/MainSplit.tsx": "src/components/structures/MainSplit.tsx",
     "src/ContentMessages.ts": "src/ContentMessages.ts",
     "src/components/structures/ThreadView.tsx": "src/components/structures/ThreadView.tsx",
-    "src/components/views/dialogs/spotlight/SpotlightDialog.tsx":"src/components/views/dialogs/spotlight/SpotlightDialog.tsx"
+    "src/components/views/dialogs/spotlight/SpotlightDialog.tsx":"src/components/views/dialogs/spotlight/SpotlightDialog.tsx",
+    "src/components/views/rooms/RoomListHeader.tsx":"src/components/views/rooms/RoomListHeader.tsx",
+    "src/components/structures/LeftPanel.tsx":"src/components/structures/LeftPanel.tsx"
 }
