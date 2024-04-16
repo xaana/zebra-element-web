@@ -22,7 +22,7 @@ const DatabasePill = ({ database,timelineRenderingType,roomId}:{database:string|
 
   if (!database) return null;
   return (
-    <div className="py-2 bg-gray-200 rounded-lg gap-2 inline-block">
+    <div className="py-2 bg-muted rounded-lg gap-2 inline-block">
         <div className='flex flex-row items-center text-xs'>
         <Database size={16} />
       <span>{database}</span>

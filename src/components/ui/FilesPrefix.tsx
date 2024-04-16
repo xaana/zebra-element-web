@@ -15,7 +15,7 @@ const FilesPrefix = ({ files}:{files: any[]|undefined}) : React.JSX.Element | nu
     
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-      <div className="inline-block px-2 bg-gray-300 rounded-full gap-2 cursor-pointer">
+      <div className="inline-block px-2 bg-muted rounded-full gap-2 cursor-pointer">
         <div className='flex flex-row text-xs item-center'>
         <File size={16} />
       <span>Files</span>
