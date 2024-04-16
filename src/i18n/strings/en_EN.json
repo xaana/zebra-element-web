@@ -10,6 +10,10 @@
         "server_picker_description": "You can use the custom server options to sign into other Matrix servers by specifying a different homeserver URL.",
         "sso_complete_in_browser_dialog_title": "Go to your browser to complete Sign In"
     },
+    "common":{
+        "favourites": "Pinned",
+        "rooms": "Recent"
+    },
     "desktop_default_device_name": "%(brand)s Desktop: %(platformName)s",
     "download_completed": "Download Completed",
     "error": {

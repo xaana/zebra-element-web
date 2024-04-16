@@ -27,12 +27,13 @@
     "src/components/views/context_menus/MessageContextMenu.tsx":"src/components/views/MessageContextMenu.tsx",
     "src/components/views/right_panel/RoomSummaryCard.tsx":"src/components/views/RoomSummaryCard.tsx",
     "src/components/views/right_panel/UserInfo.tsx":"src/components/views/UserInfo.tsx",
-    "node_modules/matrix-react-sdk/src/components/views/spaces/QuickSettingsButton.tsx": "src/components/views/spaces/QuickSettingsButton.tsx",
+    "src/components/views/spaces/QuickSettingsButton.tsx": "src/components/views/spaces/QuickSettingsButton.tsx",
     "src/components/views/settings/tabs/user/SidebarUserSettingsTab.tsx": "src/components/views/settings/SidebarUserSettingsTab.tsx",
     "src/components/structures/MainSplit.tsx": "src/components/structures/MainSplit.tsx",
     "src/ContentMessages.ts": "src/ContentMessages.ts",
     "src/components/structures/ThreadView.tsx": "src/components/structures/ThreadView.tsx",
     "src/components/views/dialogs/spotlight/SpotlightDialog.tsx":"src/components/views/dialogs/spotlight/SpotlightDialog.tsx",
     "src/components/views/rooms/RoomListHeader.tsx":"src/components/views/rooms/RoomListHeader.tsx",
-    "src/components/structures/LeftPanel.tsx":"src/components/structures/LeftPanel.tsx"
+    "src/components/structures/LeftPanel.tsx":"src/components/structures/LeftPanel.tsx",
+    "src/components/views/rooms/EventTile.tsx": "src/components/views/rooms/EventTile.tsx"
 }
