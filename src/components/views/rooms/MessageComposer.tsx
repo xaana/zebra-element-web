@@ -663,7 +663,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                     }}
                                 />
                             )}
-                            {showSendButton && (
+                            {(showSendButton && !SdkContextClass.instance.roomViewStore.getUploading()) && (
                                 <SendButton
                                     key="controls_send"
                                     onClick={this.sendMessage}
