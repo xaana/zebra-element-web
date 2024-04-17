@@ -48,6 +48,8 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 
 import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
+import { getVectorConfig } from "./vector/getconfig";
+import { toast } from "sonner";
 // scraped out of a macOS hidpi (5660ppm) screenshot png
 //                  5669 px (x-axis)      , 5669 px (y-axis)      , per metre
 const PHYS_HIDPI = [0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16, 0x25, 0x01];
@@ -597,24 +599,110 @@ export default class ContentMessages {
             }
 
             if (upload.cancelled) throw new UploadCanceledError();
-            const result = await uploadFile(matrixClient, roomId, file, onProgress, upload.abortController);
-            content.file = result.file;
-            content.url = result.url;
-            const mxcUrl = content.url ?? content.file?.url;
-            if(mxcUrl&&content.body.endsWith(".pdf")) {
-                const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
-                const currentFile = SdkContextClass.instance.roomViewStore.getFiles()
-                if (autoSelectFile&&currentFile){
-                    const newFiles  = [...currentFile,autoSelectFile];
-                    console.log("File auto select")
-                    dis.dispatch({
-                        action: "select_files",
-                        files: newFiles,
-                        roomId: roomId,
-                        context:context,
-                    });
+            let result
+            let progress: UploadProgress = {
+                loaded: 0,
+                total: file.size,
+            };
+            let mxcUrl:string | undefined;
+            if(content.body.endsWith(".pdf")){
+                dis.dispatch({action:"uploading_files",uploading:true})
+                result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
+                content.file = result.file;
+                content.url = result.url;
+                mxcUrl = content.url ?? content.file?.url;
+                if(mxcUrl) {
+                    const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
+                    const currentFile = SdkContextClass.instance.roomViewStore.getFiles()
+                    if (autoSelectFile&&currentFile){
+                        const newFiles  = [...currentFile,autoSelectFile];
+                        dis.dispatch({
+                            action: "select_files",
+                            files: newFiles,
+                            roomId: roomId,
+                            context:context,
+                        });
+                    }
                 }
+                let apiUrl;
+                const configData = await getVectorConfig();
+                if (configData?.plugins["websocket"]) {
+                    apiUrl = configData?.plugins["websocket"].url;
+                }
+                const wsUrl = `${apiUrl}/pdf_upload`;
+                const websocket = new WebSocket(wsUrl);
+                
+                let count=0;
+                websocket.onopen = () => {
+                    console.log("WebSocket connection established");
+                  
+                    // Example data to be sent to the server
+                    const textToSend = JSON.stringify({
+                      media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
+                      room_id: roomId,
+                    });
+                    // Sending a JSON string as message to the websocket server
+                    websocket.send(textToSend);
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend =  () => {
+                        const base64data = reader.result as string;                
+                        const encodedPdf = base64data?.split(',')[1]; // Remove the data URL part
+                        const fileObjects = {
+                            filename: [content.body],
+                            content: [encodedPdf],
+                        };
+            
+                        // Send encoded PDF data as string
+                        websocket.send(JSON.stringify(fileObjects));
+                    };
+                    websocket.onmessage = (event) => {
+                        if(event.data.startsWith("success")){
+                            count+=1/4
+                            progress = {
+                                loaded: count*file.size,
+                                total: file.size
+                            }
+                            
+                            dis.dispatch({ action: Action.UploadProgress, progress:progress, upload:upload});
+                            if(count===1){
+                                console.log("upload success, closing websocket");
+                                dis.dispatch({action:"uploading_files",uploading:false})
+                            }
+                            // console.log(event.data,progress);
+                        }else if(event.data.startsWith("fail")){
+                            dis.dispatch({action:"uploading_files",uploading:false})
+                            dis.dispatch({
+                                action: "select_files",
+                                files: [],
+                                roomId: roomId,
+                                context:context,
+                            });
+                            toast.error("File upload failed. Please try again");
+                        }
+                        
+                    };
+                  };
+                  websocket.onerror = (event) => {
+                    console.error("WebSocket error observed:", event);
+                    dis.dispatch({action:"uploading_files",uploading:false})
+                            dis.dispatch({
+                                action: "select_files",
+                                files: [],
+                                roomId: roomId,
+                                context:context,
+                            });
+                            toast.error("File upload failed. Please try again");
+                };
             }
+            else{
+                result = await uploadFile(matrixClient, roomId, file, onProgress, upload.abortController);
+                content.file = result.file;
+                content.url = result.url;
+            }
+            
+            
+            
             
             
             

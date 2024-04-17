@@ -55,6 +55,9 @@
         },
         "algology": {
             "url": "http://localhost:3001"
+        },
+        "websocket": {
+            "url": "ws://localhost:8000/ws"
         }
     },
     "bot_api": "http://localhost:29316/_matrix/maubot/plugin/zebra"

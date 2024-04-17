@@ -457,7 +457,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     {this.card.current && <Measured sensor={this.card.current} onMeasurement={this.onMeasurement} />}
                     <div className="mx_ThreadView_timelinePanelWrapper">{timeline}</div>
 
-                    {ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 && (
+                    {(ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading() ) && (
                         <UploadBar room={this.props.room} relation={threadRelation} />
                     )}
 
