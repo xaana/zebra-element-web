@@ -418,11 +418,9 @@ export class RoomViewStore extends EventEmitter {
                 // If currently viewed room does not match the room in which we wish to reply then change rooms this
                 // can happen when performing a search across all rooms. Persist the data from this event for both
                 // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
-                if (payload.uploading){
                     this.setState({
                         uploading: payload.uploading,
                     });
-                }
             }
             break;
             case Action.PromptAskToJoin: {
