@@ -605,7 +605,7 @@ export default class ContentMessages {
                 total: file.size,
             };
             let mxcUrl:string | undefined;
-            if(content.body.endsWith(".pdf")){
+            if(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt")) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;
