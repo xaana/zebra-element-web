@@ -55,6 +55,9 @@
         },
         "algology": {
             "url": "https://algology-dev.securezebra.com"
+        },
+        "websocket": {
+            "url": "ws://dev-api-2.securezebra.com/ws"
         }
     },
     "bot_api": "https://dev-api-1.securezebra.com/_matrix/maubot/plugin/zebra"

@@ -112,7 +112,7 @@ import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/Show
 import { RoomStatusBarUnsentMessages } from "matrix-react-sdk/src/components/structures/RoomStatusBarUnsentMessages";
 import { LargeLoader } from "matrix-react-sdk/src/components/structures/LargeLoader";
 import { isVideoRoom } from "matrix-react-sdk/src/utils/video-rooms";
-import { SDKContext } from "matrix-react-sdk/src/contexts/SDKContext";
+import { SDKContext, SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { CallStore, CallStoreEvent } from "matrix-react-sdk/src/stores/CallStore";
 import { Call } from "matrix-react-sdk/src/models/Call";
 import { RoomSearchView } from "matrix-react-sdk/src/components/structures/RoomSearchView";
@@ -2312,8 +2312,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         let statusBar: JSX.Element | undefined;
         let isStatusAreaExpanded = true;
-
-        if (ContentMessages.sharedInstance().getCurrentUploads().length > 0) {
+        if (ContentMessages.sharedInstance().getCurrentUploads().length > 0 || SdkContextClass.instance.roomViewStore.getUploading()) {
+            
             statusBar = <UploadBar room={this.state.room} />;
         } else if (!this.state.search) {
             isStatusAreaExpanded = this.state.statusBarVisible;

@@ -390,3 +390,11 @@
 @import "matrix-react-sdk/res/css/voice-broadcast/atoms/_VoiceBroadcastRecordingConnectionError.pcss";
 @import "matrix-react-sdk/res/css/voice-broadcast/atoms/_VoiceBroadcastRoomSubtitle.pcss";
 @import "matrix-react-sdk/res/css/voice-broadcast/molecules/_VoiceBroadcastBody.pcss";
+.mx_EventTile[data-layout="bubble"] {
+    &[data-self="true"] {
+        .mx_ThreadSummary {
+            margin-inline-start: calc(-1 * var(--gutterSize));
+            margin-inline-end: auto;
+        }
+    }
+}

@@ -61,6 +61,8 @@ import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { getVectorConfig } from "@/vector/getconfig";
 import { Loader } from "@/components/ui/loader";
+import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
+import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -587,6 +589,22 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return <span className="mx_EventTile_pendingModeration">{`(${text})`}</span>;
     }
+
+    private getCitations = (fullResponse: string): WebSearchSourceItem[] => {
+        const citations: WebSearchSourceItem[] = []
+        const regex =
+          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+        const urls = fullResponse.match(regex)
+        const uniqueCitations = [...new Set(urls)] as any[]
+        for (const link of uniqueCitations) {
+          const hostname = new URL(link).hostname
+          citations.push({ link, hostname })
+        }
+        return citations
+      }
+    
+
+
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -627,6 +645,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if (content.prompt){
+            const citations: WebSearchSourceItem[] = this.getCitations(content.body)
+            body=(
+                <>
+                    {body}
+                    <WebSearchSources data={citations} />
+                    
+                </>
+            )
+        }
         if (database){
             body=(
                 <div className="flex items-center">
