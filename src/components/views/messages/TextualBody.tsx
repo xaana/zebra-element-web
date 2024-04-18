@@ -63,6 +63,7 @@ import { getVectorConfig } from "@/vector/getconfig";
 import { Loader } from "@/components/ui/loader";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
 import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+import { SuggestionPrompt } from "./SuggestionPrompt";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -602,6 +603,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         return citations
       }
+
+      private insertSuggestion = (suggestion: string): void => {
+        dis.dispatch<ComposerInsertPayload>({
+            action: Action.ComposerInsert,
+            text: suggestion,
+            timelineRenderingType: this.context.timelineRenderingType,
+        });
+      }
     
 
 
@@ -651,7 +660,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <WebSearchSources data={citations} />
-                    
+                    <SuggestionPrompt suggestions={content.prompt} insertSuggestion={this.insertSuggestion} />
                 </>
             )
         }
