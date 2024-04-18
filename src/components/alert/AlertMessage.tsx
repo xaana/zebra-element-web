@@ -35,7 +35,7 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
     return (
         <Card className="w-[600px]">
             <CardHeader>
-                {content.status=="firing"?`🔥${content.title}`:`🥳${content.title}`}
+                {content.status=="firing"?`🔥${content.title}`:`🚨${content.title}`}
                 {/* <h2>{content.title}</h2> */}
             </CardHeader>
             <CardContent>
