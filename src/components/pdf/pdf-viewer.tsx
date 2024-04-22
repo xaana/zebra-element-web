@@ -93,19 +93,22 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
                 setEvents([...roomResults, ...finalResults]);
             });
         };
-
+        // just get the root need to fixed
         initRouting();
         
         const currentRoom = client.getRoom(roomId);
 
         if(currentRoom){
             fetchFileEventsServer([currentRoom]);
-            const files = currentRoom.findEventById(rootId)?.getContent()
-            if(files){
-                setUrls(files["fileSelected"].map((file: DocFile)=>file.mediaId))
-            }
+            const files = currentRoom.findEventById(rootId)
+            files?.getThread()?.timeline.forEach((evt)=>{
+                if(evt.getContent().fileSelected){
+                    setUrls([...urls,...evt.getContent().fileSelected.map((file: DocFile)=>file.mediaId)])
+                }
+            })
         }
     }, [client]);
+
     useEffect(() => {
         if (events.length === 0) return;
         const tempPdfs = events.map(async (event) => {
@@ -162,7 +165,7 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
         <>
             <Button
                 variant="secondary"
-                className="font-normal text-xs cursor-pointer !border-black border border-solid"
+                className="font-normal text-xs cursor-pointer !border-black border border-solid h-7"
                 onClick={() => {
                     setShowCitations(!showCitations);
                 }}
