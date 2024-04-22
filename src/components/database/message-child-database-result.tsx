@@ -50,7 +50,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
 
     const handleDataDownload = (): void => {
         const csv = [];
-        csv.push(Object.keys(data)) ;
+        csv.push(Object.keys(data[0])) ;
         for (const rowItem of data){
             csv.push(Object.values(rowItem).join(","))
         }
@@ -149,20 +149,14 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                         <DropdownMenuContent side="top">
                                             <DropdownMenuLabel>Options</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem>
-                                                <Button onClick={handleViewCharts} className="w-full">
-                                                    <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
-                                                </Button>
+                                            <DropdownMenuItem onSelect={handleViewCharts}>
+                                                <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Button className="text-left w-full" onClick={handleDataDownload}>
-                                                    <Download className="h-4 w-4 mr-2" />  Download
-                                                </Button>
+                                            <DropdownMenuItem onSelect={handleDataDownload}>
+                                                <Download className="h-4 w-4 mr-2" />  Download
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                <Button onClick={handleAlgologyRedirect} className="w-full">
-                                                    <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
-                                                </Button>
+                                            <DropdownMenuItem onSelect={handleAlgologyRedirect}>
+                                                <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
