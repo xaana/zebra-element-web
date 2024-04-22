@@ -18,7 +18,7 @@ export const generateAlertBody = (content:{
         result.push({
             name: alert.labels.alertname,
             value: alert.values || alert.valueString || "No values available.",
-            alertURL: alert.generatorURL || subUriPos === -1 ? alert.generatorURL.substring(subUriPos+1) : null,
+            // alertURL: alert.generatorURL || subUriPos === -1 ? alert.generatorURL.substring(subUriPos+1) : null,
             panelURL: alert.panelURL ? alert.panelURL.substring(subUriPos+1) : null,
             dashboardURL: alert.panelURL ? alert.dashboardURL.substring(subUriPos+1) : null
         })

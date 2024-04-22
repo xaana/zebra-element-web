@@ -14,7 +14,7 @@ import { PluginActions } from "../../plugins";
 
 import { init } from "@/vector/routing";
 
-const BUTTON_STYLE = "bg-gray-300 hover:bg-gray-500 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center h-8";
+const BUTTON_STYLE = "bg-gray-300 hover:bg-gray-500 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center h-8 my-1 w-full";
 
 const AlertMessagePanel = (props:any): React.JSX.Element => {
     const {content} = props;
@@ -35,10 +35,10 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
     return (
         <Card className="w-[600px]">
             <CardHeader>
-                {content.status=="firing"?`🔥${content.title}`:`🚨${content.title}`}
+                {content.status!=="firing"?`🔔${content.title}`:`❗️${content.title}`}
                 {/* <h2>{content.title}</h2> */}
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 pt-3">
                 
                 {alertBody.length >= 1 && (
                 <Table>
@@ -47,7 +47,7 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
                             <TableHead className="w-[16px]">No.</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Value</TableHead>
-                            <TableHead className="w-[96px]">Options</TableHead>
+                            <TableHead className="w-[72px]">Options</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -61,13 +61,13 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
                                 }): (item.value.length > 40 ? item.value.substring(0,37)+"...": item.value)}
                             </TableCell>
                             <TableCell>
-                                {item.alertURL ? (
+                                {/* {item.alertURL ? (
                                     <Button className={BUTTON_STYLE} 
                                         onClick={()=>buttonClickHandler(item.alertURL)}
                                     >
                                         View Alert
                                     </Button>
-                                ) : null}
+                                ) : null} */}
                                 {item.panelURL ? (
                                     <Button className={BUTTON_STYLE}
                                         onClick={()=>buttonClickHandler(item.panelURL)}
