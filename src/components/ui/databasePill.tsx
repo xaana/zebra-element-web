@@ -1,7 +1,9 @@
 import React from 'react';
 import { TimelineRenderingType } from 'matrix-react-sdk/src/contexts/RoomContext';
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import { Database, X } from 'lucide-react';
+import { X } from 'lucide-react';
+
+import { IconDatabase } from './icons';
 
 // import { IconDatabase } from './icons';
 
@@ -22,9 +24,9 @@ const DatabasePill = ({ database,timelineRenderingType,roomId}:{database:string|
 
   if (!database) return null;
   return (
-    <div className="py-2 bg-muted rounded-lg gap-2 inline-block">
-        <div className='flex flex-row items-center text-xs'>
-        <Database size={16} />
+    <div className="inline-block px-2 bg-muted rounded-full gap-2">
+        <div className='flex flex-row text-xs'>
+        <IconDatabase />
       <span>{database}</span>
 
       <X onClick={()=>cancelQuoting()} className='cursor-pointer' size={16} />

@@ -71,6 +71,7 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/components/views/rooms/BasicMessageComposer";
 import { data } from "@tensorflow/tfjs";
 import { DocFile } from "./FileSelector";
+import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
 
 
 
@@ -557,21 +558,27 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
             if(content&&this.props.database){
                 content['database'] = this.props.database;
-                dis.dispatch({
-                    action: "select_database",
-                    database: "",
-                    roomId: roomId,
-                    context: this.context.timelineRenderingType,
-                });
+                if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
+                    dis.dispatch({
+                        action: "select_database",
+                        database: "",
+                        roomId: roomId,
+                        context: this.context.timelineRenderingType,
+                    });
+                }
+                
             }
             if(content&&this.props.files&&this.props.files?.length>0){
                 content['fileSelected'] = this.props.files;
-                dis.dispatch({
-                    action: "select_files",
-                    files: [],
-                    roomId: roomId,
-                    context: this.context.timelineRenderingType,
-                });
+                if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
+                    dis.dispatch({
+                        action: "select_files",
+                        files: [],
+                        roomId: roomId,
+                        context: this.context.timelineRenderingType,
+                    });
+                }
+                
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,
@@ -664,6 +671,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 logger.error(e);
             }
         }
+        if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
         if (database){
             dis.dispatch({
                 action: "select_database",
@@ -679,7 +687,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 roomId: this.context.roomId,
                 context: this.context.timelineRenderingType,
             });
-        }
+        }}
         return null;
     }
 
