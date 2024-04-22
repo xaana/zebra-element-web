@@ -60,7 +60,7 @@ import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { getVectorConfig } from "@/vector/getconfig";
-import { Loader } from "@/components/ui/loader";
+import { Loader} from "@/components/ui/loader";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
 import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import { SuggestionPrompt } from "./SuggestionPrompt";
@@ -666,7 +666,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (database){
             body=(
-                <div className="flex items-center">
+                <div>
                 <DatabasePrefix database={database} />
                 {body}
                 </div>
@@ -674,7 +674,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (fileSelected){
             body=(
-                <div className="flex items-center">
+                <div>
                     <FilesPrefix files={fileSelected} />
                     {body}
                 </div>
@@ -728,6 +728,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
+                    <SuggestionPrompt suggestions={content.file_prompt} insertSuggestion={this.insertSuggestion} />
                 </>
             );
         
@@ -750,7 +751,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId) {
             const tableJson = JSON.parse(databaseTable);
-            console.log(tableJson)
             body = (
                 <>
                     {body}
@@ -780,6 +780,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 <div className="shadow-none">
                                     <CollapsibleMessage title="View SQL Query" contents={query || []} />
                                 </div>
+                                <SuggestionPrompt suggestions={content.database_prompt} insertSuggestion={this.insertSuggestion} />
                             </>
                         )}
                     </div>
