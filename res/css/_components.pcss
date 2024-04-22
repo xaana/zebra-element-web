@@ -390,13 +390,16 @@
 @import "matrix-react-sdk/res/css/voice-broadcast/atoms/_VoiceBroadcastRecordingConnectionError.pcss";
 @import "matrix-react-sdk/res/css/voice-broadcast/atoms/_VoiceBroadcastRoomSubtitle.pcss";
 @import "matrix-react-sdk/res/css/voice-broadcast/molecules/_VoiceBroadcastBody.pcss";
-.mx_EventTile[data-layout="bubble"] {
-    &[data-self="true"] {
-        .mx_ThreadSummary {
-            margin-inline-start: calc(-1 * var(--gutterSize));
-            margin-inline-end: auto;
-        }
-    }
+
+.whoistyping-loader {
+  width: 10px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 #0004;
+  animation: l1 1s infinite;
+}
+@keyframes l1 {
+    100% {box-shadow: 0 0 0 30px #0000}
 }
 
 .mx_JumpToBottomButton {
