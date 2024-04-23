@@ -326,7 +326,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 this.applyFormatting();
             }
         }
-        if (prevProps.mxEvent.getContent().edit_state === mxEvent.getContent().edit_state) {
     }
 
     public componentWillUnmount(): void {
