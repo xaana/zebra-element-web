@@ -19,6 +19,7 @@ import React, { ReactNode } from "react";
 import { NumberSize, Resizable } from "matrix-react-sdk/node_modules/re-resizable";
 import { Direction } from "matrix-react-sdk/node_modules/re-resizable/lib/resizer";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
+import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 
 interface IProps {
     resizeNotifier: ResizeNotifier;
@@ -38,7 +39,29 @@ interface IProps {
     defaultSize: number;
 }
 
-export default class MainSplit extends React.Component<IProps> {
+interface IState {
+    collapseRightPanel: boolean;
+    children?: React.JSX.Element
+}
+
+const MainSplitBodyView = (props: {
+    bodyView: React.ReactNode,
+    onClick: () => void,
+}): React.JSX.Element => {
+    return (
+        <div style={{display:"flex", flex:1}} onClick={props.onClick}>
+            {props.bodyView}
+        </div>
+    )
+}
+
+export default class MainSplit extends React.Component<IProps, IState> {
+    public constructor(props:IProps) {
+        super(props);
+        this.state = {
+            collapseRightPanel: false,
+        }
+    }
     public static defaultProps = {
         defaultSize: 350,
     };
@@ -89,40 +112,47 @@ export default class MainSplit extends React.Component<IProps> {
         const bodyView = React.Children.only(this.props.children);
         const panelView = this.props.panel;
 
-        const hasResizer = !this.props.collapsedRhs && panelView;
-
+        const hasResizer = !this.props.collapsedRhs && panelView && !this.state.collapseRightPanel;
+        
         let children;
         if (hasResizer) {
-            children = (
-                <Resizable
-                    key={this.props.sizeKey}
-                    defaultSize={this.loadSidePanelSize()}
-                    minWidth={264}
-                    maxWidth="70%"
-                    enable={{
-                        top: false,
-                        right: false,
-                        bottom: false,
-                        left: true,
-                        topRight: false,
-                        bottomRight: false,
-                        bottomLeft: false,
-                        topLeft: false,
-                    }}
-                    onResizeStart={this.onResizeStart}
-                    onResize={this.onResize}
-                    onResizeStop={this.onResizeStop}
-                    className="mx_RightPanel_ResizeWrapper shadow-2xl"
-                    handleClasses={{ left: "mx_ResizeHandle--horizontal" }}
-                >
-                    {panelView}
-                </Resizable>
-            );
+            children = <Resizable
+                key={this.props.sizeKey}
+                defaultSize={this.loadSidePanelSize()}
+                minWidth={264}
+                maxWidth="70%"
+                enable={{
+                    top: false,
+                    right: false,
+                    bottom: false,
+                    left: true,
+                    topRight: false,
+                    bottomRight: false,
+                    bottomLeft: false,
+                    topLeft: false,
+                }}
+                onResizeStart={this.onResizeStart}
+                onResize={this.onResize}
+                onResizeStop={this.onResizeStop}
+                className="mx_RightPanel_ResizeWrapper shadow-2xl"
+                handleClasses={{ left: "mx_ResizeHandle--horizontal" }}
+            >
+                {this.state.collapseRightPanel ? undefined : panelView}
+            </Resizable>
         }
-
         return (
             <div className="mx_MainSplit">
-                {bodyView}
+                <MainSplitBodyView 
+                    bodyView={bodyView} 
+                    onClick={()=>{
+                        if (hasResizer){
+                            this.setState(prevState=>({collapseRightPanel: true}));
+                            RightPanelStore.instance.setCards([]);
+                        } else {
+                            this.setState(prevState=>({collapseRightPanel: false}));
+                        }
+                    }} 
+                />
                 {children}
             </div>
         );

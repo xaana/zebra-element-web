@@ -37,7 +37,8 @@
     "src/components/structures/LeftPanel.tsx":"src/components/structures/LeftPanel.tsx",
     "src/components/views/rooms/EventTile.tsx": "src/components/views/rooms/EventTile.tsx",
     "src/components/structures/UploadBar.tsx": "src/components/structures/UploadBar.tsx",
-    "src/components/views/elements/GenericEventListSummary":"src/components/views/GenericEventListSummary.tsx",
+    "src/components/views/elements/GenericEventListSummary":"src/components/views/elements/GenericEventListSummary.tsx",
     "src/components/structures/grouper/CreationGrouper.tsx":"src/components/structures/CreationGrouper.tsx",
-    "src/components/views/rooms/WhoIsTypingTile.tsx": "src/components/views/rooms/WhoIsTypingTile.tsx"
+    "src/components/views/rooms/WhoIsTypingTile.tsx": "src/components/views/rooms/WhoIsTypingTile.tsx",
+    "src/components/views/elements/SearchWarning.tsx": "src/components/views/elements/SearchWarning.tsx"
 }
