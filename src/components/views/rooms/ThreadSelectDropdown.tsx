@@ -1,6 +1,6 @@
 import React from "react";
 import { Room, MatrixEvent } from "matrix-js-sdk/src/matrix";
-import { ChevronsUpDown  } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
@@ -8,19 +8,8 @@ import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelS
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
 
-import {
-    Command,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-    CommandSeparator,
-  } from "../../ui/command"; 
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "../../ui/popover" ;
+import { Command, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../../ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Button } from "../../ui/button";
 import type { Thread } from "matrix-js-sdk/src/matrix";
 
@@ -31,16 +20,16 @@ interface Props {
     mxEvent?: MatrixEvent;
     initialOption?: string;
 }
-   
+
 export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [value, setValue] = React.useState("");
-    const [threads, setThreads]= React.useState(()=>props.room.getThreads());
-    
-    React.useEffect(()=>{
+    const [threads, setThreads] = React.useState(() => props.room.getThreads());
+
+    React.useEffect(() => {
         const updatedThreads = props.room.getThreads();
         setThreads(updatedThreads);
-        dis.register((payload)=>{
+        dis.register((payload) => {
             if (payload.action === Action.ShowThread) {
                 const { rootEvent, initialEvent, highlighted, scrollIntoView, push } = payload as ShowThreadPayload;
                 const threadViewCard = {
@@ -62,22 +51,21 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                     context: TimelineRenderingType.Thread,
                 });
             }
-        })
-    },[props.room])
-    
+        });
+    }, [props.room]);
+
     const getLatestTimestamp = (thread: Thread): number => {
         return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent.localTimestamp;
-    }
+    };
 
     const onSelectHandler = (thread: Thread): void => {
         if (thread?.rootEvent) {
             dis.dispatch<ShowThreadPayload>({
                 action: Action.ShowThread,
-                rootEvent: thread.rootEvent
+                rootEvent: thread.rootEvent,
             });
         }
-    }
-    
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -87,12 +75,14 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                     role="combobox"
                     aria-expanded={open}
                     className="h-7 w-[160px] justify-between text-sm"
-                    onClick={()=>{
-                        if (props.room.getThreads()!==threads){
-                            setThreads(props.room.getThreads().sort((a,b)=>getLatestTimestamp(a) - getLatestTimestamp(b)));
+                    onClick={() => {
+                        if (props.room.getThreads() !== threads) {
+                            setThreads(
+                                props.room.getThreads().sort((a, b) => getLatestTimestamp(a) - getLatestTimestamp(b)),
+                            );
                         }
                     }}
-                >   
+                >
                     Select Topic
                     {/* {value ? value :"Select Topic..."} */}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -100,80 +90,93 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
             </PopoverTrigger>
             <PopoverContent className="w-[240px] p-0">
                 <Command>
-                    {threads.length ? 
-                    <>
-                        <CommandInput placeholder="Search Topic..." />
-                        <CommandList> 
-                            
-                            <CommandGroup heading="Today">
-                                {threads
-                                .filter((item)=>getLatestTimestamp(item) + (24 * 60 * 60 * 1000) > Date.now())
-                                .map((item)=>{
-                                    return (
-                                        <ThreadSelectItem
-                                            thread={item}
-                                            id={item.id}
-                                            value={item.id}
-                                            onSelect={(currentId)=>{
-                                                onSelectHandler(item);
-                                                setValue(currentId===value?"":currentId);
-                                                setOpen(false);
-                                            }} 
-                                        />
-                                    )
-                                })}
-                            </CommandGroup>
-                            <CommandSeparator />
-                            <CommandGroup heading="Past Week">
-                                {threads
-                                .filter((item)=>getLatestTimestamp(item) + (24 * 60 * 60 * 1000) < Date.now() && getLatestTimestamp(item) + (7 * 24 * 60 * 60 * 1000) > Date.now())
-                                .map((item)=>{
-                                    return (
-                                        <ThreadSelectItem
-                                            thread={item}
-                                            id={item.id}
-                                            value={item.id}
-                                            onSelect={(currentId)=>{
-                                                onSelectHandler(item);
-                                                setValue(currentId===value?"":currentId);
-                                                setOpen(false);
-                                            }} 
-                                        />
-                                    )
-                                })}
-                            </CommandGroup>
-                            <CommandSeparator />
-                            <CommandGroup heading="More Than One Week">
-                                {threads
-                                .filter((item)=>getLatestTimestamp(item) + (7 * 24 * 60 * 60 * 1000) < Date.now())
-                                .map((item)=>{
-                                    return (
-                                        <ThreadSelectItem
-                                            thread={item}
-                                            id={item.id}
-                                            value={item.id}
-                                            onSelect={(currentId)=>{
-                                                onSelectHandler(item);
-                                                setValue(currentId===value?"":currentId);
-                                                setOpen(false);
-                                            }} 
-                                        />
-                                    )
-                                })}
-                            </CommandGroup>
-                        </CommandList>
-                    </>
-                     : <Label className="py-6 text-center text-sm">No Topic Found</Label>}
+                    {threads.length ? (
+                        <>
+                            <CommandInput placeholder="Search Topic..." />
+                            <CommandList>
+                                <CommandGroup heading="Today">
+                                    {threads
+                                        .filter((item) => getLatestTimestamp(item) + 24 * 60 * 60 * 1000 > Date.now())
+                                        .map((item) => {
+                                            return (
+                                                <ThreadSelectItem
+                                                    key={item.id}
+                                                    thread={item}
+                                                    id={item.id}
+                                                    value={item.id}
+                                                    onSelect={(currentId) => {
+                                                        onSelectHandler(item);
+                                                        setValue(currentId === value ? "" : currentId);
+                                                        setOpen(false);
+                                                    }}
+                                                />
+                                            );
+                                        })}
+                                </CommandGroup>
+                                <CommandSeparator />
+                                <CommandGroup heading="Past Week">
+                                    {threads
+                                        .filter(
+                                            (item) =>
+                                                getLatestTimestamp(item) + 24 * 60 * 60 * 1000 < Date.now() &&
+                                                getLatestTimestamp(item) + 7 * 24 * 60 * 60 * 1000 > Date.now(),
+                                        )
+                                        .map((item) => {
+                                            return (
+                                                <ThreadSelectItem
+                                                    key={item.id}
+                                                    thread={item}
+                                                    id={item.id}
+                                                    value={item.id}
+                                                    onSelect={(currentId) => {
+                                                        onSelectHandler(item);
+                                                        setValue(currentId === value ? "" : currentId);
+                                                        setOpen(false);
+                                                    }}
+                                                />
+                                            );
+                                        })}
+                                </CommandGroup>
+                                <CommandSeparator />
+                                <CommandGroup heading="More Than One Week">
+                                    {threads
+                                        .filter(
+                                            (item) => getLatestTimestamp(item) + 7 * 24 * 60 * 60 * 1000 < Date.now(),
+                                        )
+                                        .map((item) => {
+                                            return (
+                                                <ThreadSelectItem
+                                                    key={item.id}
+                                                    thread={item}
+                                                    id={item.id}
+                                                    value={item.id}
+                                                    onSelect={(currentId) => {
+                                                        onSelectHandler(item);
+                                                        setValue(currentId === value ? "" : currentId);
+                                                        setOpen(false);
+                                                    }}
+                                                />
+                                            );
+                                        })}
+                                </CommandGroup>
+                            </CommandList>
+                        </>
+                    ) : (
+                        <Label className="py-6 text-center text-sm">No Topic Found</Label>
+                    )}
                 </Command>
             </PopoverContent>
         </Popover>
-    )
-}
+    );
+};
 
-const ThreadSelectItem = (
-    props: {thread: Thread, id:string, value:string, onSelect:(currentId:string)=>void}
-): React.JSX.Element => {
-    const {thread, id, value, onSelect} = props;
+const ThreadSelectItem = (props: {
+    thread: Thread;
+    id: string;
+    value: string;
+    onSelect: (currentId: string) => void;
+}): React.JSX.Element => {
+    const { thread, id, value, onSelect } = props;
     const messageContent = thread.rootEvent?.getContent();
     let messageText;
 
@@ -182,8 +185,7 @@ const ThreadSelectItem = (
             messageText = messageContent.body; // Message (In str format)
             break;
         case "m.notice":
-            messageText = 
-                messageContent.alertContent 
+            messageText = messageContent.alertContent
                 ? messageContent.alertContent.title // Alert Card Title
                 : messageContent.body; // General Content
             break;
@@ -205,21 +207,15 @@ const ThreadSelectItem = (
             messageText = "Undecrypted Message";
             break;
         default:
-            messageText = messageContent.body
+            messageText = messageContent.body;
             break;
     }
 
     return (
-        <CommandItem
-            className=" text-gray-900 hover:text-gray-100"
-            key={id}
-            value={value}
-            onSelect={onSelect}
-        >
+        <CommandItem className=" text-gray-900 hover:text-gray-100" key={id} value={value} onSelect={onSelect}>
             <div className="flex flex-row flex-grow bg-transparent justify-end w-full">
                 <p className="flex-1 truncate">{messageText}</p>
             </div>
         </CommandItem>
-        
-    )
-}
+    );
+};
