@@ -100,7 +100,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         // Fetch all rooms current user is a part of
         const rooms: Room[] = client.getVisibleRooms(false);
 
-        // Array to store all `m.file` events across all rooms
+        // Array to store all file events across all rooms
         const allFileEvents: MatrixEvent[] = [];
 
         // Array to store all thread root events across all rooms
@@ -121,7 +121,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
                     roomEvents.forEach((event) => {
                         // Store thread root events
                         event.isThreadRoot && threadRootEvents.push(event);
-                        // Store `m.file` type events
+                        // Store file events
                         (event.getContent().url || event.getContent().file) && allFileEvents.push(event);
                     });
                 }),
