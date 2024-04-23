@@ -105,7 +105,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
     public componentDidMount(): void {
         if (this.state.thread) {
             this.postThreadUpdate(this.state.thread)
-            console.log(this.state.thread.timeline[0].getContent())
             if(this.state.thread.timeline[0]?.getContent().database){
                 this.setState({database: this.state.thread.timeline[0].getContent().database,files:[]})
             }
