@@ -18,6 +18,7 @@ import React, { createRef, SyntheticEvent, MouseEvent } from "react";
 import ReactDOM from "react-dom";
 import highlight from "highlight.js";
 import { MsgType } from "matrix-js-sdk/src/matrix";
+import { IContent } from "matrix-js-sdk/src/models/event";
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { formatDate } from "matrix-react-sdk/src/DateUtils";
 import Modal from "matrix-react-sdk/src/Modal";
@@ -60,7 +61,7 @@ import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { getVectorConfig } from "@/vector/getconfig";
-import { Loader } from "@/components/ui/loader";
+import { Loader} from "@/components/ui/loader";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
 import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import { SuggestionPrompt } from "./SuggestionPrompt";
@@ -76,6 +77,9 @@ interface IState {
     pdfUrls: any[];
     citations: Citation[];
     botApi: null | string;
+    echartsOption: string | undefined;
+    echartsQuery: string | undefined;
+    generating: boolean;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -97,6 +101,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             pdfUrls: [],
             citations: [],
             botApi: null,
+            echartsOption: undefined,
+            echartsQuery: undefined,
+            generating: false,
         };
     }
 
@@ -311,7 +318,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
     }
 
-    public componentDidUpdate(prevProps: Readonly<IBodyProps>): void {
+    public componentDidUpdate(prevProps: Readonly<IBodyProps>, prevState: Readonly<IState>): void {
         if (!this.props.editState) {
             const stoppedEditing = prevProps.editState && !this.props.editState;
             const messageWasEdited = prevProps.replacingEventId !== this.props.replacingEventId;
@@ -343,7 +350,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             nextProps.editState !== this.props.editState ||
             nextState.links !== this.state.links ||
             nextState.widgetHidden !== this.state.widgetHidden ||
-            nextProps.isSeeingThroughMessageHiddenForModeration !== this.props.isSeeingThroughMessageHiddenForModeration
+            nextProps.isSeeingThroughMessageHiddenForModeration !== this.props.isSeeingThroughMessageHiddenForModeration ||
+            nextState.echartsOption !== this.state.echartsOption ||
+            nextState.echartsQuery !== this.state.echartsQuery ||
+            nextState.generating !== this.state.generating
         );
     }
 
@@ -634,8 +644,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const roomId = mxEvent.getRoomId();
         const rootId = mxEvent.threadRootId;
         const queryDescription = content.query_description;
-        const echartsOption = content.echartsOption;
-        const echartsQuery = content.echartsQuery;
         const pdfResponse = content.pdfResponse;
         const citations = content.citations;
         const alertContent = content.alertContent;
@@ -666,7 +674,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (database){
             body=(
-                <div className="flex items-center">
+                <div>
                 <DatabasePrefix database={database} />
                 {body}
                 </div>
@@ -674,7 +682,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (fileSelected){
             body=(
-                <div className="flex items-center">
+                <div>
                     <FilesPrefix files={fileSelected} />
                     {body}
                 </div>
@@ -728,18 +736,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
+                    <SuggestionPrompt suggestions={content.file_prompt} insertSuggestion={this.insertSuggestion} />
                 </>
             );
         
         }
-        if ((echartsOption && echartsQuery) || content.generating) {
-            body = (
-                <>
-                    {body}
-                    <EChartPanel echartsOption={echartsOption} echartsQuery={echartsQuery} />
-                </>
-            );
-        }
+        
         if (alertContent) {
             body = (
                 <>
@@ -750,7 +752,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId) {
             const tableJson = JSON.parse(databaseTable);
-            console.log(tableJson)
             body = (
                 <>
                     {body}
@@ -760,8 +761,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}
                                     totalEntries={fetchedDataLen}
+                                    query={query}
+                                    description={queryDescription}
+                                    echartsData={tableJson}
+                                    userId={mxEvent.getSender()}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
+                                        this.setState({generating:true})
                                         const jsonData = {
                                             query: query,
                                             query_description: queryDescription,
@@ -774,15 +780,38 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                      // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),
                                         });
-                                        fetch(request);
+                                        fetch(request).then((data) => data.json()).then((res) => {
+                                            if(res.status==="success"){
+                                                const echartsOption = res.echartsOption;
+                                                const echartsQuery = res.echartsQuery;
+                                                // const temp: IContent = JSON.parse(JSON.stringify(content));
+                                                // temp.echartsOption = echartsOption;
+                                                // temp.echartsQuery = echartsQuery;
+                                                // console.log(temp);
+                                                // mxEvent.setContent(temp);
+                                                this.setState({echartsOption:echartsOption, echartsQuery:echartsQuery});
+                                            }
+                                        }).catch((error) => {
+                                            console.error(error);
+                                        })
                                     }}
                                 />
                                 <div className="shadow-none">
                                     <CollapsibleMessage title="View SQL Query" contents={query || []} />
                                 </div>
+                                <SuggestionPrompt suggestions={content.database_prompt} insertSuggestion={this.insertSuggestion} />
                             </>
                         )}
                     </div>
+                </>
+            );
+        }
+        if ((this.state.echartsOption && this.state.echartsQuery) || this.state.generating) {
+            console.log("echartsOption", this.state.echartsOption, "echartsQuery", this.state.echartsQuery);
+            body = (
+                <>
+                    {body}
+                    <EChartPanel echartsOption={this.state.echartsOption} echartsQuery={this.state.echartsQuery} />
                 </>
             );
         }

@@ -2656,7 +2656,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                             // Override defaults when a thread is being shown to allow persisting a separate
                             // right panel width for thread panels as they tend to want to be wider.
                             sizeKey={this.state.threadRightPanel ? "thread" : undefined}
-                            defaultSize={this.state.threadRightPanel ? "50%" : undefined}
+                            defaultSize={this.state.threadRightPanel ? "70%" : undefined}
                         >
                             <div
                                 className={mainSplitContentClasses}

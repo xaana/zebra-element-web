@@ -1,10 +1,24 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Button } from "@vector-im/compound-web";
+import { Sparkles , Download, ExternalLink } from "lucide-react";
+import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
+import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 
+import { Button } from "../ui/button";
 import { IconChartDonut } from "../ui/icons";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { cn } from "../../lib/utils";
+import { PluginActions } from "../../plugins";
+
+import { IExtendedConfigOptions, getVectorConfig } from "@/vector/getconfig";
 
 const TableStyle = styled.div`
     .table__container > div::-webkit-scrollbar {
@@ -29,14 +43,66 @@ export type DataItem = {
 interface TableProps<T extends DataItem> {
     data: T[];
     totalEntries: string | undefined;
+    query: string;
+    description: string;
+    echartsData: string;
+    userId: string;
     handleViewCharts: () => void;
 }
 
 export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     data,
     totalEntries,
+    query,
+    description,
+    echartsData,
+    userId,
     handleViewCharts,
 }) => {
+
+    const handleDataDownload = (): void => {
+        const csv = [];
+        csv.push(Object.keys(data[0])) ;
+        for (const rowItem of data){
+            csv.push(Object.values(rowItem).join(","))
+        }
+        const formattedData = csv.join('\n')
+        const downloadName = "data.csv";
+        const hiddenLink = document.createElement("a");
+        hiddenLink.setAttribute("href", "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData));
+        hiddenLink.setAttribute("download", downloadName);
+        document.body.appendChild(hiddenLink);
+        hiddenLink.click();
+        document.body.removeChild(hiddenLink);
+    }
+
+    const handleAlgologyRedirect = async (): Promise<void> => {
+        getVectorConfig().then((config)=>{
+            return fetch(config?.plugins.reports.api + "/api/algology_mapping", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    query: query,
+                    description: description,
+                    user_id: userId,
+                })
+            })
+        }).then(res=>res.json())
+        .then(res=>{
+            const dashboardId = res.message.dashboard_id;
+            const panelId = res.message.panel_id;
+            const uri = `d/${dashboardId}?viewPanel=${panelId}&`
+            localStorage.setItem("pluginUri", uri)
+            window.location.hash="/plugins/algology";
+            window.matrixChat.setState({ activePluginName: "algology"});
+            SpaceStore.instance.setActiveSpace("plugin.algology");
+            defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
+        })
+        
+    }
+
     return (
         <div className="w-full">
             <TableStyle>
@@ -109,10 +175,26 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                             {data.length} of {totalEntries} rows displayed
                                         </div>
                                     )}
-                                    <Button onClick={handleViewCharts} size="sm" className="text-xs gap-0 w-auto h-auto">
-                                        <IconChartDonut className="h-3 w-3 mr-1" />
-                                        Visualise
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <Button className="text-xs gap-0 w-auto h-7">
+                                                <Sparkles />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent side="top">
+                                            <DropdownMenuLabel>Options</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onSelect={handleViewCharts}>
+                                                <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={handleDataDownload}>
+                                                <Download className="h-4 w-4 mr-2" />  Download
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={handleAlgologyRedirect}>
+                                                <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
                         </>

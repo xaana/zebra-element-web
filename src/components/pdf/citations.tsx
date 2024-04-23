@@ -72,6 +72,11 @@ export function Citations({
                 String(firstCitation.page_num),
                 parseBoundingBoxes(firstCitation.bboxes)
             );
+            handleViewCitation(
+                firstCitation.doc_name,
+                String(firstCitation.page_num),
+                parseBoundingBoxes(firstCitation.bboxes)
+            );
             setFirstOpen(false)
         }
         
