@@ -104,7 +104,14 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         if (this.state.thread) {
-            this.postThreadUpdate(this.state.thread);
+            this.postThreadUpdate(this.state.thread)
+            if(this.state.thread.timeline[0]?.getContent().database){
+                this.setState({database: this.state.thread.timeline[0].getContent().database,files:[]})
+            }
+            else if(this.state.thread.timeline[0]?.getContent().fileSelected){
+                console.log('files!!!')
+                this.setState({files: this.state.thread.timeline[0].getContent().fileSelected,database:''})
+            }
         }
 
         this.setupThread(this.props.mxEvent);
@@ -201,14 +208,25 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 if (payload.context === TimelineRenderingType.Thread) {
                     this.setState({
                         database: payload.database,
+                        files: [],
                     });
                 }
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
-                    this.setState({
-                        files: payload.files,
-                    });
+                    if (payload.files.length > 0) {
+                        const newState = [...this.state.files,...payload.files]
+                        this.setState({
+                            files: newState,
+                        });
+                    }
+                    else {
+                        this.setState({
+                            files: payload.files,
+                        });
+                    }
+
+                    
                 }
                 break;
             default:

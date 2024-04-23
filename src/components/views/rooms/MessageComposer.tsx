@@ -47,7 +47,7 @@ import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import EditorModel from "matrix-react-sdk/src/editor/model";
 import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
-import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
+import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
 import { SettingUpdatedPayload } from "matrix-react-sdk/src/dispatcher/payloads/SettingUpdatedPayload";
 import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
 import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
@@ -68,6 +68,7 @@ import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } 
 import { DocFile } from "./FileSelector";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
+import WebSearchPill from "@/components/ui/WebSearchPill";
 
 let instanceCount = 0;
 
@@ -627,6 +628,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     />
                     <DatabasePill database={this.props.database} timelineRenderingType={this.context.timelineRenderingType} roomId={this.context.roomId} />
                     <FilesPill files={this.props.files} timelineRenderingType={this.context.timelineRenderingType} roomId={this.context.roomId} />
+                    {this.context.timelineRenderingType === TimelineRenderingType.Thread&&!this.props.database&&this.props.files?.length===0&&<WebSearchPill />}
                     <div className="mx_MessageComposer_row">
                         {e2eIcon}
                         {composer}

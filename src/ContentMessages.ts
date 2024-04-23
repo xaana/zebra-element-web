@@ -614,7 +614,7 @@ export default class ContentMessages {
                 if(mxcUrl) {
                     const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
                     const currentFile = SdkContextClass.instance.roomViewStore.getFiles()
-                    if (autoSelectFile&&currentFile){
+                    if (autoSelectFile){
                         const newFiles  = [...currentFile,autoSelectFile];
                         dis.dispatch({
                             action: "select_files",

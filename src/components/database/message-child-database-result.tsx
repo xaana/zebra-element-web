@@ -1,9 +1,19 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Button } from "@vector-im/compound-web";
+import { Sparkles , Download, ExternalLink } from "lucide-react";
 
+import { Button } from "../ui/button";
 import { IconChartDonut } from "../ui/icons";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { cn } from "../../lib/utils";
 
 const TableStyle = styled.div`
@@ -37,6 +47,27 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     totalEntries,
     handleViewCharts,
 }) => {
+
+    const handleDataDownload = (): void => {
+        const csv = [];
+        csv.push(Object.keys(data[0])) ;
+        for (const rowItem of data){
+            csv.push(Object.values(rowItem).join(","))
+        }
+        const formattedData = csv.join('\n')
+        const downloadName = "data.csv";
+        const hiddenLink = document.createElement("a");
+        hiddenLink.setAttribute("href", "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData));
+        hiddenLink.setAttribute("download", downloadName);
+        document.body.appendChild(hiddenLink);
+        hiddenLink.click();
+        document.body.removeChild(hiddenLink);
+    }
+
+    const handleAlgologyRedirect = (): void => {
+        console.log("No link provided, pass now")
+    }
+
     return (
         <div className="w-full">
             <TableStyle>
@@ -109,10 +140,55 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                             {data.length} of {totalEntries} rows displayed
                                         </div>
                                     )}
-                                    <Button onClick={handleViewCharts} size="sm" className="text-xs gap-0 w-auto h-auto">
-                                        <IconChartDonut className="h-3 w-3 mr-1" />
-                                        Visualise
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger>
+                                            <Button className="text-xs gap-0 w-auto h-7">
+                                                <Sparkles />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent side="top">
+                                            <DropdownMenuLabel>Options</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onSelect={handleViewCharts}>
+                                                <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={handleDataDownload}>
+                                                <Download className="h-4 w-4 mr-2" />  Download
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onSelect={handleAlgologyRedirect}>
+                                                <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    {/* <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button className="text-xs gap-0 w-auto h-7">
+                                                <Sparkles />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent side="top">
+                                            <div className="grid gap-4">
+                                                <div className="grid gap-2">
+                                                    <div className="grid items-stretch">
+                                                        <Button onClick={handleViewCharts}>
+                                                            <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
+                                                        </Button>
+                                                    </div>
+                                                    <div className="grid items-stretssch">
+                                                        <Button className="text-left" onClick={handleDataDownload}>
+                                                            <Download className="h-4 w-4 mr-2" />  Download
+                                                        </Button>
+                                                    </div>
+                                                    <div className="grid items-stretch">
+                                                        <Button onClick={handleAlgologyRedirect}>
+                                                            <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover> */}
+                                    
                                 </div>
                             </div>
                         </>

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Thread, ThreadEvent, IContent, MatrixEvent, MatrixEventEvent } from "matrix-js-sdk/src/matrix";
 import { CardContext } from "matrix-react-sdk/src/components/views/right_panel/context";
 import AccessibleButton, { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
@@ -41,13 +41,19 @@ const ThreadSummary: React.FC<IProps> = ({ mxEvent, thread, ...props }) => {
     const cardContext = useContext(CardContext);
     const client = useMatrixClientContext();
     const count = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.length);
-    if(thread.timeline[0]?.getContent().open==="open"&&client.getUserId()===thread.timeline[0].getContent().user_id){
-        defaultDispatcher.dispatch<ShowThreadPayload>({
-        action: Action.ShowThread,
-        rootEvent: mxEvent,
-        push: cardContext.isCard,
-    });
-    }
+    useEffect(() => {
+        if((thread.timeline[1]?.getContent().open==="open")&&client.getUserId()===mxEvent.getSender()){
+            defaultDispatcher.dispatch<ShowThreadPayload>({
+            action: Action.ShowThread,
+            rootEvent: mxEvent,
+            push: cardContext.isCard,
+        });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[thread.timeline[0]])
+    
+
+    
     if (!count) return null; // We don't want to show a thread summary if the thread doesn't have replies yet
 
     let countSection: string | number = count;
