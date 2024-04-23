@@ -761,6 +761,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}
                                     totalEntries={fetchedDataLen}
+                                    query={query}
+                                    description={queryDescription}
+                                    echartsData={tableJson}
+                                    userId={mxEvent.getSender()}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
                                         this.setState({generating:true})
