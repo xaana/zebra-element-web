@@ -217,7 +217,7 @@ const ThreadSelectItem = (
             onSelect={onSelect}
         >
             <div className="flex flex-row flex-grow bg-transparent justify-end w-full">
-                <p className="flex-1 truncate">{messageText}</p>
+                <p className="flex-1 truncate">{messageText.length > 40 ? messageText.substring(0,37)+"...":messageText}</p>
             </div>
         </CommandItem>
         
