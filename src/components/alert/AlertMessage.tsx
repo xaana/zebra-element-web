@@ -36,10 +36,8 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
         <Card className="w-[600px]">
             <CardHeader>
                 {content.status!=="firing"?`🔔${content.title}`:`❗️${content.title}`}
-                {/* <h2>{content.title}</h2> */}
             </CardHeader>
             <CardContent className="p-2 pt-3">
-                
                 {alertBody.length >= 1 && (
                 <Table>
                     <TableHeader>
@@ -61,13 +59,6 @@ const AlertMessagePanel = (props:any): React.JSX.Element => {
                                 }): (item.value.length > 40 ? item.value.substring(0,37)+"...": item.value)}
                             </TableCell>
                             <TableCell>
-                                {/* {item.alertURL ? (
-                                    <Button className={BUTTON_STYLE} 
-                                        onClick={()=>buttonClickHandler(item.alertURL)}
-                                    >
-                                        View Alert
-                                    </Button>
-                                ) : null} */}
                                 {item.panelURL ? (
                                     <Button className={BUTTON_STYLE}
                                         onClick={()=>buttonClickHandler(item.panelURL)}

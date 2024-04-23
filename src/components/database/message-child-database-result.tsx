@@ -1,6 +1,8 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Sparkles , Download, ExternalLink } from "lucide-react";
+import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
+import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 
 import { Button } from "../ui/button";
 import { IconChartDonut } from "../ui/icons";
@@ -12,9 +14,11 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
+} from "../ui/dropdown-menu";
 import { cn } from "../../lib/utils";
+import { PluginActions } from "../../plugins";
+
+import { IExtendedConfigOptions, getVectorConfig } from "@/vector/getconfig";
 
 const TableStyle = styled.div`
     .table__container > div::-webkit-scrollbar {
@@ -39,12 +43,20 @@ export type DataItem = {
 interface TableProps<T extends DataItem> {
     data: T[];
     totalEntries: string | undefined;
+    query: string;
+    description: string;
+    echartsData: string;
+    userId: string;
     handleViewCharts: () => void;
 }
 
 export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     data,
     totalEntries,
+    query,
+    description,
+    echartsData,
+    userId,
     handleViewCharts,
 }) => {
 
@@ -64,8 +76,31 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
         document.body.removeChild(hiddenLink);
     }
 
-    const handleAlgologyRedirect = (): void => {
-        console.log("No link provided, pass now")
+    const handleAlgologyRedirect = async (): Promise<void> => {
+        getVectorConfig().then((config)=>{
+            return fetch(config?.plugins.reports.api + "/api/algology_mapping", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    query: query,
+                    description: description,
+                    user_id: userId,
+                })
+            })
+        }).then(res=>res.json())
+        .then(res=>{
+            const dashboardId = res.message.dashboard_id;
+            const panelId = res.message.panel_id;
+            const uri = `d/${dashboardId}?viewPanel=${panelId}&`
+            localStorage.setItem("pluginUri", uri)
+            window.location.hash="/plugins/algology";
+            window.matrixChat.setState({ activePluginName: "algology"});
+            SpaceStore.instance.setActiveSpace("plugin.algology");
+            defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
+        })
+        
     }
 
     return (
@@ -160,35 +195,6 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
-                                    {/* <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button className="text-xs gap-0 w-auto h-7">
-                                                <Sparkles />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent side="top">
-                                            <div className="grid gap-4">
-                                                <div className="grid gap-2">
-                                                    <div className="grid items-stretch">
-                                                        <Button onClick={handleViewCharts}>
-                                                            <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
-                                                        </Button>
-                                                    </div>
-                                                    <div className="grid items-stretssch">
-                                                        <Button className="text-left" onClick={handleDataDownload}>
-                                                            <Download className="h-4 w-4 mr-2" />  Download
-                                                        </Button>
-                                                    </div>
-                                                    <div className="grid items-stretch">
-                                                        <Button onClick={handleAlgologyRedirect}>
-                                                            <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover> */}
-                                    
                                 </div>
                             </div>
                         </>
