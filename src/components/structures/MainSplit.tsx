@@ -49,7 +49,16 @@ const MainSplitBodyView = (props: {
     onClick: () => void,
 }): React.JSX.Element => {
     return (
-        <div style={{display:"flex", flex:1}} onClick={props.onClick}>
+        <div style={{
+            display: "flex",
+            flex: "1 1 0%",
+            WebkitBoxOrient: "vertical",
+            WebkitBoxDirection:"normal",
+            flexDirection:"column",
+            WebkitBoxFlex:1,
+            minWidth:0
+            }} 
+            onClick={props.onClick}>
             {props.bodyView}
         </div>
     )
