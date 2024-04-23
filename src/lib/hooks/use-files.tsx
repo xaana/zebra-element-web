@@ -35,7 +35,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
     /**
      * Returns an array of events belonging to a given thread's EventTimelineSet.
      *
-     * @return {Promise<MatrixEvent[]>} Array of unique files from events in the rooms
+     * @return {Promise<MatrixEvent[]>} Array of unique events in a thread
      */
     const getThreadEvents = useCallback(
         async (timelineSet: EventTimelineSet, eventId: string): Promise<MatrixEvent[]> => {
