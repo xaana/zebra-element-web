@@ -7,8 +7,8 @@ export const EChartPanel = ({
     echartsOption,
     echartsQuery,
 }: {
-    echartsOption: any | null;
-    echartsQuery: string | null;
+    echartsOption: any | undefined;
+    echartsQuery: string | undefined;
 }) => {
     const content = echartsOption ? (
         <>
