@@ -613,16 +613,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return citations
       }
 
-      private insertSuggestion = (suggestion: string): void => {
-        dis.dispatch<ComposerInsertPayload>({
-            action: Action.ComposerInsert,
-            text: suggestion,
-            timelineRenderingType: this.context.timelineRenderingType,
-        });
-      }
-    
-
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -634,6 +624,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         const mxEvent = this.props.mxEvent;
+        
         const content = mxEvent.getContent();
         let isNotice = false;
         let isEmote = false;
@@ -667,7 +658,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <WebSearchSources data={citations} />
-                    <SuggestionPrompt suggestions={content.prompt} insertSuggestion={this.insertSuggestion} />
+                    {roomId&&<SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} />}
                 </>
             )
         }
@@ -735,7 +726,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
-                    <SuggestionPrompt suggestions={content.file_prompt} insertSuggestion={this.insertSuggestion} />
+                    <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                 </>
             );
         
@@ -797,7 +788,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 <div className="shadow-none">
                                     <CollapsibleMessage title="View SQL Query" contents={query || []} />
                                 </div>
-                                <SuggestionPrompt suggestions={content.database_prompt} insertSuggestion={this.insertSuggestion} />
+                                <SuggestionPrompt suggestions={content.database_prompt} rootId={rootId} roomId={roomId} type={content.database_} />
                             </>
                         )}
                     </div>
