@@ -9,27 +9,19 @@ import { Skeleton } from '@/components/ui/skeleton'
   export const SuggestionPrompt = ({ suggestions,rootId,roomId,type}: { suggestions: string[], rootId?: string, roomId: string,type?: any[] | string}) => {
     const client = useContext(MatrixClientContext)
 
-    if (!suggestions){
-      return(
-        <div className='space-y-2 mt-2'>
-          <Skeleton className="w-auto h-7 rounded-md" />
-          <Skeleton className="w-auto h-7 rounded-md" />
-          <Skeleton className="w-auto h-7 rounded-md" />
-        </div>
-      )
-    }
+    // if (!suggestions){
+    //   return(
+    //     <div className='space-y-2 mt-2'>
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //     </div>
+    //   )
+    // }
 
 
 
-    if (suggestions.length===0){
-      return (
-        <div
-                className="text-xs text-muted-foreground p-1 border rounded-md cursor-pointer flex items-center gap-1 hover:bg-blue-100"
-        >
-            <span>Sorry, no suggestion for current question</span>
-        </div>
-      )
-    }
+    if (!suggestions || suggestions.length===0)return null;
     return (
       
       <div className='space-y-2 mt-2'>
