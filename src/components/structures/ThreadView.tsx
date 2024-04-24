@@ -105,13 +105,18 @@ export default class ThreadView extends React.Component<IProps, IState> {
     public componentDidMount(): void {
         if (this.state.thread) {
             this.postThreadUpdate(this.state.thread)
-            if(this.state.thread.timeline[0]?.getContent().database){
-                this.setState({database: this.state.thread.timeline[0].getContent().database,files:[]})
+            for (let i = this.state.thread.timeline.length - 1; i >= 0; i--) {
+                console.log(this.state.thread.timeline[i]?.getContent())
+                if(this.state.thread.timeline[i]?.getContent().database){
+                    this.setState({database: this.state.thread.timeline[i].getContent().database,files:[]})
+                    break
+                }
+                else if(this.state.thread.timeline[i]?.getContent().fileSelected){
+                    this.setState({files: this.state.thread.timeline[i].getContent().fileSelected,database:''})
+                    break
+                }
             }
-            else if(this.state.thread.timeline[0]?.getContent().fileSelected){
-                console.log('files!!!')
-                this.setState({files: this.state.thread.timeline[0].getContent().fileSelected,database:''})
-            }
+            
         }
 
         this.setupThread(this.props.mxEvent);
