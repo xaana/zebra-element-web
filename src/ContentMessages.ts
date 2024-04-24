@@ -45,11 +45,12 @@ import { createThumbnail } from "matrix-react-sdk/src/utils/image-media";
 import { attachMentions, attachRelation } from "matrix-react-sdk/src/components/views/rooms/SendMessageComposer";
 import { doMaybeLocalRoomAction } from "matrix-react-sdk/src/utils/local-room";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+import { toast } from "sonner";
 
 import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
 import { getVectorConfig } from "./vector/getconfig";
-import { toast } from "sonner";
+
 // scraped out of a macOS hidpi (5660ppm) screenshot png
 //                  5669 px (x-axis)      , 5669 px (y-axis)      , per metre
 const PHYS_HIDPI = [0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16, 0x25, 0x01];
@@ -617,11 +618,18 @@ export default class ContentMessages {
                     if (autoSelectFile){
                         const newFiles  = [...currentFile,autoSelectFile];
                         dis.dispatch({
+                            action: "select_database",
+                            files: "",
+                            roomId: roomId,
+                            context:context,
+                        });
+                        dis.dispatch({
                             action: "select_files",
                             files: newFiles,
                             roomId: roomId,
                             context:context,
                         });
+                        
                     }
                 }
                 let apiUrl;
@@ -635,7 +643,12 @@ export default class ContentMessages {
                 let count=0;
                 websocket.onopen = () => {
                     console.log("WebSocket connection established");
-                  
+                    progress = {
+                        loaded: 0,
+                        total: file.size
+                    }
+                    
+                    dis.dispatch({ action: Action.UploadProgress, progress:progress, upload:upload});
                     // Example data to be sent to the server
                     const textToSend = JSON.stringify({
                       media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
