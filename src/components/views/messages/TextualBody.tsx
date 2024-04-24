@@ -18,7 +18,6 @@ import React, { createRef, SyntheticEvent, MouseEvent } from "react";
 import ReactDOM from "react-dom";
 import highlight from "highlight.js";
 import { MsgType } from "matrix-js-sdk/src/matrix";
-import { IContent } from "matrix-js-sdk/src/models/event";
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { formatDate } from "matrix-react-sdk/src/DateUtils";
 import Modal from "matrix-react-sdk/src/Modal";
@@ -764,7 +763,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
-                                    userId={mxEvent.getSender()}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
                                         this.setState({generating:true})

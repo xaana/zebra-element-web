@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Sparkles , Download, ExternalLink } from "lucide-react";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
+import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { Button } from "../ui/button";
 import { IconChartDonut } from "../ui/icons";
@@ -18,7 +19,7 @@ import {
 import { cn } from "../../lib/utils";
 import { PluginActions } from "../../plugins";
 
-import { IExtendedConfigOptions, getVectorConfig } from "@/vector/getconfig";
+import { getVectorConfig } from "@/vector/getconfig";
 
 const TableStyle = styled.div`
     .table__container > div::-webkit-scrollbar {
@@ -46,7 +47,6 @@ interface TableProps<T extends DataItem> {
     query: string;
     description: string;
     echartsData: string;
-    userId: string;
     handleViewCharts: () => void;
 }
 
@@ -56,9 +56,9 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     query,
     description,
     echartsData,
-    userId,
     handleViewCharts,
 }) => {
+    const client = React.useContext(MatrixClientContext)
 
     const handleDataDownload = (): void => {
         const csv = [];
@@ -86,13 +86,14 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                 body: JSON.stringify({
                     query: query,
                     description: description,
-                    user_id: userId,
+                    user_id: client.getSafeUserId(),
                 })
             })
         }).then(res=>res.json())
         .then(res=>{
             const dashboardId = res.message.dashboard_id;
             const panelId = res.message.panel_id;
+            console.log(res,'!!!!!!!!!')
             const uri = `d/${dashboardId}?viewPanel=${panelId}&`
             localStorage.setItem("pluginUri", uri)
             window.location.hash="/plugins/algology";
