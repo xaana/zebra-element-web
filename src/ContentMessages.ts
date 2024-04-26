@@ -370,6 +370,7 @@ export async function uploadFile(
 export default class ContentMessages {
     private inprogress: RoomUpload[] = [];
     private mediaConfig: IMediaConfig | null = null;
+    private currentProgress: UploadProgress | null = null;
 
     public sendStickerContentToRoom(
         url: string,
@@ -606,6 +607,7 @@ export default class ContentMessages {
                 total: file.size,
             };
             let mxcUrl:string | undefined;
+            let slowest: RoomUpload | null
             if(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt")) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
@@ -647,8 +649,7 @@ export default class ContentMessages {
                         loaded: 0,
                         total: file.size
                     }
-                    
-                    dis.dispatch({ action: Action.UploadProgress, progress:progress, upload:upload});
+                    upload.onProgress(progress);
                     // Example data to be sent to the server
                     const textToSend = JSON.stringify({
                       media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
@@ -676,11 +677,30 @@ export default class ContentMessages {
                                 loaded: count*file.size,
                                 total: file.size
                             }
-                            
-                            dis.dispatch({ action: Action.UploadProgress, progress:progress, upload:upload});
+                            upload.onProgress(progress);
+                            slowest = this.getSlowestUpload(this.inprogress)
+                            if (slowest&&this.currentProgress&&this.currentProgress?.loaded/this.currentProgress?.total<slowest?.loaded/slowest?.total){
+                                this.currentProgress={
+                                    loaded: slowest?.loaded,
+                                    total: slowest?.total
+                                }
+                            }
+                            if(!this.currentProgress&&slowest){
+                                this.currentProgress = {
+                                    loaded: slowest?.loaded,
+                                    total: slowest?.total
+                                }
+                            }
+
+                            dis.dispatch({ action: Action.UploadProgress, progress:this.currentProgress, upload:slowest});
                             if(count===1){
-                                console.log("upload success, closing websocket");
-                                dis.dispatch({action:"uploading_files",uploading:false})
+                                console.log("upload success, closing websocket",event);
+                                removeElement(this.inprogress, (e) => e.promise === upload.promise);
+                                if (this.inprogress.length===0){
+                                    dis.dispatch({action:"uploading_files",uploading:false})
+                                    this.currentProgress=null
+                                }
+                                // dis.dispatch({action:"uploading_files",uploading:false})
                             }
                             // console.log(event.data,progress);
                         }else if(event.data.startsWith("fail")){
@@ -713,12 +733,6 @@ export default class ContentMessages {
                 content.file = result.file;
                 content.url = result.url;
             }
-            
-            
-            
-            
-            
-            
             if (upload.cancelled) throw new UploadCanceledError();
             // Await previous message being sent into the room
             if (promBefore) await promBefore;
@@ -755,8 +769,25 @@ export default class ContentMessages {
                 dis.dispatch<UploadErrorPayload>({ action: Action.UploadFailed, upload, error });
             }
         } finally {
-            removeElement(this.inprogress, (e) => e.promise === upload.promise);
+            if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))){
+                removeElement(this.inprogress, (e) => e.promise === upload.promise);
+            }
         }
+    }
+
+    private getSlowestUpload(uploads: RoomUpload[]): RoomUpload | null {
+        if (uploads.length === 0) {
+            return null;  // Return null if the list is empty
+        }
+    
+        return uploads.reduce((acc, item) => {
+            if (item.total === 0) {
+                return acc;  // Skip items with total as 0 to avoid division by zero
+            }
+            const currentRatio = item.loaded / item.total;
+            const accRatio = acc.loaded / acc.total;
+            return currentRatio < accRatio ? item : acc;
+        });
     }
 
     private isFileSizeAcceptable(file: File): boolean {

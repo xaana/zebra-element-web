@@ -112,24 +112,25 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
             return null;
         }
 
-        let uploadText: string;
-        if (this.state.countFiles > 1) {
-            // MUST use var name 'count' for pluralization to kick in
-            uploadText = _t("room|upload|uploading_multiple_file", {
-                filename: this.state.currentFile,
-                count: this.state.countFiles - 1,
-            });
-        } else {
-            uploadText = _t("room|upload|uploading_single_file", {
-                filename: this.state.currentFile,
-            });
-        }
+        const uploadText: string = "Uploading";
+        // if (this.state.countFiles > 1) {
+        //     // MUST use var name 'count' for pluralization to kick in
+        //     uploadText = _t("room|upload|uploading_multiple_file", {
+        //         filename: this.state.currentFile,
+        //         count: this.state.countFiles - 1,
+        //     });
+        // } else {
+        //     uploadText = _t("room|upload|uploading_single_file", {
+        //         filename: this.state.currentFile,
+        //     });
+        // }
 
-        const uploadSize = fileSize(this.state.currentTotal!);
+        // const uploadSize = fileSize(this.state.currentTotal!);
         return (
             <div className="mx_UploadBar">
                 <div className="mx_UploadBar_filename">
-                    {uploadText} ({uploadSize})
+                    {uploadText} 
+                    {/* ({uploadSize}) */}
                 </div>
                 <AccessibleButton onClick={this.onCancelClick} className="mx_UploadBar_cancel" />
                 <ProgressBar value={this.state.currentLoaded!} max={this.state.currentTotal!} />
