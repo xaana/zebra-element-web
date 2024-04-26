@@ -362,7 +362,7 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                     </Badge>
                 )}
 
-                {isRoomEncrypted && e2eStatus !== E2EStatus.Warning && (
+                {/* {isRoomEncrypted && e2eStatus !== E2EStatus.Warning && (
                     <Badge kind="success">
                         <LockIcon width="1em" />
                         {_t("common|encrypted")}
@@ -381,7 +381,7 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                         <ErrorIcon width="1em" />
                         {_t("common|not_trusted")}
                     </Badge>
-                )}
+                )} */}
             </Flex>
         </header>
     );

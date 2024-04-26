@@ -14,6 +14,10 @@
         "favourites": "Pinned",
         "rooms": "Recent"
     },
+    "context_menu": {
+        "favourite": "Pin",
+        "unfavourite": "Unpin"
+    },
     "desktop_default_device_name": "%(brand)s Desktop: %(platformName)s",
     "download_completed": "Download Completed",
     "error": {

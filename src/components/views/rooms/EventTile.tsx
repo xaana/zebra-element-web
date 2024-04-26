@@ -428,7 +428,6 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
         }
 
         if (objectHasDiff(this.props.mxEvent.getContent()["loading_status"], nextProps.mxEvent.getContent()["loading_status"])) {
-            console.log("rerendering");
             return true;
         }
 

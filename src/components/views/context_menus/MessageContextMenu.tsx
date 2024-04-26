@@ -571,25 +571,25 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
             );
         }
 
-        let copyLinkButton: JSX.Element | undefined;
-        if (link) {
-            copyLinkButton = (
-                <IconizedContextMenuOption
-                    iconClassName="mx_MessageContextMenu_iconCopy"
-                    onClick={this.onCopyLinkClick}
-                    label={_t("action|copy_link")}
-                    element="a"
-                    {
-                        // XXX: Typescript signature for AccessibleButton doesn't work properly for non-inputs like `a`
-                        ...{
-                            href: link,
-                            target: "_blank",
-                            rel: "noreferrer noopener",
-                        }
-                    }
-                />
-            );
-        }
+        // let copyLinkButton: JSX.Element | undefined;
+        // if (link) {
+        //     copyLinkButton = (
+        //         <IconizedContextMenuOption
+        //             iconClassName="mx_MessageContextMenu_iconCopy"
+        //             onClick={this.onCopyLinkClick}
+        //             label={_t("action|copy_link")}
+        //             element="a"
+        //             {
+        //                 // XXX: Typescript signature for AccessibleButton doesn't work properly for non-inputs like `a`
+        //                 ...{
+        //                     href: link,
+        //                     target: "_blank",
+        //                     rel: "noreferrer noopener",
+        //                 }
+        //             }
+        //         />
+        //     );
+        // }
 
         let copyButton: JSX.Element | undefined;
         if (rightClick && getSelectedText()) {
@@ -664,7 +664,7 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
             nativeItemsList = (
                 <IconizedContextMenuOptionList>
                     {copyButton}
-                    {copyLinkButton}
+                    {/* {copyLinkButton} */}
                 </IconizedContextMenuOptionList>
             );
         }
