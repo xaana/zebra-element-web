@@ -709,9 +709,10 @@ export default class ContentMessages {
                         }else if(event.data.startsWith("fail")){
                             console.log(event.data)
                             dis.dispatch({action:"uploading_files",uploading:false})
+                            this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
                             dis.dispatch({
                                 action: "select_files",
-                                files: [],
+                                files: this.fileUploaded,
                                 roomId: roomId,
                                 context:context,
                             });
@@ -722,10 +723,11 @@ export default class ContentMessages {
                   };
                   websocket.onerror = (event) => {
                     console.error("WebSocket error observed:", event);
+                    this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
                     dis.dispatch({action:"uploading_files",uploading:false})
                             dis.dispatch({
                                 action: "select_files",
-                                files: [],
+                                files: this.fileUploaded,
                                 roomId: roomId,
                                 context:context,
                             });
