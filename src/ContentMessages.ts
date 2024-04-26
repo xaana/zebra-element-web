@@ -371,6 +371,8 @@ export default class ContentMessages {
     private inprogress: RoomUpload[] = [];
     private mediaConfig: IMediaConfig | null = null;
     private currentProgress: UploadProgress | null = null;
+    private fileUploaded : DocFile[] = [];
+    
 
     public sendStickerContentToRoom(
         url: string,
@@ -616,9 +618,8 @@ export default class ContentMessages {
                 mxcUrl = content.url ?? content.file?.url;
                 if(mxcUrl) {
                     const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
-                    const currentFile = SdkContextClass.instance.roomViewStore.getFiles()
+                    this.fileUploaded.push(autoSelectFile)
                     if (autoSelectFile){
-                        const newFiles  = [...currentFile,autoSelectFile];
                         dis.dispatch({
                             action: "select_database",
                             files: "",
@@ -627,7 +628,7 @@ export default class ContentMessages {
                         });
                         dis.dispatch({
                             action: "select_files",
-                            files: newFiles,
+                            files: this.fileUploaded,
                             roomId: roomId,
                             context:context,
                         });
@@ -694,16 +695,19 @@ export default class ContentMessages {
 
                             dis.dispatch({ action: Action.UploadProgress, progress:this.currentProgress, upload:slowest});
                             if(count===1){
+                                // all file completed reinitialize record state
                                 console.log("upload success, closing websocket",event);
                                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
                                 if (this.inprogress.length===0){
                                     dis.dispatch({action:"uploading_files",uploading:false})
                                     this.currentProgress=null
                                 }
+                                this.fileUploaded = []
                                 // dis.dispatch({action:"uploading_files",uploading:false})
                             }
                             // console.log(event.data,progress);
                         }else if(event.data.startsWith("fail")){
+                            console.log(event.data)
                             dis.dispatch({action:"uploading_files",uploading:false})
                             dis.dispatch({
                                 action: "select_files",
@@ -711,7 +715,7 @@ export default class ContentMessages {
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. Please try again");
+                            toast.error("File upload failed. something wrong when we handle your file");
                         }
                         
                     };
@@ -725,7 +729,7 @@ export default class ContentMessages {
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. Please try again");
+                            toast.error("File upload failed. websocket error");
                 };
             }
             else{

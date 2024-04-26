@@ -93,7 +93,6 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
         .then(res=>{
             const dashboardId = res.message.dashboard_id;
             const panelId = res.message.panel_id;
-            console.log(res,'!!!!!!!!!')
             const uri = `d/${dashboardId}?viewPanel=${panelId}&`
             localStorage.setItem("pluginUri", uri)
             window.location.hash="/plugins/algology";
