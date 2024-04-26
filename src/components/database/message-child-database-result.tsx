@@ -100,7 +100,6 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
             SpaceStore.instance.setActiveSpace("plugin.algology");
             defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
         })
-        
     }
 
     return (

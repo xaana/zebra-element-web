@@ -427,6 +427,11 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             return true;
         }
 
+        if (objectHasDiff(this.props.mxEvent.getContent()["loading_status"], nextProps.mxEvent.getContent()["loading_status"])) {
+            console.log("rerendering");
+            return true;
+        }
+
         return !this.propsEqual(this.props, nextProps);
     }
 
@@ -1061,8 +1066,9 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                 ![TimelineRenderingType.ThreadsList, TimelineRenderingType.Notification].includes(
                     this.context.timelineRenderingType,
                 );
+            const avatarClassNames = `mx_EventTile_avatar ${(this.props.mxEvent.getContent()["loading_status"] ?  "whoistyping-loader":"")}`;
             avatar = (
-                <div className="mx_EventTile_avatar">
+                <div className={avatarClassNames}>
                     <MemberAvatar
                         member={member}
                         size={avatarSize}
