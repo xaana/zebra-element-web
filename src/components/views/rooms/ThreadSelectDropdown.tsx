@@ -55,7 +55,7 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
     }, [props.room]);
 
     const getLatestTimestamp = (thread: Thread): number => {
-        return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent.localTimestamp;
+        return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent?.localTimestamp;
     };
 
     const onSelectHandler = (thread: Thread): void => {

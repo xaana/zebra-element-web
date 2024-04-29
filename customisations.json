@@ -18,6 +18,7 @@
     "src/components/views/elements/GenericEventListSummary": "src/components/views/elements/GenericEventListSummary.tsx",
     "src/components/views/elements/LanguageDropdown.tsx": "src/components/views/settings/LanguageDropdown.tsx",
     "src/components/views/elements/SearchWarning.tsx": "src/components/views/elements/SearchWarning.tsx",
+    "src/components/views/messages/EncryptionEvent.tsx": "src/components/views/messages/EncryptionEvent.tsx",
     "src/components/views/messages/TextualBody.tsx": "src/components/views/messages/TextualBody.tsx",
     "src/components/views/right_panel/BaseCard.tsx": "src/components/views/BaseCard.tsx",
     "src/components/views/right_panel/RoomSummaryCard.tsx": "src/components/views/RoomSummaryCard.tsx",
