@@ -54,9 +54,36 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
         });
     }, [props.room]);
 
-    const getLatestTimestamp = (thread: Thread): number => {
+    const getLatestTimestamp = (thread: Thread): number|undefined => {
         return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent?.localTimestamp;
     };
+
+    const groupThreadsByDate = (threads: Thread[]): {today:Thread[],lastWeek:Thread[],earlier:Thread[]} => {
+        const today = new Date();
+        const oneDay = 1000 * 60 * 60 * 24;
+        const groups: {today:Thread[],lastWeek:Thread[],earlier:Thread[]} = {
+          today: [],
+          lastWeek: [],
+          earlier: []
+        };
+      
+        threads.forEach(thread => {
+            const timestamp = getLatestTimestamp(thread);
+            if (!timestamp) return;
+            const itemDate = new Date(timestamp);
+            const diffDays = Math.floor((today - itemDate) / oneDay);
+        
+            if (diffDays === 0) {
+                groups.today.push(thread);
+            } else if (diffDays <= 7) {
+                groups.lastWeek.push(thread);
+            } else {
+                groups.earlier.push(thread);
+            }
+        });
+      
+        return groups;
+      }
 
     const onSelectHandler = (thread: Thread): void => {
         if (thread?.rootEvent) {
@@ -66,6 +93,8 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
             });
         }
     };
+
+    const groupedThreads = groupThreadsByDate(threads);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -95,8 +124,7 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                             <CommandInput placeholder="Search Topic..." />
                             <CommandList>
                                 <CommandGroup heading="Today">
-                                    {threads
-                                        .filter((item) => getLatestTimestamp(item) + 24 * 60 * 60 * 1000 > Date.now())
+                                    {groupedThreads.today
                                         .map((item) => {
                                             return (
                                                 <ThreadSelectItem
@@ -115,12 +143,7 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                                 </CommandGroup>
                                 <CommandSeparator />
                                 <CommandGroup heading="Past Week">
-                                    {threads
-                                        .filter(
-                                            (item) =>
-                                                getLatestTimestamp(item) + 24 * 60 * 60 * 1000 < Date.now() &&
-                                                getLatestTimestamp(item) + 7 * 24 * 60 * 60 * 1000 > Date.now(),
-                                        )
+                                    {groupedThreads.lastWeek
                                         .map((item) => {
                                             return (
                                                 <ThreadSelectItem
@@ -139,10 +162,7 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                                 </CommandGroup>
                                 <CommandSeparator />
                                 <CommandGroup heading="More Than One Week">
-                                    {threads
-                                        .filter(
-                                            (item) => getLatestTimestamp(item) + 7 * 24 * 60 * 60 * 1000 < Date.now(),
-                                        )
+                                    {groupedThreads.earlier
                                         .map((item) => {
                                             return (
                                                 <ThreadSelectItem
