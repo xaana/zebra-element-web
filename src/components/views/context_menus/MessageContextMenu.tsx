@@ -660,7 +660,7 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
         }
 
         let nativeItemsList: JSX.Element | undefined;
-        if (copyButton || copyLinkButton) {
+        if (copyButton) {
             nativeItemsList = (
                 <IconizedContextMenuOptionList>
                     {copyButton}
