@@ -64,6 +64,7 @@ import { Loader} from "@/components/ui/loader";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
 import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import { SuggestionPrompt } from "./SuggestionPrompt";
+import { ImageViewer } from "@/components/pdf/ImageViewer";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -725,7 +726,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <>
                     {body}
-                    <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
+                    {!content.is_image && <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />}
+                    {content.is_image && this.context.room&&<ImageViewer eventId={content.file_ids} room={this.context.room} />}
                     <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                 </>
             );
