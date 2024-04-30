@@ -27,7 +27,7 @@ export function CitationsTable({
     data: Citation[];
     onViewCitation: (documentName: string, pageNumber: string, bboxes: BoundingBox[]) => void;
 }) {
-    if (data.length===0)return;
+    if (data.length===0)return null;
 
 
     const columns: ColumnDef<Citation>[] = [
