@@ -49,7 +49,7 @@ export const FileSelector = (props:IProps) => {
     }
     const fetchFiles = async (): Promise<void> => {
         const fetchedFiles = await getUserFiles();
-        const temp = fetchedFiles.map((file)=>{return {mediaId:file.mediaId,fileName:file.name}});
+        const temp = fetchedFiles.map((file)=>{return {eventId:file.id,mediaId:file.mediaId,fileName:file.name,roomId:file.roomId}});
         const uniqueList =temp.filter((item, index, self) =>
         index === self.findIndex((t) => (
             t.mediaId === item.mediaId && t.fileName === item.fileName
