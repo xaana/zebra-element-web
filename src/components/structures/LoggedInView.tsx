@@ -769,7 +769,7 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 )}
                             </div>
                         </div>
-                        {/* <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" /> */}
+                        <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" />
                         <div className="mx_RoomView_wrapper shadow-xl">{pageElement}</div>
                     </div>
                 </div>
