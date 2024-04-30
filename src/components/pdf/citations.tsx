@@ -161,7 +161,7 @@ export function Citations({
     };
     return (
         <>
-            {pdfUrls && citations ? (
+            {pdfUrls ? (
                 <div className="flex flex-col gap-y-3 h-full">
                     <div className="basis-3/5 min-h-[300px] overflow-hidden flex flex-col grow shrink-0">
                         <div className="flex items-center justify-between pt-4 pb-2">
