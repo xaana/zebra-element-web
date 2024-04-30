@@ -945,8 +945,8 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
         }
 
         const isProbablyMedia = MediaEventHelper.isEligible(this.props.mxEvent);
-
         const lineClasses = classNames("mx_EventTile_line", {
+            mx_EventTile_sendByZebra: this.props.mxEvent.sender?.userId=== "@zebra:securezebra.com",
             mx_EventTile_mediaLine: isProbablyMedia,
             mx_EventTile_image:
                 this.props.mxEvent.getType() === EventType.RoomMessage &&

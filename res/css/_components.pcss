@@ -399,18 +399,57 @@
   animation: l1 1s infinite;
 }
 @keyframes l1 {
-    100% {box-shadow: 0 0 0 30px #0000}
+  100% {box-shadow: 0 0 0 30px #0000}
+}
+
+.mx_LeftPanel_wrapper {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  height: 100%; /* ensure space panel is still scrollable with an outer wrapper */
+
+  .mx_LeftPanel_wrapper--user {
+    background-color: $roomlist-bg-color;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    max-width: 350px;
+
+    &[data-collapsed] {
+        max-width: var(--collapsedWidth);
+    }
+  }
 }
 
 .mx_JumpToBottomButton {
-    z-index: 40;
-    position: absolute;
-    /* 12 because height is 50 but button is only 38 = 12+(50-38) = 24 */
-    bottom: 12px;
-    right: 24px;
-    width: 38px;
-    /* give it a fixed height so the badge doesn't make */
-    /* it taller and pop upwards when visible */
-    height: 50px;
-    text-align: center;
+  z-index: 40;
+  position: absolute;
+  /* 12 because height is 50 but button is only 38 = 12+(50-38) = 24 */
+  bottom: 12px;
+  right: 24px;
+  width: 38px;
+  /* give it a fixed height so the badge doesn't make */
+  /* it taller and pop upwards when visible */
+  height: 50px;
+  text-align: center;
 }
+
+.mx_EventTile[data-layout="bubble"] {
+  .mx_EventTile_line.mx_EventTile_sendByZebra {
+    width: 95%;
+    max-width: 95%;
+    line-height: 24px;
+  }
+}
+
+.mx_EventTile_content .markdown-body {
+  font: 400 0.9375rem/1.5 Rubik !important;
+  font: var(--cpd-font-body-md-regular) !important;
+  letter-spacing: -0.0088em;
+  letter-spacing: var(--cpd-font-letter-spacing-body-md);
+  font-family: inherit !important;
+  white-space: normal !important;
+  line-height: 24px !important;
+  color: inherit;
+}
+    
