@@ -1,98 +1,24 @@
-import { useCallback, useMemo } from "react";
-import {
-    Direction,
-    EventTimelineSet,
-    Filter,
-    MatrixEvent,
-    Room,
-    IContextResponse,
-    Method,
-    IRelationsResponse,
-} from "matrix-js-sdk/src/matrix";
+import { useCallback } from "react";
+import pLimit from "p-limit";
+import { MatrixEvent, Room, Method } from "matrix-js-sdk/src/matrix";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { encodeUri } from "matrix-js-sdk/src/utils";
-import { Feature, ServerSupport } from "matrix-js-sdk/src/feature";
-import { getRelationsThreadFilter } from "matrix-js-sdk/src/thread-utils";
 import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
+import { IRoomEvent } from "matrix-js-sdk/src/matrix";
 
 import type { File } from "@/plugins/files/types";
+
+interface IMessagesResponse {
+    start?: string;
+    end?: string;
+    chunk: IRoomEvent[];
+}
+
 export function useFiles(): { getUserFiles: () => Promise<File[]> } {
     const client = useMatrixClientContext();
 
-    // Create a memoised filter to reuse if client hasn't changed
-    const filter = useMemo(() => {
-        const newFilter = new Filter(client.getSafeUserId());
-        newFilter.setDefinition({
-            room: {
-                timeline: {
-                    types: ["m.room.message", "m.room.encrypted"],
-                },
-            },
-        });
-        return newFilter;
-    }, [client]);
-
     /**
-     * Returns an array of events belonging to a given thread's EventTimelineSet.
-     *
-     * @return {Promise<MatrixEvent[]>} Array of unique events in a thread
-     */
-    const getThreadEvents = useCallback(
-        async (timelineSet: EventTimelineSet, eventId: string): Promise<MatrixEvent[]> => {
-            const path = encodeUri("/rooms/$roomId/context/$eventId", {
-                $roomId: timelineSet.room?.roomId,
-                $eventId: eventId,
-            });
-
-            const params: Record<string, string | string[]> = {
-                limit: "0",
-            };
-
-            const res = await client.http.authedRequest<IContextResponse>(Method.Get, path, params);
-            const mapper = client.getEventMapper();
-
-            const recurse = client.canSupport.get(Feature.RelationsRecursion) !== ServerSupport.Unsupported;
-
-            if (!timelineSet.thread) {
-                throw new Error("could not get thread timeline: not a thread timeline");
-            }
-
-            const thread = timelineSet.thread;
-            const resOlder: IRelationsResponse = await client.fetchRelations(
-                timelineSet.room!.roomId,
-                thread.id,
-                null,
-                null,
-                {
-                    dir: Direction.Backward,
-                    from: res.start,
-                    recurse: recurse || undefined,
-                },
-            );
-            const resNewer: IRelationsResponse = await client.fetchRelations(
-                timelineSet.room!.roomId,
-                thread.id,
-                null,
-                null,
-                {
-                    dir: Direction.Forward,
-                    from: res.end,
-                    recurse: recurse || undefined,
-                },
-            );
-
-            const events = [
-                ...resNewer.chunk.reverse().filter(getRelationsThreadFilter(thread.id)).map(mapper),
-                ...resOlder.chunk.filter(getRelationsThreadFilter(thread.id)).map(mapper),
-            ];
-
-            return events;
-        },
-        [client],
-    );
-
-    /**
-     * Returns an array of files fetched from encrypted and plain rooms.
+     * Returns an array of files fetched from all rooms the user is a part of.
      *
      * @return {Promise<File[]>} Array of unique files from events in the rooms
      */
@@ -103,44 +29,64 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         // Array to store all file events across all rooms
         const allFileEvents: MatrixEvent[] = [];
 
-        // Array to store all thread root events across all rooms
-        const threadRootEvents: MatrixEvent[] = [];
+        // Limit for concurrent requests
+        const limit = pLimit(10);
 
-        // Fetch all file events in main room timelines
-        try {
-            filter.filterId = await client.getOrCreateFilter("FILTER_FILES_" + client.credentials.userId, filter);
+        // Function to fetch all events in a room in a paginated manner
+        const fetchRoomMessages = async (room: Room): Promise<IRoomEvent[]> => {
+            let hasMore = true;
+            let nextToken = null; // Initial nextToken is null indicating the first page
+            const allRoomEvents = [];
 
-            await Promise.all(
-                rooms.map(async (roomData) => {
-                    const room = client.getRoom(roomData.roomId);
-                    if (!room) return;
-
-                    const timelineSet = room.getOrCreateFilteredTimelineSet(filter);
-                    const roomEvents = timelineSet.getLiveTimeline().getEvents();
-                    await Promise.all(roomEvents.map((event) => client.decryptEventIfNeeded(event)));
-                    roomEvents.forEach((event) => {
-                        // Store thread root events
-                        event.isThreadRoot && threadRootEvents.push(event);
-                        // Store file events
-                        (event.getContent().url || event.getContent().file) && allFileEvents.push(event);
+            while (hasMore) {
+                try {
+                    const path = encodeUri("/rooms/$roomId/messages", {
+                        $roomId: room.roomId,
                     });
-                }),
-            );
-        } catch (error) {
-            console.error("Failed to fetch events in main room timelines:", error);
-        }
+                    const params: Record<string, any> = {
+                        limit: 100,
+                        filter: JSON.stringify({ types: ["m.room.encrypted", "m.room.message"] }),
+                    };
+                    if (nextToken) {
+                        params.from = nextToken; // Include the nextToken for pagination
+                        params.dir = "f";
+                    }
 
-        // Fetch all file events in thread root events
-        try {
-            const threadEventsPromises = threadRootEvents.map((event) =>
-                getThreadEvents(event.getThread()!.timelineSet, event.getId()!),
-            );
-            const threadEvents = (await Promise.all(threadEventsPromises)).flat();
-            await Promise.all(threadEvents.map((event) => client.decryptEventIfNeeded(event)));
-            allFileEvents.push(...threadEvents.filter((event) => event.getContent().url || event.getContent().file));
-        } catch (error) {
-            console.error("Failed to fetch events in thread timelines:", error);
-        }
+                    const response = await client.http.authedRequest<IMessagesResponse>(Method.Get, path, params);
+                    if (response.chunk.length === 0 || !response.end) {
+                        hasMore = false; // no more data is available
+                    } else {
+                        nextToken = response.end; // Update the token for the next iteration
+                    }
+                    allRoomEvents.push(...response.chunk);
+                } catch (error) {
+                    console.error(`Failed to fetch event context for room ${room.roomId}:`, error);
+                    break; // Break the loop on error
+                }
+            }
+
+            return allRoomEvents;
+        };
+
+        // Fetch all events in all rooms
+        const roomMessagesPromises = rooms.map((room) => limit(() => fetchRoomMessages(room)));
+
+        // Map IRoomEvents to MatrixEvents
+        const mapper = client.getEventMapper();
+
+        // Consolidate all events
+        const allEvents: MatrixEvent[] = (await Promise.all(roomMessagesPromises)).flat().map(mapper);
+
+        // Decrypt all events
+        await Promise.all(allEvents.map((event) => client.decryptEventIfNeeded(event)));
+
+        // Filter out non-file events
+        allFileEvents.push(
+            ...allEvents.filter((event) => {
+                const content = event.getContent();
+                return content.url || content.file;
+            }),
+        );
 
         const files = Array.from(
             new Map(
@@ -163,7 +109,7 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         );
 
         return files;
-    }, [client, filter, getThreadEvents]);
+    }, [client]);
 
     return { getUserFiles };
 }
