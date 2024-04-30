@@ -10,12 +10,25 @@ import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 import { Citations } from "./citations";
 import { init as initRouting } from "../../vector/routing";
 import { DocFile } from "../views/rooms/FileSelector";
+import { getVectorConfig } from "@/vector/getconfig";
 export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citations: any[];rootId: string }) => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     const [events, setEvents] = useState<MatrixEvent[]>([]);
     const [urls,setUrls] = useState<string[]>([]);
+    const [docFiles,setDocFiles] = useState<DocFile[]>([]);
+    const [apiUrl,setApiUrl] = useState<string>("");
     const client = useMatrixClientContext();
+
+    useEffect(()=>{
+        getVectorConfig().then((config)=>{
+            if (config?.plugins["reports"]) {
+                setApiUrl(config?.plugins["reports"].api);
+            }
+        });
+    },[])
+
+
     useEffect(() => {
         const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
             const encryptedRooms = [];
@@ -104,6 +117,7 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
             files?.getThread()?.timeline.forEach((evt)=>{
                 if(evt.getContent().fileSelected){
                     setUrls([...urls,...evt.getContent().fileSelected.map((file: DocFile)=>file.mediaId)])
+                    setDocFiles([...docFiles,...evt.getContent().fileSelected])
                 }
             })
         }
@@ -114,30 +128,36 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
         const tempPdfs = events.map(async (event) => {
             const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
             if (mxcUrl&&urls.includes(mxcUrl)){
-                
-                if (event.isEncrypted()) {
-                    const mediaHelper = new MediaEventHelper(event);
-                    try {
-                        const temp = await mediaHelper.sourceBlob.value;
-                        // If the Blob type is not 'application/pdf', create a new Blob with the correct type
-                        const Pdf = new Blob([temp], { type: "application/pdf" });
-                        const pdfUrl = URL.createObjectURL(Pdf);
-                        
-                        return { name: event.getContent().body, url: pdfUrl };
-                    } catch (err) {
-                        console.error("decryption error", err);
-                    }
-                }else{
-                    const downloadUrl = client.mxcUrlToHttp(mxcUrl)
-                    if (downloadUrl){
-                        const data = await fetchResourceAsBlob(downloadUrl)
-                        if(data){
-                            const pdfUrl = URL.createObjectURL(data)
-                            return { name: event.getContent().body, url: pdfUrl};
+                const tempFile = findDocFileById(mxcUrl)
+                if (tempFile?.fileName.endsWith(".pdf")){
+                    if (event.isEncrypted()) {
+                        const mediaHelper = new MediaEventHelper(event);
+                        try {
+                            const temp = await mediaHelper.sourceBlob.value;
+                            // If the Blob type is not 'application/pdf', create a new Blob with the correct type
+                            const Pdf = new Blob([temp], { type: "application/pdf" });
+                            const pdfUrl = URL.createObjectURL(Pdf);
+                            
+                            return { name: event.getContent().body, url: pdfUrl };
+                        } catch (err) {
+                            console.error("decryption error", err);
                         }
                     }
-            }
-            
+                    else{
+                        const downloadUrl = client.mxcUrlToHttp(mxcUrl)
+                        if (downloadUrl){
+                            const data = await fetchResourceAsBlob(downloadUrl)
+                            if(data){
+                                const pdfUrl = URL.createObjectURL(data)
+                                return { name: event.getContent().body, url: pdfUrl};
+                            }
+                        }
+                    }
+                }else if (tempFile&&(tempFile.fileName.endsWith(".doc")||tempFile.fileName.endsWith(".docx"))){
+                    const pdfUrl = await fetchPdfAndCreateObjectURL(mxcUrl.substring(6).split("/").pop())
+                    return pdfUrl
+                }
+
                 
             }
         });
@@ -147,6 +167,55 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
             });
         }
     }, [events]);
+
+
+    function findDocFileById(mediaId: string): DocFile | undefined {
+        return docFiles.find(docFile => docFile.mediaId === mediaId);
+    }
+
+    async function fetchPdfAndCreateObjectURL(mediaId:string): Promise<{ name: string, url: string }> {
+        try {
+            const payload = {
+                media_ids: mediaId
+            }
+            const url = `${apiUrl}/api/get_docfile`
+            const request = new Request(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+
+            });
+            const response = await fetch(request);
+            const jsonResponse = await response.json(); // Assuming the server returns just a Base64 string
+            const base64String = await jsonResponse.pdf.content;
+            const fileName = jsonResponse.pdf.filename
+    
+            // Convert Base64 string to a Blob
+            const pdfBlob = base64ToBlob(base64String, 'application/pdf');
+    
+            // Create a Blob URL
+            const objectURL = URL.createObjectURL(pdfBlob);
+            return { name: fileName[0], url: objectURL};
+        } catch (error) {
+            console.error('Error fetching or converting PDF:', error);
+            throw error;
+        }
+    }
+    
+    // Helper function to convert Base64 string to Blob
+    function base64ToBlob(base64: string, contentType: string): Blob {
+        const binaryString = window.atob(base64); // Decode Base64 to binary string
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+    
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+    
+        return new Blob([bytes], { type: contentType });
+    }
 
     async function fetchResourceAsBlob(url:string) {
         try {
