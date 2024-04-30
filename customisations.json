@@ -44,5 +44,6 @@
     "src/DeviceListener.ts": "src/DeviceListener.ts",
     "src/stores/right-panel/RightPanelStorePhases.ts": "src/stores/right-panel/RightPanelStorePhases.ts",
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
-    "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts"
+    "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
+    "src/settings/Settings.tsx": "src/settings/Settings.tsx"
 }

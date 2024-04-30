@@ -48,22 +48,19 @@ import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
 import { EditWysiwygComposer } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer";
 import { IEventTileOps } from "matrix-react-sdk/src/components/views/rooms/EventTile";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
-// import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
 import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
+import { SuggestionPrompt } from "./SuggestionPrompt";
+
 import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
-import { getVectorConfig } from "@/vector/getconfig";
-import { Loader} from "@/components/ui/loader";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import { SuggestionPrompt } from "./SuggestionPrompt";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -83,6 +80,7 @@ interface IState {
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
     private readonly contentRef = createRef<HTMLSpanElement>();
+    // const roomViewContext = useContext(RoomContext);
 
     private unmounted = false;
     private pills: Element[] = [];
@@ -114,11 +112,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private getBotApi = async () => {
-        const configData = await getVectorConfig();
-        if (configData?.bot_api) {
-            this.setState({ botApi: configData.bot_api });
-        }
+    private getBotApi = () => {
+        const botApiUrl = SettingsStore.getValue("botApiUrl");
+        this.setState({ botApi: botApiUrl });
     };
 
     private applyFormatting(): void {
@@ -349,7 +345,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             nextProps.editState !== this.props.editState ||
             nextState.links !== this.state.links ||
             nextState.widgetHidden !== this.state.widgetHidden ||
-            nextProps.isSeeingThroughMessageHiddenForModeration !== this.props.isSeeingThroughMessageHiddenForModeration ||
+            nextProps.isSeeingThroughMessageHiddenForModeration !==
+                this.props.isSeeingThroughMessageHiddenForModeration ||
             nextState.echartsOption !== this.state.echartsOption ||
             nextState.echartsQuery !== this.state.echartsQuery ||
             nextState.generating !== this.state.generating
@@ -601,17 +598,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     }
 
     private getCitations = (fullResponse: string): WebSearchSourceItem[] => {
-        const citations: WebSearchSourceItem[] = []
-        const regex =
-          /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-        const urls = fullResponse.match(regex)
-        const uniqueCitations = [...new Set(urls)] as any[]
+        const citations: WebSearchSourceItem[] = [];
+        const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)/g;
+        const urls = fullResponse.match(regex);
+        const uniqueCitations = [...new Set(urls)] as any[];
         for (const link of uniqueCitations) {
-          const hostname = new URL(link).hostname
-          citations.push({ link, hostname })
+            const hostname = new URL(link).hostname;
+            citations.push({ link, hostname });
         }
-        return citations
-      }
+        return citations;
+    };
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
@@ -624,7 +620,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         const mxEvent = this.props.mxEvent;
-        
+
         const content = mxEvent.getContent();
         let isNotice = false;
         let isEmote = false;
@@ -652,93 +648,105 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (content.prompt){
-            const citations: WebSearchSourceItem[] = this.getCitations(content.body)
-            body=(
+        if (content.prompt) {
+            const citations: WebSearchSourceItem[] = this.getCitations(content.body);
+            body = (
                 <>
                     {body}
                     <WebSearchSources data={citations} />
-                    {roomId&&<SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} />}
+                    {roomId && <SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} />}
                 </>
-            )
+            );
         }
-        if (database){
-            body=(
+        if (database) {
+            body = (
                 <div>
-                <DatabasePrefix database={database} />
-                {body}
+                    <DatabasePrefix database={database} />
+                    {body}
                 </div>
-            )
+            );
         }
-        if (fileSelected){
-            body=(
+        if (fileSelected) {
+            body = (
                 <div>
                     <FilesPrefix files={fileSelected} />
                     {body}
                 </div>
-            )
+            );
         }
-        if (approvalId){
+        if (approvalId) {
             body = (
                 <div>
                     {body}
                     <div className="flex gap-2 justify-end">
-                        <Button onClick={()=>{
-                            content["approvalId"] = null
-                            const temp = content
-                            mxEvent.setContent(temp)
-                            const payload = {
-                                approvalId: approvalId}
-                            const url = `${this.state.botApi}/approve`
-                            const request = new Request(url, {
-                                method: "POST",
-                                body: JSON.stringify(payload),
-                            });
-                            fetch(request).then((response) => response.json()).then((data) => {
-                                console.log(data)
-                            });
-                        }
-                        
-                        }>Approve</Button>
-                        <Button onClick={()=>{
-                            content["approvalId"] = null
-                            const temp = content
-                            mxEvent.setContent(temp)
-                            const payload = {
-                                approvalId: approvalId}
-                            const url = `${this.state.botApi}/reject`
-                            const request = new Request(url, {
-                                method: "POST",
-                                body: JSON.stringify(payload),
-                            });
-                            fetch(request).then((data) => {
-                                console.log(data.json())
-                            });
-                        }
-                        
-                        }>Reject</Button>
+                        <Button
+                            onClick={() => {
+                                content["approvalId"] = null;
+                                const temp = content;
+                                mxEvent.setContent(temp);
+                                const payload = {
+                                    approvalId: approvalId,
+                                };
+                                const url = `${this.state.botApi}/approve`;
+                                const request = new Request(url, {
+                                    method: "POST",
+                                    body: JSON.stringify(payload),
+                                });
+                                fetch(request)
+                                    .then((response) => response.json())
+                                    .then((data) => {
+                                        console.log(data);
+                                    });
+                            }}
+                        >
+                            Approve
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                content["approvalId"] = null;
+                                const temp = content;
+                                mxEvent.setContent(temp);
+                                const payload = {
+                                    approvalId: approvalId,
+                                };
+                                const url = `${this.state.botApi}/reject`;
+                                const request = new Request(url, {
+                                    method: "POST",
+                                    body: JSON.stringify(payload),
+                                });
+                                fetch(request).then((data) => {
+                                    console.log(data.json());
+                                });
+                            }}
+                        >
+                            Reject
+                        </Button>
                     </div>
                 </div>
             );
         }
-        if (pdfResponse&&roomId&&rootId) {
+        if (pdfResponse && roomId && rootId) {
             body = (
                 <>
                     {body}
                     <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
-                    <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
+                    <SuggestionPrompt
+                        suggestions={content.file_prompt}
+                        rootId={rootId}
+                        roomId={roomId}
+                        type={content.files_}
+                    />
                 </>
             );
-        
         }
-        
+
         if (alertContent) {
             body = (
                 <>
                     {body}
                     <AlertMessagePanel content={alertContent} />
                 </>
-            )
+            );
         }
         if (databaseTable && roomId) {
             const tableJson = JSON.parse(databaseTable);
@@ -746,7 +754,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <div className="flex flex-col gap-y-2">
-                        {tableJson && tableJson.length > 0 && query  &&(
+                        {tableJson && tableJson.length > 0 && query && (
                             <>
                                 <MessageChildDatabaseResult
                                     data={tableJson || []}
@@ -756,7 +764,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     echartsData={tableJson}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
-                                        this.setState({generating:true})
+                                        this.setState({ generating: true });
                                         const jsonData = {
                                             query: query,
                                             query_description: queryDescription,
@@ -766,29 +774,40 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                         };
                                         const request = new Request(`${this.state.botApi}/echarts/${roomId}`, {
                                             method: "POST",
-                                     // This is the part that tries to bypass CORS, but it has limitations
+                                            // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),
                                         });
-                                        fetch(request).then((data) => data.json()).then((res) => {
-                                            if(res.status==="success"){
-                                                const echartsOption = res.echartsOption;
-                                                const echartsQuery = res.echartsQuery;
-                                                // const temp: IContent = JSON.parse(JSON.stringify(content));
-                                                // temp.echartsOption = echartsOption;
-                                                // temp.echartsQuery = echartsQuery;
-                                                // console.log(temp);
-                                                // mxEvent.setContent(temp);
-                                                this.setState({echartsOption:echartsOption, echartsQuery:echartsQuery});
-                                            }
-                                        }).catch((error) => {
-                                            console.error(error);
-                                        })
+                                        fetch(request)
+                                            .then((data) => data.json())
+                                            .then((res) => {
+                                                if (res.status === "success") {
+                                                    const echartsOption = res.echartsOption;
+                                                    const echartsQuery = res.echartsQuery;
+                                                    // const temp: IContent = JSON.parse(JSON.stringify(content));
+                                                    // temp.echartsOption = echartsOption;
+                                                    // temp.echartsQuery = echartsQuery;
+                                                    // console.log(temp);
+                                                    // mxEvent.setContent(temp);
+                                                    this.setState({
+                                                        echartsOption: echartsOption,
+                                                        echartsQuery: echartsQuery,
+                                                    });
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                console.error(error);
+                                            });
                                     }}
                                 />
                                 <div className="shadow-none">
                                     <CollapsibleMessage title="View SQL Query" contents={query || []} />
                                 </div>
-                                <SuggestionPrompt suggestions={content.database_prompt} rootId={rootId} roomId={roomId} type={content.database_} />
+                                <SuggestionPrompt
+                                    suggestions={content.database_prompt}
+                                    rootId={rootId}
+                                    roomId={roomId}
+                                    type={content.database_}
+                                />
                             </>
                         )}
                     </div>

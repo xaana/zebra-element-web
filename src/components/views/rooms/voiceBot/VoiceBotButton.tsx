@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useContext } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import { Pipeline, pipeline } from "@xenova/transformers";
 import * as tf from "@tensorflow/tfjs";
@@ -9,6 +9,7 @@ import React from "react";
 import "../style/button.css";
 import { IContent } from "matrix-js-sdk/src/models/event";
 import { MatrixClient } from "matrix-js-sdk/src/matrix";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
@@ -18,7 +19,6 @@ import { LoadingAnimation } from "./loading-animation";
 import { FadeTransition } from "../../../ui/transitions/fade-transition";
 import { SwitchFadeTransition } from "../../../ui/transitions/switch-fade-transition";
 import { useAudio } from "../../../../lib/hooks/use-audio";
-import { getVectorConfig } from "@/vector/getconfig";
 
 const DialogStyle = styled.div`
     .blob__dialog {
@@ -153,7 +153,7 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
     };
 
     const [triggered, setTriggered] = useState(false);
-    const [botApi,setBotApi] = useState("")
+    const [botApi, setBotApi] = useState("");
     const recorderRef = useRef<RecordRTC | null>(null);
     const mic = useRef<MediaStream>();
     // const scriptProcessor = useRef<ScriptProcessorNode>()
@@ -292,17 +292,9 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
         // http://localhost:29316/_matrix/maubot/plugin/1/stream
     };
     useEffect(() => {
-
         const getBotApi = async (): Promise<void> => {
-            const configData = await getVectorConfig();
-            if (configData?.bot_api) {
-                setBotApi(configData?.bot_api);
-                // if (configData?.bot_api) {
-                //     const resp = await fetch(`${botApi}/database_list`);
-                //     const data = await resp.json();
-                //     if (data) setDbList(data);
-                // }
-            }
+            const apiUrl = SettingsStore.getValue("botApiUrl");
+            apiUrl && setBotApi(apiUrl);
         };
 
         getBotApi();
