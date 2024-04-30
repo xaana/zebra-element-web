@@ -61,8 +61,6 @@ import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import { SuggestionPrompt } from "./SuggestionPrompt";
 import { ImageViewer } from "@/components/pdf/ImageViewer";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
