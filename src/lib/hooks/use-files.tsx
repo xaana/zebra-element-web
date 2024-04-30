@@ -29,9 +29,6 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
         // Array to store all file events across all rooms
         const allFileEvents: MatrixEvent[] = [];
 
-        // Array to store event contexts for last event in each room
-        let messages: IRoomEvent[] = [];
-
         // Limit for concurrent requests
         const limit = pLimit(10);
 
@@ -71,13 +68,14 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
             return allRoomEvents;
         };
 
+        // Fetch all events in all rooms
         const roomMessagesPromises = rooms.map((room) => limit(() => fetchRoomMessages(room)));
-        messages = (await Promise.all(roomMessagesPromises)).flat();
 
+        // Map IRoomEvents to MatrixEvents
         const mapper = client.getEventMapper();
 
         // Consolidate all events
-        const allEvents = messages.map(mapper);
+        const allEvents: MatrixEvent[] = (await Promise.all(roomMessagesPromises)).flat().map(mapper);
 
         // Decrypt all events
         await Promise.all(allEvents.map((event) => client.decryptEventIfNeeded(event)));
