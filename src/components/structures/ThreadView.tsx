@@ -114,7 +114,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 else if(this.state.thread.timeline[i]?.getContent().fileSelected){
                     this.setState({files: this.state.thread.timeline[i].getContent().fileSelected,database:''})
                     break
-                }else{
+                }else if (this.state.thread.timeline[i]?.getContent().web) {
                     this.setState({database:'',files:[]})
                     break
                 }
