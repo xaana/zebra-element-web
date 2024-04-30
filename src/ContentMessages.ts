@@ -50,6 +50,7 @@ import { toast } from "sonner";
 import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
 import { getVectorConfig } from "./vector/getconfig";
+import { imag } from "@tensorflow/tfjs";
 
 // scraped out of a macOS hidpi (5660ppm) screenshot png
 //                  5669 px (x-axis)      , 5669 px (y-axis)      , per metre
@@ -150,23 +151,22 @@ async function infoForImageFile(matrixClient: MatrixClient, roomId: string, imag
     const imageInfo = result.info;
 
     // For lesser supported image types, always include the thumbnail even if it is larger
-    if (!ALWAYS_INCLUDE_THUMBNAIL.includes(imageFile.type)) {
-        // we do all sizing checks here because we still rely on thumbnail generation for making a blurhash from.
-        const sizeDifference = imageFile.size - imageInfo.thumbnail_info!.size;
-        if (
-            // image is small enough already
-            imageFile.size <= IMAGE_SIZE_THRESHOLD_THUMBNAIL ||
-            // thumbnail is not sufficiently smaller than original
-            (sizeDifference <= IMAGE_THUMBNAIL_MIN_REDUCTION_SIZE &&
-                sizeDifference <= imageFile.size * IMAGE_THUMBNAIL_MIN_REDUCTION_PERCENT)
-        ) {
-            delete imageInfo["thumbnail_info"];
-            return imageInfo;
-        }
-    }
+    // if (!ALWAYS_INCLUDE_THUMBNAIL.includes(imageFile.type)) {
+    //     // we do all sizing checks here because we still rely on thumbnail generation for making a blurhash from.
+    //     const sizeDifference = imageFile.size - imageInfo.thumbnail_info!.size;
+    //     if (
+    //         // image is small enough already
+    //         imageFile.size <= IMAGE_SIZE_THRESHOLD_THUMBNAIL ||
+    //         // thumbnail is not sufficiently smaller than original
+    //         (sizeDifference <= IMAGE_THUMBNAIL_MIN_REDUCTION_SIZE &&
+    //             sizeDifference <= imageFile.size * IMAGE_THUMBNAIL_MIN_REDUCTION_PERCENT)
+    //     ) {
+    //         delete imageInfo["thumbnail_info"];
+    //         return imageInfo;
+    //     }
+    // }
 
     const uploadResult = await uploadFile(matrixClient, roomId, result.thumbnail);
-
     imageInfo["thumbnail_url"] = uploadResult.url;
     imageInfo["thumbnail_file"] = uploadResult.file;
     return imageInfo;
@@ -564,10 +564,12 @@ export default class ContentMessages {
         }
 
         try {
+            let mxcUrl:string | undefined;
             if (file.type.startsWith("image/")) {
                 content.msgtype = MsgType.Image;
                 try {
                     const imageInfo = await infoForImageFile(matrixClient, roomId, file);
+                    mxcUrl = imageInfo.thumbnail_file?.url ?? imageInfo.thumbnail_file?.url;
                     Object.assign(content.info, imageInfo);
                 } catch (e) {
                     if (e instanceof HTTPError) {
@@ -608,7 +610,6 @@ export default class ContentMessages {
                 loaded: 0,
                 total: file.size,
             };
-            let mxcUrl:string | undefined;
             let slowest: RoomUpload | null
             if(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt")) {
                 dis.dispatch({action:"uploading_files",uploading:true})
@@ -616,25 +617,6 @@ export default class ContentMessages {
                 content.file = result.file;
                 content.url = result.url;
                 mxcUrl = content.url ?? content.file?.url;
-                if(mxcUrl) {
-                    const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
-                    this.fileUploaded.push(autoSelectFile)
-                    if (autoSelectFile){
-                        dis.dispatch({
-                            action: "select_database",
-                            files: "",
-                            roomId: roomId,
-                            context:context,
-                        });
-                        dis.dispatch({
-                            action: "select_files",
-                            files: this.fileUploaded,
-                            roomId: roomId,
-                            context:context,
-                        });
-                        
-                    }
-                }
                 let apiUrl;
                 const configData = await getVectorConfig();
                 if (configData?.plugins["websocket"]) {
@@ -747,6 +729,25 @@ export default class ContentMessages {
             const threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : null;
 
             const response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
+            if(mxcUrl) {
+                const autoSelectFile = {"mediaId":mxcUrl,"fileName":content.body,eventId:response.event_id,roomId:roomId};
+                this.fileUploaded.push(autoSelectFile)
+                if (autoSelectFile){
+                    dis.dispatch({
+                        action: "select_database",
+                        files: "",
+                        roomId: roomId,
+                        context:context,
+                    });
+                    dis.dispatch({
+                        action: "select_files",
+                        files: this.fileUploaded,
+                        roomId: roomId,
+                        context:context,
+                    });
+                    
+                }
+            }
 
             if (SettingsStore.getValue("Performance.addSendMessageTimingMetadata")) {
                 sendRoundTripMetric(matrixClient, roomId, response.event_id);
