@@ -12,10 +12,9 @@ import { Icon } from "@/components/ui/Icon";
 
 export const MainPanel = (): JSX.Element => {
     const { getUserFiles } = useFiles();
-    // const [files, setFiles] = useState<File[]>([]);
     const [media, setMedia] = useState<File[]>([]);
     const [documents, setDocuments] = useState<File[]>([]);
-    const [displayType, setDisplayType] = useState("media");
+    const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
 
     useEffect(() => {
         initRouting();
@@ -40,7 +39,11 @@ export const MainPanel = (): JSX.Element => {
                         View and manage your files – Select files to be analyzed by Zebra.
                     </p>
                 </div>
-                <Tabs value={displayType} onValueChange={(value) => setDisplayType(value)} className="mt-8">
+                <Tabs
+                    value={displayType}
+                    onValueChange={(value) => setDisplayType(value as "documents" | "media")}
+                    className="mt-8"
+                >
                     <TabsList className="w-full">
                         <TabsTrigger value="documents" className="flex-1">
                             <Icon className="mr-2" name="Files" />
