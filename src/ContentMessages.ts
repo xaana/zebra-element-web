@@ -45,11 +45,13 @@ import { createThumbnail } from "matrix-react-sdk/src/utils/image-media";
 import { attachMentions, attachRelation } from "matrix-react-sdk/src/components/views/rooms/SendMessageComposer";
 import { doMaybeLocalRoomAction } from "matrix-react-sdk/src/utils/local-room";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+import { toast } from "sonner";
 
 import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
 import { getVectorConfig } from "./vector/getconfig";
-import { toast } from "sonner";
+import { imag } from "@tensorflow/tfjs";
+
 // scraped out of a macOS hidpi (5660ppm) screenshot png
 //                  5669 px (x-axis)      , 5669 px (y-axis)      , per metre
 const PHYS_HIDPI = [0x00, 0x00, 0x16, 0x25, 0x00, 0x00, 0x16, 0x25, 0x01];
@@ -149,23 +151,22 @@ async function infoForImageFile(matrixClient: MatrixClient, roomId: string, imag
     const imageInfo = result.info;
 
     // For lesser supported image types, always include the thumbnail even if it is larger
-    if (!ALWAYS_INCLUDE_THUMBNAIL.includes(imageFile.type)) {
-        // we do all sizing checks here because we still rely on thumbnail generation for making a blurhash from.
-        const sizeDifference = imageFile.size - imageInfo.thumbnail_info!.size;
-        if (
-            // image is small enough already
-            imageFile.size <= IMAGE_SIZE_THRESHOLD_THUMBNAIL ||
-            // thumbnail is not sufficiently smaller than original
-            (sizeDifference <= IMAGE_THUMBNAIL_MIN_REDUCTION_SIZE &&
-                sizeDifference <= imageFile.size * IMAGE_THUMBNAIL_MIN_REDUCTION_PERCENT)
-        ) {
-            delete imageInfo["thumbnail_info"];
-            return imageInfo;
-        }
-    }
+    // if (!ALWAYS_INCLUDE_THUMBNAIL.includes(imageFile.type)) {
+    //     // we do all sizing checks here because we still rely on thumbnail generation for making a blurhash from.
+    //     const sizeDifference = imageFile.size - imageInfo.thumbnail_info!.size;
+    //     if (
+    //         // image is small enough already
+    //         imageFile.size <= IMAGE_SIZE_THRESHOLD_THUMBNAIL ||
+    //         // thumbnail is not sufficiently smaller than original
+    //         (sizeDifference <= IMAGE_THUMBNAIL_MIN_REDUCTION_SIZE &&
+    //             sizeDifference <= imageFile.size * IMAGE_THUMBNAIL_MIN_REDUCTION_PERCENT)
+    //     ) {
+    //         delete imageInfo["thumbnail_info"];
+    //         return imageInfo;
+    //     }
+    // }
 
     const uploadResult = await uploadFile(matrixClient, roomId, result.thumbnail);
-
     imageInfo["thumbnail_url"] = uploadResult.url;
     imageInfo["thumbnail_file"] = uploadResult.file;
     return imageInfo;
@@ -369,6 +370,9 @@ export async function uploadFile(
 export default class ContentMessages {
     private inprogress: RoomUpload[] = [];
     private mediaConfig: IMediaConfig | null = null;
+    private currentProgress: UploadProgress | null = null;
+    private fileUploaded : DocFile[] = [];
+    
 
     public sendStickerContentToRoom(
         url: string,
@@ -560,10 +564,12 @@ export default class ContentMessages {
         }
 
         try {
+            let mxcUrl:string | undefined;
             if (file.type.startsWith("image/")) {
                 content.msgtype = MsgType.Image;
                 try {
                     const imageInfo = await infoForImageFile(matrixClient, roomId, file);
+                    mxcUrl = imageInfo.thumbnail_file?.url ?? imageInfo.thumbnail_file?.url;
                     Object.assign(content.info, imageInfo);
                 } catch (e) {
                     if (e instanceof HTTPError) {
@@ -604,26 +610,13 @@ export default class ContentMessages {
                 loaded: 0,
                 total: file.size,
             };
-            let mxcUrl:string | undefined;
+            let slowest: RoomUpload | null
             if(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt")) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;
                 content.url = result.url;
                 mxcUrl = content.url ?? content.file?.url;
-                if(mxcUrl) {
-                    const autoSelectFile: DocFile = {"mediaId":mxcUrl,"fileName":content.body}
-                    const currentFile = SdkContextClass.instance.roomViewStore.getFiles()
-                    if (autoSelectFile){
-                        const newFiles  = [...currentFile,autoSelectFile];
-                        dis.dispatch({
-                            action: "select_files",
-                            files: newFiles,
-                            roomId: roomId,
-                            context:context,
-                        });
-                    }
-                }
                 let apiUrl;
                 const configData = await getVectorConfig();
                 if (configData?.plugins["websocket"]) {
@@ -635,7 +628,11 @@ export default class ContentMessages {
                 let count=0;
                 websocket.onopen = () => {
                     console.log("WebSocket connection established");
-                  
+                    progress = {
+                        loaded: 0,
+                        total: file.size
+                    }
+                    upload.onProgress(progress);
                     // Example data to be sent to the server
                     const textToSend = JSON.stringify({
                       media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
@@ -663,36 +660,60 @@ export default class ContentMessages {
                                 loaded: count*file.size,
                                 total: file.size
                             }
-                            
-                            dis.dispatch({ action: Action.UploadProgress, progress:progress, upload:upload});
+                            upload.onProgress(progress);
+                            slowest = this.getSlowestUpload(this.inprogress)
+                            if (slowest&&this.currentProgress&&this.currentProgress?.loaded/this.currentProgress?.total<slowest?.loaded/slowest?.total){
+                                this.currentProgress={
+                                    loaded: slowest?.loaded,
+                                    total: slowest?.total
+                                }
+                            }
+                            if(!this.currentProgress&&slowest){
+                                this.currentProgress = {
+                                    loaded: slowest?.loaded,
+                                    total: slowest?.total
+                                }
+                            }
+
+                            dis.dispatch({ action: Action.UploadProgress, progress:this.currentProgress, upload:slowest});
                             if(count===1){
-                                console.log("upload success, closing websocket");
-                                dis.dispatch({action:"uploading_files",uploading:false})
+                                // all file completed reinitialize record state
+                                console.log("upload success, closing websocket",event);
+                                removeElement(this.inprogress, (e) => e.promise === upload.promise);
+                                if (this.inprogress.length===0){
+                                    dis.dispatch({action:"uploading_files",uploading:false})
+                                    this.currentProgress=null
+                                }
+                                this.fileUploaded = []
+                                // dis.dispatch({action:"uploading_files",uploading:false})
                             }
                             // console.log(event.data,progress);
                         }else if(event.data.startsWith("fail")){
+                            console.log(event.data)
                             dis.dispatch({action:"uploading_files",uploading:false})
+                            this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
                             dis.dispatch({
                                 action: "select_files",
-                                files: [],
+                                files: this.fileUploaded,
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. Please try again");
+                            toast.error("File upload failed. something wrong when we handle your file");
                         }
                         
                     };
                   };
                   websocket.onerror = (event) => {
                     console.error("WebSocket error observed:", event);
+                    this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
                     dis.dispatch({action:"uploading_files",uploading:false})
                             dis.dispatch({
                                 action: "select_files",
-                                files: [],
+                                files: this.fileUploaded,
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. Please try again");
+                            toast.error("File upload failed. websocket error");
                 };
             }
             else{
@@ -700,12 +721,6 @@ export default class ContentMessages {
                 content.file = result.file;
                 content.url = result.url;
             }
-            
-            
-            
-            
-            
-            
             if (upload.cancelled) throw new UploadCanceledError();
             // Await previous message being sent into the room
             if (promBefore) await promBefore;
@@ -714,6 +729,25 @@ export default class ContentMessages {
             const threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : null;
 
             const response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
+            if(mxcUrl) {
+                const autoSelectFile = {"mediaId":mxcUrl,"fileName":content.body,eventId:response.event_id,roomId:roomId};
+                this.fileUploaded.push(autoSelectFile)
+                if (autoSelectFile){
+                    dis.dispatch({
+                        action: "select_database",
+                        files: "",
+                        roomId: roomId,
+                        context:context,
+                    });
+                    dis.dispatch({
+                        action: "select_files",
+                        files: this.fileUploaded,
+                        roomId: roomId,
+                        context:context,
+                    });
+                    
+                }
+            }
 
             if (SettingsStore.getValue("Performance.addSendMessageTimingMetadata")) {
                 sendRoundTripMetric(matrixClient, roomId, response.event_id);
@@ -742,8 +776,25 @@ export default class ContentMessages {
                 dis.dispatch<UploadErrorPayload>({ action: Action.UploadFailed, upload, error });
             }
         } finally {
-            removeElement(this.inprogress, (e) => e.promise === upload.promise);
+            if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))){
+                removeElement(this.inprogress, (e) => e.promise === upload.promise);
+            }
         }
+    }
+
+    private getSlowestUpload(uploads: RoomUpload[]): RoomUpload | null {
+        if (uploads.length === 0) {
+            return null;  // Return null if the list is empty
+        }
+    
+        return uploads.reduce((acc, item) => {
+            if (item.total === 0) {
+                return acc;  // Skip items with total as 0 to avoid division by zero
+            }
+            const currentRatio = item.loaded / item.total;
+            const accRatio = acc.loaded / acc.total;
+            return currentRatio < accRatio ? item : acc;
+        });
     }
 
     private isFileSizeAcceptable(file: File): boolean {

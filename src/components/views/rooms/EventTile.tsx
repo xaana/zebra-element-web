@@ -427,6 +427,10 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             return true;
         }
 
+        if (objectHasDiff(this.props.mxEvent.getContent()["loading_status"], nextProps.mxEvent.getContent()["loading_status"])) {
+            return true;
+        }
+
         return !this.propsEqual(this.props, nextProps);
     }
 
@@ -941,8 +945,8 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
         }
 
         const isProbablyMedia = MediaEventHelper.isEligible(this.props.mxEvent);
-
         const lineClasses = classNames("mx_EventTile_line", {
+            mx_EventTile_sendByZebra: this.props.mxEvent.sender?.userId=== "@zebra:securezebra.com",
             mx_EventTile_mediaLine: isProbablyMedia,
             mx_EventTile_image:
                 this.props.mxEvent.getType() === EventType.RoomMessage &&
@@ -1061,8 +1065,9 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                 ![TimelineRenderingType.ThreadsList, TimelineRenderingType.Notification].includes(
                     this.context.timelineRenderingType,
                 );
+            const avatarClassNames = `mx_EventTile_avatar ${(this.props.mxEvent.getContent()["loading_status"] ?  "whoistyping-loader":"")}`;
             avatar = (
-                <div className="mx_EventTile_avatar">
+                <div className={avatarClassNames}>
                     <MemberAvatar
                         member={member}
                         size={avatarSize}

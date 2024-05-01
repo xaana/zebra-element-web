@@ -43,6 +43,7 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { ThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ThreadPayload";
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
+import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 
 interface IProps {
     room: Room;
@@ -105,13 +106,21 @@ export default class ThreadView extends React.Component<IProps, IState> {
     public componentDidMount(): void {
         if (this.state.thread) {
             this.postThreadUpdate(this.state.thread)
-            if(this.state.thread.timeline[0]?.getContent().database){
-                this.setState({database: this.state.thread.timeline[0].getContent().database,files:[]})
+            for (let i = this.state.thread.timeline.length - 1; i >= 0; i--) {
+                console.log(this.state.thread.timeline[i]?.getContent())
+                if(this.state.thread.timeline[i]?.getContent().database){
+                    this.setState({database: this.state.thread.timeline[i].getContent().database,files:[]})
+                    break
+                }
+                else if(this.state.thread.timeline[i]?.getContent().fileSelected){
+                    this.setState({files: this.state.thread.timeline[i].getContent().fileSelected,database:''})
+                    break
+                }else if (this.state.thread.timeline[i]?.getContent().web) {
+                    this.setState({database:'',files:[]})
+                    break
+                }
             }
-            else if(this.state.thread.timeline[0]?.getContent().fileSelected){
-                console.log('files!!!')
-                this.setState({files: this.state.thread.timeline[0].getContent().fileSelected,database:''})
-            }
+            
         }
 
         this.setupThread(this.props.mxEvent);
@@ -397,6 +406,15 @@ export default class ThreadView extends React.Component<IProps, IState> {
         );
     };
 
+    private checkInThread = (uploads: RoomUpload[]): boolean => {
+        for (const upload of uploads) {
+            if (upload.relation?.rel_type === THREAD_RELATION_TYPE.name) {
+                return true;
+        }
+        return false;
+        }
+    }
+
     public render(): React.ReactNode {
         const highlightedEventId = this.props.isInitialEventHighlighted ? this.props.initialEvent?.getId() : undefined;
 
@@ -475,7 +493,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     {this.card.current && <Measured sensor={this.card.current} onMeasurement={this.onMeasurement} />}
                     <div className="mx_ThreadView_timelinePanelWrapper">{timeline}</div>
 
-                    {(ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading() ) && (
+                    {this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads(threadRelation))&&((ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) && (
                         <UploadBar room={this.props.room} relation={threadRelation} />
                     )}
 

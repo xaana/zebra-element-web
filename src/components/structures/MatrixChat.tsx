@@ -48,8 +48,6 @@ import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import { showRoomInviteDialog, showStartChatInviteDialog } from "matrix-react-sdk/src/RoomInvite";
 import * as Rooms from "matrix-react-sdk/src/Rooms";
 import SdkConfig, { ConfigOptions } from "matrix-react-sdk/src/SdkConfig";
-import type NewRecoveryMethodDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/NewRecoveryMethodDialog";
-import type RecoveryMethodRemovedDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/RecoveryMethodRemovedDialog";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 // LifecycleStore is not used but does listen to and dispatch actions
 import { Linkify } from "matrix-react-sdk/src/HtmlUtils";
@@ -61,7 +59,6 @@ import { storeRoomAliasInCache } from "matrix-react-sdk/src/RoomAliasCache";
 import Views from "matrix-react-sdk/src/Views";
 import { IRoomStateEventsActionPayload } from "matrix-react-sdk/src/actions/MatrixActionCreators";
 import { viewUserDeviceSettings } from "matrix-react-sdk/src/actions/handlers/viewUserDeviceSettings";
-import type LoggedInViewType from "matrix-react-sdk/src/components/structures/LoggedInView";
 import LoggedInView from "matrix-react-sdk/src/components/structures/LoggedInView";
 import CompleteSecurity from "matrix-react-sdk/src/components/structures/auth/CompleteSecurity";
 import { ConfirmSessionLockTheftView } from "matrix-react-sdk/src/components/structures/auth/ConfirmSessionLockTheftView";
@@ -115,7 +112,10 @@ import ThemeWatcher from "matrix-react-sdk/src/settings/watchers/ThemeWatcher";
 import "matrix-react-sdk/src/stores/AutoRageshakeStore";
 import { CallStore } from "matrix-react-sdk/src/stores/CallStore";
 import "matrix-react-sdk/src/stores/LifecycleStore";
-import ThreepidInviteStore, { IThreepidInvite, IThreepidInviteWireFormat } from "matrix-react-sdk/src/stores/ThreepidInviteStore";
+import ThreepidInviteStore, {
+    IThreepidInvite,
+    IThreepidInviteWireFormat,
+} from "matrix-react-sdk/src/stores/ThreepidInviteStore";
 import ToastStore from "matrix-react-sdk/src/stores/ToastStore";
 import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
 import { NotificationColor } from "matrix-react-sdk/src/stores/notifications/NotificationColor";
@@ -128,7 +128,10 @@ import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelS
 import { RightPanelPhases } from "matrix-react-sdk/src/stores/right-panel/RightPanelStorePhases";
 import RoomListStore from "matrix-react-sdk/src/stores/room-list/RoomListStore";
 import { RoomUpdateCause } from "matrix-react-sdk/src/stores/room-list/models";
-import { hideToast as hideAnalyticsToast, showToast as showAnalyticsToast } from "matrix-react-sdk/src/toasts/AnalyticsToast";
+import {
+    hideToast as hideAnalyticsToast,
+    showToast as showAnalyticsToast,
+} from "matrix-react-sdk/src/toasts/AnalyticsToast";
 import { showToast as showNotificationsToast } from "matrix-react-sdk/src/toasts/DesktopNotificationsToast";
 import { showToast as showMobileGuideToast } from "matrix-react-sdk/src/toasts/MobileGuideToast";
 import AutoDiscoveryUtils from "matrix-react-sdk/src/utils/AutoDiscoveryUtils";
@@ -147,6 +150,12 @@ import { makeRoomPermalink } from "matrix-react-sdk/src/utils/permalinks/Permali
 import { showSpaceInvite } from "matrix-react-sdk/src/utils/space";
 import { copyPlaintext } from "matrix-react-sdk/src/utils/strings";
 import { VoiceBroadcastResumer, cleanUpBroadcasts } from "matrix-react-sdk/src/voice-broadcast";
+
+import type LoggedInViewType from "matrix-react-sdk/src/components/structures/LoggedInView";
+import type RecoveryMethodRemovedDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/RecoveryMethodRemovedDialog";
+import type NewRecoveryMethodDialog from "matrix-react-sdk/src/async-components/views/dialogs/security/NewRecoveryMethodDialog";
+
+import { getVectorConfig } from "@/vector/getconfig";
 
 // legacy export
 export { default as Views } from "matrix-react-sdk/src/Views";
@@ -600,6 +609,18 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             justRegistered: false,
             ...state,
         } as IState);
+    }
+
+    // Set the botApiUrl in SettingsStore based on the configuration
+    private async setApiUrl(): Promise<void> {
+        try {
+            const configData = await getVectorConfig();
+            if (configData?.bot_api) {
+                await SettingsStore.setValue("botApiUrl", null, SettingLevel.DEVICE, configData.bot_api);
+            }
+        } catch (e) {
+            console.error(`Error in setting botApiUrl`, e);
+        }
     }
 
     private onAction = (payload: ActionPayload): void => {
@@ -1147,8 +1168,6 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             //         console.log(err);
             //     }
             // }
-            
-
         }
     }
 
@@ -1363,6 +1382,9 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
         ThemeController.isLogin = false;
         this.themeWatcher.recheck();
         StorageManager.tryPersistStorage();
+
+        // Set Bot API URL setting in SettingsStore
+        await this.setApiUrl();
 
         if (MatrixClientPeg.currentUserIsJustRegistered() && SettingsStore.getValue("FTUE.useCaseSelection") === null) {
             this.setStateForNewView({ view: Views.USE_CASE_SELECTION });
@@ -2105,15 +2127,17 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                 />
             );
         } else if (this.state.view === Views.COMPLETE_SECURITY) {
-            view = <CompleteSecurity onFinished={this.onCompleteSecurityE2eSetupFinished} />;
+            // view = <CompleteSecurity onFinished={this.onCompleteSecurityE2eSetupFinished} />;
+            this.onLoggedIn();
         } else if (this.state.view === Views.E2E_SETUP) {
-            view = (
-                <E2eSetup
-                    onFinished={this.onCompleteSecurityE2eSetupFinished}
-                    accountPassword={this.stores.accountPasswordStore.getPassword()}
-                    tokenLogin={!!this.tokenLogin}
-                />
-            );
+            // view = (
+            //     <E2eSetup
+            //         onFinished={this.onCompleteSecurityE2eSetupFinished}
+            //         accountPassword={this.stores.accountPasswordStore.getPassword()}
+            //         tokenLogin={!!this.tokenLogin}
+            //     />
+            // );
+            this.onLoggedIn();
         } else if (this.state.view === Views.LOGGED_IN) {
             // store errors stop the client syncing and require user intervention, so we'll
             // be showing a dialog. Don't show anything else.
@@ -2127,7 +2151,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                  * we should go through and figure out what we actually need to pass down, as well
                  * as using something like redux to avoid having a billion bits of state kicking around.
                  */
-                                view = (
+                view = (
                     <LoggedInView
                         {...this.props}
                         {...this.state}

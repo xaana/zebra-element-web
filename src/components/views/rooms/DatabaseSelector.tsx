@@ -3,47 +3,32 @@ import React, { useContext, useEffect, useState } from "react";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
-import { getVectorConfig } from "@/vector/getconfig";
-
 import "./style/button.css";
-
-
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = () => {
     const [dbList, setDbList] = useState<Array<string>>([]);
-    const { roomId,timelineRenderingType } = useContext(RoomContext);
+    const { roomId, timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
 
     useEffect(() => {
         let apiUrl;
 
         const getDbList = async (): Promise<void> => {
-            const configData = await getVectorConfig();
-            if (configData?.bot_api) {
-                apiUrl = configData?.bot_api;
-                if (apiUrl) {
-                    const resp = await fetch(`${apiUrl}/database_list`);
-                    const data = await resp.json();
-                    if (data) setDbList(data);
-                }
+            apiUrl = SettingsStore.getValue("botApiUrl");
+            if (apiUrl) {
+                const resp = await fetch(`${apiUrl}/database_list`);
+                const data = await resp.json();
+                if (data) setDbList(data);
             }
         };
 
         getDbList();
-
-        // // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        // fetch(`http://localhost:29316/_matrix/maubot/plugin/1/database_list`, {
-        //     method: "GET",
-        // }).then((response) => {
-        //     response.json().then((data) => {
-        //         setDbList(data);
-        //     });
-        // });
     }, []);
 
     return (

@@ -1,10 +1,27 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { IContent } from 'matrix-js-sdk/src/matrix'
+import MatrixClientContext from 'matrix-react-sdk/src/contexts/MatrixClientContext'
+import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+
+  export const SuggestionPrompt = ({ suggestions,rootId,roomId,type}: { suggestions: string[], rootId?: string, roomId: string,type?: any[] | string}) => {
+    const client = useContext(MatrixClientContext)
+
+    // if (!suggestions){
+    //   return(
+    //     <div className='space-y-2 mt-2'>
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //       <Skeleton className="w-auto h-7 rounded-md" />
+    //     </div>
+    //   )
+    // }
 
 
-  export const SuggestionPrompt = ({ suggestions,insertSuggestion }: { suggestions: string[], insertSuggestion: (suggestion: string) => void }) => {
-    if (!suggestions||suggestions.length===0) return null
+
+    if (!suggestions || suggestions.length===0)return null;
     return (
       
       <div className='space-y-2 mt-2'>
@@ -16,7 +33,16 @@ import { Separator } from '@/components/ui/separator'
         return(
             <div
                 className="text-xs text-muted-foreground p-1 border rounded-md cursor-pointer flex items-center gap-1 hover:bg-blue-100"
-                onClick={()=>insertSuggestion(suggestion)}
+                onClick={async ()=>{
+                  const content = { msgtype: "m.text", body: suggestion } as IContent;
+                  if(Array.isArray(type)&&type.length>0){
+                    content.fileSelected = type
+                  }else if (typeof type === 'string'){
+                    content.database = type
+                  }
+                  console.log(content)
+                  await client.sendMessage(roomId, rootId, content);
+                }}
                 key={suggestion}
         >
             <span>{`${index+1}. `}{suggestion}</span>

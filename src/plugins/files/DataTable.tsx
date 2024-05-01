@@ -24,7 +24,7 @@ import { PluginActions } from "..";
 import { Input } from "../../components/ui/input";
 import type { File } from "./types";
 
-const downloadFile = async (e: SyntheticEvent, file: File) => {
+const downloadFile = async (e: SyntheticEvent, file: File): Promise<void> => {
     if (file.isEncrypted) {
         e.preventDefault();
         e.stopPropagation();
@@ -47,14 +47,14 @@ const downloadFile = async (e: SyntheticEvent, file: File) => {
     }
 };
 
-const unloadPlugin = () => {
+const unloadPlugin = (): void => {
     defaultDispatcher.dispatch({ action: PluginActions.UnloadPlugin });
 };
 
 export const columns: ColumnDef<File>[] = [
     {
         accessorKey: "name",
-        header: ({ column }) => {
+        header: ({ column }): JSX.Element => {
             return (
                 <Button
                     className="w-full rounded-none bg-transparent"
@@ -74,27 +74,24 @@ export const columns: ColumnDef<File>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => {
+        cell: ({ row }): JSX.Element => {
             const file = row.original;
-            const [isDownloading, setDownloading] = useState(false);
-
             return (
                 <a
                     href={file.downloadUrl}
                     download={file.name}
                     onClick={(e) => {
-                        setDownloading(true);
                         downloadFile(e, file);
                     }}
                 >
-                    {file.name} {isDownloading ? "downloading..." : ""}
+                    {file.name}
                 </a>
             );
         },
     },
     {
         accessorKey: "timestamp",
-        header: ({ column }) => {
+        header: ({ column }): JSX.Element => {
             return (
                 <Button
                     className="w-full rounded-none bg-transparent"
@@ -117,7 +114,7 @@ export const columns: ColumnDef<File>[] = [
     },
     {
         accessorKey: "sender",
-        header: ({ column }) => {
+        header: ({ column }): JSX.Element => {
             return (
                 <Button
                     className="w-full rounded-none bg-transparent"
@@ -140,7 +137,7 @@ export const columns: ColumnDef<File>[] = [
     },
     {
         accessorKey: "room",
-        header: ({ column }) => {
+        header: ({ column }): JSX.Element => {
             return (
                 <Button
                     className="w-full rounded-none bg-transparent"
@@ -160,7 +157,7 @@ export const columns: ColumnDef<File>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => {
+        cell: ({ row }): JSX.Element => {
             const file = row.original;
             const room = file.room;
 
@@ -180,7 +177,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>): JSX.Element {
     const [sorting, setSorting] = useState<SortingState>([{ id: "timestamp", desc: false }]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -209,7 +206,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
                     className="max-w-sm"
                 />
             </div>
-            <div className="rounded-md border">
+            <div className="">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

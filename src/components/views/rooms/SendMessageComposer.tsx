@@ -449,6 +449,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     }
 
     public async sendMessage(): Promise<void> {
+        if (SdkContextClass.instance.roomViewStore.getUploading()){
+            // do not send messages if the upload is in progress
+            return;
+        }
         const model = this.model;
         if (model.isEmpty) {
             return;

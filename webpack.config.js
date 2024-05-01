@@ -583,11 +583,16 @@ module.exports = (env, argv) => {
                                 expandProps: "end",
                                 svgoConfig: {
                                     plugins: [
-                                        // Each plugin is an object
                                         {
-                                            name: "removeDimensions",
-                                            active: true, // This is usually the default, so it's optional
+                                            name: "preset-default",
+                                            params: {
+                                                overrides: {
+                                                    removeViewBox: false,
+                                                },
+                                            },
                                         },
+                                        { name: "removeDimensions" },
+                                        { name: "prefixIds" },
                                     ],
                                 },
                                 /**
