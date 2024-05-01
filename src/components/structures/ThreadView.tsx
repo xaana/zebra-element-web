@@ -43,6 +43,7 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { ThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ThreadPayload";
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
+import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 
 interface IProps {
     room: Room;
@@ -405,6 +406,15 @@ export default class ThreadView extends React.Component<IProps, IState> {
         );
     };
 
+    private checkInThread = (uploads: RoomUpload[]): boolean => {
+        for (const upload of uploads) {
+            if (upload.relation?.rel_type === THREAD_RELATION_TYPE.name) {
+                return true;
+        }
+        return false;
+        }
+    }
+
     public render(): React.ReactNode {
         const highlightedEventId = this.props.isInitialEventHighlighted ? this.props.initialEvent?.getId() : undefined;
 
@@ -483,7 +493,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     {this.card.current && <Measured sensor={this.card.current} onMeasurement={this.onMeasurement} />}
                     <div className="mx_ThreadView_timelinePanelWrapper">{timeline}</div>
 
-                    {(ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading() ) && (
+                    {this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads(threadRelation))&&((ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) && (
                         <UploadBar room={this.props.room} relation={threadRelation} />
                     )}
 

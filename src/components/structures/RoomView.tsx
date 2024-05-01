@@ -133,6 +133,7 @@ import { RightPanelPhases } from "../../stores/right-panel/RightPanelStorePhases
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import TimelinePanel from "./TimelinePanel";
+import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -2119,6 +2120,15 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
         }
     };
 
+    private checkInThread = (uploads: RoomUpload[]): boolean => {
+        for (const upload of uploads) {
+            if (upload.relation?.rel_type !== THREAD_RELATION_TYPE.name) {
+                return true;
+        }
+        return false;
+    }
+}
+
     /**
      * Handles the cancellation of a request to join a room.
      *
@@ -2312,13 +2322,13 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         let statusBar: JSX.Element | undefined;
         let isStatusAreaExpanded = true;
-        if (ContentMessages.sharedInstance().getCurrentUploads().length > 0 || SdkContextClass.instance.roomViewStore.getUploading()) {
+        if (this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads())&&(ContentMessages.sharedInstance().getCurrentUploads().length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) {
             
             statusBar = <UploadBar room={this.state.room} />;
         } else if (!this.state.search) {
             isStatusAreaExpanded = this.state.statusBarVisible;
             statusBar = (
-                <RoomStatusBar
+                <RoomStatusBar  
                     room={this.state.room}
                     isPeeking={myMembership !== "join"}
                     onInviteClick={this.onInviteClick}
