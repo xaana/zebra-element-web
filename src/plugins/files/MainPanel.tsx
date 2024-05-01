@@ -52,12 +52,10 @@ export const MainPanel = (): JSX.Element => {
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
-
-                {displayType === "documents" ? (
-                    <DataTable columns={columns} data={documents} />
-                ) : (
-                    <MediaGrid images={media} />
-                )}
+                {displayType === "documents" && <DataTable columns={columns} data={documents} />}
+                <div style={{ display: displayType === "media" ? "block" : "none" }}>
+                    <MediaGrid media={media} />
+                </div>
             </div>
         </div>
     );

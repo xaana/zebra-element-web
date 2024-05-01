@@ -1,35 +1,72 @@
 import React, { useEffect, useState } from "react";
 
 import { File } from "./types";
+import { MediaGridItem } from "./MediaGridItem";
 
-export const MediaGrid = ({ images }: { images: File[] }): JSX.Element => {
-    const [media, setMedia] = useState<string[]>([]);
+import { RingLoader } from "@/components/ui/loaders/ring-loader";
+
+export interface MediaItem extends File {
+    srcBlob: Blob;
+    srcUrl: string;
+    thumbnailBlob?: Blob;
+    thumbnailUrl?: string;
+}
+
+export const MediaGrid = ({ media }: { media: File[] }): JSX.Element => {
+    const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
     useEffect(() => {
-        const getBlobs = async (): Promise<void> => {
-            for (const image of images) {
-                const blob: Blob = await image.mediaHelper.sourceBlob.value;
-                setMedia((media) => [...media, URL.createObjectURL(blob)]);
-            }
-        };
+        async function processMedia(): Promise<void> {
+            const mediaItemsPromises = media.map(async (m) => {
+                try {
+                    // Fetch blobs concurrently if possible
+                    const [blob, thumbnailBlob] = await Promise.all([
+                        m.mediaHelper.sourceBlob.value,
+                        m.mediaHelper.thumbnailBlob.value.catch((e) => {
+                            console.error("Error fetching thumbnail", e);
+                            return null;
+                        }), // Handle thumbnail error separately
+                    ]);
 
-        getBlobs();
-    }, [images]);
+                    // Create media item object
+                    const mediaItem = {
+                        ...m,
+                        srcBlob: blob,
+                        srcUrl: URL.createObjectURL(blob),
+                        ...(thumbnailBlob && { thumbnailBlob, thumbnailUrl: URL.createObjectURL(thumbnailBlob) }),
+                    };
+
+                    return mediaItem;
+                } catch (err) {
+                    console.error("Error fetching media blob", err);
+                    return null; // Return null if main blob fetch fails
+                }
+            });
+
+            // Resolve all promises and filter out any nulls (failed fetches)
+            const resolvedMediaItems = (await Promise.all(mediaItemsPromises)).filter(
+                (item) => item !== null,
+            ) as MediaItem[];
+
+            // Batch update state once with all new media items
+            setMediaItems((items) => [...items, ...resolvedMediaItems]);
+        }
+
+        // Call processMedia with the media array
+        processMedia();
+    }, [media]);
     return (
-        <div className="w-full flex flex-wrap gap-2 items-start mt-4">
-            {media.map((media, index) => {
-                return (
-                    <div
-                        key={index}
-                        className="flex-1 basis-1/3 max-w-[240px] object-cover rounded-sm overflow-hidden bg-primary"
-                    >
-                        <img
-                            className="w-full h-full object-cover"
-                            src={media}
-                            // alt={image.name}
-                        />
-                    </div>
-                );
-            })}
-        </div>
+        <>
+            {mediaItems.length === 0 ? (
+                <div className="flex justify-center items-center w-full p-20">
+                    <RingLoader size={48} />
+                </div>
+            ) : (
+                <ul className="w-full mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1">
+                    {mediaItems.map((item, index) => {
+                        return <MediaGridItem key={index} mediaItem={item} />;
+                    })}
+                </ul>
+            )}
+        </>
     );
 };
