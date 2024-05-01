@@ -90,21 +90,27 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
 
         const files = Array.from(
             new Map(
-                allFileEvents.map((event) => [
-                    event.getId(),
-                    {
-                        id: event.getId() ?? "",
-                        name: event.getContent().body ?? event.getClearContent()?.body,
-                        downloadUrl: client.mxcUrlToHttp(event.getContent().url ?? event.getContent().file?.url) ?? "",
-                        timestamp: new Date(event.localTimestamp),
-                        roomId: event.getRoomId() ?? "",
-                        room: rooms.find((r) => r.roomId === event.getRoomId()),
-                        sender: event.getSender() ?? "",
-                        isEncrypted: event.isEncrypted(),
-                        mediaHelper: new MediaEventHelper(event),
-                        mediaId: event.getContent().url ?? event.getContent().file?.url,
-                    },
-                ]),
+                allFileEvents.map((event) => {
+                    const content = event.getContent();
+                    const mediaHelper = new MediaEventHelper(event);
+                    return [
+                        event.getId(),
+                        {
+                            id: event.getId() ?? "",
+                            name: content.body ?? event.getClearContent()?.body,
+                            downloadUrl: client.mxcUrlToHttp(content.url ?? content.file?.url) ?? "",
+                            timestamp: new Date(event.localTimestamp),
+                            roomId: event.getRoomId() ?? "",
+                            room: rooms.find((r) => r.roomId === event.getRoomId()),
+                            sender: event.getSender() ?? "",
+                            isEncrypted: event.isEncrypted(),
+                            mediaHelper,
+                            mediaId: content.url ?? content.file?.url,
+                            type: content.msgtype ?? "",
+                            mxEvent: event,
+                        },
+                    ];
+                }),
             ).values(),
         );
 
