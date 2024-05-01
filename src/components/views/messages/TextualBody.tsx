@@ -76,6 +76,7 @@ interface IState {
     botApi: null | string;
     echartsOption: string | undefined;
     echartsQuery: string | undefined;
+    echartsCode:string | undefined;
     generating: boolean;
 }
 
@@ -101,6 +102,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             botApi: null,
             echartsOption: undefined,
             echartsQuery: undefined,
+            echartsCode: undefined,
             generating: false,
         };
     }
@@ -757,7 +759,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             );
         }
-        if (databaseTable && roomId) {
+        if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
             body = (
                 <>
@@ -772,6 +774,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     description={queryDescription}
                                     echartsData={tableJson}
                                     eventId={mxEvent.getId()}
+                                    echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
                                         this.setState({ generating: true });
@@ -793,6 +796,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                 if (res.status === "success") {
                                                     const echartsOption = res.echartsOption;
                                                     const echartsQuery = res.echartsQuery;
+                                                    const echartsCode = res.echartsCode;
                                                     // const temp: IContent = JSON.parse(JSON.stringify(content));
                                                     // temp.echartsOption = echartsOption;
                                                     // temp.echartsQuery = echartsQuery;
@@ -801,6 +805,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                     this.setState({
                                                         echartsOption: echartsOption,
                                                         echartsQuery: echartsQuery,
+                                                        echartsCode: echartsCode,
                                                     });
                                                 }
                                             })
