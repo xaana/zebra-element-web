@@ -47,6 +47,7 @@ interface TableProps<T extends DataItem> {
     query: string;
     description: string;
     echartsData: string;
+    eventId: string;
     handleViewCharts: () => void;
 }
 
@@ -56,6 +57,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     query,
     description,
     echartsData,
+    eventId,
     handleViewCharts,
 }) => {
     const client = React.useContext(MatrixClientContext)
@@ -87,6 +89,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                     query: query,
                     description: description,
                     user_id: client.getSafeUserId(),
+                    eventId: eventId
                 })
             })
         }).then(res=>res.json())

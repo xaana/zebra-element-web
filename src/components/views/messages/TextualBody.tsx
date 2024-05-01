@@ -771,6 +771,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
+                                    eventId={mxEvent.getId()}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
                                         this.setState({ generating: true });
