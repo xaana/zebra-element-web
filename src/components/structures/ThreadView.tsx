@@ -225,8 +225,12 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 if (payload.context === TimelineRenderingType.Thread) {
                     if (payload.files.length > 0) {
                         const newState = [...this.state.files,...payload.files]
+                        const uniqueList =newState.filter((item, index, self) =>
+                            index === self.findIndex((t) => (
+                                t.mediaId === item.mediaId && t.fileName === item.fileName
+                            )))
                         this.setState({
-                            files: newState,
+                            files: uniqueList,
                         });
                     }
                     else {
