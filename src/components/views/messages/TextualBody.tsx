@@ -352,7 +352,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 this.props.isSeeingThroughMessageHiddenForModeration ||
             nextState.echartsOption !== this.state.echartsOption ||
             nextState.echartsQuery !== this.state.echartsQuery ||
-            nextState.generating !== this.state.generating
+            nextState.generating !== this.state.generating||
+            nextState.echartsCode!==this.state.echartsCode
         );
     }
 
@@ -773,7 +774,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
-                                    eventId={mxEvent.getId()}
+                                    eventId={mxEvent.getId()||""}
                                     echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
