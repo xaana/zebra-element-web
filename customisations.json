@@ -47,5 +47,6 @@
     "src/stores/right-panel/RightPanelStorePhases.ts": "src/stores/right-panel/RightPanelStorePhases.ts",
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
     "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
-    "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx":"src/components/views/settings/GeneralRoomSettingsTab.tsx"
+    "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx":"src/components/views/settings/GeneralRoomSettingsTab.tsx",
+    "src/components/views/rooms/NewRoomIntro.tsx":"src/components/views/rooms/NewRoomIntro.tsx"
 }
