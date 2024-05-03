@@ -23,6 +23,7 @@
     "src/components/views/right_panel/BaseCard.tsx": "src/components/views/BaseCard.tsx",
     "src/components/views/right_panel/RoomSummaryCard.tsx": "src/components/views/RoomSummaryCard.tsx",
     "src/components/views/right_panel/UserInfo.tsx": "src/components/views/UserInfo.tsx",
+    "src/components/views/room_settings/RoomProfileSettings.tsx": "src/components/views/settings/RoomProfileSettings.tsx",
     "src/components/views/rooms/EventTile.tsx": "src/components/views/rooms/EventTile.tsx",
     "src/components/views/rooms/LegacyRoomHeader.tsx": "src/components/views/rooms/LegacyRoomHeader.tsx",
     "src/components/views/rooms/MessageComposer.tsx": "src/components/views/rooms/MessageComposer.tsx",
@@ -42,8 +43,10 @@
     "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx",
     "src/ContentMessages.ts": "src/ContentMessages.ts",
     "src/DeviceListener.ts": "src/DeviceListener.ts",
+    "src/settings/Settings.tsx": "src/settings/Settings.tsx",
     "src/stores/right-panel/RightPanelStorePhases.ts": "src/stores/right-panel/RightPanelStorePhases.ts",
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
     "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
-    "src/settings/Settings.tsx": "src/settings/Settings.tsx"
+    "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx":"src/components/views/settings/GeneralRoomSettingsTab.tsx",
+    "src/components/views/rooms/NewRoomIntro.tsx":"src/components/views/rooms/NewRoomIntro.tsx"
 }
