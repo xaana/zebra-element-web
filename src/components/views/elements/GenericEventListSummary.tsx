@@ -115,23 +115,24 @@ const GenericEventListSummary: React.FC<IProps> = ({
     }
 
     return (
-        <li
-            className="mx_GenericEventListSummary"
-            data-scroll-tokens={eventIds}
-            data-expanded={expanded + ""}
-            data-layout={layout}
-            data-testid={testId}
-        >
-            {/* <AccessibleButton
-                kind="link_inline"
-                className="mx_GenericEventListSummary_toggle"
-                onClick={toggleExpanded}
-                aria-expanded={expanded}
-            >
-                {expanded ? _t("action|collapse") : _t("action|expand")}
-            </AccessibleButton> */}
-            {body}
-        </li>
+        <></>
+        // <li
+        //     className="mx_GenericEventListSummary"
+        //     data-scroll-tokens={eventIds}
+        //     data-expanded={expanded + ""}
+        //     data-layout={layout}
+        //     data-testid={testId}
+        // >
+        //     {/* <AccessibleButton
+        //         kind="link_inline"
+        //         className="mx_GenericEventListSummary_toggle"
+        //         onClick={toggleExpanded}
+        //         aria-expanded={expanded}
+        //     >
+        //         {expanded ? _t("action|collapse") : _t("action|expand")}
+        //     </AccessibleButton> */}
+        //     {body}
+        // </li>
     );
 };
 
