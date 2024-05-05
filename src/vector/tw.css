@@ -3,12 +3,43 @@
 @tailwind utilities;
 
 .zebra-container {
-    --background: 0 0% 100%;
+    /* --cpd-color-theme-bg: #f8f7fd !important; */
+    /* --cpd-color-bg-canvas-default: #f8f7fd !important; */
+    --cpd-color-bg-subtle-secondary-level-0: #d0c6f3 !important;
+
+    --background: 250 60% 98.04%;
+    --foreground: 255 61.54% 5.1%;
+
+    --primary: 253.21 64.37% 51.57%;
+    --primary-foreground: 0 0% 100%;
+
+    --card: 250 60% 98.04%;
+    --card-foreground: 255 61.54% 5.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 255 61.54% 5.1%;
+
+    --secondary: 253.04 62.16% 92.75%;
+    --secondary-foreground: 250 30% 7.84%;
+
+    --muted: 251.25 66.67% 95.29%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 251.25 66.67% 95.29%;
+    --accent-foreground: 253.21 64.37% 51.57%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 90.2%;
+    --input: 0 0% 90.2%;
+    --ring: 253.21 64.37% 51.57%;
+
+    --radius: 0.5rem;
+    /* --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
 
     --card: 220 14% 93%;
-    /* --card: 120 5% 96%; */
-    /* --card: 0 0% 100%; */
     --card-foreground: 224 71.4% 4.1%;
 
     --popover: 0 0% 100%;
@@ -18,10 +49,8 @@
     --primary-foreground: 210 20% 98%;
 
     --secondary: 0 0% 96%;
-    /* --secondary: 240 9% 98%; */
     --secondary-foreground: 220.9 39.3% 11%;
 
-    /* --muted: 220 14.3% 95.9%; */
     --muted: 270 6% 90%;
     --muted-foreground: 220 8.9% 46.1%;
 
@@ -31,52 +60,75 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
 
-    /* --border: 220 13% 91%; */
     --border: 0 0% 90%;
     --input: 0 0% 90%;
     --ring: 224 71.4% 4.1%;
 
-    --radius: 0.75rem;
-    /* --radius: 0.5rem; */
+    --radius: 0.75rem; */
 
     --md-editor-font-family: "Roboto Mono", monospace;
 }
 
 .cpd-theme-dark.zebra-container {
-    --background: 224 0% 5.1%;
+    --cpd-color-theme-bg: #100e1a !important;
+    --cpd-color-bg-canvas-default: #100e1a !important;
+
+    --background: 250 30% 7.84%;
+    --foreground: 253.04 62.16% 92.75%;
+
+    --primary: 253.21 64.37% 51.57%;
+    --primary-foreground: 0 0% 100%;
+
+    --card: 250 30% 7.84%;
+    --card-foreground: 253.04 62.16% 92.75%;
+
+    --popover: 250 30% 7.84%;
+    --popover-foreground: 253.04 62.16% 92.75%;
+
+    --secondary: 252.86 60.87% 18.04%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 250.91 12.64% 17.06%;
+    --muted-foreground: 250 2.56% 54.12%;
+
+    --accent: 252.86 60.87% 18.04%;
+    --accent-foreground: 253.04 62.16% 92.75%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 253.21 64.37% 51.57%;
+
+    --radius: 0.5rem;
+    /* --background: 224 0% 5.1%;
     --foreground: 210 20% 98%;
 
     --card: 300 1% 16%;
-    /* --card: 215 28% 20%; */
-    /* --card: 224 71.4% 4.1%; */
     --card-foreground: 210 20% 98%;
 
     --popover: 300 1% 16%;
-    /* --popover: 224 71.4% 4.1%; */
     --popover-foreground: 210 20% 98%;
 
     --primary: 210 20% 98%;
     --primary-foreground: 210 20% 98%;
 
     --secondary: 0 0% 11%;
-    /* --secondary: 219 37% 11%; */
     --secondary-foreground: 210 20% 98%;
 
     --muted: 240 3% 11%;
-    /* --muted: 215 27.9% 16.9%; */
     --muted-foreground: 217.9 10.6% 64.9%;
 
     --accent: 240 3% 21%;
-    /* --accent: 215 27.9% 16.9%; */
     --accent-foreground: 210 20% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
 
     --border: 300 1% 21%;
-    /* --border: 215 27.9% 16.9%; */
     --input: 300 1% 21%;
-    --ring: 216 12.2% 83.9%;
+    --ring: 216 12.2% 83.9%; */
 }
 /* 
 .zebra-container * {

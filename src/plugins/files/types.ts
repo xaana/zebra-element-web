@@ -13,4 +13,6 @@ export type File = {
     mediaId: string;
     type: MsgType | string;
     mxEvent?: MatrixEvent;
+    fileSize?: number;
+    mimetype?: string;
 };

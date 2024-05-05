@@ -43,6 +43,218 @@ export function IconZoomIn({ className, ...props }: React.ComponentProps<"svg">)
         </svg>
     );
 }
+
+export function IconDocumentPDF({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M3 12h1.5c2 0 2.25 1.25 2.25 2s-.25 2-2.25 2H3.25v2H3v-6zm6.5 6v-6h1.705c1.137 0 2.295.5 2.295 3s-1.158 3-2.295 3H9.5zm7 1v-7h4m-4 3.5h3"
+            />
+        </svg>
+    );
+}
+export function IconDocumentCSV({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M7 13H5c-1 0-2 .5-2 1.5v3c0 1 1 1.5 2 1.5h2m6.25-6h-2.5c-1.5 0-2 .5-2 1.5s.5 1.5 2 1.5 2 .5 2 1.5-.5 1.5-2 1.5h-2.5m12.25-7v.5C20.5 13 18 19 18 19h-.5S15 13 15 12.5V12"
+            />
+        </svg>
+    );
+}
+export function IconDocumentZip({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M2 13h5v1l-4 4v1h5m3-7v8-8zm4 1v7-7zm5 2a2 2 0 0 0-2-2h-3v4h3a2 2 0 0 0 2-2z"
+            />
+        </svg>
+    );
+}
+export function IconDocumentWord({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5m-9 6-1.5 6.75h-.25L9.5 12H9l-2.75 6.75H6L4.5 12H4l2 7h.5L9 12.5h.5L12 19h.5l2-7H14z"
+            />
+        </svg>
+    );
+}
+export function IconDocumentEXE({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5m-8.75 5.5-6 7m0-7 6 7M20.5 12h-4v6h4m-1-3h-3M7 12H3v6h4m-1-3H3"
+            />
+        </svg>
+    );
+}
+export function IconDocumentTXT({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M2 12h5m-2.5 0v7M16 12h5m-2.5 0v7m-4-7.5-6 7m0-7 6 7"
+            />
+        </svg>
+    );
+}
+export function IconDocumentText({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M6 16h10H6zm0-4h12H6zm0-4h5-5zm8-7v7h7M3 23V1h12l6 6v16H3z"
+            />
+        </svg>
+    );
+}
+export function IconDocumentDB({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 7V1H19.5L23 4.5V23h-6m1-22v5h5M3 12s1-2 6-2 6 2 6 2v9s-1 2-6 2-6-2-6-2v-9zm0 5s2 2 6 2 6-2 6-2M3 13s2 2 6 2 6-2 6-2"
+            />
+        </svg>
+    );
+}
+export function IconDocumentPPT({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M4 12h1.5c2 0 3.5.5 3.5 2.25S7.5 16.5 5.5 16.5H4.25V19H4v-7z"
+            />
+        </svg>
+    );
+}
+export function IconDocumentRTF({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5m-2.5 6h-4v7m3-3.5h-3m-8-3.5h6m-3 0v7M3 19v-7h1.5C5 12 7 12 7 14s-2 2-2.5 2H3m2.25 0 2.25 3"
+            />
+        </svg>
+    );
+}
+export function IconDocument({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path fill="none" stroke="currentColor" strokeWidth={2} d="M14 1v7h7m0 15H3V1h12l3 3 3 3v16z" />
+        </svg>
+    );
+}
+export function IconDocumentExcel({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            {...props}
+        >
+            <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                d="M4.998 9V1H19.5L23 4.5V23H4M18 1v5h5M9.25 12l-2 3.25-2-3.25H5l2.25 3.5-2.5 3.5H5l2.25-3.25L9.5 19h.25l-2.5-3.5L9.5 12h-.25z"
+            />
+        </svg>
+    );
+}
 export function IconZoomOut({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg

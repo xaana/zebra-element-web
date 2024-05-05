@@ -9,7 +9,7 @@ import { useAtomValue } from "jotai";
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
-import { Textarea } from "@/components/ui/Textarea";
+import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
 import { AiTone, AiToneOption } from "@/components/reports/BlockEditor/types";
 import { tones } from "@/lib/constants";

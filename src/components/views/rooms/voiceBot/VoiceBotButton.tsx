@@ -10,6 +10,7 @@ import "../style/button.css";
 import { IContent } from "matrix-js-sdk/src/models/event";
 import { MatrixClient } from "matrix-js-sdk/src/matrix";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
@@ -576,8 +577,15 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
                 }}
             >
                 <DialogTrigger className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
+                    <AccessibleTooltipButton
+                        title="Voice Chat"
+                        className="mx_MessageComposer_button voice_bot_button"
+                        onClick={null}
+                    >
+                        <div className="hidden" />
+                    </AccessibleTooltipButton>
                     {/* <div className="!ml-0" /> */}
-                    <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" />
+                    {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" /> */}
                 </DialogTrigger>
 
                 <DialogStyle>

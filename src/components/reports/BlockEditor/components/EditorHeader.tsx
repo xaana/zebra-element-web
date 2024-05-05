@@ -7,7 +7,7 @@ import { TemplateSave } from "./TemplateSave";
 import { Icon } from "@/components/ui/Icon";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Button } from "@/components/ui/ButtonAlt";
-import Tooltip from "@/components/ui/Tooltip";
+import Tooltip from "@/components/ui/TooltipAlt";
 
 export type EditorHeaderProps = {
     isSidebarOpen?: boolean;

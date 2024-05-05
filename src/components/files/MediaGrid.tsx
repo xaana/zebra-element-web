@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { File } from "./types";
+import { File } from "../../plugins/files/types";
 import { MediaGridItem } from "./MediaGridItem";
 
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
