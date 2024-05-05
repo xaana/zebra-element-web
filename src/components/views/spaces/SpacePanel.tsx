@@ -397,6 +397,19 @@ const SpacePanel: React.FC = () => {
                         ref={ref}
                         aria-label={_t("common|spaces")}
                     >
+                        <Droppable droppableId="top-level-spaces">
+                            {(provided, snapshot) => (
+                                <InnerSpacePanel
+                                    {...provided.droppableProps}
+                                    isPanelCollapsed={isPanelCollapsed}
+                                    setPanelCollapsed={setPanelCollapsed}
+                                    isDraggingOver={snapshot.isDraggingOver}
+                                    innerRef={provided.innerRef}
+                                >
+                                    {provided.placeholder}
+                                </InnerSpacePanel>
+                            )}
+                        </Droppable>
                         <UserMenu isPanelCollapsed={isPanelCollapsed}>
                             {!activeSpace.startsWith("plugin.") && (
                                 <AccessibleTooltipButton
@@ -423,21 +436,7 @@ const SpacePanel: React.FC = () => {
                                 />
                             )}
                         </UserMenu>
-                        <Droppable droppableId="top-level-spaces">
-                            {(provided, snapshot) => (
-                                <InnerSpacePanel
-                                    {...provided.droppableProps}
-                                    isPanelCollapsed={isPanelCollapsed}
-                                    setPanelCollapsed={setPanelCollapsed}
-                                    isDraggingOver={snapshot.isDraggingOver}
-                                    innerRef={provided.innerRef}
-                                >
-                                    {provided.placeholder}
-                                </InnerSpacePanel>
-                            )}
-                        </Droppable>
-
-                        <QuickSettingsButton isPanelCollapsed={isPanelCollapsed} />
+                        {/* <QuickSettingsButton isPanelCollapsed={isPanelCollapsed} /> */}
                     </nav>
                 </DragDropContext>
             )}

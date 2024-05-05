@@ -406,9 +406,21 @@ export class RoomViewStore extends EventEmitter {
                     });
                 } else {
                     if (payload.roomId===this.state.roomId){
-                    this.setState({
-                        files: payload.files,
-                    });}
+                        if(payload.files.length>0){
+                        const newState = [...this.state.files,...payload.files]
+                        const uniqueList =newState.filter((item, index, self) =>
+                            index === self.findIndex((t) => (
+                                t.mediaId === item.mediaId && t.fileName === item.fileName
+                            )))
+                        this.setState({
+                            files: uniqueList,
+                        });}
+                    else{
+                        this.setState({
+                            files: [],
+                        });
+                    }
+                    }
                 }
             }
             break;

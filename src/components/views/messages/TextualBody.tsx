@@ -76,6 +76,7 @@ interface IState {
     botApi: null | string;
     echartsOption: string | undefined;
     echartsQuery: string | undefined;
+    echartsCode:string | undefined;
     generating: boolean;
 }
 
@@ -101,6 +102,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             botApi: null,
             echartsOption: undefined,
             echartsQuery: undefined,
+            echartsCode: undefined,
             generating: false,
         };
     }
@@ -350,7 +352,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 this.props.isSeeingThroughMessageHiddenForModeration ||
             nextState.echartsOption !== this.state.echartsOption ||
             nextState.echartsQuery !== this.state.echartsQuery ||
-            nextState.generating !== this.state.generating
+            nextState.generating !== this.state.generating||
+            nextState.echartsCode!==this.state.echartsCode
         );
     }
 
@@ -730,8 +733,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <>
                     {body}
-                    {!content.is_image && <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />}
-                    {content.is_image && this.context.room&&<ImageViewer eventId={content.file_ids} room={this.context.room} />}
+                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
+                    {content.is_image &&<div className="flex flex-row items-center gap-x-2">
+                        <div className="text-sm text-muted-foreground font-bold">
+                        Sources:
+                        </div>
+                        {content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
+                    </div>}
                     <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
@@ -752,7 +760,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             );
         }
-        if (databaseTable && roomId) {
+        if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
             body = (
                 <>
@@ -766,6 +774,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
+                                    eventId={mxEvent.getId()||""}
+                                    echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
                                         console.log(this.state.botApi);
                                         this.setState({ generating: true });
@@ -787,6 +797,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                 if (res.status === "success") {
                                                     const echartsOption = res.echartsOption;
                                                     const echartsQuery = res.echartsQuery;
+                                                    const echartsCode = res.echartsCode;
                                                     // const temp: IContent = JSON.parse(JSON.stringify(content));
                                                     // temp.echartsOption = echartsOption;
                                                     // temp.echartsQuery = echartsQuery;
@@ -795,6 +806,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                     this.setState({
                                                         echartsOption: echartsOption,
                                                         echartsQuery: echartsQuery,
+                                                        echartsCode: echartsCode,
                                                     });
                                                 }
                                             })

@@ -683,15 +683,18 @@ export default class ContentMessages {
                                 if (this.inprogress.length===0){
                                     dis.dispatch({action:"uploading_files",uploading:false})
                                     this.currentProgress=null
+                                    this.fileUploaded = []
                                 }
-                                this.fileUploaded = []
+
                                 // dis.dispatch({action:"uploading_files",uploading:false})
                             }
                             // console.log(event.data,progress);
                         }else if(event.data.startsWith("fail")){
-                            console.log(event.data)
-                            dis.dispatch({action:"uploading_files",uploading:false})
                             this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
+                            removeElement(this.inprogress, (e) => e.promise === upload.promise);
+                            if (this.fileUploaded.length === 0) {
+                                dis.dispatch({action:"uploading_files",uploading:false})
+                            }
                             dis.dispatch({
                                 action: "select_files",
                                 files: this.fileUploaded,
@@ -705,15 +708,18 @@ export default class ContentMessages {
                   };
                   websocket.onerror = (event) => {
                     console.error("WebSocket error observed:", event);
+                    removeElement(this.inprogress, (e) => e.promise === upload.promise);
                     this.fileUploaded = this.fileUploaded.filter(item => item.mediaId !== mxcUrl)
-                    dis.dispatch({action:"uploading_files",uploading:false})
-                            dis.dispatch({
-                                action: "select_files",
-                                files: this.fileUploaded,
-                                roomId: roomId,
-                                context:context,
-                            });
-                            toast.error("File upload failed. websocket error");
+                    if (this.fileUploaded.length === 0) {
+                        dis.dispatch({action:"uploading_files",uploading:false})
+                    }
+                    dis.dispatch({
+                        action: "select_files",
+                        files: this.fileUploaded,
+                        roomId: roomId,
+                        context:context,
+                    });
+                    toast.error("File upload failed. websocket error");
                 };
             }
             else{
