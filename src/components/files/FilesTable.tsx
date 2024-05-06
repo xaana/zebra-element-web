@@ -184,7 +184,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                             }}
                             variant="ghost"
                             size="sm"
-                            className="p-0 h-auto w-auto translate-y-[-2px]"
+                            className="py-1 px-0 h-full w-auto"
                         >
                             {IconComponent ? (
                                 <IconComponent className="h-4 w-4 mr-2" />
