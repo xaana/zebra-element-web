@@ -91,7 +91,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
         setDialogOpen(false);
         dis.dispatch({
             action: "select_files",
-            files: selectedFiles,
+            files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
             roomId: props.roomId,
             context: timelineRenderingType,
         });
@@ -106,7 +106,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
         if (selectedFiles.length > 0) {
             dis.dispatch({
                 action: "select_files",
-                files: selectedFiles,
+                files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
