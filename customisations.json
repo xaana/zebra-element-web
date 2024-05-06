@@ -35,6 +35,7 @@
     "src/components/views/rooms/SendMessageComposer.tsx": "src/components/views/rooms/SendMessageComposer.tsx",
     "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx",
     "src/components/views/rooms/WhoIsTypingTile.tsx": "src/components/views/rooms/WhoIsTypingTile.tsx",
+    "src/components/views/rooms/RoomTile.tsx": "src/components/views/rooms/RoomTile.tsx",
     "src/components/views/settings/EventIndexPanel.tsx": "src/components/views/settings/EventIndexPanel.tsx",
     "src/components/views/settings/tabs/user/GeneralUserSettingsTab.tsx": "src/components/views/settings/GeneralUserSettingsTab.tsx",
     "src/components/views/settings/tabs/user/SidebarUserSettingsTab.tsx": "src/components/views/settings/SidebarUserSettingsTab.tsx",
@@ -48,5 +49,7 @@
     "src/stores/RoomViewStore.tsx": "src/stores/RoomViewStore.tsx",
     "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
     "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx":"src/components/views/settings/GeneralRoomSettingsTab.tsx",
-    "src/components/views/rooms/NewRoomIntro.tsx":"src/components/views/rooms/NewRoomIntro.tsx"
+    "src/components/views/rooms/NewRoomIntro.tsx":"src/components/views/rooms/NewRoomIntro.tsx",
+    "src/components/views/rooms/avatars/DecoratedRoomAvatar.tsx": "src/components/views/rooms/avatars/DecoratedRoomAvatar.tsx",
+    "src/utils/direct-messages.ts": "src/utils/direct-messages.ts"
 }

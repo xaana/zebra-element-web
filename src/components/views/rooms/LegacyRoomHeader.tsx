@@ -29,7 +29,6 @@ import { UserTab } from "matrix-react-sdk/src/components/views/dialogs/UserTab";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import RoomHeaderButtons from "matrix-react-sdk/src/components/views/right_panel/LegacyRoomHeaderButtons";
 import E2EIcon from "matrix-react-sdk/src/components/views/rooms/E2EIcon";
-import DecoratedRoomAvatar from "matrix-react-sdk/src/components/views/avatars/DecoratedRoomAvatar";
 import AccessibleButton, { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import RoomTopic from "matrix-react-sdk/src/components/views/elements/RoomTopic";
@@ -74,6 +73,7 @@ import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
 import { ThreadSelectDropdown } from "./ThreadSelectDropdown";
 import type { MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
 import ModelSelectDropdown from "./ModelSelectDropdown";
+import DecoratedRoomAvatar from "./avatars/DecoratedRoomAvatar";
 
 class DisabledWithReason {
     public constructor(public readonly reason: string) {}
