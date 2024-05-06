@@ -39,6 +39,7 @@
     "src/components/views/rooms/SendMessageComposer.tsx": "src/components/views/rooms/SendMessageComposer.tsx",
     "src/components/views/rooms/ThreadSummary.tsx": "src/components/views/rooms/ThreadSummary.tsx",
     "src/components/views/rooms/WhoIsTypingTile.tsx": "src/components/views/rooms/WhoIsTypingTile.tsx",
+    "src/components/views/rooms/MemberList.tsx": "src/components/views/rooms/MemberList.tsx",
     "src/components/views/settings/EventIndexPanel.tsx": "src/components/views/settings/EventIndexPanel.tsx",
     "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx": "src/components/views/settings/GeneralRoomSettingsTab.tsx",
     "src/components/views/settings/tabs/user/GeneralUserSettingsTab.tsx": "src/components/views/settings/GeneralUserSettingsTab.tsx",
