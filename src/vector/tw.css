@@ -74,16 +74,17 @@
     --cpd-color-bg-canvas-default: #131214 !important;
 
     --background: 0 0% 7.45%;
-    --foreground: 262.11 100% 92.55%;
+    /* --foreground: 262.11 100% 92.55%; */
+    --foreground: 262.11 100% 100%;
 
     --primary: 262.82 100% 50%;
     --primary-foreground: 0 0% 100%;
 
     --card: 0 0% 7.45%;
-    --card-foreground: 262.11 100% 92.55%;
+    --card-foreground: 262.11 100% 100%;
 
     --popover: 0 0% 7.45%;
-    --popover-foreground: 262.11 100% 92.55%;
+    --popover-foreground: 262.11 100% 100%;
 
     --secondary: 262.92 100% 17.45%;
     --secondary-foreground: 0 0% 100%;
