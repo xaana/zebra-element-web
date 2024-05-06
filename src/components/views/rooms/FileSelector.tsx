@@ -1,104 +1,72 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
+import { MsgType } from "matrix-js-sdk/src/matrix";
+import { RowSelectionState } from "@tanstack/react-table";
 
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover"
 import { init as initRouting } from "../../../vector/routing";
-// import { IconCheckBold } from "../../ui/icons"
 
-import "./style/button.css"
-import { IconCheckBold } from "@/components/ui/icons";
-import { Button } from "@/components/ui/button";
+import "./style/button.css";
+import { File } from "@/plugins/files/types";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+// import { Button } from "@/components/ui/button";
 import { useFiles } from "@/lib/hooks/use-files";
+import { FilesTable } from "@/components/files/FilesTable";
+import FilesTabs from "@/components/files/FilesTabs";
+import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface IProps {
     roomId: string;
 }
 
-export interface DocFile{
+export interface DocFile {
     mediaId: string;
     fileName: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const FileSelector = (props:IProps) => {
-    // const [events, setEvents] = useState<MatrixEvent[]>([]);
-    const [files, setFiles] = useState<DocFile[]>([]);
-    const [selectedFiles, setSelectedFiles] = useState<DocFile[]>([]);
+export const FileSelector = (props: IProps): JSX.Element => {
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [media, setMedia] = useState<File[]>([]);
+    const [documents, setDocuments] = useState<File[]>([]);
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const { timelineRenderingType } = useContext(RoomContext);
-    const [spacePopoverOpen, setSpacePopoverOpen] = useState(false)
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const { getUserFiles } = useFiles();
     const client = useMatrixClientContext();
+
     useEffect(() => {
         initRouting();
     }, [client]);
-    const onClick = () => {
-        // setFiles([])
-        // const currentRoom = client.getRoom(props.roomId)
-        fetchFiles();
-        dis.dispatch({
-            action: "select_files",
-            database: [],
-            roomId: props.roomId,
-            timelineRenderingType,
-        });
-    }
-    const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles();
-        const temp = fetchedFiles.map((file)=>{return {eventId:file.id,mediaId:file.mediaId,fileName:file.name,roomId:file.roomId}});
-        const uniqueList =temp.filter((item, index, self) =>
-        index === self.findIndex((t) => (
-            t.mediaId === item.mediaId && t.fileName === item.fileName
-        ))
-    );
-        setFiles([...uniqueList].reverse());
-    };
-
-    // useEffect(() => {
-    //     if (events.length === 0) return;
-    //     const files: DocFile[] = events
-    //     .map((event) => {
-    //         const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-    //         // const urlSplit = mxcUrl?.split("/");
-    //         // const mediaId = urlSplit&&urlSplit[urlSplit.length - 1];
-    //         const fileName = event.getContent().body;
-    //         return {
-    //             mediaId: mxcUrl,
-    //             fileName:fileName
-                
-    //         };
-    //     })
-    //     const uniqueList =files.filter((item, index, self) =>
-    //     index === self.findIndex((t) => (
-    //         t.mediaId === item.mediaId && t.fileName === item.fileName
-    //     ))
-    // );
-    //     setFiles(uniqueList);
-    // }, [events]);
 
     useEffect(() => {
-        if(!spacePopoverOpen){
-            if (selectedFiles.length > 0) {
+        setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
+    }, [rowSelection, documents]);
 
-                dis.dispatch({
-                    action: "select_files",
-                    files: selectedFiles,
-                    roomId: props.roomId,
-                    context: timelineRenderingType,
-                });
-                dis.dispatch({
-                    action: Action.FocusAComposer,
-                    context: timelineRenderingType,
-                });
-            }
+    const handleDialogOpen = (): void => {
+        if (!dialogOpen) {
+            setMedia([]);
+            setDocuments([]);
+            // setSelectedFiles([]);
+            // setRowSelection({});
+            setDialogOpen(true);
         }
-        else{
-            setFiles([]);
-            setSelectedFiles([]);
+    };
+
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = await getUserFiles();
+        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+        setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
+    };
+
+    const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+        if (open) {
+            await fetchFiles();
             dis.dispatch({
                 action: "select_files",
                 files: [],
@@ -111,165 +79,88 @@ export const FileSelector = (props:IProps) => {
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
+        } else {
+            setDialogOpen(false);
         }
-    },[spacePopoverOpen])
-
-    const abbreviateFilename = (filename:string):string => {
-        const maxLength = 40;  // Maximum length of displayed filename
-        if (filename.length > maxLength) {
-            return filename.substring(0, maxLength - 3) + '...';  // Cut the filename and append '...'
-        }
-        return filename;
     };
 
+    const handleImageSelect = (image: MediaItem): void => {
+        setSelectedFiles(() => [image as File]);
+        setDialogOpen(false);
+        dis.dispatch({
+            action: "select_files",
+            files: selectedFiles,
+            roomId: props.roomId,
+            context: timelineRenderingType,
+        });
+        dis.dispatch({
+            action: Action.FocusAComposer,
+            context: timelineRenderingType,
+        });
+    };
 
-    // const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
-    //     const encryptedRooms = [];
-    //     const plainRooms = [];
-    //     for (const room of rooms) {
-    //         if (client.isRoomEncrypted(room.roomId)) {
-    //             encryptedRooms.push(room);
-    //         } else {
-    //             plainRooms.push(room);
-    //         }
-    //     }
+    const handleClickDone = (): void => {
+        setDialogOpen(false);
+        if (selectedFiles.length > 0) {
+            dis.dispatch({
+                action: "select_files",
+                files: selectedFiles,
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
+            dis.dispatch({
+                action: Action.FocusAComposer,
+                context: timelineRenderingType,
+            });
+        }
+    };
 
-    //     const plainFilter = new Filter(client.getSafeUserId());
-    //     plainFilter.setDefinition({
-    //         room: {
-    //             timeline: {
-    //                 contains_url: true,
-    //                 types: ["m.room.message"],
-    //             },
-    //         },
-    //     });
-
-    //     plainFilter.filterId = await client.getOrCreateFilter(
-    //         "FILTER_FILES_PLAIN_" + client.credentials.userId,
-    //         plainFilter,
-    //     );
-    //     const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
-    //     const plainEvents = plainTimelineSets.flatMap((ts) =>
-    //         ts.getTimelines().flatMap(async (t) => {
-    //             const timeline = t.fork(Direction.Forward);
-    //             let next = true;
-    //             while (next) {
-    //                 await client.paginateEventTimeline(timeline, { backwards: true });
-    //                 next = timeline.getPaginationToken(Direction.Backward) !== null;
-    //             }
-    //             return timeline.getEvents().filter((ev) => ev.getContent().file);
-    //         }),
-    //     );
-
-    //     const encryptedFilter = new Filter(client.getSafeUserId());
-    //     encryptedFilter.setDefinition({
-    //         room: {
-    //             timeline: {
-    //                 types: ["m.room.encrypted"],
-    //             },
-    //         },
-    //     });
-
-    //     encryptedFilter.filterId = await client.getOrCreateFilter(
-    //         "FILTER_FILES_ENCRYPTED_" + client.credentials.userId,
-    //         encryptedFilter,
-    //     );
-    //     const encryptedTimelineSets = encryptedRooms.map((room) =>
-    //         room.getOrCreateFilteredTimelineSet(encryptedFilter),
-    //     );
-    //     const encryptedEvents = encryptedTimelineSets.flatMap((ts) =>
-    //         ts.getTimelines().flatMap(async (t) => {
-    //             const timeline = t.fork(Direction.Forward);
-    //             let next = true;
-    //             while (next) {
-    //                 await client.paginateEventTimeline(timeline, { backwards: true });
-    //                 next = timeline.getPaginationToken(Direction.Backward) !== null;
-    //             }
-    //             return timeline.getEvents().filter((ev) => ev.getContent().file);
-    //         }),
-    //     );
-
-    //     Promise.all([...plainEvents, ...encryptedEvents]).then((results) => {
-    //         const finalResults = results.flat();
-    //         const roomResults = rooms
-    //             .flatMap((r) =>
-    //                 r.getTimelineSets().flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents())),
-    //             )
-    //             .filter((ev) => ev.getContent().url || ev.getContent().file);
-    //         setEvents([...roomResults, ...finalResults]);
-    //     });
-    // };
-    const onConfirm = () => {
-        setSpacePopoverOpen(false)
-    }
-    
     return (
-        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
-        <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
-            <PopoverTrigger asChild className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
-                <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button files_button" onClick={onClick} />
-            </PopoverTrigger>
-            <PopoverContent
-            className="!p-1 relative"
-            side="top"
-            align="start"
-            sideOffset={6}
-            >
-            <Command>
-                  <CommandInput
-                    placeholder="Search by Filename..."
-                    className="text-xs"
-                  />
-                  <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
-                    <CommandGroup>
-                    {files.map((file, index) => (
-                        <CommandItem
-                          className="text-xs"
-                          key={index}
-                          value={file["fileName"]}
-                          onSelect={() => {
-                            if(!selectedFiles.includes(file)){
-                            setSelectedFiles((pres) => 
-                            {  
-                                const temp = [...pres,files[index]];
-                                return temp
-                            })
-                          }else{
-                            setSelectedFiles((pres) => 
-                            {  
-                                const temp = pres.filter((f) => f["fileName"] !== file["fileName"]);
-                                return temp
-                            })
-                            // props.fileSelect(file)
-                          }
-                        }
-                        }
+        <>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                <DialogTrigger asChild>
+                    <AccessibleTooltipButton
+                        title="Select Files"
+                        className="mx_MessageComposer_button files_button"
+                        onClick={handleDialogOpen}
+                    >
+                        <div className="hidden" />
+                    </AccessibleTooltipButton>
+                </DialogTrigger>
+                <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
+                    <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                        <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                        <FilesTabs className="mb-4" displayType={displayType} setDisplayType={setDisplayType} />
+                        {displayType === "documents" && (
+                            <FilesTable
+                                data={documents}
+                                rowSelection={rowSelection}
+                                setRowSelection={setRowSelection}
+                                mode="dialog"
+                            />
+                        )}
+                        <div style={{ display: displayType === "media" ? "block" : "none" }}>
+                            <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
+                        </div>
+
+                        <div
+                            className={cn(
+                                "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                selectedFiles.length > 0 ? "justify-between" : "justify-end",
+                            )}
                         >
-                        
-                        {abbreviateFilename(file["fileName"])}
-                        {selectedFiles.includes(file) && (
-                            <IconCheckBold className="ml-auto h-4 w-4" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-                <div className="flex justify-end">
-                    {files.length>0?<Button className="text-xs h-7" size="sm" variant="default" onClick={onConfirm}>confirm</Button>:''}
-                </div>
-                
-            </PopoverContent>
-        </Popover>
-        </div>
-    )
-}
-        
-        
-        
-        
-        
-        
-        
-        
+                            {selectedFiles.length > 0 && (
+                                <div className="text-sm text-muted-foreground ml-2">
+                                    {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
+                                </div>
+                            )}
+                            <Button disabled={selectedFiles.length === 0} onClick={handleClickDone}>
+                                Done
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};

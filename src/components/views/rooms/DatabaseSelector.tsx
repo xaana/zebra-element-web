@@ -9,6 +9,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
 import "./style/button.css";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = () => {
@@ -37,22 +38,42 @@ export const DatabaseSelector = () => {
                 <PopoverTrigger
                     asChild
                     className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]"
-                    onClick={() => {
-                        dis.dispatch({
-                            action: "select_database",
-                            database: "",
-                            roomId: roomId,
-                            context: timelineRenderingType,
-                        });
-                        dis.dispatch({
-                            action: "select_files",
-                            files: [],
-                            roomId: roomId,
-                            context: timelineRenderingType,
-                        });
-                    }}
+                    // onClick={() => {
+                    //     dis.dispatch({
+                    //         action: "select_database",
+                    //         database: "",
+                    //         roomId: roomId,
+                    //         context: timelineRenderingType,
+                    //     });
+                    //     dis.dispatch({
+                    //         action: "select_files",
+                    //         files: [],
+                    //         roomId: roomId,
+                    //         context: timelineRenderingType,
+                    //     });
+                    // }}
                 >
-                    <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" />
+                    <AccessibleTooltipButton
+                        title="Select Database"
+                        className="mx_MessageComposer_button database_button"
+                        onClick={() => {
+                            dis.dispatch({
+                                action: "select_database",
+                                database: "",
+                                roomId: roomId,
+                                context: timelineRenderingType,
+                            });
+                            dis.dispatch({
+                                action: "select_files",
+                                files: [],
+                                roomId: roomId,
+                                context: timelineRenderingType,
+                            });
+                        }}
+                    >
+                        <div className="hidden" />
+                    </AccessibleTooltipButton>
+                    {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
                 </PopoverTrigger>
                 <PopoverContent className="!p-1" side="top" align="start" sideOffset={6}>
                     <Command>

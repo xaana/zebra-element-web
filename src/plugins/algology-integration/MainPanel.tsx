@@ -20,7 +20,6 @@ export const MainPanel = (): JSX.Element => {
         let configData: IExtendedConfigOptions | undefined;
         getVectorConfig().then((config)=>{
             configData = config;
-            console.log(client.getUserId()?.split(":")[0].substring(1));
             return fetch(config?.plugins.reports.api + "/api/algology_login", {
                 method: "POST",
                 headers: {

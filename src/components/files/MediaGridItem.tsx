@@ -12,10 +12,18 @@ import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import { IconZebra } from "@/components/ui/icons";
 
-export const MediaGridItem = ({ mediaItem }: { mediaItem: MediaItem }): JSX.Element => {
+export const MediaGridItem = ({
+    mediaItem,
+    showActionButtons,
+    onImageSelect,
+}: {
+    mediaItem: MediaItem;
+    showActionButtons: boolean;
+    onImageSelect?: (image: MediaItem) => void;
+}): JSX.Element => {
     const [hover, setHover] = useState(false);
 
-    const handleClick = (): void => {
+    const handleFullscreen = (): void => {
         if (mediaItem.mxEvent && mediaItem.srcUrl) {
             const content = mediaItem.mxEvent.getContent<ImageContent>();
             const params: Omit<ComponentProps<typeof ImageView>, "onFinished"> = {
@@ -31,11 +39,13 @@ export const MediaGridItem = ({ mediaItem }: { mediaItem: MediaItem }): JSX.Elem
             Modal.createDialog(ImageView, params, "mx_Dialog_lightbox", undefined, true);
         }
     };
+    const handleZebraChat = (): void => {};
     return (
         <li
-            className="relative overflow-hidden rounded"
+            className={cn("relative overflow-hidden rounded", !showActionButtons && "cursor-pointer")}
             onMouseOver={() => setHover(true)}
             onMouseOut={() => setHover(false)}
+            onClick={() => onImageSelect?.(mediaItem)}
         >
             <img
                 className="object-cover select-none w-full h-auto bg-gray-200 aspect-square"
@@ -49,12 +59,26 @@ export const MediaGridItem = ({ mediaItem }: { mediaItem: MediaItem }): JSX.Elem
                     hover && "opacity-100",
                 )}
             >
-                <Button className="h-auto w-auto rounded-full p-2" size="sm" variant="ghost" onClick={handleClick}>
-                    <Icon name="Fullscreen" className="w-5 h-5" strokeWidth={2} />
-                </Button>
-                <Button className="h-auto w-auto rounded-full p-2" size="sm" variant="ghost" onClick={handleClick}>
-                    <IconZebra className="w-6 h-6" />
-                </Button>
+                {showActionButtons && (
+                    <>
+                        <Button
+                            className="h-auto w-auto rounded-full p-2"
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleFullscreen}
+                        >
+                            <Icon name="Fullscreen" className="w-5 h-5" strokeWidth={2} />
+                        </Button>
+                        <Button
+                            className="h-auto w-auto rounded-full p-2"
+                            size="sm"
+                            variant="ghost"
+                            onClick={handleZebraChat}
+                        >
+                            <IconZebra className="w-6 h-6" />
+                        </Button>
+                    </>
+                )}
             </div>
         </li>
     );

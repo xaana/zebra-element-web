@@ -58,7 +58,7 @@ import IconizedContextMenu, {
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
 import UIStore from "matrix-react-sdk/src/stores/UIStore";
-import QuickSettingsButton from "matrix-react-sdk/src/components/views/spaces/QuickSettingsButton";
+// import QuickSettingsButton from "matrix-react-sdk/src/components/views/spaces/QuickSettingsButton";
 import { useSettingValue } from "matrix-react-sdk/src/hooks/useSettings";
 import UserMenu from "matrix-react-sdk/src/components/structures/UserMenu";
 import IndicatorScrollbar from "matrix-react-sdk/src/components/structures/IndicatorScrollbar";
@@ -75,6 +75,7 @@ import { ALTERNATE_KEY_NAME } from "matrix-react-sdk/src/accessibility/KeyboardS
 import { PluginButton } from "./PluginButton";
 
 import { pluginList } from "@/plugins";
+import { IconTurium } from "@/components/ui/icons";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const invites = useEventEmitterState<Room[]>(SpaceStore.instance, UPDATE_INVITED_SPACES, () => {
@@ -397,6 +398,27 @@ const SpacePanel: React.FC = () => {
                         ref={ref}
                         aria-label={_t("common|spaces")}
                     >
+                        <div
+                            className="cursor-pointer w-8 h-8 ml-5 my-3"
+                            onClick={() => {
+                                defaultDispatcher.dispatch({ action: "view_home_page" });
+                            }}
+                        >
+                            <IconTurium className="w-8 h-8" />
+                        </div>
+                        <Droppable droppableId="top-level-spaces">
+                            {(provided, snapshot) => (
+                                <InnerSpacePanel
+                                    {...provided.droppableProps}
+                                    isPanelCollapsed={isPanelCollapsed}
+                                    setPanelCollapsed={setPanelCollapsed}
+                                    isDraggingOver={snapshot.isDraggingOver}
+                                    innerRef={provided.innerRef}
+                                >
+                                    {provided.placeholder}
+                                </InnerSpacePanel>
+                            )}
+                        </Droppable>
                         <UserMenu isPanelCollapsed={isPanelCollapsed}>
                             {!activeSpace.startsWith("plugin.") && (
                                 <AccessibleTooltipButton
@@ -423,21 +445,7 @@ const SpacePanel: React.FC = () => {
                                 />
                             )}
                         </UserMenu>
-                        <Droppable droppableId="top-level-spaces">
-                            {(provided, snapshot) => (
-                                <InnerSpacePanel
-                                    {...provided.droppableProps}
-                                    isPanelCollapsed={isPanelCollapsed}
-                                    setPanelCollapsed={setPanelCollapsed}
-                                    isDraggingOver={snapshot.isDraggingOver}
-                                    innerRef={provided.innerRef}
-                                >
-                                    {provided.placeholder}
-                                </InnerSpacePanel>
-                            )}
-                        </Droppable>
-
-                        <QuickSettingsButton isPanelCollapsed={isPanelCollapsed} />
+                        {/* <QuickSettingsButton isPanelCollapsed={isPanelCollapsed} /> */}
                     </nav>
                 </DragDropContext>
             )}

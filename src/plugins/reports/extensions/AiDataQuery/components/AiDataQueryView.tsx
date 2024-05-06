@@ -12,7 +12,7 @@ import { getVectorConfig } from "@/vector/getconfig";
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
-import { Textarea } from "@/components/ui/Textarea";
+import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
