@@ -73,7 +73,9 @@ import { ALTERNATE_KEY_NAME } from "matrix-react-sdk/src/accessibility/KeyboardS
 // import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
 
 import { PluginButton } from "./PluginButton";
+
 import { pluginList } from "@/plugins";
+import { IconZebra } from "@/components/ui/icons";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const invites = useEventEmitterState<Room[]>(SpaceStore.instance, UPDATE_INVITED_SPACES, () => {
@@ -395,10 +397,16 @@ const SpacePanel: React.FC = () => {
                         onKeyDown={onKeyDownHandler}
                         ref={ref}
                         aria-label={_t("common|spaces")}
-                    > 
-                        <div className="cursor-pointer w-8 h-8 ml-5 my-3" onClick={()=>{defaultDispatcher.dispatch({ action: "view_home_page" })}}>
-                            <img height="32" src="themes/element/img/logos/element-logo.svg" alt="Turium" />
-                        </div>                        
+                    >
+                        <div
+                            className="cursor-pointer w-8 h-8 ml-5 my-3"
+                            onClick={() => {
+                                defaultDispatcher.dispatch({ action: "view_home_page" });
+                            }}
+                        >
+                            {/* <img height="32" src="themes/element/img/logos/element-logo.svg" alt="Turium" /> */}
+                            <IconZebra className="w-8 h-8 fill-primary" />
+                        </div>
                         <Droppable droppableId="top-level-spaces">
                             {(provided, snapshot) => (
                                 <InnerSpacePanel
