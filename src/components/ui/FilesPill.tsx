@@ -32,7 +32,7 @@ const FilesPill = ({ files,timelineRenderingType,roomId}:{files:DocFile[]|undefi
 
             <div className='flex flex-row text-sm' key={file.mediaId}>
                     <FileText size={16} />
-                <span>{file.fileName}</span>
+                <span>{file.name}</span>
                 </div>)
         })}
     </div>

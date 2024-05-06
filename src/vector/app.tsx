@@ -42,7 +42,7 @@ import VectorBasePlatform from "./platform/VectorBasePlatform";
 import { getInitialScreenAfterLogin, getScreenFromLocation, init as initRouting, onNewScreen } from "./routing";
 import { UserFriendlyError } from "../languageHandler";
 
-import { TooltipProvider } from "@/components/ui/tooltip-alt";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // add React and ReactPerf to the global namespace, to make them easier to access via the console
 // this incidentally means we can forget our React imports in JSX files without penalty.
@@ -121,17 +121,17 @@ export async function loadApp(fragParams: {}, matrixChatRef: React.Ref<MatrixCha
         <wrapperOpts.Wrapper>
             <Toaster />
             <TooltipProvider>
-            <MatrixChat
-                ref={matrixChatRef}
-                onNewScreen={onNewScreen}
-                config={config}
-                realQueryParams={params}
-                startingFragmentQueryParams={fragParams}
-                enableGuest={!config.disable_guests}
-                onTokenLoginCompleted={onTokenLoginCompleted}
-                initialScreenAfterLogin={initialScreenAfterLogin}
-                defaultDeviceDisplayName={defaultDeviceName}
-            />
+                <MatrixChat
+                    ref={matrixChatRef}
+                    onNewScreen={onNewScreen}
+                    config={config}
+                    realQueryParams={params}
+                    startingFragmentQueryParams={fragParams}
+                    enableGuest={!config.disable_guests}
+                    onTokenLoginCompleted={onTokenLoginCompleted}
+                    initialScreenAfterLogin={initialScreenAfterLogin}
+                    defaultDeviceDisplayName={defaultDeviceName}
+                />
             </TooltipProvider>
         </wrapperOpts.Wrapper>
     );

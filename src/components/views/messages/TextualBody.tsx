@@ -352,7 +352,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 this.props.isSeeingThroughMessageHiddenForModeration ||
             nextState.echartsOption !== this.state.echartsOption ||
             nextState.echartsQuery !== this.state.echartsQuery ||
-            nextState.generating !== this.state.generating
+            nextState.generating !== this.state.generating||
+            nextState.echartsCode!==this.state.echartsCode
         );
     }
 
@@ -729,16 +730,18 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if (pdfResponse && roomId && rootId) {
+            const citations: WebSearchSourceItem[] = this.getCitations(content.body);
             body = (
                 <>
                     {body}
-                    {!content.is_image && <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />}
-                    <div className="flex flex-row items-center gap-x-2">
+                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
+                    {content.is_image &&<div className="flex flex-row items-center gap-x-2">
                         <div className="text-sm text-muted-foreground font-bold">
                         Sources:
                         </div>
-                        {content.is_image &&content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
-                    </div>
+                        {content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
+                    </div>}
+                    {citations.length > 0 && <WebSearchSources data={citations} />}
                     <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
@@ -773,10 +776,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
-                                    eventId={mxEvent.getId()}
+                                    eventId={mxEvent.getId()||""}
                                     echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
-                                        console.log(this.state.botApi);
                                         this.setState({ generating: true });
                                         const jsonData = {
                                             query: query,

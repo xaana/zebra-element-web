@@ -98,6 +98,8 @@ interface IProps extends MatrixClientProps {
     compact?: boolean;
     database?:string;
     files?: DocFile[];
+    fromHomepage?: boolean;
+    onSendCallback?: ()=>void;
 }
 
 interface IState {
@@ -495,7 +497,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
 
         const canSendMessages = this.context.canSendMessages && !this.context.tombstone;
         let composer: ReactNode;
-        if (canSendMessages) {
+        if (canSendMessages || this.props.fromHomepage) {
             if (this.state.isWysiwygLabEnabled && menuPosition) {
                 composer = (
                     <SendWysiwygComposer
@@ -526,6 +528,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         toggleStickerPickerOpen={this.toggleStickerPickerOpen}
                         database={this.props.database}
                         files={this.props.files}
+                        onSendCallback={this.props.onSendCallback}
                     />
                 );
             }
@@ -603,7 +606,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             />,
         );
 
-        const showSendButton = canSendMessages && (!this.state.isComposerEmpty || this.state.haveRecording);
+        const showSendButton = (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
 
         const classes = classNames({
             "mx_MessageComposer": true,
@@ -621,7 +624,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                 aria-label={_t("a11y|message_composer")}
             >
                 {recordingTooltip}
-                <div className="mx_MessageComposer_wrapper">
+                <div className={`mx_MessageComposer_wrapper shadow-2xl${this.props.fromHomepage && " text-start"}`}>
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
@@ -634,7 +637,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         {composer}
                         <div className="mx_MessageComposer_actions">
                             {controls}
-                            {canSendMessages && (
+                            {(canSendMessages || this.props.fromHomepage) && (
                                 <MessageComposerButtons
                                     addEmoji={this.addEmoji}
                                     haveRecording={this.state.haveRecording}

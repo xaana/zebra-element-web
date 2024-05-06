@@ -107,6 +107,8 @@ export function useFiles(): { getUserFiles: () => Promise<File[]> } {
                             mediaHelper,
                             mediaId: content.url ?? content.file?.url,
                             type: content.msgtype ?? "",
+                            fileSize: content.info ? content.info.size : undefined,
+                            mimetype: content.info ? content.info.mimetype : undefined,
                             mxEvent: event,
                         },
                     ];
