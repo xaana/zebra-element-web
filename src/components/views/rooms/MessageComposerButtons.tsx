@@ -45,7 +45,7 @@ import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { AudioCapture } from "./audio-capture";
 import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
 import { DatabaseSelector } from "./DatabaseSelector";
-import { DocFile, FileSelector } from "./FileSelector"
+import { FileSelector } from "./FileSelector"
 
 interface IProps {
     addEmoji: (emoji: string) => boolean;

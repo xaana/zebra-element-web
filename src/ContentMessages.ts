@@ -736,7 +736,7 @@ export default class ContentMessages {
 
             const response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
             if(mxcUrl) {
-                const autoSelectFile = {"mediaId":mxcUrl,"fileName":content.body,eventId:response.event_id,roomId:roomId};
+                const autoSelectFile = {"mediaId":mxcUrl,"name":content.body,eventId:response.event_id,roomId:roomId};
                 this.fileUploaded.push(autoSelectFile)
                 if (autoSelectFile){
                     dis.dispatch({
