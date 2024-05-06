@@ -405,7 +405,7 @@ const SpacePanel: React.FC = () => {
                             }}
                         >
                             {/* <img height="32" src="themes/element/img/logos/element-logo.svg" alt="Turium" /> */}
-                            <IconZebra className="w-8 h-8 fill-primary" />
+                            <IconZebra className="w-8 h-8 transition-all fill-primary hover:fill-primary-700" />
                         </div>
                         <Droppable droppableId="top-level-spaces">
                             {(provided, snapshot) => (

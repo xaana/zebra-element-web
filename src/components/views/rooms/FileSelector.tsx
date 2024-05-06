@@ -96,8 +96,18 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const handleImageSelect = (image: MediaItem): void => {
-        setSelectedFiles([...selectedFiles, image]);
-        handleDialogOpenChange(false);
+        setSelectedFiles(() => [image as File]);
+        setDialogOpen(false);
+        dis.dispatch({
+            action: "select_files",
+            files: selectedFiles,
+            roomId: props.roomId,
+            context: timelineRenderingType,
+        });
+        dis.dispatch({
+            action: Action.FocusAComposer,
+            context: timelineRenderingType,
+        });
     };
 
     return (
