@@ -62,6 +62,7 @@ import { CancelAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads
 import { SubmitAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/SubmitAskToJoinPayload";
 import { ModuleRunner } from "matrix-react-sdk/src/modules/ModuleRunner";
 import { DocFile } from "@/components/views/rooms/FileSelector";
+import { File } from "@/plugins/files/types";
 
 const NUM_JOIN_RETRY = 5;
 
@@ -410,10 +411,18 @@ export class RoomViewStore extends EventEmitter {
                         const newState = [...this.state.files,...payload.files]
                         const uniqueList =newState.filter((item, index, self) =>
                             index === self.findIndex((t) => (
-                                t.mediaId === item.mediaId && t.fileName === item.fileName
+                                t.mediaId === item.mediaId && t.name === item.name
                             )))
+                        const fileList = uniqueList.map((file:File) => {
+                            return {
+                                mediaId: file.mediaId,
+                                name: file.name,
+                                eventId: file.mxEvent?.getId(),
+                                roomId: file.roomId,
+                            };
+                        })
                         this.setState({
-                            files: uniqueList,
+                            files: fileList,
                         });}
                     else{
                         this.setState({

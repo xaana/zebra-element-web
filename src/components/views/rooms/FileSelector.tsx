@@ -26,7 +26,7 @@ interface IProps {
 
 export interface DocFile {
     mediaId: string;
-    fileName: string;
+    name: string;
 }
 
 export const FileSelector = (props: IProps): JSX.Element => {

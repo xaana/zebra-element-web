@@ -44,6 +44,7 @@ import { ThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ThreadPa
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
+import { File } from "@/plugins/files/types";
 
 interface IProps {
     room: Room;
@@ -227,10 +228,18 @@ export default class ThreadView extends React.Component<IProps, IState> {
                         const newState = [...this.state.files,...payload.files]
                         const uniqueList =newState.filter((item, index, self) =>
                             index === self.findIndex((t) => (
-                                t.mediaId === item.mediaId && t.fileName === item.fileName
+                                t.mediaId === item.mediaId && t.name === item.name
                             )))
+                            const fileList = uniqueList.map((file:File) => {
+                                return {
+                                    mediaId: file.mediaId,
+                                    name: file.name,
+                                    eventId: file.mxEvent?.getId(),
+                                    roomId: file.roomId,
+                                };
+                            })
                         this.setState({
-                            files: uniqueList,
+                            files: fileList,
                         });
                     }
                     else {
