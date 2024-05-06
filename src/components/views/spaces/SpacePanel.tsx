@@ -73,7 +73,6 @@ import { ALTERNATE_KEY_NAME } from "matrix-react-sdk/src/accessibility/KeyboardS
 // import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
 
 import { PluginButton } from "./PluginButton";
-
 import { pluginList } from "@/plugins";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
@@ -396,7 +395,10 @@ const SpacePanel: React.FC = () => {
                         onKeyDown={onKeyDownHandler}
                         ref={ref}
                         aria-label={_t("common|spaces")}
-                    >
+                    > 
+                        <div className="cursor-pointer w-8 h-8 ml-5 my-3" onClick={()=>{defaultDispatcher.dispatch({ action: "view_home_page" })}}>
+                            <img height="32" src="themes/element/img/logos/element-logo.svg" alt="Turium" />
+                        </div>                        
                         <Droppable droppableId="top-level-spaces">
                             {(provided, snapshot) => (
                                 <InnerSpacePanel

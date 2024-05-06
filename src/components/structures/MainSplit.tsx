@@ -129,7 +129,7 @@ export default class MainSplit extends React.Component<IProps, IState> {
                 key={this.props.sizeKey}
                 defaultSize={this.loadSidePanelSize()}
                 minWidth={264}
-                maxWidth="70%"
+                maxWidth="95%"
                 enable={{
                     top: false,
                     right: false,
