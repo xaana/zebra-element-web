@@ -52,7 +52,8 @@ export const FileSelector = (props: IProps): JSX.Element => {
         if (!dialogOpen) {
             setMedia([]);
             setDocuments([]);
-            setSelectedFiles([]);
+            // setSelectedFiles([]);
+            // setRowSelection({});
             setDialogOpen(true);
         }
     };
@@ -80,18 +81,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
             });
         } else {
             setDialogOpen(false);
-            if (selectedFiles.length > 0) {
-                dis.dispatch({
-                    action: "select_files",
-                    files: selectedFiles,
-                    roomId: props.roomId,
-                    context: timelineRenderingType,
-                });
-                dis.dispatch({
-                    action: Action.FocusAComposer,
-                    context: timelineRenderingType,
-                });
-            }
         }
     };
 
@@ -108,6 +97,22 @@ export const FileSelector = (props: IProps): JSX.Element => {
             action: Action.FocusAComposer,
             context: timelineRenderingType,
         });
+    };
+
+    const handleClickDone = (): void => {
+        setDialogOpen(false);
+        if (selectedFiles.length > 0) {
+            dis.dispatch({
+                action: "select_files",
+                files: selectedFiles,
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
+            dis.dispatch({
+                action: Action.FocusAComposer,
+                context: timelineRenderingType,
+            });
+        }
     };
 
     return (
@@ -149,7 +154,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                                     {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
                                 </div>
                             )}
-                            <Button disabled={selectedFiles.length === 0} onClick={() => handleDialogOpenChange(false)}>
+                            <Button disabled={selectedFiles.length === 0} onClick={handleClickDone}>
                                 Done
                             </Button>
                         </div>
