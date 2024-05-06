@@ -5,6 +5,7 @@ import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClie
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import { MsgType } from "matrix-js-sdk/src/matrix";
+import { RowSelectionState } from "@tanstack/react-table";
 
 import { init as initRouting } from "../../../vector/routing";
 
@@ -13,6 +14,11 @@ import { File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 // import { Button } from "@/components/ui/button";
 import { useFiles } from "@/lib/hooks/use-files";
+import { FilesTable } from "@/components/files/FilesTable";
+import FilesTabs from "@/components/files/FilesTabs";
+import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface IProps {
     roomId: string;
@@ -23,20 +29,24 @@ export interface DocFile {
     fileName: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const FileSelector = (props: IProps) => {
-    // const [events, setEvents] = useState<MatrixEvent[]>([]);
-    // const [files, setFiles] = useState<DocFile[]>([]);
+export const FileSelector = (props: IProps): JSX.Element => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [media, setMedia] = useState<File[]>([]);
     const [documents, setDocuments] = useState<File[]>([]);
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const { timelineRenderingType } = useContext(RoomContext);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const { getUserFiles } = useFiles();
     const client = useMatrixClientContext();
+
     useEffect(() => {
         initRouting();
     }, [client]);
+
+    useEffect(() => {
+        setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
+    }, [rowSelection, documents]);
 
     const handleDialogOpen = (): void => {
         if (!dialogOpen) {
@@ -85,6 +95,11 @@ export const FileSelector = (props: IProps) => {
         }
     };
 
+    const handleImageSelect = (image: MediaItem): void => {
+        setSelectedFiles([...selectedFiles, image]);
+        handleDialogOpenChange(false);
+    };
+
     return (
         <>
             <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
@@ -97,7 +112,39 @@ export const FileSelector = (props: IProps) => {
                         <div className="hidden" />
                     </AccessibleTooltipButton>
                 </DialogTrigger>
-                <DialogContent className="w-[80vw] h-[90vh] p-10">File Manager</DialogContent>
+                <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
+                    <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                        <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                        <FilesTabs className="mb-4" displayType={displayType} setDisplayType={setDisplayType} />
+                        {displayType === "documents" && (
+                            <FilesTable
+                                data={documents}
+                                rowSelection={rowSelection}
+                                setRowSelection={setRowSelection}
+                                mode="dialog"
+                            />
+                        )}
+                        <div style={{ display: displayType === "media" ? "block" : "none" }}>
+                            <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
+                        </div>
+
+                        <div
+                            className={cn(
+                                "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                selectedFiles.length > 0 ? "justify-between" : "justify-end",
+                            )}
+                        >
+                            {selectedFiles.length > 0 && (
+                                <div className="text-sm text-muted-foreground ml-2">
+                                    {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
+                                </div>
+                            )}
+                            <Button disabled={selectedFiles.length === 0} onClick={() => handleDialogOpenChange(false)}>
+                                Done
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
             </Dialog>
         </>
     );

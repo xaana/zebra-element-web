@@ -12,8 +12,17 @@ export interface MediaItem extends File {
     thumbnailUrl?: string;
 }
 
-export const MediaGrid = ({ media }: { media: File[] }): JSX.Element => {
+export const MediaGrid = ({
+    media,
+    mode,
+    onImageSelect,
+}: {
+    media: File[];
+    mode: "dialog" | "standalone";
+    onImageSelect?: (image: MediaItem) => void;
+}): JSX.Element => {
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+
     useEffect(() => {
         async function processMedia(): Promise<void> {
             const mediaItemsPromises = media.map(async (m) => {
@@ -54,6 +63,10 @@ export const MediaGrid = ({ media }: { media: File[] }): JSX.Element => {
         // Call processMedia with the media array
         processMedia();
     }, [media]);
+
+    const handleImageSelect = (item: MediaItem): void => {
+        onImageSelect?.(item);
+    };
     return (
         <>
             {mediaItems.length === 0 ? (
@@ -63,7 +76,14 @@ export const MediaGrid = ({ media }: { media: File[] }): JSX.Element => {
             ) : (
                 <ul className="w-full mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1">
                     {mediaItems.map((item, index) => {
-                        return <MediaGridItem key={index} mediaItem={item} />;
+                        return (
+                            <MediaGridItem
+                                key={index}
+                                mediaItem={item}
+                                showActionButtons={mode === "standalone"}
+                                onImageSelect={mode === "dialog" ? handleImageSelect : undefined}
+                            />
+                        );
                     })}
                 </ul>
             )}

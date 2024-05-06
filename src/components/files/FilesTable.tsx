@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
     ColumnDef,
+    RowSelectionState,
     SortingState,
     flexRender,
     getCoreRowModel,
@@ -130,202 +131,214 @@ const downloadFile = async (e: React.SyntheticEvent, file: File): Promise<void> 
     }
 };
 
-export function FilesTable({
-    data,
-    rowSelection,
-    setRowSelection,
-}: {
-    data: File[];
-    rowSelection: {};
-    setRowSelection: React.Dispatch<React.SetStateAction<{}>>;
-}): JSX.Element {
-    // const [rowSelection, setRowSelection] = React.useState({});
-    const [sorting, setSorting] = React.useState<SortingState>([]);
-    const client = useMatrixClientContext();
-
-    const columns: ColumnDef<File>[] = [
-        {
-            id: "select",
-            header: ({ table }) => (
-                <Checkbox
-                    checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className="translate-y-[2px] mx-2"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className="translate-y-[8px] mx-2"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
-        },
-        {
-            accessorKey: "name",
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
-            cell: ({ row }): JSX.Element => {
-                const file = row.original;
-                const IconComponent = getIconComponent(file.name);
-                return (
-                    <Button
-                        onClick={(e) => {
-                            downloadFile(e, file);
-                        }}
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-auto w-auto translate-y-[-2px]"
-                    >
-                        {IconComponent ? (
-                            <IconComponent className="h-4 w-4 mr-2" />
-                        ) : (
-                            <IconDocument className="h-4 w-4 mr-2" />
-                        )}
-                        <span className="max-w-[500px] truncate font-medium">{row.getValue("name")}</span>
-                    </Button>
-                );
-            },
-        },
-        {
-            accessorKey: "sender",
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Sender" />,
-            cell: ({ row }): JSX.Element => {
-                const sender = row.getValue("sender") as string;
-
-                return (
-                    <div className="flex w-[100px] items-center">
-                        <span>
-                            {sender === client.getSafeUserId()
-                                ? "me"
-                                : client.getUser(sender)?.displayName ?? "Unknown"}
-                        </span>
-                    </div>
-                );
-            },
-            filterFn: (row, id, value): boolean => {
-                return value.includes(row.getValue(id));
-            },
-        },
-        {
-            accessorKey: "room",
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Room" />,
-            cell: ({ row }): JSX.Element => {
-                const file = row.original;
-                const room = file.room;
-
-                return (
-                    <div className="flex items-center">
-                        {room ? (
-                            <Button
-                                className="w-auto h-auto p-0"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                    unloadPlugin();
-                                    window.location.hash = `#/room/${room.roomId}`;
-                                }}
-                            >
-                                {file.room?.name}
-                                <Icon name="ExternalLink" className="h-3 w-3 ml-1" />
-                            </Button>
-                        ) : (
-                            <span>Unknown</span>
-                        )}
-                    </div>
-                );
-            },
-            filterFn: (row, id, value): boolean => {
-                return value.includes(row.getValue(id));
-            },
-        },
-        {
-            accessorKey: "timestamp",
-            header: ({ column }) => <DataTableColumnHeader column={column} title="Shared on" />,
-            cell: ({ row }): JSX.Element => {
-                const date: Date = row.getValue("timestamp");
-                const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
-
-                return <span>{formatted}</span>;
-            },
-        },
-        {
-            accessorKey: "fileSize",
-            header: ({ column }) => <DataTableColumnHeader column={column} title="File size" />,
-            cell: ({ row }): JSX.Element => {
-                const fileSize = row.getValue("fileSize") as number;
-                return <span>{fileSize ? prettyFileSize(fileSize) : "—"}</span>;
-            },
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => <DataTableRowActions row={row} />,
-        },
-    ];
-
-    const table = useReactTable({
-        data,
-        columns,
-        state: {
-            sorting,
-            rowSelection,
-        },
-        enableRowSelection: true,
-        onRowSelectionChange: setRowSelection,
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
-    });
-
-    return (
-        <div className="space-y-4">
-            <DataTableToolbar table={table} />
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id} colSpan={header.colSpan}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </TableHead>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-            <DataTablePagination table={table} />
-        </div>
-    );
+export interface FilesTableHandle {
+    getSelectedFiles: () => File[];
 }
+
+export interface FilesTableProps {
+    data: File[];
+    rowSelection: RowSelectionState;
+    setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
+    mode: "dialog" | "standalone";
+}
+
+export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
+    ({ data, rowSelection, setRowSelection, mode }, ref): JSX.Element => {
+        const [sorting, setSorting] = React.useState<SortingState>([]);
+        const client = useMatrixClientContext();
+
+        const columns: ColumnDef<File>[] = [
+            {
+                id: "select",
+                header: ({ table }) => (
+                    <Checkbox
+                        checked={
+                            table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
+                        }
+                        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                        aria-label="Select all"
+                        className="translate-y-[2px] mx-2"
+                    />
+                ),
+                cell: ({ row }) => (
+                    <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(value) => row.toggleSelected(!!value)}
+                        aria-label="Select row"
+                        className="translate-y-[8px] mx-2"
+                    />
+                ),
+                enableSorting: false,
+                enableHiding: false,
+            },
+            {
+                accessorKey: "name",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+                cell: ({ row }): JSX.Element => {
+                    const file = row.original;
+                    const IconComponent = getIconComponent(file.name);
+                    return (
+                        <Button
+                            onClick={(e) => {
+                                downloadFile(e, file);
+                            }}
+                            variant="ghost"
+                            size="sm"
+                            className="p-0 h-auto w-auto translate-y-[-2px]"
+                        >
+                            {IconComponent ? (
+                                <IconComponent className="h-4 w-4 mr-2" />
+                            ) : (
+                                <IconDocument className="h-4 w-4 mr-2" />
+                            )}
+                            <span className="max-w-[250px] truncate font-medium">{row.getValue("name")}</span>
+                        </Button>
+                    );
+                },
+            },
+            {
+                accessorKey: "sender",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Sender" />,
+                cell: ({ row }): JSX.Element => {
+                    const sender = row.getValue("sender") as string;
+
+                    return (
+                        <div className="flex w-[100px] items-center">
+                            <span>
+                                {sender === client.getSafeUserId()
+                                    ? "me"
+                                    : client.getUser(sender)?.displayName ?? "Unknown"}
+                            </span>
+                        </div>
+                    );
+                },
+                filterFn: (row, id, value): boolean => {
+                    return value.includes(row.getValue(id));
+                },
+            },
+            {
+                accessorKey: "room",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Room" />,
+                cell: ({ row }): JSX.Element => {
+                    const file = row.original;
+                    const room = file.room;
+
+                    return (
+                        <div className="flex items-center">
+                            {room ? (
+                                <Button
+                                    className="w-auto h-auto p-0"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        unloadPlugin();
+                                        window.location.hash = `#/room/${room.roomId}`;
+                                    }}
+                                >
+                                    {file.room?.name}
+                                    <Icon name="ExternalLink" className="h-3 w-3 ml-1" />
+                                </Button>
+                            ) : (
+                                <span>Unknown</span>
+                            )}
+                        </div>
+                    );
+                },
+                filterFn: (row, id, value): boolean => {
+                    return value.includes(row.getValue(id));
+                },
+            },
+            {
+                accessorKey: "timestamp",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Shared on" />,
+                cell: ({ row }): JSX.Element => {
+                    const date: Date = row.getValue("timestamp");
+                    const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
+
+                    return <span>{formatted}</span>;
+                },
+            },
+            {
+                accessorKey: "fileSize",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="File size" />,
+                cell: ({ row }): JSX.Element => {
+                    const fileSize = row.getValue("fileSize") as number;
+                    return <span>{fileSize ? prettyFileSize(fileSize) : "—"}</span>;
+                },
+            },
+            {
+                id: "actions",
+                cell: ({ row }) => mode === "standalone" && <DataTableRowActions row={row} />,
+            },
+        ];
+
+        const table = useReactTable({
+            data,
+            columns,
+            state: {
+                sorting,
+                rowSelection,
+            },
+            enableRowSelection: true,
+            onRowSelectionChange: setRowSelection,
+            onSortingChange: setSorting,
+            getCoreRowModel: getCoreRowModel(),
+            getFilteredRowModel: getFilteredRowModel(),
+            getPaginationRowModel: getPaginationRowModel(),
+            getSortedRowModel: getSortedRowModel(),
+            getFacetedRowModel: getFacetedRowModel(),
+            getFacetedUniqueValues: getFacetedUniqueValues(),
+        });
+
+        React.useImperativeHandle(ref, () => ({
+            getSelectedFiles(): File[] {
+                return table.getSelectedRowModel().rows.map((row) => row.original) || [];
+            },
+        }));
+
+        return (
+            <div className="space-y-4">
+                <DataTableToolbar table={table} />
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead key={header.id} colSpan={header.colSpan}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(header.column.columnDef.header, header.getContext())}
+                                            </TableHead>
+                                        );
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+                <DataTablePagination table={table} />
+            </div>
+        );
+    },
+);
