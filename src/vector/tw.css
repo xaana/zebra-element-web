@@ -20,7 +20,7 @@
     --popover-foreground: 264 100% 4.9%;
 
     --secondary: 262.11 100% 92.55%;
-    --secondary-foreground: 270 5.26% 7.45%;
+    --secondary-foreground: 0 0% 7.45%;
 
     --muted: 261.6 100% 95.1%;
     --muted-foreground: 0 0% 40%;
@@ -73,23 +73,23 @@
     --cpd-color-theme-bg: #131214 !important;
     --cpd-color-bg-canvas-default: #131214 !important;
 
-    --background: 270 5.26% 7.45%;
+    --background: 0 0% 7.45%;
     --foreground: 262.11 100% 92.55%;
 
     --primary: 262.82 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --card: 270 5.26% 7.45%;
+    --card: 0 0% 7.45%;
     --card-foreground: 262.11 100% 92.55%;
 
-    --popover: 270 5.26% 7.45%;
+    --popover: 0 0% 7.45%;
     --popover-foreground: 262.11 100% 92.55%;
 
     --secondary: 262.92 100% 17.45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 300 1.18% 16.67%;
-    --muted-foreground: 240 0.43% 53.92%;
+    --muted: 0 0% 16.86%;
+    --muted-foreground: 0 0% 53.73%;
 
     --accent: 262.92 100% 17.45%;
     --accent-foreground: 262.11 100% 92.55%;

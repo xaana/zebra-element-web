@@ -268,7 +268,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
             {
                 id: "actions",
-                cell: ({ row }) => mode === "standalone" && <DataTableRowActions row={row} />,
+                cell: ({ row }) => <DataTableRowActions row={row} />,
             },
         ];
 
