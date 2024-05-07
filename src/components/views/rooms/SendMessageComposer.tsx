@@ -256,6 +256,7 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     toggleStickerPickerOpen: () => void;
     database?:string;
     files?: DocFile[];
+    onSendCallback?: () => void;
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -317,6 +318,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         switch (action) {
             case KeyBindingAction.SendMessage:
                 this.sendMessage();
+                this.props.onSendCallback && this.props.onSendCallback();
                 event.preventDefault();
                 break;
             case KeyBindingAction.SelectPrevSendHistory:

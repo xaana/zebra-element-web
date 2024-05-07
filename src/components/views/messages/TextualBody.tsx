@@ -730,6 +730,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if (pdfResponse && roomId && rootId) {
+            const citations: WebSearchSourceItem[] = this.getCitations(content.body);
             body = (
                 <>
                     {body}
@@ -740,6 +741,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </div>
                         {content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
                     </div>}
+                    {citations.length > 0 && <WebSearchSources data={citations} />}
                     <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
@@ -777,7 +779,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     eventId={mxEvent.getId()||""}
                                     echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
-                                        console.log(this.state.botApi);
                                         this.setState({ generating: true });
                                         const jsonData = {
                                             query: query,

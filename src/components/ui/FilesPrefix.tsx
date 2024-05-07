@@ -26,7 +26,7 @@ const FilesPrefix = ({ files}:{files: any[]|undefined}) : React.JSX.Element | nu
         {/* <DropdownMenuLabel>Files</DropdownMenuLabel> */}
         {/* <DropdownMenuSeparator /> */}
         {files&&files.map((file,index) => (
-          <DropdownMenuItem key={file.mediaId} disabled className='font-bold'>{`${index+1}. ${file.fileName}`}</DropdownMenuItem>
+          <DropdownMenuItem key={file.mediaId} disabled className='font-bold'>{`${index+1}. ${file.name}`}</DropdownMenuItem>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

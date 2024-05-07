@@ -67,7 +67,6 @@ import { makeUserPermalink } from "matrix-react-sdk/src/utils/permalinks/Permali
 import { buildActivityScores, buildMemberScores, compareMembers } from "matrix-react-sdk/src/utils/SortMembers";
 import { copyPlaintext } from "matrix-react-sdk/src/utils/strings";
 import BaseAvatar from "matrix-react-sdk/src/components/views/avatars/BaseAvatar";
-import DecoratedRoomAvatar from "matrix-react-sdk/src/components/views/avatars/DecoratedRoomAvatar";
 import { SearchResultAvatar } from "matrix-react-sdk/src/components/views/avatars/SearchResultAvatar";
 import { NetworkDropdown } from "matrix-react-sdk/src/components/views/directory/NetworkDropdown";
 import AccessibleButton, { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
@@ -85,6 +84,7 @@ import { useFeatureEnabled } from "matrix-react-sdk/src/hooks/useSettings";
 import { filterBoolean } from "matrix-react-sdk/src/utils/arrays";
 import { transformSearchTerm } from "matrix-react-sdk/src/utils/SearchInput";
 import { Filter } from "matrix-react-sdk/src/components/views/dialogs/spotlight/Filter";
+import DecoratedRoomAvatar from "../../rooms/avatars/DecoratedRoomAvatar";
 
 const MAX_RECENT_SEARCHES = 10;
 const SECTION_LIMIT = 50; // only show 50 results per section for performance reasons

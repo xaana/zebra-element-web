@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Direction, Filter, MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
+import { IContent, MatrixEvent} from "matrix-js-sdk/src/matrix";
 
 import { Button } from "../ui/button";
 import { IconTable } from "../ui/icons";
 import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
-import { init as initRouting } from "../../vector/routing";
-import { DocFile } from "../views/rooms/FileSelector";
 import { getVectorConfig } from "@/vector/getconfig";
-export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citations: any[];rootId: string }) => {
+import { useFiles } from "@/lib/hooks/use-files";
+export const PdfViewer = ({ citations,content, mxEvent }: {  citations: any[];content: IContent; mxEvent: MatrixEvent }) => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
-    const [events, setEvents] = useState<MatrixEvent[]>([]);
-    const [urls,setUrls] = useState<string[]>([]);
-    const [docFiles,setDocFiles] = useState<DocFile[]>([]);
+    // const [events, setEvents] = useState<MatrixEvent[]>([]);
+    // const [urls,setUrls] = useState<string[]>([]);
+    // const [docFiles,setDocFiles] = useState<File[]>([]);
     const [apiUrl,setApiUrl] = useState<string>("");
-    const client = useMatrixClientContext();
+    // const client = useMatrixClientContext();
+    const { getUserFiles } = useFiles();
 
     useEffect(()=>{
         getVectorConfig().then((config)=>{
@@ -29,155 +27,126 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
     },[])
 
 
-    useEffect(() => {
-        const fetchFileEventsServer = async (rooms: Room[]): Promise<void> => {
-            const encryptedRooms = [];
-            const plainRooms = [];
-            for (const room of rooms) {
-                if (client.isRoomEncrypted(room.roomId)) {
-                    encryptedRooms.push(room);
-                } else {
-                    plainRooms.push(room);
+    useEffect(()=>{
+        
+        const fetchFiles = async (): Promise<void> => {
+            const fetchedFiles = await getUserFiles();
+            const thread = mxEvent.getThread();
+            let files:any = [];
+            if (thread){
+                for (const evt of thread.timeline){
+                    const content = evt.getContent();
+                    if (content?.files_){
+                        const temp = content.files_.map((file:any)=>{
+                            return file.mediaId
+                        })
+                        files = [...files,...temp]
+                    }
                 }
             }
-
-            const plainFilter = new Filter(client.getSafeUserId());
-            plainFilter.setDefinition({
-                room: {
-                    timeline: {
-                        contains_url: true,
-                        types: ["m.room.message"],
-                    },
-                },
-            });
-
-            plainFilter.filterId = await client.getOrCreateFilter(
-                "FILTER_FILES_PLAIN_" + client.credentials.userId,
-                plainFilter,
-            );
-            const plainTimelineSets = plainRooms.map((room) => room.getOrCreateFilteredTimelineSet(plainFilter));
-            const plainEvents = plainTimelineSets.flatMap((ts) =>
-                ts.getTimelines().flatMap(async (t) => {
-                    const timeline = t.fork(Direction.Forward);
-                    let next = true;
-                    while (next) {
-                        await client.paginateEventTimeline(timeline, { backwards: true });
-                        next = timeline.getPaginationToken(Direction.Backward) !== null;
-                    }
-                    return timeline.getEvents().filter((ev) => ev.getContent().file);
-                }),
-            );
-
-            const encryptedFilter = new Filter(client.getSafeUserId());
-            encryptedFilter.setDefinition({
-                room: {
-                    timeline: {
-                        types: ["m.room.encrypted"],
-                    },
-                },
-            });
-
-            encryptedFilter.filterId = await client.getOrCreateFilter(
-                "FILTER_FILES_ENCRYPTED_" + client.credentials.userId,
-                encryptedFilter,
-            );
-            const encryptedTimelineSets = encryptedRooms.map((room) =>
-                room.getOrCreateFilteredTimelineSet(encryptedFilter),
-            );
-            const encryptedEvents = encryptedTimelineSets.flatMap((ts) =>
-                ts.getTimelines().flatMap(async (t) => {
-                    const timeline = t.fork(Direction.Forward);
-                    let next = true;
-                    while (next) {
-                        await client.paginateEventTimeline(timeline, { backwards: true });
-                        next = timeline.getPaginationToken(Direction.Backward) !== null;
-                    }
-                    return timeline.getEvents().filter((ev) => ev.getContent().file);
-                }),
-            );
-
-            Promise.all([...plainEvents, ...encryptedEvents]).then((results) => {
-                const finalResults = results.flat();
-                const roomResults = rooms
-                    .flatMap((r) =>
-                        r.getTimelineSets().flatMap((ts) => ts.getTimelines().flatMap((t) => t.getEvents())),
-                    )
-                    .filter((ev) => ev.getContent().url || ev.getContent().file);
-                setEvents([...roomResults, ...finalResults]);
-            });
-        };
-        // just get the root need to fixed
-        initRouting();
-        
-        const currentRoom = client.getRoom(roomId);
-
-        if(currentRoom){
-            fetchFileEventsServer([currentRoom]);
-            const files = currentRoom.findEventById(rootId)
-            files?.getThread()?.timeline.forEach((evt)=>{
-                if(evt.getContent().fileSelected){
-                    setUrls([...urls,...evt.getContent().fileSelected.map((file: DocFile)=>file.mediaId)])
-                    setDocFiles([...docFiles,...evt.getContent().fileSelected])
-                }
-            })
-        }
-    }, [client]);
-
-    useEffect(() => {
-        if (events.length === 0) return;
-        const tempPdfs = events.map(async (event) => {
-            const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-            if (mxcUrl&&urls.includes(mxcUrl)){
-                const tempFile = findDocFileById(mxcUrl)
-                if (tempFile?.fileName.endsWith(".pdf")){
-                    if (event.isEncrypted()) {
-                        const mediaHelper = new MediaEventHelper(event);
-                        try {
-                            const temp = await mediaHelper.sourceBlob.value;
-                            // If the Blob type is not 'application/pdf', create a new Blob with the correct type
-                            const Pdf = new Blob([temp], { type: "application/pdf" });
-                            const pdfUrl = URL.createObjectURL(Pdf);
-                            
-                            return { name: event.getContent().body, url: pdfUrl };
-                        } catch (err) {
-                            console.error("decryption error", err);
-                        }
+            console.log(files);
+            
+            // const files = content.files_.map((file:any)=>{
+            //     return file.mediaId
+            // })
+            const temp = fetchedFiles.filter((file)=>{return files.includes(file.mediaId)});
+            console.log(temp)
+            const tempFiles = temp.map(async (file)=>{
+                if(file.name.endsWith(".pdf")){
+                    if (file.mxEvent?.isEncrypted()){
+                        const blob = await file.mediaHelper.sourceBlob.value;
+                        const Pdf = new Blob([blob], { type: "application/pdf" });
+                        const pdfUrl = URL.createObjectURL(Pdf);
+                        return { name: file.name, url: pdfUrl };
                     }
                     else{
-                        const downloadUrl = client.mxcUrlToHttp(mxcUrl)
+                        const downloadUrl = file.downloadUrl;
                         if (downloadUrl){
                             const data = await fetchResourceAsBlob(downloadUrl)
                             if(data){
                                 const pdfUrl = URL.createObjectURL(data)
-                                return { name: event.getContent().body, url: pdfUrl};
+                                return { name: file.name, url: pdfUrl};
                             }
                         }
+
                     }
-                }else if (tempFile&&(tempFile.fileName.endsWith(".doc")||tempFile.fileName.endsWith(".docx"))){
-                    const pdfUrl = await fetchPdfAndCreateObjectURL(mxcUrl.substring(6).split("/").pop())
-                    return pdfUrl
                 }
+                else if ((file.name.endsWith(".doc")||file.name.endsWith(".docx"))){
+                    console.log('download doc')
+                        const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop()||"");
+                        return pdfUrl
+                    }
+            })
+
+            if (tempFiles) {
+                Promise.all(tempFiles).then((res) => {
+                    setPdfUrls(res.filter(element => element !== undefined));
+                });
+            }
+                
+
+        };
+        if(apiUrl){
+        fetchFiles();}
+    },[apiUrl])
+    
+    // useEffect(() => {
+    //     if (events.length === 0) return;
+        
+    //     const tempPdfs = events.map(async (event) => {
+    //         const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
+    //         if (mxcUrl&&urls.includes(mxcUrl)){
+    //             const tempFile = findDocFileById(mxcUrl)
+    //             if (tempFile?.fileName.endsWith(".pdf")){
+    //                 if (event.isEncrypted()) {
+    //                     const mediaHelper = new MediaEventHelper(event);
+    //                     try {
+    //                         const temp = await mediaHelper.sourceBlob.value;
+    //                         // If the Blob type is not 'application/pdf', create a new Blob with the correct type
+    //                         const Pdf = new Blob([temp], { type: "application/pdf" });
+    //                         const pdfUrl = URL.createObjectURL(Pdf);
+                            
+    //                         return { name: event.getContent().body, url: pdfUrl };
+    //                     } catch (err) {
+    //                         console.error("decryption error", err);
+    //                     }
+    //                 }
+    //                 else{
+    //                     const downloadUrl = client.mxcUrlToHttp(mxcUrl)
+    //                     if (downloadUrl){
+    //                         const data = await fetchResourceAsBlob(downloadUrl)
+    //                         if(data){
+    //                             const pdfUrl = URL.createObjectURL(data)
+    //                             return { name: event.getContent().body, url: pdfUrl};
+    //                         }
+    //                     }
+    //                 }
+    //             }else if (tempFile&&(tempFile.fileName.endsWith(".doc")||tempFile.fileName.endsWith(".docx"))){
+    //                 const pdfUrl = await fetchPdfAndCreateObjectURL(mxcUrl.substring(6).split("/").pop())
+    //                 return pdfUrl
+    //             }
 
                 
-            }
-        });
-        if (tempPdfs) {
-            Promise.all(tempPdfs).then((res) => {
-                setPdfUrls(res.filter(element => element !== undefined));
-            });
-        }
-    }, [events]);
+    //         }
+    //     });
+    //     if (tempPdfs) {
+    //         Promise.all(tempPdfs).then((res) => {
+    //             setPdfUrls(res.filter(element => element !== undefined));
+    //         });
+    //     }
+    // }, [events]);
 
 
-    function findDocFileById(mediaId: string): DocFile | undefined {
-        return docFiles.find(docFile => docFile.mediaId === mediaId);
-    }
+    // function findDocFileById(mediaId: string): DocFile | undefined {
+    //     return docFiles.find(docFile => docFile.mediaId === mediaId);
+    // }
 
     async function fetchPdfAndCreateObjectURL(mediaId:string): Promise<{ name: string, url: string }> {
         try {
             const payload = {
                 media_ids: mediaId
             }
+            console.log(apiUrl)
             const url = `${apiUrl}/api/get_docfile`
             const request = new Request(url, {
                 method: "POST",
@@ -217,7 +186,7 @@ export const PdfViewer = ({ roomId, citations,rootId }: { roomId: string; citati
         return new Blob([bytes], { type: contentType });
     }
 
-    async function fetchResourceAsBlob(url:string) {
+    async function fetchResourceAsBlob(url:string): Promise<Blob | undefined> {
         try {
           const response = await fetch(url);
           if (!response.ok) {
