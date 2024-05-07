@@ -27,7 +27,7 @@ interface IProps {
 export interface DocFile {
     mediaId: string;
     name: string;
-    eventId?:string;
+    eventId?: string;
     roomId: string;
 }
 
@@ -91,7 +91,15 @@ export const FileSelector = (props: IProps): JSX.Element => {
         setDialogOpen(false);
         dis.dispatch({
             action: "select_files",
-            files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
+            files: [
+                {
+                    mediaId: image.mediaId,
+                    name: image.name,
+                    roomId: props.roomId,
+                    eventId: image.mxEvent?.getId(),
+                },
+            ],
+            // files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
             roomId: props.roomId,
             context: timelineRenderingType,
         });
@@ -106,7 +114,14 @@ export const FileSelector = (props: IProps): JSX.Element => {
         if (selectedFiles.length > 0) {
             dis.dispatch({
                 action: "select_files",
-                files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
+                files: selectedFiles.map((file) => {
+                    return {
+                        mediaId: file.mediaId,
+                        name: file.name,
+                        roomId: file.roomId,
+                        eventId: file.mxEvent?.getId(),
+                    };
+                }),
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
