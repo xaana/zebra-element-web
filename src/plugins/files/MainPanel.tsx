@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { init as initRouting } from "../../vector/routing";
-// import { DataTable } from "./DataTable";
 import type { File } from "./types";
 import { MediaGrid } from "../../components/files/MediaGrid";
 
-import { useFiles } from "@/lib/hooks/use-files";
+import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 
 export const MainPanel = (): JSX.Element => {
-    const { getUserFiles } = useFiles();
+    const client = useMatrixClientContext();
     const [media, setMedia] = useState<File[]>([]);
     const [documents, setDocuments] = useState<File[]>([]);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
@@ -22,13 +22,13 @@ export const MainPanel = (): JSX.Element => {
         initRouting();
 
         const fetchFiles = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles();
+            const fetchedFiles = await getUserFiles(client);
             setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
             setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
         };
 
         fetchFiles();
-    }, [getUserFiles]);
+    }, [client]);
 
     return (
         <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">

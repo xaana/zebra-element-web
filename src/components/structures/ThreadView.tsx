@@ -224,17 +224,18 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
+                    if (payload.roomId===this.props.room.roomId){
                     if (payload.files.length > 0) {
                         const newState = [...this.state.files,...payload.files]
                         const uniqueList =newState.filter((item, index, self) =>
                             index === self.findIndex((t) => (
                                 t.mediaId === item.mediaId && t.name === item.name
                             )))
-                            const fileList = uniqueList.map((file:File) => {
+                            const fileList = uniqueList.map((file:DocFile) => {
                                 return {
                                     mediaId: file.mediaId,
                                     name: file.name,
-                                    eventId: file.mxEvent?.getId(),
+                                    eventId: file.eventId,
                                     roomId: file.roomId,
                                 };
                             })
@@ -246,7 +247,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                         this.setState({
                             files: payload.files,
                         });
-                    }
+                    }}
 
                     
                 }
