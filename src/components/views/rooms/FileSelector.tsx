@@ -89,7 +89,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
         setDialogOpen(false);
         dis.dispatch({
             action: "select_files",
-            files: selectedFiles,
+            files: [image],
             roomId: props.roomId,
             context: timelineRenderingType,
         });
