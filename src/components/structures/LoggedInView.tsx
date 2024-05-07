@@ -177,10 +177,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         document.addEventListener("keydown", this.onNativeKeyDown, false);
-        if (this.props.initialScreenAfterLogin?.screen == "home"||!this.props.initialScreenAfterLogin) {
-            const NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
-            startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
-        }
         LegacyCallHandler.instance.addListener(LegacyCallHandlerEvent.CallState, this.onCallState);
 
         this.updateServerNoticeEvents();
@@ -693,17 +689,6 @@ class LoggedInView extends React.Component<IProps, IState> {
 
             case PageTypes.HomePage:
                 pageElement = <UserOnboardingPage justRegistered={this.props.justRegistered} />;
-                if((window.location.hash==="#/login")){
-                    console.log("redirecting to zebra chat");
-                    const NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
-                    startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
-                }
-                // if (this.props.initialScreenAfterLogin?.screen=="home"){
-
-                // getInitialScreenAfterLogin(window.location);
-                // NewMember = new DirectoryMember({ user_id: "@zebra:securezebra.com" });
-                // startDmOnFirstMessage(this.props.matrixClient, [NewMember]);
-                //     }
                 break;
 
             case PageTypes.UserView:
