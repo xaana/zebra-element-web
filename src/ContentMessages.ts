@@ -785,6 +785,9 @@ export default class ContentMessages {
         } finally {
             if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))){
                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
+                if(this.inprogress.length===0){
+                    this.fileUploaded = []
+                }
             }
         }
     }
