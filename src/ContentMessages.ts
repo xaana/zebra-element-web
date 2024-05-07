@@ -713,6 +713,7 @@ export default class ContentMessages {
                     if (this.fileUploaded.length === 0) {
                         dis.dispatch({action:"uploading_files",uploading:false})
                     }
+                    matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                     dis.dispatch({
                         action: "select_files",
                         files: this.fileUploaded,
