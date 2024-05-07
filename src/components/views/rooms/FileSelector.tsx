@@ -12,8 +12,7 @@ import { init as initRouting } from "../../../vector/routing";
 import "./style/button.css";
 import { File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-// import { Button } from "@/components/ui/button";
-import { useFiles } from "@/lib/hooks/use-files";
+import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
@@ -39,7 +38,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
     const { timelineRenderingType } = useContext(RoomContext);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
-    const { getUserFiles } = useFiles();
     const client = useMatrixClientContext();
 
     useEffect(() => {
@@ -61,7 +59,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles();
+        const fetchedFiles = await getUserFiles(client);
         setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
         setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
     };
