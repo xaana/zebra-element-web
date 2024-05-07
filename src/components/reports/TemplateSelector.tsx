@@ -20,13 +20,13 @@ import {
     showHomeAtom,
 } from "@/plugins/reports/stores/store";
 import { reportsStore } from "@/plugins/reports/MainPanel";
-import { useFiles } from "@/lib/hooks/use-files";
+import { getUserFiles } from "@/lib/utils/getUserFiles";
 
 interface TemplateSelectorProps {
     nextStep: () => void;
     prevStep: () => void;
 }
-export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps) => {
+export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps): JSX.Element => {
     const client = useMatrixClientContext();
     const userId: string = client.getSafeUserId();
     const [selectedTemplate, setSelectedTemplate] = useAtom(selectedTemplateAtom);
@@ -40,7 +40,6 @@ export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps) 
     );
 
     const [templates, setTemplates] = useState<Template[]>([]);
-    const { getUserFiles } = useFiles();
     const [files, setFiles] = useState<File[]>([]);
 
     useEffect(() => {
@@ -76,13 +75,13 @@ export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps) 
         };
 
         const fetchData = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles();
+            const fetchedFiles = await getUserFiles(client);
             setFiles(() => fetchedFiles.filter((file) => file.name.endsWith(".pdf")));
             await fetchTemplatesData();
         };
 
         fetchData();
-    }, [getUserFiles, userId]);
+    }, [client, userId]);
 
     const fetchTemplateContent = async (): Promise<void> => {
         const templateId: string = selectedTemplate?.id ?? "";
@@ -103,7 +102,7 @@ export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps) 
         }
     };
 
-    const proceedToEditTemplate = async () => {
+    const proceedToEditTemplate = async (): Promise<void> => {
         selectedTemplate && (await fetchTemplateContent());
         // check of rowSelection has more than one item
         if (Object.keys(rowSelection).length > 0) {

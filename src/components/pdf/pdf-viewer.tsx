@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { IContent, MatrixEvent} from "matrix-js-sdk/src/matrix";
+import { IContent, MatrixEvent } from "matrix-js-sdk/src/matrix";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { Button } from "../ui/button";
 import { IconTable } from "../ui/icons";
@@ -7,92 +8,98 @@ import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
 import { getVectorConfig } from "@/vector/getconfig";
-import { useFiles } from "@/lib/hooks/use-files";
-export const PdfViewer = ({ citations,content, mxEvent }: {  citations: any[];content: IContent; mxEvent: MatrixEvent }) => {
+import { getUserFiles } from "@/lib/utils/getUserFiles";
+
+export const PdfViewer = ({
+    citations,
+    content,
+    mxEvent,
+}: {
+    citations: any[];
+    content: IContent;
+    mxEvent: MatrixEvent;
+}): JSX.Element => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     // const [events, setEvents] = useState<MatrixEvent[]>([]);
     // const [urls,setUrls] = useState<string[]>([]);
     // const [docFiles,setDocFiles] = useState<File[]>([]);
-    const [apiUrl,setApiUrl] = useState<string>("");
+    const [apiUrl, setApiUrl] = useState<string>("");
     // const client = useMatrixClientContext();
-    const { getUserFiles } = useFiles();
 
-    useEffect(()=>{
-        getVectorConfig().then((config)=>{
+    const client = useMatrixClientContext();
+
+    useEffect(() => {
+        getVectorConfig().then((config) => {
             if (config?.plugins["reports"]) {
                 setApiUrl(config?.plugins["reports"].api);
             }
         });
-    },[])
+    }, []);
 
-
-    useEffect(()=>{
-        
+    useEffect(() => {
         const fetchFiles = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles();
+            const fetchedFiles = await getUserFiles(client);
             const thread = mxEvent.getThread();
-            let files:any = [];
-            if (thread){
-                for (const evt of thread.timeline){
+            let files: any = [];
+            if (thread) {
+                for (const evt of thread.timeline) {
                     const content = evt.getContent();
-                    if (content?.files_){
-                        const temp = content.files_.map((file:any)=>{
-                            return file.mediaId
-                        })
-                        files = [...files,...temp]
+                    if (content?.files_) {
+                        const temp = content.files_.map((file: any) => {
+                            return file.mediaId;
+                        });
+                        files = [...files, ...temp];
                     }
                 }
             }
             console.log(files);
-            
+
             // const files = content.files_.map((file:any)=>{
             //     return file.mediaId
             // })
-            const temp = fetchedFiles.filter((file)=>{return files.includes(file.mediaId)});
-            console.log(temp)
-            const tempFiles = temp.map(async (file)=>{
-                if(file.name.endsWith(".pdf")){
-                    if (file.mxEvent?.isEncrypted()){
+            const temp = fetchedFiles.filter((file) => {
+                return files.includes(file.mediaId);
+            });
+            console.log(temp);
+            const tempFiles = temp.map(async (file) => {
+                if (file.name.endsWith(".pdf")) {
+                    if (file.mxEvent?.isEncrypted()) {
                         const blob = await file.mediaHelper.sourceBlob.value;
                         const Pdf = new Blob([blob], { type: "application/pdf" });
                         const pdfUrl = URL.createObjectURL(Pdf);
                         return { name: file.name, url: pdfUrl };
-                    }
-                    else{
+                    } else {
                         const downloadUrl = file.downloadUrl;
-                        if (downloadUrl){
-                            const data = await fetchResourceAsBlob(downloadUrl)
-                            if(data){
-                                const pdfUrl = URL.createObjectURL(data)
-                                return { name: file.name, url: pdfUrl};
+                        if (downloadUrl) {
+                            const data = await fetchResourceAsBlob(downloadUrl);
+                            if (data) {
+                                const pdfUrl = URL.createObjectURL(data);
+                                return { name: file.name, url: pdfUrl };
                             }
                         }
-
                     }
+                } else if (file.name.endsWith(".doc") || file.name.endsWith(".docx")) {
+                    console.log("download doc");
+                    const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop() || "");
+                    return pdfUrl;
                 }
-                else if ((file.name.endsWith(".doc")||file.name.endsWith(".docx"))){
-                    console.log('download doc')
-                        const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop()||"");
-                        return pdfUrl
-                    }
-            })
+            });
 
             if (tempFiles) {
                 Promise.all(tempFiles).then((res) => {
-                    setPdfUrls(res.filter(element => element !== undefined));
+                    setPdfUrls(res.filter((element) => element !== undefined));
                 });
             }
-                
-
         };
-        if(apiUrl){
-        fetchFiles();}
-    },[apiUrl])
-    
+        if (apiUrl) {
+            fetchFiles();
+        }
+    }, [apiUrl]);
+
     // useEffect(() => {
     //     if (events.length === 0) return;
-        
+
     //     const tempPdfs = events.map(async (event) => {
     //         const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
     //         if (mxcUrl&&urls.includes(mxcUrl)){
@@ -105,7 +112,7 @@ export const PdfViewer = ({ citations,content, mxEvent }: {  citations: any[];co
     //                         // If the Blob type is not 'application/pdf', create a new Blob with the correct type
     //                         const Pdf = new Blob([temp], { type: "application/pdf" });
     //                         const pdfUrl = URL.createObjectURL(Pdf);
-                            
+
     //                         return { name: event.getContent().body, url: pdfUrl };
     //                     } catch (err) {
     //                         console.error("decryption error", err);
@@ -126,7 +133,6 @@ export const PdfViewer = ({ citations,content, mxEvent }: {  citations: any[];co
     //                 return pdfUrl
     //             }
 
-                
     //         }
     //     });
     //     if (tempPdfs) {
@@ -136,68 +142,66 @@ export const PdfViewer = ({ citations,content, mxEvent }: {  citations: any[];co
     //     }
     // }, [events]);
 
-
     // function findDocFileById(mediaId: string): DocFile | undefined {
     //     return docFiles.find(docFile => docFile.mediaId === mediaId);
     // }
 
-    async function fetchPdfAndCreateObjectURL(mediaId:string): Promise<{ name: string, url: string }> {
+    async function fetchPdfAndCreateObjectURL(mediaId: string): Promise<{ name: string; url: string }> {
         try {
             const payload = {
-                media_ids: mediaId
-            }
-            console.log(apiUrl)
-            const url = `${apiUrl}/api/get_docfile`
+                media_ids: mediaId,
+            };
+            console.log(apiUrl);
+            const url = `${apiUrl}/api/get_docfile`;
             const request = new Request(url, {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(payload),
-
             });
             const response = await fetch(request);
             const jsonResponse = await response.json(); // Assuming the server returns just a Base64 string
             const base64String = await jsonResponse.pdf.content;
-            const fileName = jsonResponse.pdf.filename
-    
+            const fileName = jsonResponse.pdf.filename;
+
             // Convert Base64 string to a Blob
-            const pdfBlob = base64ToBlob(base64String, 'application/pdf');
-    
+            const pdfBlob = base64ToBlob(base64String, "application/pdf");
+
             // Create a Blob URL
             const objectURL = URL.createObjectURL(pdfBlob);
-            return { name: fileName[0], url: objectURL};
+            return { name: fileName[0], url: objectURL };
         } catch (error) {
-            console.error('Error fetching or converting PDF:', error);
+            console.error("Error fetching or converting PDF:", error);
             throw error;
         }
     }
-    
+
     // Helper function to convert Base64 string to Blob
     function base64ToBlob(base64: string, contentType: string): Blob {
         const binaryString = window.atob(base64); // Decode Base64 to binary string
         const len = binaryString.length;
         const bytes = new Uint8Array(len);
-    
+
         for (let i = 0; i < len; i++) {
             bytes[i] = binaryString.charCodeAt(i);
         }
-    
+
         return new Blob([bytes], { type: contentType });
     }
 
-    async function fetchResourceAsBlob(url:string): Promise<Blob | undefined> {
+    async function fetchResourceAsBlob(url: string): Promise<Blob | undefined> {
         try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          const blob = await response.blob();
-          return blob;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const blob = await response.blob();
+            return blob;
         } catch (error) {
-          console.error("Error fetching the blob:", error);
+            console.error("Error fetching the blob:", error);
         }
-      }
+    }
 
     return (
         <>
