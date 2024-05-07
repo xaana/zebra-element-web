@@ -111,6 +111,7 @@ export const getUserFiles = async (client: MatrixClient): Promise<File[]> => {
             }),
         ).values(),
     );
-
+    // sort the file list by timestamp
+    files.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     return files;
 };
