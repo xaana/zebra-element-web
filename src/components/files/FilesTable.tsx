@@ -140,10 +140,11 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
+    onDelete: (row: any) => void;
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
-    ({ data, rowSelection, setRowSelection, mode }, ref): JSX.Element => {
+    ({ data, rowSelection, setRowSelection, mode,onDelete }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
         const client = useMatrixClientContext();
 
@@ -268,9 +269,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
             {
                 id: "actions",
-                cell: ({ row }) => <DataTableRowActions row={row} />,
+                cell: ({ row }) => <DataTableRowActions row={row} onDelete={onDelete} />,
             },
         ];
+
 
         const table = useReactTable({
             data,

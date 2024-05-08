@@ -29,6 +29,13 @@ export const MainPanel = (): JSX.Element => {
 
         fetchFiles();
     }, [client]);
+    const onDelete = (row:any):void=>{
+        const currentFile = row.original as File;
+        const roomId = currentFile.roomId;
+        const eventId = currentFile.mxEvent?.getId();
+        eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
+        setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+    }
 
     return (
         <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
@@ -46,6 +53,7 @@ export const MainPanel = (): JSX.Element => {
                         rowSelection={rowSelection}
                         setRowSelection={setRowSelection}
                         mode="standalone"
+                        onDelete={onDelete}
                     />
                 )}
                 <div style={{ display: displayType === "media" ? "block" : "none" }}>

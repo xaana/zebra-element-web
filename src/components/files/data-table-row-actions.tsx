@@ -1,6 +1,7 @@
 import React from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { IconZebra } from "../ui/icons";
 
@@ -18,14 +19,24 @@ import {
     // DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// import { File } from '@/plugins/files/types';
+import { File } from '@/plugins/files/types';
+
+
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
+    onDelete?: (row:any) => void;
 }
 
-export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>): JSX.Element {
-    // const task = row.original as File;
+export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActionsProps<TData>): JSX.Element {
+    // const matrixClient = useMatrixClientContext();
+    
+    // const onDelete = ():void => {
+    //     const currentFile = row.original as File;
+    //     const roomId = currentFile.roomId;
+    //     const eventId = currentFile.mxEvent?.getId();
+    //     eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
+    // }
 
     return (
         <DropdownMenu>
@@ -55,7 +66,7 @@ export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TDa
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>onDelete&&onDelete(row)}>
                     Delete
                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                 </DropdownMenuItem>
