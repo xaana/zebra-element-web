@@ -1329,9 +1329,9 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         let extraSection;
         let footer;
         let keySharingWarning = <span />;
-
-        const identityServersEnabled = SettingsStore.getValue(UIFeature.IdentityServer);
-
+        //TODO: temperary set to false
+        // const identityServersEnabled = SettingsStore.getValue(UIFeature.IdentityServer);
+        const identityServersEnabled=false;
         const hasSelection =
             this.state.targets.length > 0 || (this.state.filterText && this.state.filterText.includes("@"));
 
@@ -1339,7 +1339,6 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         const userId = cli.getUserId()!;
         if (this.props.kind === InviteKind.Dm) {
             title = _t("space|add_existing_room_space|dm_heading");
-
             if (identityServersEnabled) {
                 helpText = _t(
                     "invite|start_conversation_name_email_mxid_prompt",
@@ -1375,7 +1374,7 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
             extraSection = (
                 <div className="mx_InviteDialog_section_hidden_suggestions_disclaimer">
                     <span>{_t("invite|suggestions_disclaimer")}</span>
-                    <p>{_t("invite|suggestions_disclaimer_prompt")}</p>
+                    {/* <p>{_t("invite|suggestions_disclaimer_prompt")}</p> */}
                 </div>
             );
             const link = makeUserPermalink(MatrixClientPeg.safeGet().getSafeUserId());
