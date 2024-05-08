@@ -37,6 +37,7 @@ import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import classNames from "classnames";
 
 import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
 interface IProps {
     justRegistered?: boolean;
@@ -123,18 +124,8 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     const brandingConfig = SdkConfig.getObject("branding");
     const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
     const isDarkTheme = JSON.parse(localStorage.getItem("mx_local_settings") ?? "{\"theme\":\"light\"}")["theme"] === "dark"
-    const classname = classNames({
-        "mx-auto": true,
-        "my-0": true,
-        "w-24": true,
-        "rounded-full": true,
-        "border-2": true,
-        "p-4": true,
-        "mb-8": true,
-        "border-slate-300": !isDarkTheme,
-        "border-slate-700": isDarkTheme,
-        "invert": isDarkTheme
-    })
+    const classname = classNames("mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
+        {"border-slate-700 invert": isDarkTheme}, {"border-slate-300": !isDarkTheme})
 
     const introSection: JSX.Element = (
         <React.Fragment>
