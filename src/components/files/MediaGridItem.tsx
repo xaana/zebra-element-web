@@ -16,10 +16,12 @@ export const MediaGridItem = ({
     mediaItem,
     showActionButtons,
     onImageSelect,
+    onDelete,
 }: {
     mediaItem: MediaItem;
     showActionButtons: boolean;
     onImageSelect?: (image: MediaItem) => void;
+    onDelete?: (currentFile:any) => void;
 }): JSX.Element => {
     const [hover, setHover] = useState(false);
 
@@ -76,6 +78,14 @@ export const MediaGridItem = ({
                             onClick={handleZebraChat}
                         >
                             <IconZebra className="w-6 h-6" />
+                        </Button>
+                        <Button
+                            className="h-auto w-auto rounded-full p-2"
+                            size="sm"
+                            variant="ghost"
+                            onClick={()=>onDelete&&onDelete(mediaItem.currentFile)}
+                        >
+                            <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
                         </Button>
                     </>
                 )}

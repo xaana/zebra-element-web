@@ -140,7 +140,7 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
-    onDelete: (row: any) => void;
+    onDelete: (currentFile: any) => void;
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(

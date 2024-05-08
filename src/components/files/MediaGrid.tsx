@@ -8,6 +8,7 @@ import { RingLoader } from "@/components/ui/loaders/ring-loader";
 export interface MediaItem extends File {
     srcBlob: Blob;
     srcUrl: string;
+    currentFile: File;
     thumbnailBlob?: Blob;
     thumbnailUrl?: string;
 }
@@ -16,10 +17,12 @@ export const MediaGrid = ({
     media,
     mode,
     onImageSelect,
+    onDelete,
 }: {
     media: File[];
     mode: "dialog" | "standalone";
     onImageSelect?: (image: MediaItem) => void;
+    onDelete?: (currentFile:any) => void;
 }): JSX.Element => {
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
@@ -40,6 +43,7 @@ export const MediaGrid = ({
                     const mediaItem = {
                         ...m,
                         srcBlob: blob,
+                        currentFile: m,
                         srcUrl: URL.createObjectURL(blob),
                         ...(thumbnailBlob && { thumbnailBlob, thumbnailUrl: URL.createObjectURL(thumbnailBlob) }),
                     };
@@ -57,7 +61,7 @@ export const MediaGrid = ({
             ) as MediaItem[];
 
             // Batch update state once with all new media items
-            setMediaItems((items) => [...items, ...resolvedMediaItems]);
+            setMediaItems(() => [ ...resolvedMediaItems]);
         }
 
         // Call processMedia with the media array
@@ -82,6 +86,7 @@ export const MediaGrid = ({
                                 mediaItem={item}
                                 showActionButtons={mode === "standalone"}
                                 onImageSelect={mode === "dialog" ? handleImageSelect : undefined}
+                                onDelete={onDelete}
                             />
                         );
                     })}

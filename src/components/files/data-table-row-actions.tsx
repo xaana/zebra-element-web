@@ -25,7 +25,7 @@ import { File } from '@/plugins/files/types';
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
-    onDelete?: (row:any) => void;
+    onDelete?: (currentFile:any) => void;
 }
 
 export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActionsProps<TData>): JSX.Element {
@@ -66,7 +66,7 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                <DropdownMenuItem onClick={()=>onDelete&&onDelete(row)}>
+                <DropdownMenuItem onClick={()=>onDelete&&onDelete(row.original)}>
                     Delete
                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                 </DropdownMenuItem>

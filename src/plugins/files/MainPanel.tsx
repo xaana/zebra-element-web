@@ -29,12 +29,16 @@ export const MainPanel = (): JSX.Element => {
 
         fetchFiles();
     }, [client]);
-    const onDelete = (row:any):void=>{
-        const currentFile = row.original as File;
+    const onDelete = (currentFile:any):void=>{
         const roomId = currentFile.roomId;
         const eventId = currentFile.mxEvent?.getId();
         eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
-        setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+        if (currentFile.type === MsgType.File){
+            setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+        }else if (currentFile.type === MsgType.Image){
+            console.log('removing media',currentFile);
+            setMedia((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+        }
     }
 
     return (
@@ -57,7 +61,7 @@ export const MainPanel = (): JSX.Element => {
                     />
                 )}
                 <div style={{ display: displayType === "media" ? "block" : "none" }}>
-                    <MediaGrid media={media} mode="standalone" />
+                    <MediaGrid media={media} mode="standalone" onDelete={onDelete} />
                 </div>
             </div>
         </div>
