@@ -12,6 +12,11 @@ import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import { IconZebra } from "@/components/ui/icons";
 
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+
+
+
+
 export const MediaGridItem = ({
     mediaItem,
     showActionButtons,
@@ -24,6 +29,7 @@ export const MediaGridItem = ({
     onDelete?: (currentFile:any) => void;
 }): JSX.Element => {
     const [hover, setHover] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const handleFullscreen = (): void => {
         if (mediaItem.mxEvent && mediaItem.srcUrl) {
@@ -42,7 +48,15 @@ export const MediaGridItem = ({
         }
     };
     const handleZebraChat = (): void => {};
+    const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+        if (open) {
+            setDialogOpen(open);
+        } else {
+            setDialogOpen(false);
+        }
+    };
     return (
+        <>
         <li
             className={cn("relative overflow-hidden rounded", !showActionButtons && "cursor-pointer")}
             onMouseOver={() => setHover(true)}
@@ -83,7 +97,7 @@ export const MediaGridItem = ({
                             className="h-auto w-auto rounded-full p-2"
                             size="sm"
                             variant="ghost"
-                            onClick={()=>onDelete&&onDelete(mediaItem.currentFile)}
+                            onClick={()=>setDialogOpen(true)}
                         >
                             <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
                         </Button>
@@ -91,5 +105,21 @@ export const MediaGridItem = ({
                 )}
             </div>
         </li>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
+                        <DialogDescription>
+                            The action will delete the file permanently, the message will be unrecoverable.
+                        </DialogDescription>
+
+                </DialogHeader>
+                <DialogFooter>
+                    <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
+                    <Button onClick={()=>onDelete&&onDelete(mediaItem.currentFile)}>confirm</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 };

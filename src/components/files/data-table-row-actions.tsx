@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { IconZebra } from "../ui/icons";
 
@@ -20,6 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { File } from '@/plugins/files/types';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 
 
@@ -30,15 +30,22 @@ interface DataTableRowActionsProps<TData> {
 
 export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActionsProps<TData>): JSX.Element {
     // const matrixClient = useMatrixClientContext();
-    
+    const [dialogOpen, setDialogOpen] = useState(false);
     // const onDelete = ():void => {
     //     const currentFile = row.original as File;
     //     const roomId = currentFile.roomId;
     //     const eventId = currentFile.mxEvent?.getId();
     //     eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
     // }
-
+    const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+        if (open) {
+            setDialogOpen(open);
+        } else {
+            setDialogOpen(false);
+        }
+    };
     return (
+        <>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
@@ -66,11 +73,27 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                <DropdownMenuItem onClick={()=>onDelete&&onDelete(row.original)}>
+                <DropdownMenuItem onClick={()=>setDialogOpen(true)}>
                     Delete
                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
+                        <DialogDescription>
+                            The action will delete the file permanently, the message will be unrecoverable.
+                        </DialogDescription>
+
+                </DialogHeader>
+                <DialogFooter>
+                    <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
+                    <Button onClick={()=>onDelete&&onDelete(row.original)}>confirm</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 }
