@@ -25,6 +25,7 @@ export const MediaGrid = ({
     onDelete?: (currentFile:any) => void;
 }): JSX.Element => {
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+    const [showLoading, setShowLoading] = useState<boolean>(true);
 
     useEffect(() => {
         async function processMedia(): Promise<void> {
@@ -62,6 +63,7 @@ export const MediaGrid = ({
 
             // Batch update state once with all new media items
             setMediaItems(() => [ ...resolvedMediaItems]);
+            setShowLoading(false);
         }
 
         // Call processMedia with the media array
@@ -73,11 +75,11 @@ export const MediaGrid = ({
     };
     return (
         <>
-            {mediaItems.length === 0 ? (
+            {showLoading ? (
                 <div className="flex justify-center items-center w-full p-20">
                     <RingLoader size={48} />
                 </div>
-            ) : (
+            ) : (mediaItems.length===0) ? (<div className="flex justify-center items-center w-full p-20">No media file found</div>) : (<>
                 <ul className="w-full mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1">
                     {mediaItems.map((item, index) => {
                         return (
@@ -91,6 +93,7 @@ export const MediaGrid = ({
                         );
                     })}
                 </ul>
+                </>
             )}
         </>
     );
