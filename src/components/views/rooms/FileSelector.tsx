@@ -53,7 +53,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
             setMedia([]);
             setDocuments([]);
             // setSelectedFiles([]);
-            // setRowSelection({});
+            setRowSelection({});
             setDialogOpen(true);
         }
     };
