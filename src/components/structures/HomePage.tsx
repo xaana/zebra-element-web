@@ -21,7 +21,6 @@ import { getHomePageUrl } from "matrix-react-sdk/src/utils/pages";
 import { _tDom } from "matrix-react-sdk/src/languageHandler";
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import BaseAvatar from "matrix-react-sdk/src/components/views/avatars/BaseAvatar";
 import { OwnProfileStore } from "matrix-react-sdk/src/stores/OwnProfileStore";
 import { UPDATE_EVENT } from "matrix-react-sdk/src/stores/AsyncStore";
@@ -32,13 +31,13 @@ import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import EmbeddedPage from "matrix-react-sdk/src/components/structures/EmbeddedPage";
 import { Search, File, Database, Headphones } from "lucide-react";
 import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
-
-import { Button } from "../ui/button";
-import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { MessageComposer } from "matrix-react-sdk/src/components/views/rooms/MessageComposer";
 import { findDMRoom } from "matrix-react-sdk/src/utils/dm/findDMRoom";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
+import classNames from "classnames";
+
 import { Label } from "../ui/label";
+import { Button } from "../ui/button";
 
 interface IProps {
     justRegistered?: boolean;
@@ -89,7 +88,6 @@ const UserWelcomeTop: React.FC = () => {
 const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     const cli = useMatrixClientContext();
     const config = SdkConfig.get();
-    
 
     const pageUrl = getHomePageUrl(config, cli);
     const botDM = new DirectoryMember({
@@ -97,11 +95,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         display_name: "zebra",
     })
     const targetDMRoom = findDMRoom(cli, [botDM]);
-
-
-    if (pageUrl) {
-        return <EmbeddedPage className="mx_HomePage" url={pageUrl} scrollbar={true} />;
-    }
 
     const onClickWebSearchHandler = ():void => {
         startDmOnFirstMessage(cli, [botDM])
@@ -120,7 +113,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     const onClickDocumentHandler = ():void => {
         startDmOnFirstMessage(cli, [botDM])
         .then((roomId)=>{
-            cli.sendMessage(roomId, {msgtype: "m.text", body: "List top 5 contracts by values",fileSelected: "contract"})
+            console.log(roomId)
         });
     }
 
@@ -130,13 +123,20 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     const brandingConfig = SdkConfig.getObject("branding");
     const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
+    const isDarkTheme = JSON.parse(localStorage.getItem("mx_local_settings") ?? "{\"theme\":\"light\"}")["theme"] === "dark"
+    const classname = classNames("mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
+        {"border-slate-700 invert": isDarkTheme}, {"border-slate-300": !isDarkTheme})
 
     const introSection: JSX.Element = (
         <React.Fragment>
-            <img className="mx-auto my-0 w-12 h-12" src={logoUrl} alt={config.brand} />
+            <img className={classname} src={logoUrl} alt={config.brand} />
             <h1><strong>Where Universe Connects</strong></h1>
         </React.Fragment>
     );
+
+    if (pageUrl) {
+        return <EmbeddedPage className="mx_HomePage" url={pageUrl} scrollbar={true} />;
+    }
 
     return (
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
@@ -159,7 +159,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         <div className="w-1/6 mr-0"><File /></div>
                     </Button>
 
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDatabaseHandler}>
+                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDatabaseHandler} disabled>
                         <div className="w-full text-start">
                             <h2><strong>Datastore</strong></h2>
                         </div>
@@ -167,7 +167,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         <div className="w-1/6 mr-0"><Database /></div>
                     </Button>
 
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickAudioHandler}>
+                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickAudioHandler} disabled>
                         <div className="w-full text-start">
                             <h2><strong>Audio Model</strong></h2>
                         </div>
@@ -176,11 +176,11 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                     </Button>
                 </div>
                 {targetDMRoom && (
-                    <MessageComposer 
-                        room={targetDMRoom} 
-                        resizeNotifier={new ResizeNotifier()} 
-                        mxClient={cli} 
-                        fromHomepage={true} 
+                    <MessageComposer
+                        room={targetDMRoom}
+                        resizeNotifier={new ResizeNotifier()}
+                        mxClient={cli}
+                        fromHomepage={true}
                         onSendCallback={()=>{
                             dis.dispatch({
                                 action: "view_room",
@@ -191,7 +191,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                 }
                 {targetDMRoom && (<Label className="text-slate-500">Zebra can make mistakes, please review.</Label>)}
             </div>
-            
         </AutoHideScrollbar>
     );
 };
