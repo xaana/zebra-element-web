@@ -6,7 +6,7 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 
-  export const SuggestionPrompt = ({ suggestions,rootId,roomId,type}: { suggestions: string[], rootId?: string, roomId: string,type?: any[] | string}) => {
+  export const SuggestionPrompt = ({ suggestions,rootId,roomId,type}: { suggestions: string[], rootId?: string, roomId: string,type?: any[] | string|boolean}) => {
     const client = useContext(MatrixClientContext)
 
     // if (!suggestions){
@@ -39,6 +39,9 @@ import { Skeleton } from '@/components/ui/skeleton'
                     content.fileSelected = type
                   }else if (typeof type === 'string'){
                     content.database = type
+                  }
+                  else if (typeof type === 'boolean'){
+                    content.web=type
                   }
                   console.log(content)
                   await client.sendMessage(roomId, rootId, content);
