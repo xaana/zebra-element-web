@@ -1,8 +1,8 @@
 diff --git a/node_modules/matrix-js-sdk/src/models/event-timeline.ts b/node_modules/matrix-js-sdk/src/models/event-timeline.ts
-index a20dac8..4270fb9 100644
+index a20dac8..70a32fe 100644
 --- a/node_modules/matrix-js-sdk/src/models/event-timeline.ts
 +++ b/node_modules/matrix-js-sdk/src/models/event-timeline.ts
-@@ -243,6 +243,42 @@ export class EventTimeline {
+@@ -243,6 +243,48 @@ export class EventTimeline {
       * @returns An array of MatrixEvents
       */
      public getEvents(): MatrixEvent[] {
@@ -23,6 +23,12 @@ index a20dac8..4270fb9 100644
 +                    ) {
 +                        // Update the content of the custom event
 +                        this.events[targetEventIndex]?.setContent(lastMessage.getContent());
++                        if (lastMessage.getContent().open==="open"&&this.events[targetEventIndex]){
++                            this.events[targetEventIndex].getContent().open="open";
++                        }
++                        else if (!lastMessage.getContent().open&&this.events[targetEventIndex]){
++                            this.events[targetEventIndex].getContent().open=null;
++                        }
 +                        // Drop the current latest custom event
 +                        this.events.pop();
 +                    }
