@@ -2,6 +2,7 @@ import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReact
 import React from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Button } from "../ui/button";
 
 export type Citation = {
     id: string;
@@ -115,7 +116,7 @@ export function CitationsTable({
                     )}
                 </TableBody>
             </Table>
-            {/* {!(!table.getCanNextPage() && !table.getCanPreviousPage()) && (
+            {!(!table.getCanNextPage() && !table.getCanPreviousPage()) && (
         <div className="flex items-center justify-end space-x-2 py-4">
           <div className="space-x-2">
             <Button
@@ -136,7 +137,7 @@ export function CitationsTable({
             </Button>
           </div>
         </div>
-      )} */}
+      )}
         </>
     );
 }

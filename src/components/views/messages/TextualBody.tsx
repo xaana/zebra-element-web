@@ -658,7 +658,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <>
                     {body}
                     <WebSearchSources data={citations} />
-                    {roomId && <SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} />}
+                    {roomId && <SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} type={content.web} />}
                 </>
             );
         }

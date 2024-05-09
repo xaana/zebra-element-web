@@ -12,6 +12,7 @@
     "src/components/structures/TimelinePanel.tsx": "src/components/structures/TimelinePanel.tsx",
     "src/components/structures/UploadBar.tsx": "src/components/structures/UploadBar.tsx",
     "src/components/views/context_menus/MessageContextMenu.tsx": "src/components/views/context_menus/MessageContextMenu.tsx",
+    "src/components/views/context_menus/RoomContextMenu.tsx": "src/components/views/context_menus/RoomContextMenu.tsx",
     "src/components/views/context_menus/RoomGeneralContextMenu.tsx": "src/components/views/context_menus/RoomGeneralContextMenu.tsx",
     "src/components/views/dialogs/CreateRoomDialog.tsx": "src/components/views/dialogs/CreateRoomDialog.tsx",
     "src/components/views/dialogs/InviteDialog.tsx": "src/components/views/dialogs/InviteDialog.tsx",

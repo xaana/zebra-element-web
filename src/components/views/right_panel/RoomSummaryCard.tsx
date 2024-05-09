@@ -428,8 +428,8 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
             <Separator />
 
             <ToggleMenuItem
-                Icon={FavouriteIcon}
-                label={_t("room|context_menu|favourite")}
+                Icon={PinIcon}
+                label={_t("context_menu|favourite")}
                 checked={isFavorite}
                 onChange={() => tagRoom(room, DefaultTagID.Favourite)}
                 // XXX: https://github.com/element-hq/compound/issues/288

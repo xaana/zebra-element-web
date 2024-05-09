@@ -46,6 +46,7 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -140,13 +141,21 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
+    onDelete?: (currentFile: any) => void;
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
-    ({ data, rowSelection, setRowSelection, mode }, ref): JSX.Element => {
+    ({ data, rowSelection, setRowSelection, mode,onDelete }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
+        const [dialogOpen, setDialogOpen] = React.useState(false);
         const client = useMatrixClientContext();
-
+        const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+            if (open) {
+                setDialogOpen(open);
+            } else {
+                setDialogOpen(false);
+            }
+        };
         const columns: ColumnDef<File>[] = [
             {
                 id: "select",
@@ -268,9 +277,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
             {
                 id: "actions",
-                cell: ({ row }) => <DataTableRowActions row={row} />,
+                cell: ({ row }) => <DataTableRowActions row={row} onDelete={onDelete} />,
             },
         ];
+
 
         const table = useReactTable({
             data,
@@ -296,9 +306,22 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
         }));
 
+        const deleteMultiFiles = () : void => {
+            for (const key in rowSelection) {
+                onDelete&&onDelete(data[Number(key)]);
+                setDialogOpen(false)
+            }
+            onDelete&&setRowSelection({});
+        }
+
         return (
+            <>
             <div className="space-y-4">
-                <DataTableToolbar table={table} />
+                <div className="flex justify-between items-center">
+                    <DataTableToolbar table={table} />
+                    {Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
+                </div>
+                
                 <div className="rounded-md border">
                     <Table>
                         <TableHeader>
@@ -339,6 +362,22 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 </div>
                 <DataTablePagination table={table} />
             </div>
+                <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Are you sure you want to delete all files?</DialogTitle>
+                                <DialogDescription>
+                                    The action will delete files permanently, messages will be unrecoverable.
+                                </DialogDescription>
+
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
+                            <Button onClick={()=>deleteMultiFiles()}>confirm</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </>
         );
     },
 );

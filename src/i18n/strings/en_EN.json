@@ -16,7 +16,7 @@
     },
     "context_menu": {
         "favourite": "Pin",
-        "unfavourite": "Unpin"
+        "unfavourite": "Pinned"
     },
     "desktop_default_device_name": "%(brand)s Desktop: %(platformName)s",
     "download_completed": "Download Completed",
