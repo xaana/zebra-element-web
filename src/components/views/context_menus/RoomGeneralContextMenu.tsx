@@ -110,8 +110,8 @@ export const RoomGeneralContextMenu: React.FC<RoomGeneralContextMenuProps> = ({
         <IconizedContextMenuCheckbox
             onClick={wrapHandler((ev) => onTagRoom(ev, DefaultTagID.Favourite), onPostFavoriteClick, true)}
             active={isFavorite}
-            label={isFavorite ? _t("room|context_menu|unfavourite") : _t("room|context_menu|favourite")}
-            iconClassName="mx_RoomGeneralContextMenu_iconStar"
+            label={isFavorite ? _t("context_menu|unfavourite") : _t("context_menu|favourite")}
+            iconClassName="mx_RoomGeneralContextMenu_iconPins"
         />
     );
 
