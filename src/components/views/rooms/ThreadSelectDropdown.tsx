@@ -54,36 +54,36 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
         });
     }, [props.room]);
 
-    const getLatestTimestamp = (thread: Thread): number|undefined => {
+    const getLatestTimestamp = (thread: Thread): number | undefined => {
         return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent?.localTimestamp;
     };
 
-    const groupThreadsByDate = (threads: Thread[]): {today:Thread[],lastWeek:Thread[],earlier:Thread[]} => {
-        const today = new Date();
+    const groupThreadsByDate = (threads: Thread[]): { today: Thread[]; lastWeek: Thread[]; earlier: Thread[] } => {
+        const now = new Date();
         const oneDay = 1000 * 60 * 60 * 24;
-        const groups: {today:Thread[],lastWeek:Thread[],earlier:Thread[]} = {
-          today: [],
-          lastWeek: [],
-          earlier: []
+        const sevenDays = oneDay * 7;
+        const groups: { today: Thread[]; lastWeek: Thread[]; earlier: Thread[] } = {
+            today: [],
+            lastWeek: [],
+            earlier: [],
         };
-      
-        threads.forEach(thread => {
+
+        threads.forEach((thread) => {
             const timestamp = getLatestTimestamp(thread);
             if (!timestamp) return;
-            const itemDate = new Date(timestamp);
-            const diffDays = Math.floor((today - itemDate) / oneDay);
-        
-            if (diffDays === 0) {
+
+            const diff = now.getTime() - new Date(timestamp).getTime();
+            if (diff < oneDay) {
                 groups.today.push(thread);
-            } else if (diffDays <= 7) {
+            } else if (diff < sevenDays) {
                 groups.lastWeek.push(thread);
             } else {
                 groups.earlier.push(thread);
             }
         });
-      
+
         return groups;
-      }
+    };
 
     const onSelectHandler = (thread: Thread): void => {
         if (thread?.rootEvent) {
@@ -95,6 +95,24 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
     };
 
     const groupedThreads = groupThreadsByDate(threads);
+
+    const TopicList = ({ heading, topics }: { heading: string; topics: Thread[] }) => (
+        <CommandGroup heading={heading}>
+            {topics.map((item) => (
+                <ThreadSelectItem
+                    key={item.id}
+                    thread={item}
+                    id={item.id}
+                    value={item.id}
+                    onSelect={(currentId) => {
+                        onSelectHandler(item);
+                        setValue(currentId === value ? "" : currentId);
+                        setOpen(false);
+                    }}
+                />
+            ))}
+        </CommandGroup>
+    );
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -123,62 +141,17 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
                         <>
                             <CommandInput placeholder="Search Topic..." />
                             <CommandList>
-                                <CommandGroup heading="Today">
-                                    {groupedThreads.today
-                                        .map((item) => {
-                                            return (
-                                                <ThreadSelectItem
-                                                    key={item.id}
-                                                    thread={item}
-                                                    id={item.id}
-                                                    value={item.id}
-                                                    onSelect={(currentId) => {
-                                                        onSelectHandler(item);
-                                                        setValue(currentId === value ? "" : currentId);
-                                                        setOpen(false);
-                                                    }}
-                                                />
-                                            );
-                                        })}
-                                </CommandGroup>
+                                {groupedThreads.today?.length > 0 && (
+                                    <TopicList heading="Today" topics={groupedThreads.today} />
+                                )}
                                 <CommandSeparator />
-                                <CommandGroup heading="Past Week">
-                                    {groupedThreads.lastWeek
-                                        .map((item) => {
-                                            return (
-                                                <ThreadSelectItem
-                                                    key={item.id}
-                                                    thread={item}
-                                                    id={item.id}
-                                                    value={item.id}
-                                                    onSelect={(currentId) => {
-                                                        onSelectHandler(item);
-                                                        setValue(currentId === value ? "" : currentId);
-                                                        setOpen(false);
-                                                    }}
-                                                />
-                                            );
-                                        })}
-                                </CommandGroup>
+                                {groupedThreads.lastWeek?.length > 0 && (
+                                    <TopicList heading="Past Week" topics={groupedThreads.lastWeek} />
+                                )}
                                 <CommandSeparator />
-                                <CommandGroup heading="More Than One Week">
-                                    {groupedThreads.earlier
-                                        .map((item) => {
-                                            return (
-                                                <ThreadSelectItem
-                                                    key={item.id}
-                                                    thread={item}
-                                                    id={item.id}
-                                                    value={item.id}
-                                                    onSelect={(currentId) => {
-                                                        onSelectHandler(item);
-                                                        setValue(currentId === value ? "" : currentId);
-                                                        setOpen(false);
-                                                    }}
-                                                />
-                                            );
-                                        })}
-                                </CommandGroup>
+                                {groupedThreads.earlier?.length > 0 && (
+                                    <TopicList heading="More Than One Week" topics={groupedThreads.earlier} />
+                                )}
                             </CommandList>
                         </>
                     ) : (
@@ -227,14 +200,16 @@ const ThreadSelectItem = (props: {
             messageText = "Undecrypted Message";
             break;
         default:
-            messageText = messageContent.body;
+            messageText = "Message Undefined";
             break;
     }
 
     return (
         <CommandItem className=" text-gray-900 hover:text-gray-100" key={id} value={value} onSelect={onSelect}>
             <div className="flex flex-row flex-grow bg-transparent justify-end w-full">
-                <p className="flex-1 truncate">{messageText.length > 40 ? messageText.substring(0,37)+"...":messageText}</p>
+                <p className="flex-1 truncate">
+                    {messageText.length > 40 ? messageText.substring(0, 37) + "..." : messageText}
+                </p>
             </div>
         </CommandItem>
     );
