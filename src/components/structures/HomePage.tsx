@@ -39,6 +39,7 @@ import classNames from "classnames";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
+
 interface IProps {
     justRegistered?: boolean;
 }
@@ -118,7 +119,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     }
 
     const onClickAudioHandler = ():void => {
-        console.log("aa")
+        console.log("Audio module is currently disabled, please contact Administrator")
     }
 
     const brandingConfig = SdkConfig.getObject("branding");
@@ -140,10 +141,11 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     return (
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
+            {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
             <div className="mx_HomePage_default_wrapper">
                 {introSection}
                 <div className="mx_HomePage_default_buttons gap-x-8 gap-y-4 justify-center">
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickWebSearchHandler}>
+                    <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickWebSearchHandler}>
                         <div className="w-full text-start">
                             <h2><strong>Search</strong></h2>
                         </div>
@@ -151,7 +153,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         <div className="w-1/6 mr-0"><Search /></div>
                     </Button>
 
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDocumentHandler}>
+                    <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDocumentHandler} disabled>
                         <div className="w-full text-start">
                             <h2><strong>Document</strong></h2>
                         </div>
@@ -159,7 +161,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         <div className="w-1/6 mr-0"><File /></div>
                     </Button>
 
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDatabaseHandler} disabled>
+                    <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickDatabaseHandler}>
                         <div className="w-full text-start">
                             <h2><strong>Datastore</strong></h2>
                         </div>
@@ -167,7 +169,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                         <div className="w-1/6 mr-0"><Database /></div>
                     </Button>
 
-                    <Button className="w-2/5 h-24 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickAudioHandler} disabled>
+                    <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClickAudioHandler} disabled>
                         <div className="w-full text-start">
                             <h2><strong>Audio Model</strong></h2>
                         </div>
@@ -191,6 +193,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                 }
                 {targetDMRoom && (<Label className="text-slate-500">Zebra can make mistakes, please review.</Label>)}
             </div>
+
         </AutoHideScrollbar>
     );
 };
