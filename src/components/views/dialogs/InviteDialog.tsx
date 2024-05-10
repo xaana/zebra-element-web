@@ -28,7 +28,10 @@ import { makeRoomPermalink, makeUserPermalink } from "matrix-react-sdk/src/utils
 import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
 import * as Email from "matrix-react-sdk/src/email";
-import { getDefaultIdentityServerUrl, setToDefaultIdentityServer } from "matrix-react-sdk/src/utils/IdentityServerUtils";
+import {
+    getDefaultIdentityServerUrl,
+    setToDefaultIdentityServer,
+} from "matrix-react-sdk/src/utils/IdentityServerUtils";
 import { buildActivityScores, buildMemberScores, compareMembers } from "matrix-react-sdk/src/utils/SortMembers";
 import { abbreviateUrl } from "matrix-react-sdk/src/utils/UrlUtils";
 import IdentityAuthClient from "matrix-react-sdk/src/IdentityAuthClient";
@@ -70,7 +73,9 @@ import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import { privateShouldBeEncrypted } from "matrix-react-sdk/src/utils/rooms";
 import { NonEmptyArray } from "matrix-react-sdk/src/@types/common";
 import { UNKNOWN_PROFILE_ERRORS } from "matrix-react-sdk/src/utils/MultiInviter";
-import AskInviteAnywayDialog, { UnknownProfiles } from "matrix-react-sdk/src/components/views/dialogs/AskInviteAnywayDialog";
+import AskInviteAnywayDialog, {
+    UnknownProfiles,
+} from "matrix-react-sdk/src/components/views/dialogs/AskInviteAnywayDialog";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { UserProfilesStore } from "matrix-react-sdk/src/stores/UserProfilesStore";
 import { getVectorConfig } from "@/vector/getconfig";
@@ -339,7 +344,7 @@ interface IInviteDialogState {
     dialPadValue: string;
     currentTabId: TabId;
     userIds: string[];
-    filterUser:string[];
+    filterUser: string[];
 
     // These two flags are used for the 'Go' button to communicate what is going on.
     busy: boolean;
@@ -426,12 +431,11 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                 fetch(request)
                     .then((response) => response.json())
                     .then((data) => {
-                        this.setState({ userIds: data.user});
+                        this.setState({ userIds: data.user });
                     });
             }
         });
-                
-        
+
         if (this.props.initialText) {
             //TODO: we may can get all the id of functional users and display in the suggestions when user open the dialog
             this.updateSuggestions([this.props.initialText]);
@@ -732,53 +736,54 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         let tempResults: Result[] = [];
         for (const term of terms) {
             cli.searchUserDirectory({ term })
-            .then(async (r): Promise<void> => {
-                if (term !== this.state.filterText&&!this.state.filterUser.includes(term)) {
-                    // Discard the results - we were probably too slow on the server-side to make
-                    // these results useful. This is a race we want to avoid because we could overwrite
-                    // more accurate results.
-                    return;
-                }
-
-                if (!r.results) r.results = [];
-
-                // While we're here, try and autocomplete a search result for the mxid itself
-                // if there's no matches (and the input looks like a mxid).
-                if (term[0] === "@" && term.indexOf(":") > 1) {
-                    try {
-                        const profile = await this.profilesStore.getOrFetchProfile(term, { shouldThrow: true });
-
-                        if (profile) {
-                            // If we have a profile, we have enough information to assume that
-                            // the mxid can be invited - add it to the list. We stick it at the
-                            // top so it is most obviously presented to the user.
-                            r.results.splice(0, 0, {
-                                user_id: term,
-                                display_name: profile["displayname"],
-                                avatar_url: profile["avatar_url"],
-                            });
-                        }
-                    } catch (e) {
-                        logger.warn("Non-fatal error trying to make an invite for a user ID", e);
+                .then(async (r): Promise<void> => {
+                    if (term !== this.state.filterText && !this.state.filterUser.includes(term)) {
+                        // Discard the results - we were probably too slow on the server-side to make
+                        // these results useful. This is a race we want to avoid because we could overwrite
+                        // more accurate results.
+                        return;
                     }
-                }
-                
-                tempResults = [...tempResults, ...r.results.map((u) => ({
-                    userId: u.user_id,
-                    user: new DirectoryMember(u),
-                }))];
-                this.setState({
-                    serverResultsMixin: tempResults,
+
+                    if (!r.results) r.results = [];
+
+                    // While we're here, try and autocomplete a search result for the mxid itself
+                    // if there's no matches (and the input looks like a mxid).
+                    if (term[0] === "@" && term.indexOf(":") > 1) {
+                        try {
+                            const profile = await this.profilesStore.getOrFetchProfile(term, { shouldThrow: true });
+
+                            if (profile) {
+                                // If we have a profile, we have enough information to assume that
+                                // the mxid can be invited - add it to the list. We stick it at the
+                                // top so it is most obviously presented to the user.
+                                r.results.splice(0, 0, {
+                                    user_id: term,
+                                    display_name: profile["displayname"],
+                                    avatar_url: profile["avatar_url"],
+                                });
+                            }
+                        } catch (e) {
+                            logger.warn("Non-fatal error trying to make an invite for a user ID", e);
+                        }
+                    }
+
+                    tempResults = [
+                        ...tempResults,
+                        ...r.results.map((u) => ({
+                            userId: u.user_id,
+                            user: new DirectoryMember(u),
+                        })),
+                    ];
+                    this.setState({
+                        serverResultsMixin: tempResults,
+                    });
+                })
+                .catch((e) => {
+                    logger.error("Error searching user directory:");
+                    logger.error(e);
+                    this.setState({ serverResultsMixin: [] }); // clear results because it's moderately fatal
                 });
-                
-            })
-            .catch((e) => {
-                logger.error("Error searching user directory:");
-                logger.error(e);
-                this.setState({ serverResultsMixin: [] }); // clear results because it's moderately fatal
-            });
         }
-        
 
         // Whenever we search the directory, also try to search the identity server. It's
         // all debounced the same anyways.
@@ -839,10 +844,10 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         // }
     };
 
-    private findUsersWithRegex = (userIDs: string[], pattern:string): string[] => {
+    private findUsersWithRegex = (userIDs: string[], pattern: string): string[] => {
         const regex = new RegExp(pattern);
-        return userIDs.filter(userID => regex.test(userID)) ?? [];
-    }
+        return userIDs.filter((userID) => regex.test(userID)) ?? [];
+    };
 
     private updateFilter = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const term = e.target.value;
@@ -856,20 +861,18 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         }
         this.debounceTimer = window.setTimeout(() => {
             const temp = this.findUsersWithRegex(this.state.userIds, term);
-            if (temp.length>0){
-                if(temp.length>5){
-                const terms = temp.slice(0,5);
-                this.setState({ filterUser: terms });
-                this.updateSuggestions(terms)
-            }else{
-                this.setState({ filterUser: temp });
-                this.updateSuggestions(temp)
-            }
-                
-            }else{
+            if (temp.length > 0) {
+                if (temp.length > 5) {
+                    const terms = temp.slice(0, 5);
+                    this.setState({ filterUser: terms });
+                    this.updateSuggestions(terms);
+                } else {
+                    this.setState({ filterUser: temp });
+                    this.updateSuggestions(temp);
+                }
+            } else {
                 this.updateSuggestions([term]);
             }
-            
         }, 150); // 150ms debounce (human reaction time + some)
     };
 
@@ -1331,7 +1334,7 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         let keySharingWarning = <span />;
         //TODO: temperary set to false
         // const identityServersEnabled = SettingsStore.getValue(UIFeature.IdentityServer);
-        const identityServersEnabled=false;
+        const identityServersEnabled = false;
         const hasSelection =
             this.state.targets.length > 0 || (this.state.filterText && this.state.filterText.includes("@"));
 
@@ -1346,9 +1349,10 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                     {
                         userId: () => {
                             return (
-                                <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
-                                    {userId}
-                                </a>
+                                // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
+                                //     {userId}
+                                // </a>
+                                userId
                             );
                         },
                     },
@@ -1360,9 +1364,10 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                     {
                         userId: () => {
                             return (
-                                <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
-                                    {userId}
-                                </a>
+                                // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
+                                //     {userId}
+                                // </a>
+                                userId
                             );
                         },
                     },
@@ -1448,9 +1453,7 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                     visibilityEvent && visibilityEvent.getContent() && visibilityEvent.getContent().history_visibility;
                 if (visibility === "world_readable" || visibility === "shared") {
                     keySharingWarning = (
-                        <p className="mx_InviteDialog_helpText">
-                            {" " + _t("invite|key_share_warning")}
-                        </p>
+                        <p className="mx_InviteDialog_helpText">{" " + _t("invite|key_share_warning")}</p>
                     );
                 }
             }
