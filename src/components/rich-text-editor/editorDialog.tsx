@@ -4,34 +4,30 @@ import { Button } from "../ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "../ui/dialog";
-import Editor from "./editor";
+import Editor from "./Editor";
 
 const EditorDialog = (props: {
-    onToggleOpenCallback?: (open:boolean)=>void,
+    trigger?: React.JSX.Element
     onDestroyCallback?: (data:string)=>void
+    onSendCallback: (content:string)=>void
 }):React.JSX.Element => {
     const [open, setOpen] = React.useState(false);
 
-    const onToggleOpenHandler = ():void => {
-        const curr = open;
-        setOpen(!!curr)
-        props.onToggleOpenCallback && props.onToggleOpenCallback(open);
-    }
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger>
-                <Button onClick={onToggleOpenHandler}>
+            <DialogTrigger asChild>
+                {props.trigger ?? (<Button>
                     Open
-                </Button>
+                </Button>)}
             </DialogTrigger>
             <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                <Editor onDestroyCallback={props.onDestroyCallback} />
+                <Editor
+                    onDestroyCallback={props.onDestroyCallback}
+                    onCancelCallback={()=>{setOpen(false)}}
+                    onSendCallback={props.onSendCallback}
+                />
             </DialogContent>
         </Dialog>
     )

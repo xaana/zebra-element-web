@@ -66,6 +66,7 @@ import MessageComposerButtons from "matrix-react-sdk/src/components/views/rooms/
 
 import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } from "./SendMessageComposer";
 import { DocFile } from "./FileSelector";
+
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WebSearchPill from "@/components/ui/WebSearchPill";
@@ -666,6 +667,15 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         );
                                         this.toggleButtonMenu();
                                     }}
+                                    onRichTextEditorDestroyCallback={(data:string)=>{
+                                        this.setState({
+                                            composerContent: data,
+                                        })
+                                    }}
+                                    onSendCallback={(content:string)=>{
+                                        this.props.mxClient.sendMessage(this.context.roomId, {msgtype: "m.text", body: content})
+                                    }}
+
                                 />
                             )}
                             {(showSendButton && !SdkContextClass.instance.roomViewStore.getUploading()) && (

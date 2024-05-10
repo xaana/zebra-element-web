@@ -12,3 +12,8 @@
     -webkit-mask-image: url("files.svg") !important;
     mask-image: url("files.svg") !important;
 }
+
+.editor_button::before {
+    -webkit-mask-image: url("text-editor.svg") !important;
+    mask-image: url("text-editor.svg") !important;
+}

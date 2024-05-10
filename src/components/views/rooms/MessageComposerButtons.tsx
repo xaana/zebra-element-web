@@ -46,6 +46,7 @@ import { AudioCapture } from "./audio-capture";
 import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
 import { DatabaseSelector } from "./DatabaseSelector";
 import { FileSelector } from "./FileSelector"
+import EditorDialog from "../../rich-text-editor/EditorDialog";
 
 interface IProps {
     addEmoji: (emoji: string) => boolean;
@@ -64,6 +65,8 @@ interface IProps {
     onStartVoiceBroadcastClick: () => void;
     isRichTextEnabled: boolean;
     onComposerModeClick: () => void;
+    onRichTextEditorDestroyCallback?:(data:string)=>void;
+    onSendCallback: (content:string)=>void;
 }
 
 type OverflowMenuCloser = () => void;
@@ -76,6 +79,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     if (!matrixClient || !room || props.haveRecording) {
         return null;
     }
+    console.log(props)
 
     let mainButtons: ReactNode[];
     let moreButtons: ReactNode[];
@@ -101,6 +105,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     } else {
         mainButtons = [
+            richTextEditorButton(props.onRichTextEditorDestroyCallback, props.onSendCallback),
             isWysiwygLabEnabled ? (
                 <ComposerModeButton
                     key="composerModeButton"
@@ -117,7 +122,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             // (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId),
             databaseSelector(),
             filesSelector(room.roomId),
-            
         ];
         moreButtons = [
             showStickersButton(props),
@@ -201,6 +205,30 @@ function filesSelector(roomId: string): ReactElement {
 
 function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {
     return <VoiceBotButton key="controls_voicebot" client={matrixClient} room={room.roomId} />;
+}
+
+function richTextEditorButton(
+    onSendCallback: (content:string)=>void,
+    onRichTextEditorDestroyCallback?:(data:string)=>void,
+): ReactElement {
+    const trigger = (
+        <AccessibleTooltipButton
+            title="Open Rich Text Editor"
+            className="mx_MessageComposer_button editor_button"
+            // onClick={() => {
+            //     dis.dispatch({
+            //         action: "select_database",
+            //         database: "",
+            //         roomId: room.roomId,
+            //         context: room.,
+            //     });
+            // }}
+        >
+            <div className="hidden" />
+        </AccessibleTooltipButton>
+    )
+
+    return <EditorDialog trigger={trigger} onDestroyCallback={onRichTextEditorDestroyCallback} onSendCallback={onSendCallback} />
 }
 
 type UploadButtonFn = () => void;
