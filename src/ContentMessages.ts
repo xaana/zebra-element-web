@@ -568,6 +568,7 @@ export default class ContentMessages {
             if (file.type.startsWith("image/")) {
                 content.msgtype = MsgType.Image;
                 try {
+                    dis.dispatch({action:"uploading_files",uploading:true})
                     const imageInfo = await infoForImageFile(matrixClient, roomId, file);
                     mxcUrl = imageInfo.thumbnail_file?.url ?? imageInfo.thumbnail_file?.url;
                     Object.assign(content.info, imageInfo);
@@ -788,6 +789,7 @@ export default class ContentMessages {
                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
                 if(this.inprogress.length===0){
                     this.fileUploaded = []
+                    dis.dispatch({action:"uploading_files",uploading:false})
                 }
             }
         }
