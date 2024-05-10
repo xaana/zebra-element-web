@@ -145,7 +145,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                 <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
                     <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
                         <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
-                        <FilesTabs className="mb-4" displayType={displayType} setDisplayType={setDisplayType} />
+                        <FilesTabs className="mb-4" displayType={displayType} setDisplayType={setDisplayType} setRowSelection={setRowSelection} />
                         {displayType === "documents" && (
                             <FilesTable
                                 data={documents}

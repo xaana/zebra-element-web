@@ -3,14 +3,17 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils";
+import { RowSelectionState } from "@tanstack/react-table";
 const FilesTabs = ({
     displayType,
     setDisplayType,
     className,
+    setRowSelection,
 }: {
     displayType: "documents" | "media";
     setDisplayType: (value: "documents" | "media") => void;
     className?: string;
+    setRowSelection?: React.Dispatch<React.SetStateAction<RowSelectionState>>;
 }): JSX.Element => {
     return (
         <Tabs
@@ -23,7 +26,7 @@ const FilesTabs = ({
                     <Icon className="mr-2" name="Files" />
                     Documents
                 </TabsTrigger>
-                <TabsTrigger value="media" className="flex-1">
+                <TabsTrigger value="media" className="flex-1" onClick={() => setRowSelection && setRowSelection({})}>
                     <Icon className="mr-2" name="Images" />
                     Media
                 </TabsTrigger>
