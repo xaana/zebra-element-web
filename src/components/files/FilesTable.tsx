@@ -319,7 +319,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <DataTableToolbar table={table} />
-                    {Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
+                    {onDelete&&Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
                 </div>
                 
                 <div className="rounded-md border">
