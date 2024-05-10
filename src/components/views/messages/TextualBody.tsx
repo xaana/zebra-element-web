@@ -741,7 +741,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </div>
                         {content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
                     </div>}
-                    {webCitations.length > 0 && <WebSearchSources data={citations} />}
+                    {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
                     <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
