@@ -16,7 +16,8 @@ const MenuBar = (props: {onDestroyCallback?:(data:string)=>void}):React.JSX.Elem
 
     React.useEffect(()=>{
         return ()=>{
-            props.onDestroyCallback && editor && props.onDestroyCallback(editor.getHTML())
+            console.log(props.onDestroyCallback);
+            props.onDestroyCallback && editor && props.onDestroyCallback(editor.getText())
         }
     }, [])
 
@@ -125,21 +126,36 @@ const extensions = [
   }),
 ];
 
-const EditorFooter = ():React.JSX.Element => {
+const EditorFooter = (props:{
+    onSendCallback:(content: string)=>void,
+    onCancelCallback:()=>void
+}):React.JSX.Element => {
     const { editor } = useCurrentEditor();
     if (!editor) {
         return (<></>);
     }
+
+    const sendHandler = ():void => {
+        props.onSendCallback && editor && props.onSendCallback(editor.getHTML())
+    }
+
     return (
-        <Button
-            variant="default"
-            onClick={() => {
-                const content = editor.getHTML();
-                navigator.clipboard.writeText(content);
-            }}
-        >
-            Copy To Clipboard
-        </Button>
+        <div className="flex flex-row justify-end gap-x-3">
+            <Button
+                className="w-[100px]"
+                variant="default"
+                onClick={props.onCancelCallback}
+            >
+                Cancel
+            </Button>
+            <Button
+                className="w-[100px]"
+                variant="default"
+                onClick={sendHandler}
+            >
+                Send
+            </Button>
+        </div>
     )
 }
 
@@ -174,11 +190,19 @@ display: none;
 </blockquote>
 `;
 
-const App = (props: {onDestroyCallback?: (data:string)=>void}):React.JSX.Element => {
+const App = (props: {
+    onDestroyCallback?: (data:string)=>void
+    onSendCallback: (content:string)=>void,
+    onCancelCallback: ()=>void
+}):React.JSX.Element => {
     return (
         <EditorProvider
             slotBefore={<MenuBar onDestroyCallback={props.onDestroyCallback} />}
-            slotAfter={<EditorFooter />}
+            slotAfter={<EditorFooter onCancelCallback={props.onCancelCallback}
+                onSendCallback={(content:string):void=>{
+                    props.onSendCallback(content);
+                    props.onCancelCallback();
+            }} />}
             extensions={extensions}
             content={content}
         />
