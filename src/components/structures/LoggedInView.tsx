@@ -36,7 +36,7 @@ import { IMatrixClientCreds } from "matrix-react-sdk/src/MatrixClientPeg";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
 import ResizeHandle from "matrix-react-sdk/src/components/views/elements/ResizeHandle";
-import { CollapseDistributor, Resizer } from "matrix-react-sdk/src/resizer";
+import { CollapseDistributor } from "matrix-react-sdk/src/resizer/";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
@@ -80,8 +80,10 @@ import { UPDATE_SELECTED_SPACE } from "matrix-react-sdk/src/stores/spaces";
 import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
 
-import { IScreen } from "./MatrixChat";
 import type { RoomView as RoomViewType } from "matrix-react-sdk/src/components/structures/RoomView";
+
+import { IScreen } from "./MatrixChat";
+import ToggleResizer from "@/resizer/toggleResizer";
 
 import { getPlugin, Plugin, PluginActions } from "@/plugins";
 
@@ -150,7 +152,7 @@ class LoggedInView extends React.Component<IProps, IState> {
     protected layoutWatcherRef?: string;
     protected compactLayoutWatcherRef?: string;
     protected backgroundImageWatcherRef?: string;
-    protected resizer?: Resizer<ICollapseConfig, CollapseItem>;
+    protected resizer?: ToggleResizer<ICollapseConfig, CollapseItem>;
 
     public constructor(props: IProps) {
         super(props);
@@ -276,12 +278,12 @@ class LoggedInView extends React.Component<IProps, IState> {
         return this._roomView.current.canResetTimeline();
     };
 
-    private createResizer(): Resizer<ICollapseConfig, CollapseItem> {
+    private createResizer(): ToggleResizer<ICollapseConfig, CollapseItem> {
         let panelSize: number | null;
         let panelCollapsed: boolean;
         const collapseConfig: ICollapseConfig = {
-            // TODO decrease this once Spaces launches as it'll no longer need to include the 56px Community Panel
-            toggleSize: 206 - 50,
+            // In ToggleResizer, it is the tab size when tab is openned.
+            toggleSize: 250,
             onCollapsed: (collapsed) => {
                 panelCollapsed = collapsed;
                 if (collapsed) {
@@ -307,7 +309,7 @@ class LoggedInView extends React.Component<IProps, IState> {
             },
             handler: this.resizeHandler.current ?? undefined,
         };
-        const resizer = new Resizer(this._resizeContainer.current, CollapseDistributor, collapseConfig);
+        const resizer = new ToggleResizer(this._resizeContainer.current, CollapseDistributor, collapseConfig);
         resizer.setClassNames({
             handle: "mx_ResizeHandle",
             vertical: "mx_ResizeHandle--vertical",
