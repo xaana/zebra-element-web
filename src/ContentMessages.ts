@@ -702,6 +702,7 @@ export default class ContentMessages {
                                 context:context,
                             });
                             toast.error("File upload failed. something wrong when we handle your file");
+                            matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                         }
                         
                     };
