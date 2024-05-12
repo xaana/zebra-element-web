@@ -16,6 +16,7 @@
     "src/components/views/context_menus/RoomGeneralContextMenu.tsx": "src/components/views/context_menus/RoomGeneralContextMenu.tsx",
     "src/components/views/dialogs/CreateRoomDialog.tsx": "src/components/views/dialogs/CreateRoomDialog.tsx",
     "src/components/views/dialogs/InviteDialog.tsx": "src/components/views/dialogs/InviteDialog.tsx",
+    "src/components/views/dialogs/UserSettingsDialog.tsx": "src/components/views/dialogs/UserSettingsDialog.tsx",
     "src/components/views/dialogs/spotlight/SpotlightDialog.tsx": "src/components/views/dialogs/spotlight/SpotlightDialog.tsx",
     "src/components/views/elements/GenericEventListSummary": "src/components/views/elements/GenericEventListSummary.tsx",
     "src/components/views/elements/LanguageDropdown.tsx": "src/components/views/settings/LanguageDropdown.tsx",
