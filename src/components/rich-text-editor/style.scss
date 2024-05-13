@@ -1,4 +1,9 @@
 .tiptap {
+    ::selection {
+        color: hsl(var(--accent-foreground));
+        background-color: hsl(var(--accent));
+    }
+
     > * + * {
       margin-top: 0.75em;
     }
@@ -56,4 +61,8 @@
 
 .ProseMirror > * {
     max-width: none;
+}
+
+div:has(>.tiptap.ProseMirror) {
+    overflow-y: scroll;
 }
