@@ -68,7 +68,7 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
             earlier: [],
         };
 
-        threads.forEach((thread) => {
+        threads.reverse().forEach((thread) => {
             const timestamp = getLatestTimestamp(thread);
             if (!timestamp) return;
 
