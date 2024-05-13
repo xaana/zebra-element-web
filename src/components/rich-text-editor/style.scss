@@ -63,6 +63,10 @@
     max-width: none;
 }
 
+.tiptap.ProseMirror {
+    min-height:600px
+}
+
 div:has(>.tiptap.ProseMirror) {
     overflow-y: scroll;
 }

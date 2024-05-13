@@ -49,9 +49,9 @@ const MenuBar = (props: { onDestroyCallback?: (data: string) => void }): React.J
     }
 
     return (
-        <div className="flex flex-nowrap justify-start w-full p-3 gap-x-4">
+        <div className="flex flex-nowrap justify-start w-full p-3 gap-x-4 h-[62px]">
             <Toggle
-                onChange={() => editor.chain().focus().toggleBold().run()}
+                onClick={() => editor.chain().focus().toggleBold().run()}
                 disabled={!editor.can().chain().focus().toggleBold().run()}
             >
                 <Bold />
@@ -145,7 +145,7 @@ const extensions = [
 ];
 
 const EditorFooter = (props: {
-    onSendCallback: (content: string) => void;
+    onSendCallback: (content: string, rawContent:string) => void;
     onCancelCallback: () => void;
 }): React.JSX.Element => {
     const { editor } = useCurrentEditor();
@@ -154,11 +154,11 @@ const EditorFooter = (props: {
     }
 
     const sendHandler = (): void => {
-        props.onSendCallback && editor && props.onSendCallback(editor.getHTML());
+        props.onSendCallback && editor && props.onSendCallback(editor.getHTML(),editor.getText());
     };
 
     return (
-        <div className="flex flex-row justify-end gap-x-3">
+        <div className="flex flex-row justify-end gap-x-3 pb-1 pr-1">
             <Button className="w-[100px]" variant="default" onClick={props.onCancelCallback}>
                 Cancel
             </Button>
@@ -202,7 +202,7 @@ display: none;
 
 const App = (props: {
     onDestroyCallback?: (data: string) => void;
-    onSendCallback: (content: string) => void;
+    onSendCallback: (content: string, rawContent:string) => void;
     onCancelCallback: () => void;
 }): React.JSX.Element => {
     return (
@@ -211,8 +211,8 @@ const App = (props: {
             slotAfter={
                 <EditorFooter
                     onCancelCallback={props.onCancelCallback}
-                    onSendCallback={(content: string): void => {
-                        props.onSendCallback(content);
+                    onSendCallback={(content: string, rawContent:string): void => {
+                        props.onSendCallback(content, rawContent);
                         props.onCancelCallback();
                     }}
                 />

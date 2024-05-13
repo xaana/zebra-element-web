@@ -66,7 +66,7 @@ interface IProps {
     isRichTextEnabled: boolean;
     onComposerModeClick: () => void;
     onRichTextEditorDestroyCallback?:(data:string)=>void;
-    onSendCallback: (content:string)=>void;
+    onSendCallback: (content: string, rawContent:string)=>void;
 }
 
 type OverflowMenuCloser = () => void;
@@ -104,7 +104,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     } else {
         mainButtons = [
-            richTextEditorButton(props.onRichTextEditorDestroyCallback, props.onSendCallback),
+            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
             isWysiwygLabEnabled ? (
                 <ComposerModeButton
                     key="composerModeButton"
@@ -207,7 +207,7 @@ function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {
 }
 
 function richTextEditorButton(
-    onSendCallback: (content:string)=>void,
+    onSendCallback: (content: string, rawContent:string)=>void,
     onRichTextEditorDestroyCallback?:(data:string)=>void,
 ): ReactElement {
     const trigger = (

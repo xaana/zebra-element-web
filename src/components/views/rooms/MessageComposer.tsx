@@ -672,9 +672,13 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                             composerContent: data,
                                         })
                                     }}
-                                    onSendCallback={(content:string)=>{
-                                        this.props.mxClient.sendMessage(this.context.roomId!, {msgtype: "m.text", format: "org.matrix.custom.html",
-                                        formatted_body: content});
+                                    onSendCallback={(content: string, rawContent:string)=>{
+                                        this.props.mxClient.sendMessage(this.context.roomId!, {
+                                            msgtype: "m.text",
+                                            format: "org.matrix.custom.html",
+                                            body: rawContent,
+                                            formatted_body: content
+                                        });
                                     }}
 
                                 />
