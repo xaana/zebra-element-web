@@ -2323,12 +2323,12 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
         let statusBar: JSX.Element | undefined;
         let isStatusAreaExpanded = true;
         if (this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads())&&(ContentMessages.sharedInstance().getCurrentUploads().length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) {
-            
+
             statusBar = <UploadBar room={this.state.room} />;
         } else if (!this.state.search) {
             isStatusAreaExpanded = this.state.statusBarVisible;
             statusBar = (
-                <RoomStatusBar  
+                <RoomStatusBar
                     room={this.state.room}
                     isPeeking={myMembership !== "join"}
                     onInviteClick={this.onInviteClick}

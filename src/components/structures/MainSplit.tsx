@@ -36,7 +36,7 @@ interface IProps {
     /**
      * The size to use for the panel component if one isn't persisted in storage. Defaults to 350.
      */
-    defaultSize: number;
+    defaultSize: string | number;
 }
 
 interface IState {
@@ -57,7 +57,7 @@ const MainSplitBodyView = (props: {
             flexDirection:"column",
             WebkitBoxFlex:1,
             minWidth:0
-            }} 
+            }}
             onClick={props.onClick}>
             {props.bodyView}
         </div>
@@ -83,6 +83,15 @@ export default class MainSplit extends React.Component<IProps, IState> {
         this.props.resizeNotifier.notifyRightHandleResized();
     };
 
+    // private parseWidth = (widthStr:string):number => {
+    //     let result = parseInt(widthStr);
+    //     if (widthStr.includes('%')) {
+    //         const parentWidth = element.parentNode.clientWidth;
+    //         result = (result / 100) * parentWidth;
+    //     }
+    //     return result;
+    // }
+
     private get sizeSettingStorageKey(): string {
         let key = "mx_rhs_size";
         if (!!this.props.sizeKey) {
@@ -98,22 +107,23 @@ export default class MainSplit extends React.Component<IProps, IState> {
         delta: NumberSize,
     ): void => {
         this.props.resizeNotifier.stopResizing();
-        window.localStorage.setItem(
-            this.sizeSettingStorageKey,
-            (this.loadSidePanelSize().width + delta.width).toString(),
-        );
+        // window.localStorage.setItem(
+        //     this.sizeSettingStorageKey,
+        //     // (this.loadSidePanelSize().width + delta.width).toString(),
+        //     this.loadSidePanelSize().width.toString(),
+        // );
     };
 
-    private loadSidePanelSize(): { height: string | number; width: number } {
-        let rhsSize = parseInt(window.localStorage.getItem(this.sizeSettingStorageKey)!, 10);
-
-        if (isNaN(rhsSize)) {
-            rhsSize = this.props.defaultSize;
-        }
-
+    private loadSidePanelSize(): { height: string | number; width: string | number } {
+        // let rhsSize = parseInt(window.localStorage.getItem(this.sizeSettingStorageKey)!, 10);
+        // let rhsSize = window.localStorage.getItem(this.sizeSettingStorageKey);
+        // if (!rhsSize) {
+        //     rhsSize = this.props.defaultSize;
+        // }
+        // if (rhsSize < )
         return {
             height: "100%",
-            width: rhsSize,
+            width: this.props.defaultSize,
         };
     }
 
@@ -122,7 +132,7 @@ export default class MainSplit extends React.Component<IProps, IState> {
         const panelView = this.props.panel;
 
         const hasResizer = !this.props.collapsedRhs && panelView && !this.state.collapseRightPanel;
-        
+
         let children;
         if (hasResizer) {
             children = <Resizable
@@ -151,8 +161,8 @@ export default class MainSplit extends React.Component<IProps, IState> {
         }
         return (
             <div className="mx_MainSplit">
-                <MainSplitBodyView 
-                    bodyView={bodyView} 
+                <MainSplitBodyView
+                    bodyView={bodyView}
                     onClick={()=>{
                         if (hasResizer){
                             this.setState(prevState=>({collapseRightPanel: true}));
@@ -160,7 +170,7 @@ export default class MainSplit extends React.Component<IProps, IState> {
                         } else {
                             this.setState(prevState=>({collapseRightPanel: false}));
                         }
-                    }} 
+                    }}
                 />
                 {children}
             </div>
