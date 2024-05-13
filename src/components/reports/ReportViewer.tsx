@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import type { Editor } from "@tiptap/react";
 
@@ -8,7 +7,7 @@ import { Loader } from "@/components/ui/loader";
 import { ReportSave } from "@/components/reports/ReportSave";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
-
+import { generatePdf } from "@/plugins/reports/utils/generatePdf";
 interface ReportViewerProps {
     editor: Editor | null;
     nextStep: () => void;
@@ -18,73 +17,87 @@ export const ReportViewer = ({ editor, nextStep, prevStep }: ReportViewerProps):
     const [pdfUrl, setPdfUrl] = useState("");
     const [isPdfLoading, setisPdfLoading] = useState(false);
 
-    async function convertImageUrlToBase64(url: string): Promise<string | ArrayBuffer | null> {
-        // Fetch the image
-        const response = await fetch(url);
-        // Convert the response to a blob
-        const blob = await response.blob();
+    // async function convertImageUrlToBase64(url: string): Promise<string | ArrayBuffer | null> {
+    //     // Fetch the image
+    //     const response = await fetch(url);
+    //     // Convert the response to a blob
+    //     const blob = await response.blob();
 
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
+    //     return new Promise((resolve, reject) => {
+    //         const reader = new FileReader();
 
-            // Resolve with the Base64 Data URL once reading is complete
-            reader.onloadend = (): void => resolve(reader.result);
-            reader.onerror = reject;
+    //         // Resolve with the Base64 Data URL once reading is complete
+    //         reader.onloadend = (): void => resolve(reader.result);
+    //         reader.onerror = reject;
 
-            // Read the blob as a Data URL (Base64)
-            reader.readAsDataURL(blob);
-        });
-    }
+    //         // Read the blob as a Data URL (Base64)
+    //         reader.readAsDataURL(blob);
+    //     });
+    // }
 
-    const fetchPdf = async (formData: FormData): Promise<void> => {
-        try {
-            setisPdfLoading(true);
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate-pdf/generate`, {
-                method: "POST",
-                body: formData,
-            });
+    // const fetchPdf = async (formData: FormData): Promise<void> => {
+    //     try {
+    //         setisPdfLoading(true);
+    //         const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate-pdf/generate`, {
+    //             method: "POST",
+    //             body: formData,
+    //         });
 
-            if (!response.ok) throw new Error("Network response was not ok.");
+    //         if (!response.ok) throw new Error("Network response was not ok.");
 
-            const blob = await response.blob();
-            if (blob) {
-                const url = window.URL.createObjectURL(blob);
-                setPdfUrl(url); // Update state with the URL for the PDF
-            }
-        } catch (error) {
-            // console.error('Error fetching PDF:', error)
-            toast.error("Error displaying PDF. Please try again later.");
-        }
-        setisPdfLoading(false);
-    };
+    //         const blob = await response.blob();
+    //         if (blob) {
+    //             const url = window.URL.createObjectURL(blob);
+    //             setPdfUrl(url); // Update state with the URL for the PDF
+    //         }
+    //     } catch (error) {
+    //         // console.error('Error fetching PDF:', error)
+    //         toast.error("Error displaying PDF. Please try again later.");
+    //     }
+    //     setisPdfLoading(false);
+    // };
 
     useEffect(() => {
         if (!editor) return;
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(editor.getHTML(), "text/html");
-        const images = doc.querySelectorAll("img");
+        // const parser = new DOMParser();
+        // const doc = parser.parseFromString(editor.getHTML(), "text/html");
+        // const images = doc.querySelectorAll("img");
 
-        // Map each image to a promise
-        const imagePromises = Array.from(images).map(async (img) => {
-            const src = img.getAttribute("src");
-            if (src?.startsWith("blob:")) {
-                const base64: any = await convertImageUrlToBase64(src);
-                img.src = base64.toString();
-            } else if (src?.startsWith("/")) {
-                const base64: any = await convertImageUrlToBase64(window.location.origin + src);
-                img.src = base64.toString();
-            }
-        });
+        // // Map each image to a promise
+        // const imagePromises = Array.from(images).map(async (img) => {
+        //     const src = img.getAttribute("src");
+        //     if (src?.startsWith("blob:")) {
+        //         const base64: any = await convertImageUrlToBase64(src);
+        //         img.src = base64.toString();
+        //     } else if (src?.startsWith("/")) {
+        //         const base64: any = await convertImageUrlToBase64(window.location.origin + src);
+        //         img.src = base64.toString();
+        //     }
+        // });
 
-        // Wait for all promises to resolve
-        Promise.all(imagePromises).then(() => {
-            const formData = new FormData();
-            formData.append("html_content", doc.documentElement.outerHTML);
+        // // Wait for all promises to resolve
+        // Promise.all(imagePromises).then(() => {
+        //     const formData = new FormData();
+        //     formData.append("html_content", doc.documentElement.outerHTML);
 
-            // Now it's safe to call fetchPdf
-            fetchPdf(formData);
-        });
+        //     // Now it's safe to call fetchPdf
+        //     fetchPdf(formData);
+        // });
+        setisPdfLoading(true);
+        generatePdf(editor.getHTML())
+            .then((blob) => {
+                if (blob) {
+                    const url = window.URL.createObjectURL(blob);
+                    setPdfUrl(url); // Update state with the URL for the PDF
+                }
+            })
+            .catch((error) => {
+                toast.error("Error displaying PDF. Please try again later.");
+            })
+            .finally(() => {
+                setisPdfLoading(false);
+            });
     }, [editor]);
     return (
         <>

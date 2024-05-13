@@ -45,10 +45,12 @@ export const TemplateCard = ({
                     </div>
                     <div className="flex justify-between items-start">
                         <div className="text-[10px] mt-2 text-muted-foreground">
-                            Edited{" "}
-                            {formatDistanceToNow(new Date(template.timestamp), {
-                                addSuffix: true,
-                            })}
+                            {Number(template.id) < 0
+                                ? "Preset template"
+                                : "Edited " +
+                                  formatDistanceToNow(new Date(template.timestamp), {
+                                      addSuffix: true,
+                                  })}
                         </div>
                         <TemplateActions row={template} />
                     </div>

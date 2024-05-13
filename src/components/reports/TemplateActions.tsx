@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useSetAtom } from "jotai";
-import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
 
 import { IconEllipses } from "@/components/ui/icons";
 import { Icon } from "@/components/ui/Icon";
@@ -14,27 +14,57 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { editorStateAtom, showHomeAtom, activeStepAtom } from "@/plugins/reports/stores/store";
+import { showHomeAtom, activeStepAtom } from "@/plugins/reports/stores/store";
 import { Template } from "@/plugins/reports/types";
+import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { generatePdf } from "@/plugins/reports/utils/generatePdf";
+import { getTemplateContent } from "@/plugins/reports/utils/getTemplateContent";
 
 export function TemplateActions({ row }: { row: Template }): JSX.Element {
-    const setEditorContent = useSetAtom(editorStateAtom);
     const setShowHome = useSetAtom(showHomeAtom);
     const setActiveStep = useSetAtom(activeStepAtom);
-    const handleEditReport = async (): Promise<void> => {
-        const documentId = row.id;
-        if (!documentId) return;
-        try {
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/get_document`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ document_id: documentId }),
+    const { editor } = useContext(EditorContext);
+
+    const downloadFile = async (): Promise<void> => {
+        if (!editor) return;
+
+        let templateContent: string | null = null;
+
+        if (!row.content) {
+            const templateContentString = await getTemplateContent(row.id);
+            if (templateContentString) {
+                templateContent = templateContentString;
+            }
+        } else {
+            editor.commands.setContent(row.content);
+            templateContent = editor.getHTML();
+        }
+
+        if (!templateContent) {
+            return;
+        }
+
+        editor?.commands.setContent(templateContent);
+        const pdfBlob = await generatePdf(editor.getHTML());
+
+        const fileDownloader = new FileDownloader();
+        pdfBlob &&
+            fileDownloader.download({
+                blob: pdfBlob,
+                name: row.name + ".pdf",
+                autoDownload: true,
             });
-            const data = await response.json();
-            if (data?.document) {
-                setEditorContent(() => JSON.parse(data.document));
+    };
+
+    const handleEditReport = async (): Promise<void> => {
+        if (Number(row.id) < 0) {
+            row.content && editor?.commands.setContent(row.content);
+            return;
+        }
+        try {
+            const templateContentString = await getTemplateContent(row.id);
+            if (templateContentString) {
+                editor?.commands.setContent(JSON.parse(templateContentString));
                 setActiveStep(() => steps[1]);
                 setShowHome(false);
             }
@@ -53,13 +83,20 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                    <DropdownMenuItem onClick={handleEditReport}>
+                    <DropdownMenuItem className="cursor-pointer" onClick={handleEditReport}>
                         Duplicate
                         <DropdownMenuShortcut>
                             <Icon name="Copy" className="w-4 h-4" />
                         </DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={async (e: any) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            await downloadFile();
+                        }}
+                    >
                         Download
                         <DropdownMenuShortcut>
                             <Icon name="ArrowDownToLine" className="w-4 h-4" />

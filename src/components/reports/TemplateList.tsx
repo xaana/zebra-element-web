@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
 import { Template } from "@/plugins/reports/types";
+import { Badge } from "@/components/ui/badge";
 
 export const TemplateList = ({
     templates,
@@ -49,6 +50,31 @@ export const TemplateList = ({
             ),
         },
         {
+            accessorKey: "type",
+            header: ({ column }): JSX.Element => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="w-auto"
+                    >
+                        Type
+                        <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => (
+                <div className="ml-3">
+                    <Badge
+                        className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
+                        variant="secondary"
+                    >
+                        {row.getValue("type") === "document" ? "Document" : "Template"}
+                    </Badge>
+                </div>
+            ),
+        },
+        {
             accessorKey: "timestamp",
             // header: () => <div className="text-right">Last Modified</div>,
             header: ({ column }): JSX.Element => {
@@ -71,7 +97,7 @@ export const TemplateList = ({
 
                 const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
 
-                return <div className="text-left ml-10">{formatted}</div>;
+                return <div className="text-left ml-3">{formatted}</div>;
                 // return <div className="text-right">{row.getValue("timestamp")}</div>;
             },
         },
