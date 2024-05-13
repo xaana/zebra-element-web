@@ -975,7 +975,7 @@ export const SETTINGS: { [setting: string]: ISetting } = {
     },
     "layout": {
         supportedLevels: LEVELS_ACCOUNT_SETTINGS,
-        default: Layout.Group,
+        default: Layout.Bubble,
     },
     "Images.size": {
         supportedLevels: LEVELS_ACCOUNT_SETTINGS,
