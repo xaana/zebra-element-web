@@ -618,7 +618,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private getSectionTitle = (title: string): React.ReactNode => {
         return (
-            <div className="text-sm text-muted-foreground font-bold">
+            <div className="text-base text-muted-foreground font-bold mt-3 mb-3">
                 {title}:
             </div>
         )
@@ -832,7 +832,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
-            console.log(content)
             body = (
                 <>
                     <h2>
