@@ -104,7 +104,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     } else {
         mainButtons = [
-            // richTextEditorButton(props.onSendCallback,props.onRichTextEditorDestroyCallback),
+            richTextEditorButton(props.onRichTextEditorDestroyCallback, props.onSendCallback),
             isWysiwygLabEnabled ? (
                 <ComposerModeButton
                     key="composerModeButton"
