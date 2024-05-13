@@ -45,6 +45,7 @@
     "src/components/views/settings/EventIndexPanel.tsx": "src/components/views/settings/EventIndexPanel.tsx",
     "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx": "src/components/views/settings/GeneralRoomSettingsTab.tsx",
     "src/components/views/settings/tabs/user/GeneralUserSettingsTab.tsx": "src/components/views/settings/GeneralUserSettingsTab.tsx",
+    "src/components/views/settings/tabs/user/AppearanceUserSettingsTab.tsx": "src/components/views/settings/AppearanceUserSettingsTab.tsx",
     "src/components/views/settings/tabs/user/SidebarUserSettingsTab.tsx": "src/components/views/settings/SidebarUserSettingsTab.tsx",
     "src/components/views/settings/tabs/user/VoiceUserSettingsTab.tsx": "src/components/views/settings/VoiceUserSettingsTab.tsx",
     "src/components/views/settings/tabs/user/HelpUserSettingsTab.tsx": "src/components/views/settings/HelpUserSettingsTab.tsx",
