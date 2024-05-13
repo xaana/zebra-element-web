@@ -205,7 +205,7 @@ const ThreadSelectItem = (props: {
     }
 
     return (
-        <CommandItem className=" text-gray-900 hover:text-gray-100" key={id} value={value} onSelect={onSelect}>
+        <CommandItem key={id} value={value} onSelect={onSelect}>
             <div className="flex flex-row flex-grow bg-transparent justify-end w-full">
                 <p className="flex-1 truncate">
                     {messageText.length > 40 ? messageText.substring(0, 37) + "..." : messageText}
