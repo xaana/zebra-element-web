@@ -11,7 +11,7 @@ import Editor from "./Editor";
 const EditorDialog = (props: {
     trigger?: React.JSX.Element
     onDestroyCallback?: (data:string)=>void
-    onSendCallback: (content:string)=>void
+    onSendCallback: (content: string, rawContent:string)=>void
 }):React.JSX.Element => {
     const [open, setOpen] = React.useState(false);
 
