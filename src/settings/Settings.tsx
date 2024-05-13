@@ -177,6 +177,7 @@ export interface IBaseSetting<T extends SettingValueType = SettingValueType> {
     shouldWarn?: boolean;
 
     botApiUrl?: string | null;
+    reportsApiUrl?: string | null;
 }
 
 export interface IFeature extends Omit<IBaseSetting<boolean>, "isFeature"> {
@@ -974,7 +975,7 @@ export const SETTINGS: { [setting: string]: ISetting } = {
     },
     "layout": {
         supportedLevels: LEVELS_ACCOUNT_SETTINGS,
-        default: Layout.Group,
+        default: Layout.Bubble,
     },
     "Images.size": {
         supportedLevels: LEVELS_ACCOUNT_SETTINGS,
@@ -1168,6 +1169,10 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         default: true,
     },
     "botApiUrl": {
+        supportedLevels: [SettingLevel.DEVICE],
+        default: null,
+    },
+    "reportsApiUrl": {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },

@@ -12,7 +12,7 @@ export type AIDropdownProps = {
     onFixSpelling: () => void;
     onMakeShorter: () => void;
     onMakeLonger: () => void;
-    onEmojify: () => void;
+    // onEmojify: () => void;
     onTldr: () => void;
     onTone: (tone: string) => void;
     onCompleteSentence: () => void;
@@ -20,14 +20,14 @@ export type AIDropdownProps = {
 
 export const AIDropdown = ({
     onCompleteSentence,
-    onEmojify,
+    // onEmojify,
     onFixSpelling,
     onMakeLonger,
     onMakeShorter,
     onSimplify,
     onTldr,
     onTone,
-}: AIDropdownProps) => {
+}: AIDropdownProps): JSX.Element => {
     const handleTone = useCallback((tone: string) => () => onTone(tone), [onTone]);
 
     return (
@@ -92,12 +92,12 @@ export const AIDropdown = ({
                             Tl;dr:
                         </DropdownButton>
                     </Dropdown.Item>
-                    <Dropdown.Item onClick={onEmojify}>
+                    {/* <Dropdown.Item onClick={onEmojify}>
                         <DropdownButton>
                             <Icon name="SmilePlus" />
                             Emojify
                         </DropdownButton>
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                     <Dropdown.Item onClick={onCompleteSentence}>
                         <DropdownButton>
                             <Icon name="PenLine" />

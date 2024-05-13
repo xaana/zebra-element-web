@@ -11,70 +11,86 @@ import {
 } from "@tanstack/react-table";
 import { format, parseISO, isToday } from "date-fns";
 
-import { DataTableRowActions } from "./data-table-row-actions";
-import type { Report } from "./ReportsManager";
-
+import { TemplateActions } from "@/components/reports/TemplateActions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
+import { Template } from "@/plugins/reports/types";
 
-export const columns: ColumnDef<Report>[] = [
-    {
-        accessorKey: "title",
-        header: ({ column }): JSX.Element => {
-            return (
-                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="w-auto">
-                    Title
-                    <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
-                </Button>
-            );
-        },
-        cell: ({ row }) => <div className="ml-5">{row.getValue("title")}</div>,
-    },
-    {
-        accessorKey: "timestamp",
-        // header: () => <div className="text-right">Last Modified</div>,
-        header: ({ column }): JSX.Element => {
-            return (
-                <div className="w-fit text-left">
-                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="text-left">
-                        Last Modified
+export const TemplateList = ({
+    templates,
+    selectTemplate,
+}: {
+    templates: Template[];
+    selectTemplate: (template: Template) => void;
+}): JSX.Element => {
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const columns: ColumnDef<Template>[] = [
+        {
+            accessorKey: "name",
+            header: ({ column }): JSX.Element => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="w-auto"
+                    >
+                        Title
                         <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
                     </Button>
-                </div>
-            );
+                );
+            },
+            cell: ({ row }) => (
+                <Button onClick={selectTemplate.bind(null, row.original)} variant="link">
+                    {row.getValue("name")}
+                </Button>
+            ),
         },
-        cell: ({ row }): JSX.Element => {
-            // const date: Date = row.getValue("timestamp");
-            const date = parseISO(row.getValue("timestamp"));
+        {
+            accessorKey: "timestamp",
+            // header: () => <div className="text-right">Last Modified</div>,
+            header: ({ column }): JSX.Element => {
+                return (
+                    <div className="w-fit text-left">
+                        <Button
+                            variant="ghost"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                            className="text-left"
+                        >
+                            Last Modified
+                            <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                );
+            },
+            cell: ({ row }): JSX.Element => {
+                // const date: Date = row.getValue("timestamp");
+                const date = parseISO(row.getValue("timestamp"));
 
-            const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
+                const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
 
-            return <div className="text-left ml-10">{formatted}</div>;
-            // return <div className="text-right">{row.getValue("timestamp")}</div>;
+                return <div className="text-left ml-10">{formatted}</div>;
+                // return <div className="text-right">{row.getValue("timestamp")}</div>;
+            },
         },
-    },
-    {
-        accessorKey: "status",
-        header: ({ column }): JSX.Element => {
-            return (
-                <div>status</div>
-            );
+        {
+            accessorKey: "status",
+            header: ({ column }): JSX.Element => {
+                return <div>Status</div>;
+            },
+            cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
         },
-        cell: ({ row }) => <div>{row.getValue("status")}</div>,
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => <DataTableRowActions row={row.original} />,
-        size: 20,
-    },
-];
+        {
+            id: "actions",
+            cell: ({ row }) => <TemplateActions row={row.original} />,
+            size: 20,
+        },
+    ];
 
-const ReportsTable = ({ reports }: { reports: Report[] }): JSX.Element => {
-    const [sorting, setSorting] = useState<SortingState>([]);
     const table = useReactTable({
-        data: reports,
+        data: templates,
         columns,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
@@ -88,15 +104,17 @@ const ReportsTable = ({ reports }: { reports: Report[] }): JSX.Element => {
     });
     return (
         <div className="w-full">
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filter reports..."
-                    value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("title")?.setFilterValue(event.target.value)}
-                    className="max-w-sm"
-                />
-            </div>
-            <div className="rounded-md border">
+            {/* <div className='flex items-center py-4'>
+        <Input
+          placeholder='Filter reports...'
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className='max-w-sm'
+        />
+      </div> */}
+            <div className="">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -157,5 +175,3 @@ const ReportsTable = ({ reports }: { reports: Report[] }): JSX.Element => {
         </div>
     );
 };
-
-export default ReportsTable;

@@ -62,6 +62,9 @@ import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
 import { WebSearchSourceItem, WebSearchSources } from "@/components/web/WebSearchSources";
 import { ImageViewer } from "@/components/pdf/ImageViewer";
+import { Skeleton } from "@/components/ui/skeleton";
+import DatabasePill from "@/components/ui/databasePill";
+import FilesPill from "@/components/ui/FilesPill";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -613,6 +616,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return citations;
     };
 
+    private getSectionTitle = (title: string): React.ReactNode => {
+        return (
+            <div className="text-sm text-muted-foreground font-bold">
+                {title}:
+            </div>
+        )
+    }
+
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -630,6 +641,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         let isEmote = false;
         const databaseTable = content.database_table;
         const fetchedDataLen = content.fetched_data_len;
+        const rawQuestion = content.raw_question;
         const query = content.query;
         const roomId = mxEvent.getRoomId();
         const rootId = mxEvent.threadRootId;
@@ -652,13 +664,46 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (content.prompt) {
-            const citations: WebSearchSourceItem[] = this.getCitations(content.body);
+        // if (query) {
+        //     <h2><strong>{query}</strong></h2>
+        //     {body}
+        // }
+        // if (content.sources) {
+        //     <h2><strong>{query}</strong></h2>
+        //     {citations ? <WebSearchSources data={citations} /> : <Skeleton className="w-full h-[30px] rounded-full" /> }
+        //     <br />
+        //     {body}
+        // }
+        if (content.prompt || content.sources){
+            // const citations: WebSearchSourceItem[] = this.getCitations(content.body)
+            const citations: WebSearchSourceItem[] = content.sources.map((item: string)=>{
+                const url = new URL(item)
+                return {
+                    link: item,
+                    hostname: url.hostname
+                }
+            })
             body = (
                 <>
+                    <h2>
+                        <strong>{rawQuestion}</strong>
+                    </h2>
+                    {citations ? (
+                        <WebSearchSources data={citations} />
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    <br />
+                    {this.getSectionTitle("Answer")}
                     {body}
-                    <WebSearchSources data={citations} />
-                    {roomId && <SuggestionPrompt suggestions={content.prompt} rootId={rootId} roomId={roomId} type={content.web} />}
+                    {roomId && (
+                        <SuggestionPrompt
+                            suggestions={content.prompt}
+                            rootId={rootId}
+                            roomId={roomId}
+                            type={content.web}
+                        />
+                    )}
                 </>
             );
         }
@@ -733,16 +778,39 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
             body = (
                 <>
+                    {/* <h2>
+                        <strong>{rawQuestion}</strong>
+                    </h2>
+                    {fileSelected ? (
+                        <>
+                            {this.getSectionTitle("Source")}
+                            <FilesPill files={fileSelected} />
+                        </>
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    <br />
+                    {this.getSectionTitle("Answer")} */}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
-                    {content.is_image &&<div className="flex flex-row items-center gap-x-2">
-                        <div className="text-sm text-muted-foreground font-bold">
-                        Sources:
+                    {content.is_image && (
+                        <div className="flex flex-row items-center gap-x-2">
+                            <div className="text-sm text-muted-foreground font-bold">Sources:</div>
+                            {content.file_ids.map(
+                                (eventId: string) =>
+                                    this.context.room && (
+                                        <ImageViewer key={eventId} eventId={eventId} room={this.context.room} />
+                                    ),
+                            )}
                         </div>
-                        {content.file_ids.map((eventId:string)=>this.context.room&&<ImageViewer key = {eventId} eventId={eventId} room={this.context.room} />)}
-                    </div>}
+                    )}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
-                    <SuggestionPrompt suggestions={content.file_prompt} rootId={rootId} roomId={roomId} type={content.files_} />
+                    <SuggestionPrompt
+                        suggestions={content.file_prompt}
+                        rootId={rootId}
+                        roomId={roomId}
+                        type={content.files_}
+                    />
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -764,8 +832,22 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
+            console.log(content)
             body = (
                 <>
+                    <h2>
+                        <strong>{rawQuestion}</strong>
+                    </h2>
+                    {content.database_ ? (
+                        <>
+                            {this.getSectionTitle("Source")}
+                            <DatabasePill database={content.database_} />
+                        </>
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    <br />
+                    {this.getSectionTitle("Answer")}
                     {body}
                     <div className="flex flex-col gap-y-2">
                         {tableJson && tableJson.length > 0 && query && (
@@ -776,7 +858,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     query={query}
                                     description={queryDescription}
                                     echartsData={tableJson}
-                                    eventId={mxEvent.getId()||""}
+                                    eventId={mxEvent.getId() || ""}
                                     echartsCode={this.state.echartsCode}
                                     handleViewCharts={() => {
                                         this.setState({ generating: true });

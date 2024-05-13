@@ -16,7 +16,7 @@ limitations under the License.
 */
 
 import React, { ChangeEvent, createRef, KeyboardEvent, SyntheticEvent } from "react";
-import { Room, RoomType, JoinRule, Preset, Visibility } from "matrix-js-sdk/src/matrix";
+import { Room, RoomType, JoinRule, Preset, Visibility, UNSTABLE_ELEMENT_FUNCTIONAL_USERS } from "matrix-js-sdk/src/matrix";
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
 import withValidation, { IFieldState, IValidationResult } from "matrix-react-sdk/src/components/views/elements/Validation";
 import { _t } from "matrix-react-sdk/src/languageHandler";
@@ -135,7 +135,16 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
         const createOpts: IOpts["createOpts"] = (opts.createOpts = {});
         opts.roomType = this.props.type;
         createOpts.name = this.state.name;
-
+        const content= {
+            "service_members": [
+                "@zebra:securezebra.com"
+              ]
+        }
+        const initialState = {
+            type:UNSTABLE_ELEMENT_FUNCTIONAL_USERS.name,
+            content:content
+        }
+        createOpts.initial_state=[initialState]
         if (this.state.joinRule === JoinRule.Public) {
             createOpts.visibility = Visibility.Public;
             createOpts.preset = Preset.PublicChat;

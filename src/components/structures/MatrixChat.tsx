@@ -611,15 +611,23 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
         } as IState);
     }
 
-    // Set the botApiUrl in SettingsStore based on the configuration
+    // Set the botApiUrl and reportsApiUrl in SettingsStore based on the configuration
     private async setApiUrl(): Promise<void> {
         try {
             const configData = await getVectorConfig();
             if (configData?.bot_api) {
                 await SettingsStore.setValue("botApiUrl", null, SettingLevel.DEVICE, configData.bot_api);
             }
+            if (configData?.plugins.reports.api) {
+                await SettingsStore.setValue(
+                    "reportsApiUrl",
+                    null,
+                    SettingLevel.DEVICE,
+                    configData.plugins.reports.api,
+                );
+            }
         } catch (e) {
-            console.error(`Error in setting botApiUrl`, e);
+            console.error(`Error in setting botApiUrl|reportsApiUrl`, e);
         }
     }
 

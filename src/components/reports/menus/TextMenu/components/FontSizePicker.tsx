@@ -19,7 +19,7 @@ export type FontSizePickerProps = {
     value: string;
 };
 
-export const FontSizePicker = ({ onChange, value }: FontSizePickerProps) => {
+export const FontSizePicker = ({ onChange, value }: FontSizePickerProps): JSX.Element => {
     const currentValue = FONT_SIZES.find((size) => size.value === value);
     const currentSizeLabel = currentValue?.label.split(" ")[0] || "Medium";
 

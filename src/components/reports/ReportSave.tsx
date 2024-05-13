@@ -1,12 +1,15 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { useSetAtom } from "jotai";
+import { toast } from "sonner";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import toast from "react-hot-toast";
-import { useAtom, useSetAtom } from "jotai";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+
+import type { Editor } from "@tiptap/react";
 
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
-import { apiUrlAtom, showHomeAtom } from "@/plugins/reports/stores/store";
+import { showHomeAtom } from "@/plugins/reports/stores/store";
 import {
     Dialog,
     DialogContent,
@@ -17,23 +20,18 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
-import { reportsStore } from "@/plugins/reports/MainPanel";
-import {
-    editorStateAtom,
-    // editorContentAtom,
-} from "@/plugins/reports/stores/store";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export function ReportSave(): JSX.Element {
+export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
     const [name, setName] = useState("");
+    const [type, setType] = useState<string>("document");
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const client = useMatrixClientContext();
-    const userId: string = client.getSafeUserId();
-    const [editorState, setEditorState] = useAtom(editorStateAtom);
     const setShowHome = useSetAtom(showHomeAtom);
+    const client = useMatrixClientContext();
 
     useEffect(() => {
         if (!dialogOpen) {
@@ -44,15 +42,16 @@ export function ReportSave(): JSX.Element {
 
     const handleSubmit = async (): Promise<void> => {
         setLoading(true);
-        const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/create_document`, {
+        const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/create_document`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_id: userId,
+                user_id: client.getSafeUserId(),
                 document_name: name,
-                document_data: JSON.stringify(editorState),
+                document_data: JSON.stringify(editor.getJSON()),
+                document_type: type,
             }),
         });
         if (response.ok) {
@@ -61,7 +60,7 @@ export function ReportSave(): JSX.Element {
             setDialogOpen(false);
             toast.success("Report saved successfully!");
             setShowHome(true);
-            setEditorState(undefined);
+            editor.commands.setContent("");
         } else {
             setSaveResult("Failed to save template. Please try again later.");
             setLoading(false);
@@ -70,7 +69,7 @@ export function ReportSave(): JSX.Element {
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline">
+                <Button size="sm">
                     Save Report
                     <Icon name="Save" strokeWidth={2} className="ml-1 h-4 w-4" />
                 </Button>
@@ -90,7 +89,7 @@ export function ReportSave(): JSX.Element {
                             <DialogTitle>Save Report</DialogTitle>
                             <DialogDescription>Save the preview as a report document.</DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+                        <div className="grid gap-4 py-2">
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="name" className="text-right">
                                     Report Name
@@ -101,6 +100,21 @@ export function ReportSave(): JSX.Element {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                 />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="type" className="text-right">
+                                    Save as
+                                </Label>
+                                <RadioGroup className="flex items-center gap-4" value={type} onValueChange={setType}>
+                                    <div className="flex items-center space-x-1">
+                                        <RadioGroupItem value="document" id="document" />
+                                        <Label htmlFor="document">Document</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <RadioGroupItem value="template" id="template" />
+                                        <Label htmlFor="template">Template</Label>
+                                    </div>
+                                </RadioGroup>
                             </div>
                         </div>
                         <DialogFooter>

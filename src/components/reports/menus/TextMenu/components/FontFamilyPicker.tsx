@@ -39,7 +39,7 @@ export type FontFamilyPickerProps = {
     value: string;
 };
 
-export const FontFamilyPicker = ({ onChange, value }: FontFamilyPickerProps) => {
+export const FontFamilyPicker = ({ onChange, value }: FontFamilyPickerProps): JSX.Element => {
     const currentValue = FONT_FAMILIES.find((size) => size.value === value);
     const currentFontLabel = currentValue?.label.split(" ")[0] || "Inter";
 

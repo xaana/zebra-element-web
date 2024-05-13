@@ -33,8 +33,8 @@ export const AiDataQuery = Node.create({
         return {
             id: {
                 default: undefined,
-                parseHTML: (element) => element.getAttribute("data-id"),
-                renderHTML: (attributes) => ({
+                parseHTML: (element): any => element.getAttribute("data-id"),
+                renderHTML: (attributes): any => ({
                     "data-id": attributes.id,
                 }),
             },
@@ -63,7 +63,7 @@ export const AiDataQuery = Node.create({
         return {
             setAiDataQuery:
                 () =>
-                ({ chain }) =>
+                ({ chain }): any =>
                     chain()
                         .focus()
                         .insertContent({

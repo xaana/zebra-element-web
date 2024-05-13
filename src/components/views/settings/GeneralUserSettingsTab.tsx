@@ -19,13 +19,13 @@ limitations under the License.
 import React, { ReactNode } from "react";
 import { SERVICE_TYPES, HTTPError, IThreepid, ThreepidMedium } from "matrix-js-sdk/src/matrix";
 import { logger } from "matrix-js-sdk/src/logger";
-import { Icon as WarningIcon } from "matrix-react-sdk/res/img/feather-customised/warning-triangle.svg";
+// import { Icon as WarningIcon } from "matrix-react-sdk/res/img/feather-customised/warning-triangle.svg";
 import { UserFriendlyError, _t } from "matrix-react-sdk/src/languageHandler";
 import ProfileSettings from "matrix-react-sdk/src/components/views/settings/ProfileSettings";
 import * as languageHandler from "matrix-react-sdk/src/languageHandler";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import LanguageDropdown from "matrix-react-sdk/src/components/views/elements/LanguageDropdown";
-import SpellCheckSettings from "matrix-react-sdk/src/components/views/settings/SpellCheckSettings";
+// import LanguageDropdown from "matrix-react-sdk/src/components/views/elements/LanguageDropdown";
+// import SpellCheckSettings from "matrix-react-sdk/src/components/views/settings/SpellCheckSettings";
 import AccessibleButton from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
 import DeactivateAccountDialog from "matrix-react-sdk/src/components/views/dialogs/DeactivateAccountDialog";
 import PlatformPeg from "matrix-react-sdk/src/PlatformPeg";
@@ -35,26 +35,28 @@ import { Service, ServicePolicyPair, startTermsFlow } from "matrix-react-sdk/src
 import IdentityAuthClient from "matrix-react-sdk/src/IdentityAuthClient";
 import { abbreviateUrl } from "matrix-react-sdk/src/utils/UrlUtils";
 import { getThreepidsWithBindStatus } from "matrix-react-sdk/src/boundThreepids";
-import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
+// import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
 import { UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
 import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import ErrorDialog, { extractErrorMessageFromError } from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
-import AccountPhoneNumbers from "matrix-react-sdk/src/components/views/settings/account/PhoneNumbers";
-import AccountEmailAddresses from "matrix-react-sdk/src/components/views/settings/account/EmailAddresses";
+// import AccountPhoneNumbers from "matrix-react-sdk/src/components/views/settings/account/PhoneNumbers";
+// import AccountEmailAddresses from "matrix-react-sdk/src/components/views/settings/account/EmailAddresses";
 import DiscoveryEmailAddresses from "matrix-react-sdk/src/components/views/settings/discovery/EmailAddresses";
 import DiscoveryPhoneNumbers from "matrix-react-sdk/src/components/views/settings/discovery/PhoneNumbers";
 import ChangePassword from "matrix-react-sdk/src/components/views/settings/ChangePassword";
 import InlineTermsAgreement from "matrix-react-sdk/src/components/views/terms/InlineTermsAgreement";
 import SetIdServer from "matrix-react-sdk/src/components/views/settings/SetIdServer";
 import SetIntegrationManager from "matrix-react-sdk/src/components/views/settings/SetIntegrationManager";
-import ToggleSwitch from "matrix-react-sdk/src/components/views/elements/ToggleSwitch";
-import { IS_MAC } from "matrix-react-sdk/src/Keyboard";
+// import ToggleSwitch from "matrix-react-sdk/src/components/views/elements/ToggleSwitch";
+// import { IS_MAC } from "matrix-react-sdk/src/Keyboard";
 import SettingsTab from "matrix-react-sdk/src/components/views/settings/tabs/SettingsTab";
 import { SettingsSection } from "matrix-react-sdk/src/components/views/settings/shared/SettingsSection";
-import SettingsSubsection, { SettingsSubsectionText } from "matrix-react-sdk/src/components/views/settings/shared/SettingsSubsection";
-import { SettingsSubsectionHeading } from "matrix-react-sdk/src/components/views/settings/shared/SettingsSubsectionHeading";
-import Heading from "matrix-react-sdk/src/components/views/typography/Heading";
-import InlineSpinner from "matrix-react-sdk/src/components/views/elements/InlineSpinner";
+import SettingsSubsection, {
+    SettingsSubsectionText,
+} from "matrix-react-sdk/src/components/views/settings/shared/SettingsSubsection";
+// import { SettingsSubsectionHeading } from "matrix-react-sdk/src/components/views/settings/shared/SettingsSubsectionHeading";
+// import Heading from "matrix-react-sdk/src/components/views/typography/Heading";
+// import InlineSpinner from "matrix-react-sdk/src/components/views/elements/InlineSpinner";
 import { ThirdPartyIdentifier } from "matrix-react-sdk/src/AddThreepid";
 import { SDKContext } from "matrix-react-sdk/src/contexts/SDKContext";
 
@@ -250,27 +252,27 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
         }
     }
 
-    private onLanguageChange = (newLanguage: string): void => {
-        if (this.state.language === newLanguage) return;
+    // private onLanguageChange = (newLanguage: string): void => {
+    //     if (this.state.language === newLanguage) return;
 
-        SettingsStore.setValue("language", null, SettingLevel.DEVICE, newLanguage);
-        this.setState({ language: newLanguage });
-        const platform = PlatformPeg.get();
-        if (platform) {
-            platform.setLanguage([newLanguage]);
-            platform.reload();
-        }
-    };
+    //     SettingsStore.setValue("language", null, SettingLevel.DEVICE, newLanguage);
+    //     this.setState({ language: newLanguage });
+    //     const platform = PlatformPeg.get();
+    //     if (platform) {
+    //         platform.setLanguage([newLanguage]);
+    //         platform.reload();
+    //     }
+    // };
 
-    private onSpellCheckLanguagesChange = (languages: string[]): void => {
-        this.setState({ spellCheckLanguages: languages });
-        PlatformPeg.get()?.setSpellCheckLanguages(languages);
-    };
+    // private onSpellCheckLanguagesChange = (languages: string[]): void => {
+    //     this.setState({ spellCheckLanguages: languages });
+    //     PlatformPeg.get()?.setSpellCheckLanguages(languages);
+    // };
 
-    private onSpellCheckEnabledChange = (spellCheckEnabled: boolean): void => {
-        this.setState({ spellCheckEnabled });
-        PlatformPeg.get()?.setSpellCheckEnabled(spellCheckEnabled);
-    };
+    // private onSpellCheckEnabledChange = (spellCheckEnabled: boolean): void => {
+    //     this.setState({ spellCheckEnabled });
+    //     PlatformPeg.get()?.setSpellCheckEnabled(spellCheckEnabled);
+    // };
 
     private onPasswordChangeError = (err: Error): void => {
         logger.error("Failed to change password: " + err);
@@ -322,47 +324,47 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
     };
 
     private renderAccountSection(): JSX.Element {
-        let threepidSection: ReactNode = null;
+        // let threepidSection: ReactNode = null;
 
-        if (SettingsStore.getValue(UIFeature.ThirdPartyID)) {
-            const emails = this.state.loading3pids ? (
-                <InlineSpinner />
-            ) : (
-                <AccountEmailAddresses
-                    emails={this.state.emails}
-                    onEmailsChange={this.onEmailsChange}
-                    disabled={!this.state.canMake3pidChanges}
-                />
-            );
-            const msisdns = this.state.loading3pids ? (
-                <InlineSpinner />
-            ) : (
-                <AccountPhoneNumbers
-                    msisdns={this.state.msisdns}
-                    onMsisdnsChange={this.onMsisdnsChange}
-                    disabled={!this.state.canMake3pidChanges}
-                />
-            );
-            threepidSection = (
-                <>
-                    <SettingsSubsection
-                        heading={_t("settings|general|emails_heading")}
-                        stretchContent
-                        data-testid="mx_AccountEmailAddresses"
-                    >
-                        {emails}
-                    </SettingsSubsection>
+        // if (SettingsStore.getValue(UIFeature.ThirdPartyID)) {
+        //     const emails = this.state.loading3pids ? (
+        //         <InlineSpinner />
+        //     ) : (
+        //         <AccountEmailAddresses
+        //             emails={this.state.emails}
+        //             onEmailsChange={this.onEmailsChange}
+        //             disabled={!this.state.canMake3pidChanges}
+        //         />
+        //     );
+        //     const msisdns = this.state.loading3pids ? (
+        //         <InlineSpinner />
+        //     ) : (
+        //         <AccountPhoneNumbers
+        //             msisdns={this.state.msisdns}
+        //             onMsisdnsChange={this.onMsisdnsChange}
+        //             disabled={!this.state.canMake3pidChanges}
+        //         />
+        //     );
+        //     threepidSection = (
+        //         <>
+        //             <SettingsSubsection
+        //                 heading={_t("settings|general|emails_heading")}
+        //                 stretchContent
+        //                 data-testid="mx_AccountEmailAddresses"
+        //             >
+        //                 {emails}
+        //             </SettingsSubsection>
 
-                    <SettingsSubsection
-                        heading={_t("settings|general|msisdns_heading")}
-                        stretchContent
-                        data-testid="mx_AccountPhoneNumbers"
-                    >
-                        {msisdns}
-                    </SettingsSubsection>
-                </>
-            );
-        }
+        //             <SettingsSubsection
+        //                 heading={_t("settings|general|msisdns_heading")}
+        //                 stretchContent
+        //                 data-testid="mx_AccountPhoneNumbers"
+        //             >
+        //                 {msisdns}
+        //             </SettingsSubsection>
+        //         </>
+        //     );
+        // }
 
         let passwordChangeSection: ReactNode = null;
         if (this.state.canChangePassword) {
@@ -417,42 +419,41 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
                     {externalAccountManagement}
                     {passwordChangeSection}
                 </SettingsSubsection>
-                {threepidSection}
+                {/* {threepidSection} */}
             </>
         );
     }
 
-    private renderLanguageSection(): JSX.Element {
-        // TODO: Convert to new-styled Field
-        return (
-            <></>
-            // <SettingsSubsection heading={_t("settings|general|language_section")} stretchContent>
-            //     <LanguageDropdown
-            //         className="mx_GeneralUserSettingsTab_section_languageInput"
-            //         onOptionChange={this.onLanguageChange}
-            //         value={this.state.language}
-            //     />
-            // </SettingsSubsection>
-        );
-    }
+    // private renderLanguageSection(): JSX.Element {
+    //     // TODO: Convert to new-styled Field
+    //     return (
+    //         <SettingsSubsection heading={_t("settings|general|language_section")} stretchContent>
+    //             <LanguageDropdown
+    //                 className="mx_GeneralUserSettingsTab_section_languageInput"
+    //                 onOptionChange={this.onLanguageChange}
+    //                 value={this.state.language}
+    //             />
+    //         </SettingsSubsection>
+    //     );
+    // }
 
-    private renderSpellCheckSection(): JSX.Element {
-        const heading = (
-            <SettingsSubsectionHeading heading={_t("settings|general|spell_check_section")}>
-                <ToggleSwitch checked={!!this.state.spellCheckEnabled} onChange={this.onSpellCheckEnabledChange} />
-            </SettingsSubsectionHeading>
-        );
-        return (
-            <SettingsSubsection heading={heading} stretchContent>
-                {this.state.spellCheckEnabled && !IS_MAC && (
-                    <SpellCheckSettings
-                        languages={this.state.spellCheckLanguages}
-                        onLanguagesChange={this.onSpellCheckLanguagesChange}
-                    />
-                )}
-            </SettingsSubsection>
-        );
-    }
+    // private renderSpellCheckSection(): JSX.Element {
+    //     const heading = (
+    //         <SettingsSubsectionHeading heading={_t("settings|general|spell_check_section")}>
+    //             <ToggleSwitch checked={!!this.state.spellCheckEnabled} onChange={this.onSpellCheckEnabledChange} />
+    //         </SettingsSubsectionHeading>
+    //     );
+    //     return (
+    //         <SettingsSubsection heading={heading} stretchContent>
+    //             {this.state.spellCheckEnabled && !IS_MAC && (
+    //                 <SpellCheckSettings
+    //                     languages={this.state.spellCheckLanguages}
+    //                     onLanguagesChange={this.onSpellCheckLanguagesChange}
+    //                 />
+    //             )}
+    //         </SettingsSubsection>
+    //     );
+    // }
 
     private renderDiscoverySection(): JSX.Element {
         if (this.state.requiredPolicyInfo.hasTerms) {
@@ -524,7 +525,7 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
 
     public render(): React.ReactNode {
         const plaf = PlatformPeg.get();
-        const supportsMultiLanguageSpellCheck = plaf?.supportsSpellCheckSettings();
+        // const supportsMultiLanguageSpellCheck = plaf?.supportsSpellCheckSettings();
 
         let accountManagementSection: JSX.Element | undefined;
         const isAccountManagedExternally = !!this.state.externalAccountManagementUrl;
@@ -532,41 +533,41 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
             accountManagementSection = this.renderManagementSection();
         }
 
-        let discoverySection;
-        if (SettingsStore.getValue(UIFeature.IdentityServer)) {
-            const discoWarning = this.state.requiredPolicyInfo.hasTerms ? (
-                <WarningIcon
-                    className="mx_GeneralUserSettingsTab_warningIcon"
-                    width="18"
-                    height="18"
-                    // override icon default values
-                    aria-hidden={false}
-                    aria-label={_t("common|warning")}
-                />
-            ) : null;
-            const heading = (
-                <Heading size="2">
-                    {discoWarning}
-                    {_t("settings|general|discovery_section")}
-                </Heading>
-            );
-            discoverySection = (
-                <SettingsSection heading={heading} data-testid="discoverySection">
-                    {this.renderDiscoverySection()}
-                </SettingsSection>
-            );
-        }
+        // let discoverySection;
+        // if (SettingsStore.getValue(UIFeature.IdentityServer)) {
+        //     const discoWarning = this.state.requiredPolicyInfo.hasTerms ? (
+        //         <WarningIcon
+        //             className="mx_GeneralUserSettingsTab_warningIcon"
+        //             width="18"
+        //             height="18"
+        //             // override icon default values
+        //             aria-hidden={false}
+        //             aria-label={_t("common|warning")}
+        //         />
+        //     ) : null;
+        //     const heading = (
+        //         <Heading size="2">
+        //             {discoWarning}
+        //             {_t("settings|general|discovery_section")}
+        //         </Heading>
+        //     );
+        //     discoverySection = (
+        //         <SettingsSection heading={heading} data-testid="discoverySection">
+        //             {this.renderDiscoverySection()}
+        //         </SettingsSection>
+        //     );
+        // }
 
         return (
             <SettingsTab data-testid="mx_GeneralUserSettingsTab">
                 <SettingsSection heading={_t("common|general")}>
                     <ProfileSettings />
                     {this.renderAccountSection()}
-                    {this.renderLanguageSection()}
-                    {supportsMultiLanguageSpellCheck ? this.renderSpellCheckSection() : null}
+                    {/* {this.renderLanguageSection()} */}
+                    {/* {supportsMultiLanguageSpellCheck ? this.renderSpellCheckSection() : null} */}
                 </SettingsSection>
-                {discoverySection}
-                {this.renderIntegrationManagerSection()}
+                {/* {discoverySection} */}
+                {/* {this.renderIntegrationManagerSection()} */}
                 {accountManagementSection}
             </SettingsTab>
         );

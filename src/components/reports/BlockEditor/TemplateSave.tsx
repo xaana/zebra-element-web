@@ -1,13 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { toast } from "sonner";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import type { Editor } from "@tiptap/core";
 
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
-import { apiUrlAtom } from "@/plugins/reports/stores/store";
 import {
     Dialog,
     DialogContent,
@@ -21,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
-import { reportsStore } from "@/plugins/reports/MainPanel";
 
 export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
     const [name, setName] = useState("");
@@ -29,8 +27,6 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const client = useMatrixClientContext();
-    const userId: string = client.getSafeUserId();
 
     useEffect(() => {
         if (!dialogOpen) {
@@ -42,13 +38,13 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
 
     const handleSubmit = async (): Promise<void> => {
         setLoading(true);
-        const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/create_template`, {
+        const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/create_template`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                user_id: userId,
+                user_id: "userId",
                 template_name: name,
                 template_description: description.substring(0, 300),
                 template_data: JSON.stringify(editor.getJSON()),

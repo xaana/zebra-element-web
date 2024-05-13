@@ -15,7 +15,7 @@ export const TableOfContents = memo(({ editor, onItemClick }: TableOfContentsPro
     const [data, setData] = useState<TableOfContentsStorage | null>(null);
 
     useEffect(() => {
-        const handler = ({ editor: currentEditor }: { editor: CoreEditor }) => {
+        const handler = ({ editor: currentEditor }: { editor: CoreEditor }): void => {
             setData({ ...currentEditor.extensionStorage.tableOfContents });
         };
 
@@ -24,7 +24,7 @@ export const TableOfContents = memo(({ editor, onItemClick }: TableOfContentsPro
         editor.on("update", handler);
         editor.on("selectionUpdate", handler);
 
-        return () => {
+        return (): void => {
             editor.off("update", handler);
             editor.off("selectionUpdate", handler);
         };
@@ -49,7 +49,8 @@ export const TableOfContents = memo(({ editor, onItemClick }: TableOfContentsPro
                                     "text-neutral-800 bg-neutral-100 dark:text-neutral-100 dark:bg-neutral-900",
                             )}
                         >
-                            {item.itemIndex}. {item.textContent}
+                            {/* {item.itemIndex}.  */}
+                            {item.textContent}
                         </a>
                     ))}
                 </div>

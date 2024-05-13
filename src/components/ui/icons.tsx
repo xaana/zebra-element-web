@@ -1,6 +1,25 @@
 import * as React from "react";
 
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
+
+export function IconEllipses({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <circle cx="12" cy="12" r="1" />
+            <circle cx="19" cy="12" r="1" />
+            <circle cx="5" cy="12" r="1" />
+        </svg>
+    );
+}
 
 export function IconChartDonut({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
@@ -273,6 +292,21 @@ export function IconDocumentExcel({ className, ...props }: React.ComponentProps<
         </svg>
     );
 }
+
+export function IconStop({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 256 256"
+            fill="currentColor"
+            className={cn("zexa-h-4 zexa-w-4", className)}
+            {...props}
+        >
+            <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm32-104v40a12,12,0,0,1-12,12H108a12,12,0,0,1-12-12V108a12,12,0,0,1,12-12h40A12,12,0,0,1,160,108Z" />
+        </svg>
+    );
+}
+
 export function IconZoomOut({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg

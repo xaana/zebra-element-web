@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 import { ColumnLayout } from "../Columns";
 
 import { MenuProps } from "@/components/reports/menus/types";
-import { getRenderContainer } from "@/lib/utils/getRenderContainer";
+import { getRenderContainer } from "@/plugins/reports/utils/getRenderContainer";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Icon } from "@/components/ui/Icon";
 
