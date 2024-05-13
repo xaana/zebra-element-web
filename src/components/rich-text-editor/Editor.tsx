@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "../ui/button";
-import { Toggle } from "../ui/toggleAlt";
+import { Toggle } from "../ui/toggle";
 import { Separator } from "../ui/separator";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 

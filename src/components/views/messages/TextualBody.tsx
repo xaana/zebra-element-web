@@ -641,6 +641,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         let isEmote = false;
         const databaseTable = content.database_table;
         const fetchedDataLen = content.fetched_data_len;
+        const rawQuestion = content.raw_question;
         const query = content.query;
         const roomId = mxEvent.getRoomId();
         const rootId = mxEvent.threadRootId;
@@ -685,7 +686,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <>
                     <h2>
-                        <strong>{query}</strong>
+                        <strong>{rawQuestion}</strong>
                     </h2>
                     {citations ? (
                         <WebSearchSources data={citations} />
@@ -778,7 +779,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <>
                     {/* <h2>
-                        <strong>{query}</strong>
+                        <strong>{rawQuestion}</strong>
                     </h2>
                     {fileSelected ? (
                         <>
@@ -835,7 +836,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <>
                     <h2>
-                        <strong>{query}</strong>
+                        <strong>{rawQuestion}</strong>
                     </h2>
                     {content.database_ ? (
                         <>
