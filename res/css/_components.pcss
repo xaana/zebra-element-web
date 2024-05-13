@@ -487,6 +487,10 @@
 }
 
 .mx_ResizeHandle {
+    cursor: row-resize;
+    flex: 0 0 auto;
+    z-index: 100;
+
     &.mx_ResizeHandle--horizontal {
         margin: 0 -5px;
         padding: 0 5px;
@@ -495,6 +499,81 @@
         > div {
             width: 1px;
             height: 100%;
+        }
+    }
+
+    &.mx_ResizeHandle--vertical {
+        margin: -5px 0;
+        padding: 5px 0;
+
+        > div {
+            height: 1px;
+        }
+    }
+}
+
+.mx_MatrixChat > .mx_ResizeHandle--to-left {
+    &:hover {
+        position: relative;
+
+        &::before,
+        &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            border-radius: 4px;
+            content: " ";
+            background-color: $primary-content;
+            opacity: 0.8;
+        }
+
+        &::before {
+            margin-bottom: 12px;
+            height: 14px; /* Height of the top segment */
+            transform-origin: bottom center;
+            transform: rotate(20deg);
+        }
+
+        &::after {
+            margin-top: 12px;
+            height: 14px; /* Height of the bottom segment */
+            transform-origin: top center;
+            transform: rotate(-20deg);
+        }
+    }
+}
+
+.mx_MatrixChat > .mx_ResizeHandle--to-right {
+    &:hover {
+        position: relative;
+
+        &::before,
+        &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            border-radius: 4px;
+            content: " ";
+            background-color: $primary-content;
+            opacity: 0.8;
+        }
+
+        &::before {
+            margin-bottom: 12px;
+            height: 14px; /* Height of the top segment */
+            transform-origin: bottom center;
+            transform: rotate(-20deg);
+        }
+
+        &::after {
+            margin-top: 12px;
+            height: 14px; /* Height of the bottom segment */
+            transform-origin: top center;
+            transform: rotate(20deg);
         }
     }
 }
