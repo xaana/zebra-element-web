@@ -11,7 +11,7 @@ export type LinkPreviewPanelProps = {
     onClear: () => void;
 };
 
-export const LinkPreviewPanel = ({ onClear, onEdit, url }: LinkPreviewPanelProps) => {
+export const LinkPreviewPanel = ({ onClear, onEdit, url }: LinkPreviewPanelProps): JSX.Element => {
     return (
         <Surface className="flex items-center gap-2 p-2">
             <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm underline">

@@ -1,7 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
 
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 

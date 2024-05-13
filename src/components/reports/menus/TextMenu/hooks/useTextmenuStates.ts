@@ -3,7 +3,7 @@ import { useCallback } from "react";
 
 import { ShouldShowProps } from "../../types";
 
-import { isCustomNodeSelected, isTextSelected } from "@/lib/utils";
+import { isCustomNodeSelected, isTextSelected } from "@/plugins/reports/utils";
 
 export const useTextmenuStates = (editor: Editor) => {
     const shouldShow = useCallback(

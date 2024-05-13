@@ -28,7 +28,7 @@ export type TextMenuProps = {
     editor: Editor;
 };
 
-export const TextMenu = ({ editor }: TextMenuProps) => {
+export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
     const commands = useTextmenuCommands(editor);
     const states = useTextmenuStates(editor);
     const blockOptions = useTextmenuContentTypes(editor);
@@ -44,7 +44,7 @@ export const TextMenu = ({ editor }: TextMenuProps) => {
             <Toolbar.Wrapper>
                 <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
-                    onEmojify={commands.onEmojify}
+                    // onEmojify={commands.onEmojify}
                     onFixSpelling={commands.onFixSpelling}
                     onMakeLonger={commands.onMakeLonger}
                     onMakeShorter={commands.onMakeShorter}

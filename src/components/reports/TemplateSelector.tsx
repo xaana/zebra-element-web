@@ -1,92 +1,110 @@
-import { useAtomValue, useSetAtom, useAtom } from "jotai";
-import React, { useEffect, useRef, useState } from "react";
-import { RowSelectionState } from "@tanstack/table-core";
+import { useSetAtom } from "jotai";
+import React, { useEffect, useState } from "react";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { ContentHeader } from "./ContentHeader";
-import { FileSelector, FileSelectorHandle } from "./FileSelector";
 import { TemplateCard } from "./TemplateCard";
 import type { Template } from "@/plugins/reports/types";
-import type { File } from "@/plugins/files/types";
+import { TemplateList } from "./TemplateList";
+import { ReportGenerator } from "./ReportGenerator";
+import type { Editor } from "@tiptap/react";
 
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
-import { cn } from "@/lib/utils";
-import {
-    selectedTemplateAtom,
-    previousTemplateAtom,
-    editorStateAtom,
-    selectedFilesAtom,
-    apiUrlAtom,
-    showHomeAtom,
-} from "@/plugins/reports/stores/store";
-import { reportsStore } from "@/plugins/reports/MainPanel";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { sampleTemplate, logTemplate, financeTemplate } from "@/plugins/reports/initialContent";
 
 interface TemplateSelectorProps {
+    editor: Editor | null;
     nextStep: () => void;
     prevStep: () => void;
 }
-export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps): JSX.Element => {
-    const client = useMatrixClientContext();
-    const userId: string = client.getSafeUserId();
-    const [selectedTemplate, setSelectedTemplate] = useAtom(selectedTemplateAtom);
-    const setShowHome = useSetAtom(showHomeAtom);
-    const previousTemplate = useAtomValue(previousTemplateAtom);
-    const [selectedFiles, setSelectedFiles] = useAtom(selectedFilesAtom);
-    const fileSelector = useRef<FileSelectorHandle>(null);
-    const setEditorState = useSetAtom(editorStateAtom);
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>(
-        selectedFiles ? Object.fromEntries(selectedFiles.map((obj) => [obj.id, true])) : {},
-    );
 
-    const [templates, setTemplates] = useState<Template[]>([]);
-    const [files, setFiles] = useState<File[]>([]);
+export type GeneratedOutline = {
+    documentPrompt: string;
+    allTitles: string[];
+    contentSize: string;
+    tone: string;
+    targetAudience: string;
+};
+
+const defaultTemplates = [sampleTemplate, logTemplate, financeTemplate];
+export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelectorProps): JSX.Element => {
+    const [selectedTemplate, setSelectedTemplate] = useState<Template | null | undefined>(undefined);
+    const setGeneratorOutline = useSetAtom(generatedOutlineAtom);
+    const [templates, setTemplates] = useState<Template[]>([...defaultTemplates]);
+    const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
+    const [filterValue, setFilterValue] = useState("all");
+    const [displayType, setDisplayType] = useState("grid");
+    const client = useMatrixClientContext();
 
     useEffect(() => {
         const fetchTemplatesData = async (): Promise<void> => {
             try {
-                const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/get_template_list`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
+                const response = await fetch(
+                    `${SettingsStore.getValue("reportsApiUrl")}/api/template/get_document_list`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ user_id: client.getSafeUserId() }),
                     },
-                    body: JSON.stringify({ user_id: userId }),
-                });
+                );
                 const data = await response.json();
-                if (data?.templates?.length === 0) return;
-                setTemplates(() =>
-                    data.templates.map(
+                if (data?.document?.length === 0) return;
+                setTemplates((prev) => [
+                    ...prev,
+                    ...data.document.map(
                         ({
-                            id: id,
-                            template_name: name,
-                            template_description: description,
-                            updated_at: createdAt,
+                            id,
+                            document_name: name,
+                            document_description: description,
+                            document_type: type,
+                            updated_at: updatedAt,
                         }: {
                             id: string;
-                            template_name: string;
-                            template_description: string;
+                            document_name: string;
+                            document_description: string;
+                            document_type: string;
                             updated_at: Date;
-                        }) => ({ id, name, description: description ?? "", createdAt }),
+                        }) => ({
+                            id,
+                            name,
+                            description: description ?? "",
+                            type,
+                            timestamp: updatedAt,
+                        }),
                     ),
-                );
+                ]);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
 
         const fetchData = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles(client);
-            setFiles(() => fetchedFiles.filter((file) => file.name.endsWith(".pdf")));
             await fetchTemplatesData();
         };
 
         fetchData();
-    }, [client, userId]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const fetchTemplateContent = async (): Promise<void> => {
+    useEffect(() => {
+        if (filterValue === "documents") {
+            setFilteredTemplates(templates.filter((template) => template.type === "document"));
+        } else if (filterValue === "templates") {
+            setFilteredTemplates(templates.filter((template) => template.type === "template"));
+        } else {
+            setFilteredTemplates(templates);
+        }
+    }, [filterValue, templates]);
+
+    const fetchTemplateContent = async (): Promise<string | void> => {
         const templateId: string = selectedTemplate?.id ?? "";
         try {
-            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/template/get_template`, {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/get_document`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -97,66 +115,121 @@ export const TemplateSelector = ({ nextStep, prevStep }: TemplateSelectorProps):
             setSelectedTemplate((prev) => {
                 return prev ? { ...prev, content: data.content } : undefined;
             });
+            return data.content;
         } catch (error) {
             console.error("Error fetching data:", error);
+            return;
         }
     };
 
-    const proceedToEditTemplate = async (): Promise<void> => {
-        selectedTemplate && (await fetchTemplateContent());
-        // check of rowSelection has more than one item
-        if (Object.keys(rowSelection).length > 0) {
-            setSelectedFiles(() => files.filter((file: File) => rowSelection[file.id]));
-            if (selectedTemplate?.id !== previousTemplate?.id) {
-                setEditorState(() => undefined);
+    const handleSelectTemplate = async (template: Template | null): Promise<void> => {
+        // Editor initialization priorities: editorState > template > blank
+        if (template === null) {
+            // Blank template selected
+            setSelectedTemplate(() => null);
+            editor?.commands.setContent("");
+        } else {
+            setSelectedTemplate(() => template);
+            // If template is not from preset templates, fetch its content
+            if (Number(template.id) >= 0) {
+                const templateContent = await fetchTemplateContent();
+                template && templateContent && editor?.commands.setContent(templateContent);
+            } else {
+                template.content && editor?.commands.setContent(template.content);
             }
-            nextStep();
         }
+        nextStep();
     };
+
+    const handleReportGenerateAI = (
+        documentPrompt: string,
+        allTitles: string[],
+        contentSize: string,
+        tone: string,
+        targetAudience: string,
+    ): void => {
+        setGeneratorOutline({
+            documentPrompt,
+            allTitles,
+            contentSize,
+            tone,
+            targetAudience,
+        });
+        handleSelectTemplate(null);
+    };
+
     return (
         <>
-            <ContentHeader
-                nextStepDisabled={selectedTemplate === null || Object.keys(rowSelection).length === 0}
-                nextStepAction={proceedToEditTemplate}
-                prevStepAction={() => setShowHome(true)}
-            />
+            <div className="w-full text-2xl font-semibold mb-2 flex items-center gap-2">
+                <Icon name="GalleryVerticalEnd" className="h-5 w-5" />
+                All Reports
+            </div>
+            <div className="flex items-center gap-2 mb-6">
+                <ReportGenerator onReportGenerate={handleReportGenerateAI} />
+                <Button
+                    className="font-semibold text-sm"
+                    onClick={() => handleSelectTemplate(null)}
+                    size="sm"
+                    disabled={selectedTemplate === null}
+                    variant="secondary"
+                >
+                    <Icon name="Plus" className="mr-2" />
+                    New From Blank
+                </Button>
+            </div>
 
-            <div className="text-lg font-semibold">Select Files</div>
+            <div className="flex justify-between items-center mb-6">
+                <ToggleGroup
+                    type="single"
+                    value={filterValue}
+                    onValueChange={(value) => {
+                        if (value) setFilterValue(value);
+                    }}
+                    className="justify-start gap-2"
+                    size="sm"
+                >
+                    <ToggleGroupItem value="all" aria-label="Toggle all">
+                        <Icon name="AlignJustify" className="mr-2" />
+                        All
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="templates" aria-label="Toggle favourites">
+                        <Icon name="LayoutTemplate" className="mr-2" />
+                        Templates
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="documents" aria-label="Toggle favourites">
+                        <Icon name="FileCheck2" className="mr-2" />
+                        Documents
+                    </ToggleGroupItem>
+                </ToggleGroup>
 
-            <FileSelector
-                ref={fileSelector}
-                files={files}
-                rowSelection={rowSelection}
-                setRowSelection={setRowSelection}
-            />
+                <Tabs value={displayType} onValueChange={(value) => setDisplayType(value)} className="">
+                    <TabsList>
+                        <TabsTrigger value="grid">
+                            <Icon className="mr-2" name="LayoutGrid" />
+                            Grid
+                        </TabsTrigger>
+                        <TabsTrigger value="list">
+                            <Icon className="mr-2" name="List" />
+                            List
+                        </TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
 
-            <div className="text-lg font-semibold mt-4 mb-2">Select Template</div>
-
-            <div className="rounded-lg border bg-card p-4 w-full">
-                <div className="w-full grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <div
-                        key="new-template"
-                        className={cn(
-                            "rounded-lg border pb-3 text-left text-sm transition-all hover:bg-muted overflow-hidden cursor-pointer outline-none",
-                            !selectedTemplate && "outline outline-4 outline-primary bg-muted",
-                        )}
-                        onClick={() => setSelectedTemplate(() => undefined)}
-                    >
-                        <div className="p-3 w-full h-full flex flex-col items-center justify-center gap-2">
-                            <Icon name="Plus" className="w-8 h-8" />
-                            <div className="font-semibold text-xl">New Template</div>
-                        </div>
-                    </div>
-                    {templates.map((template) => (
+            {displayType === "grid" ? (
+                <div className="w-full grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {filteredTemplates.map((template) => (
                         <TemplateCard
                             key={template.id}
                             template={template}
-                            selected={selectedTemplate && selectedTemplate.id === template.id}
-                            setSelectedTemplate={setSelectedTemplate}
+                            selected={selectedTemplate !== null && selectedTemplate?.id === template.id}
+                            onSelectTemplate={handleSelectTemplate}
                         />
                     ))}
                 </div>
-            </div>
+            ) : (
+                <TemplateList templates={filteredTemplates} selectTemplate={handleSelectTemplate} />
+            )}
         </>
     );
 };

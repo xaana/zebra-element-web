@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 .zebra-container {
-    /* --cpd-color-theme-bg: #f8f7fd !important; */
-    /* --cpd-color-bg-canvas-default: #f8f7fd !important; */
     --cpd-color-bg-subtle-secondary-level-0: #f2f2f2 !important;
 
     --background: 0 0% 100%;
@@ -13,19 +11,19 @@
     --primary: 262.82 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
+    --card: 0 0% 97%;
     --card-foreground: 264 100% 4.9%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 264 100% 4.9%;
 
-    --secondary: 262.11 100% 92.55%;
+    --secondary: 247.5 25% 87.45%;
     --secondary-foreground: 0 0% 7.45%;
 
-    --muted: 261.6 100% 95.1%;
+    --muted: 240 12.5% 93.73%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 261.6 100% 95.1%;
+    --accent: 240 12.5% 93.73%;
     --accent-foreground: 262.82 100% 50%;
 
     --destructive: 0 84.2% 60.2%;
@@ -36,35 +34,6 @@
     --ring: 262.82 100% 50%;
 
     --radius: 0.5rem;
-    /* --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
-
-    --card: 220 14% 93%;
-    --card-foreground: 224 71.4% 4.1%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-
-    --primary: 220.9 39.3% 11%;
-    --primary-foreground: 210 20% 98%;
-
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 220.9 39.3% 11%;
-
-    --muted: 270 6% 90%;
-    --muted-foreground: 220 8.9% 46.1%;
-
-    --accent: 270 6% 90%;
-    --accent-foreground: 220.9 39.3% 11%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 224 71.4% 4.1%;
-
-    --radius: 0.75rem; */
 
     --md-editor-font-family: "Roboto Mono", monospace;
 }
@@ -74,25 +43,24 @@
     --cpd-color-bg-canvas-default: #131214 !important;
 
     --background: 0 0% 7.45%;
-    /* --foreground: 262.11 100% 92.55%; */
-    --foreground: 262.11 100% 100%;
+    --foreground: 0 0% 100%;
 
     --primary: 262.82 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --card: 0 0% 7.45%;
-    --card-foreground: 262.11 100% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 0 0% 7.45%;
-    --popover-foreground: 262.11 100% 100%;
+    --popover-foreground: 0 0% 100%;
 
-    --secondary: 262.92 100% 17.45%;
+    --secondary: 252 40.32% 24.31%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 16.86%;
     --muted-foreground: 0 0% 53.73%;
 
-    --accent: 262.92 100% 17.45%;
+    --accent: 252 40.32% 24.31%;
     --accent-foreground: 262.11 100% 92.55%;
 
     --destructive: 0 84.2% 60.2%;
@@ -100,61 +68,10 @@
 
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-    --ring: 262.82 100% 50%;
+    --ring: 258.82 80.09% 41.37%;
 
     --radius: 0.5rem;
-    /* --background: 224 0% 5.1%;
-    --foreground: 210 20% 98%;
-
-    --card: 300 1% 16%;
-    --card-foreground: 210 20% 98%;
-
-    --popover: 300 1% 16%;
-    --popover-foreground: 210 20% 98%;
-
-    --primary: 210 20% 98%;
-    --primary-foreground: 210 20% 98%;
-
-    --secondary: 0 0% 11%;
-    --secondary-foreground: 210 20% 98%;
-
-    --muted: 240 3% 11%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-
-    --accent: 240 3% 21%;
-    --accent-foreground: 210 20% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-
-    --border: 300 1% 21%;
-    --input: 300 1% 21%;
-    --ring: 216 12.2% 83.9%; */
 }
-/* 
-.zebra-container * {
-    border-color: hsl(var(--border));
-}
-.zebra-container {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-} */
-
-/* .zebra__main {
-    height: 100vh;
-    height: -webkit-fill-available;
-} */
-
-/* @media (min-width: 640px) {
-  .sidebar-open {
-    width: calc(100vw - 200px);
-  }
-}
-@media (min-width: 1000px) {
-  .sidebar-open {
-    width: calc(100vw - 260px);
-  }
-} */
 
 @layer base {
     * {
@@ -250,4 +167,9 @@ input[type="range"] {
 
 input[type="range"]::-webkit-slider-thumb {
     @apply appearance-none w-3 h-5 bg-neutral-800 rounded-full active:bg-neutral-900 active:w-4 active:h-6 transition-all dark:bg-neutral-100 dark:active:bg-white;
+}
+
+// Since tailwind's text-primary class is being overridden by Element theme in /res/_common.pcss
+.text-primary-default {
+    color: hsl(var(--primary));
 }

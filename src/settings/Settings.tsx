@@ -177,6 +177,7 @@ export interface IBaseSetting<T extends SettingValueType = SettingValueType> {
     shouldWarn?: boolean;
 
     botApiUrl?: string | null;
+    reportsApiUrl?: string | null;
 }
 
 export interface IFeature extends Omit<IBaseSetting<boolean>, "isFeature"> {
@@ -1168,6 +1169,10 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         default: true,
     },
     "botApiUrl": {
+        supportedLevels: [SettingLevel.DEVICE],
+        default: null,
+    },
+    "reportsApiUrl": {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },

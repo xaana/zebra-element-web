@@ -3,12 +3,10 @@ import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
 import { useCallback, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { toast } from "sonner";
 
 import { QueryResultTable, DataItem } from "./QueryResultTable";
 
-import { getVectorConfig } from "@/vector/getconfig";
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
@@ -25,7 +23,13 @@ export interface DataProps {
     language?: string;
 }
 
-export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttributes }: NodeViewWrapperProps) => {
+export const AiDataQueryView = ({
+    editor,
+    node,
+    getPos,
+    deleteNode,
+    updateAttributes,
+}: NodeViewWrapperProps): JSX.Element => {
     const [data, setData] = useState<DataProps>({
         text: node.attrs.prompt,
         database: node.attrs.database || undefined,
@@ -34,8 +38,6 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
         language: undefined,
     });
     const [api, setApi] = useState<string | undefined>(undefined);
-    const client = useMatrixClientContext();
-    const userId = client.getSafeUserId();
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
     const [isFetching, setIsFetching] = useState(false);
     const textareaId = useMemo(() => uuid(), []);
@@ -43,13 +45,10 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
     useEffect(() => {
-        let apiUrl;
-
         const getDbList = async (): Promise<void> => {
-            const configData = await getVectorConfig();
-            if (configData?.bot_api) {
-                apiUrl = configData?.bot_api;
-                apiUrl && setApi(apiUrl);
+            const apiUrl = process.env.REACT_APP_API_URL;
+            if (apiUrl) {
+                setApi(apiUrl);
                 const resp = await fetch(`${apiUrl}/database_list`);
                 const data = await resp.json();
                 if (data) setDbList(data);
@@ -78,12 +77,12 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
-                    user_id: userId || "user_id",
+                    user_id: "user_id",
                 }),
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
             if (data) {
                 setPreviewText(data.body);
@@ -98,7 +97,7 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
             setIsFetching(false);
             toast.error(message);
         }
-    }, [data, api, userId]);
+    }, [data, api]);
 
     const insert = useCallback(() => {
         const from = getPos();
@@ -151,7 +150,9 @@ export const AiDataQueryView = ({ editor, node, getPos, deleteNode, updateAttrib
         const columnNames = Object.keys(arr[0]);
 
         // Start the table and add a header row
-        let tableHTML = `<table><tr style="font-weight: 600;">${columnNames.map((columnName) => `<td>${columnName}</td>`).join("")}</tr>`;
+        let tableHTML = `<table><tr style="font-weight: 600;">${columnNames
+            .map((columnName) => `<td>${columnName}</td>`)
+            .join("")}</tr>`;
 
         // Add the data rows
         arr.forEach((row) => {

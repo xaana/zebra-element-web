@@ -9,7 +9,7 @@ export type EditLinkPopoverProps = {
     onSetLink: (link: string, openInNewTab?: boolean) => void;
 };
 
-export const EditLinkPopover = ({ onSetLink }: EditLinkPopoverProps) => {
+export const EditLinkPopover = ({ onSetLink }: EditLinkPopoverProps): JSX.Element => {
     return (
         <Popover.Root>
             <Popover.Trigger asChild>

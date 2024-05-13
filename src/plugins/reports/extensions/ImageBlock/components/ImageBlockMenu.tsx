@@ -8,7 +8,7 @@ import { ImageBlockWidth } from "./ImageBlockWidth";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Icon } from "@/components/ui/Icon";
 import { MenuProps } from "@/components/reports/menus/types";
-import { getRenderContainer } from "@/lib/utils";
+import { getRenderContainer } from "@/plugins/reports/utils";
 
 export const ImageBlockMenu = ({ editor, appendTo }: MenuProps): JSX.Element => {
     const menuRef = useRef<HTMLDivElement>(null);

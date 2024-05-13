@@ -4,7 +4,7 @@ import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 
 import { TableOfContents } from "@/components/reports/TableOfContents";
 
-const TableOfNodeContent = (props: NodeViewRendererProps) => {
+const TableOfNodeContent = (props: NodeViewRendererProps): JSX.Element => {
     const { editor } = props;
 
     return (
@@ -52,7 +52,7 @@ export const TableOfContentsNode = Node.create({
         return {
             insertTableOfContents:
                 () =>
-                ({ commands }) => {
+                ({ commands }): any => {
                     return commands.insertContent({
                         type: this.name,
                     });

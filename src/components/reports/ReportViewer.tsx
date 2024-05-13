@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { ContentHeader } from "./ContentHeader";
-import { ReportSave } from "./ReportSave";
+import type { Editor } from "@tiptap/react";
 
-import { editorContentAtom, apiUrlAtom } from "@/plugins/reports/stores/store";
-import { reportsStore } from "@/plugins/reports/MainPanel";
+import { Loader } from "@/components/ui/loader";
+import { ReportSave } from "@/components/reports/ReportSave";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/Icon";
+
 interface ReportViewerProps {
+    editor: Editor | null;
     nextStep: () => void;
     prevStep: () => void;
 }
-export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Element => {
+export const ReportViewer = ({ editor, nextStep, prevStep }: ReportViewerProps): JSX.Element => {
     const [pdfUrl, setPdfUrl] = useState("");
+    const [isPdfLoading, setisPdfLoading] = useState(false);
 
     async function convertImageUrlToBase64(url: string): Promise<string | ArrayBuffer | null> {
         // Fetch the image
@@ -32,7 +38,8 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Ele
 
     const fetchPdf = async (formData: FormData): Promise<void> => {
         try {
-            const response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/generate-pdf/generate`, {
+            setisPdfLoading(true);
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate-pdf/generate`, {
                 method: "POST",
                 body: formData,
             });
@@ -45,18 +52,17 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Ele
                 setPdfUrl(url); // Update state with the URL for the PDF
             }
         } catch (error) {
-            console.error("Error fetching PDF:", error);
+            // console.error('Error fetching PDF:', error)
+            toast.error("Error displaying PDF. Please try again later.");
         }
+        setisPdfLoading(false);
     };
 
     useEffect(() => {
-        const editorContent = reportsStore.get(editorContentAtom);
-        if (!editorContent) {
-            console.error("Editor content not found");
-            return;
-        }
+        if (!editor) return;
+
         const parser = new DOMParser();
-        const doc = parser.parseFromString(editorContent, "text/html");
+        const doc = parser.parseFromString(editor.getHTML(), "text/html");
         const images = doc.querySelectorAll("img");
 
         // Map each image to a promise
@@ -79,10 +85,29 @@ export const ReportViewer = ({ nextStep, prevStep }: ReportViewerProps): JSX.Ele
             // Now it's safe to call fetchPdf
             fetchPdf(formData);
         });
-    }, []);
+    }, [editor]);
     return (
         <>
-            <ContentHeader nextStepAction={nextStep} prevStepAction={prevStep} nextStepNode={<ReportSave />} />
+            <div className="w-full flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
+                <div>
+                    <h2 className="text-2xl font-semibold mb-2">Finalise the Report</h2>
+                    <p className="text-muted-foreground text-sm">
+                        View the generated report and save it to your collection
+                    </p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button onClick={() => prevStep()} variant="outline" size="sm">
+                        <Icon name="ArrowLeft" className="mr-2" />
+                        Go Back
+                    </Button>
+                    {editor && <ReportSave editor={editor} />}
+                </div>
+            </div>
+            {isPdfLoading && (
+                <div className="w-full p-20 flex justify-center items-center">
+                    <Loader height="50" width="50" />
+                </div>
+            )}
             {pdfUrl.length > 0 && (
                 <div>
                     <iframe title="pdf" src={pdfUrl} width="100%" height="800px" />
