@@ -12,7 +12,7 @@ const FilesPill = ({
     roomId,
 }: {
     files: DocFile[] | undefined;
-    timelineRenderingType?: TimelineRenderingType;
+    timelineRenderingType: TimelineRenderingType;
     roomId?: string;
 }): React.JSX.Element | null => {
     // Styles for the pill container
@@ -30,10 +30,7 @@ const FilesPill = ({
     return (
         <div className="py-2 px-4 bg-muted rounded-lg gap-2">
             <div className="relative">
-                {timelineRenderingType ||
-                    (roomId && (
-                        <X onClick={() => cancelQuoting()} className="cursor-pointer top-0 right-0 absolute text-xs" />
-                    ))}
+                <X onClick={() => cancelQuoting()} className="cursor-pointer top-0 right-0 absolute text-xs" />
             </div>
             {files &&
                 files.map((file) => {
