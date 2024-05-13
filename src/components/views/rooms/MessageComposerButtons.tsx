@@ -79,7 +79,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     if (!matrixClient || !room || props.haveRecording) {
         return null;
     }
-    console.log(props)
 
     let mainButtons: ReactNode[];
     let moreButtons: ReactNode[];
