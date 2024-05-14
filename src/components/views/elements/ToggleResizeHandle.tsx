@@ -42,8 +42,6 @@ const ToggleResizeHandle: React.FC<IResizeHandleProps> = ({ vertical, reverse, c
         classNames.push("mx_ResizeHandle--to-left");
     }
 
-    console.log(classNames.join(" "));
-
     return (
         <div ref={passRef} className={classNames.join(" ")} data-id={id}>
             <div />
