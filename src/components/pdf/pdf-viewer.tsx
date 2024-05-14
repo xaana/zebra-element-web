@@ -18,7 +18,7 @@ export const PdfViewer = ({
     citations: any[];
     content: IContent;
     mxEvent: MatrixEvent;
-}): JSX.Element => {
+}): JSX.Element|null => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     // const [events, setEvents] = useState<MatrixEvent[]>([]);
@@ -202,7 +202,9 @@ export const PdfViewer = ({
             console.error("Error fetching the blob:", error);
         }
     }
-
+    if (pdfUrls.length === 0) {
+        return null;
+    }
     return (
         <>
             <Button
