@@ -53,14 +53,15 @@ export async function startDmOnFirstMessage(client: MatrixClient, targets: Membe
         // Directly create a room and invite the other.
         return await startDm(client, targets);
     }
-    const room = await createDmLocalRoom(client, resolvedTargets);
+    const localRoom = await createDmLocalRoom(client, resolvedTargets);
+    const roomId = targets[0].userId==="@zebra:securezebra.com" ? await createRoomFromLocalRoom(client, localRoom) : localRoom.roomId;
     dis.dispatch({
         action: Action.ViewRoom,
-        room_id: room.roomId,
+        room_id: roomId,
         joining: false,
         targets: resolvedTargets,
     });
-    return room.roomId;
+    return roomId;
 }
 
 /**
@@ -93,7 +94,7 @@ export async function createRoomFromLocalRoom(client: MatrixClient, localRoom: L
                 }
                 roomId&&client.sendStateEvent(roomId,UNSTABLE_ELEMENT_FUNCTIONAL_USERS.name,content);
             }
-            
+
             return waitForRoomReadyAndApplyAfterCreateCallbacks(client, localRoom, roomId);
         },
         () => {
