@@ -3,7 +3,7 @@ import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
-import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
+import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
 
@@ -131,51 +131,53 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     return (
-        <>
-            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-                <DialogTrigger asChild>
-                    <AccessibleTooltipButton
-                        title="Select Files"
-                        className="mx_MessageComposer_button files_button"
-                        onClick={handleDialogOpen}
-                    >
-                        <div className="hidden" />
-                    </AccessibleTooltipButton>
-                </DialogTrigger>
-                <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                    <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
-                        <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
-                        <FilesTabs className="mb-4" displayType={displayType} setDisplayType={setDisplayType} setRowSelection={setRowSelection} />
-                        {displayType === "documents" && (
-                            <FilesTable
-                                data={documents}
-                                rowSelection={rowSelection}
-                                setRowSelection={setRowSelection}
-                                mode="dialog"
-                            />
-                        )}
-                        <div style={{ display: displayType === "media" ? "block" : "none" }}>
-                            <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
-                        </div>
-
-                        <div
-                            className={cn(
-                                "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
-                                selectedFiles.length > 0 ? "justify-between" : "justify-end",
-                            )}
-                        >
-                            {selectedFiles.length > 0 && (
-                                <div className="text-sm text-muted-foreground ml-2">
-                                    {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
-                                </div>
-                            )}
-                            <Button disabled={selectedFiles.length === 0} onClick={handleClickDone}>
-                                Done
-                            </Button>
-                        </div>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+            <DialogTrigger asChild>
+                <CollapsibleButton
+                    title="Select Files"
+                    className="mx_MessageComposer_button"
+                    iconClassName="files_button"
+                    onClick={handleDialogOpen}
+                />
+            </DialogTrigger>
+            <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
+                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                    <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                    <FilesTabs
+                        className="mb-4"
+                        displayType={displayType}
+                        setDisplayType={setDisplayType}
+                        setRowSelection={setRowSelection}
+                    />
+                    {displayType === "documents" && (
+                        <FilesTable
+                            data={documents}
+                            rowSelection={rowSelection}
+                            setRowSelection={setRowSelection}
+                            mode="dialog"
+                        />
+                    )}
+                    <div style={{ display: displayType === "media" ? "block" : "none" }}>
+                        <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
                     </div>
-                </DialogContent>
-            </Dialog>
-        </>
+
+                    <div
+                        className={cn(
+                            "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                            selectedFiles.length > 0 ? "justify-between" : "justify-end",
+                        )}
+                    >
+                        {selectedFiles.length > 0 && (
+                            <div className="text-sm text-muted-foreground ml-2">
+                                {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"} selected
+                            </div>
+                        )}
+                        <Button disabled={selectedFiles.length === 0} onClick={handleClickDone}>
+                            Done
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 };
