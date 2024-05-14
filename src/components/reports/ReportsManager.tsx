@@ -41,7 +41,6 @@ export const ReportsManager = ({
                     body: JSON.stringify({ user_id: userId }),
                 });
                 const data = await response.json();
-                console.log(data,'data')
                 if (data?.document?.length === 0) return;
                 setReports(() =>
                     data.document.map(

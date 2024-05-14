@@ -48,13 +48,11 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount(): void {
-        console.log("registering uploading actions");
         this.dispatcherRef = dis.register(this.onAction);
         this.mounted = true;
     }
 
     public componentWillUnmount(): void {
-        console.log("unregistering uploading actions");
         this.mounted = false;
         dis.unregister(this.dispatcherRef!);
     }

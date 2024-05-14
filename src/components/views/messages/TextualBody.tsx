@@ -831,7 +831,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
-            console.log(content)
             body = (
                 <>
                     <h2>
@@ -913,7 +912,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if ((this.state.echartsOption && this.state.echartsQuery) || this.state.generating) {
-            console.log("echartsOption", this.state.echartsOption, "echartsQuery", this.state.echartsQuery);
             body = (
                 <>
                     {body}
