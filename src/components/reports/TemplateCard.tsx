@@ -40,7 +40,7 @@ export const TemplateCard = ({
                             className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
                             variant="secondary"
                         >
-                            {template.type === "document" ? "Document" : "Template"}
+                            {template.type === "report" ? "Report" : "Template"}
                         </Badge>
                     </div>
                     <div className="flex justify-between items-start">

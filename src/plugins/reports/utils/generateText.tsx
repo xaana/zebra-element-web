@@ -17,12 +17,12 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
         from = editor.state.selection.from;
         to = editor.state.selection.to;
         textSelection = editor.state.doc.textBetween(from, to);
-        const selection = editor.state.selection.content();
-        editor.commands.deleteRange({
-            from: from,
-            to: to,
-        });
-        editor.commands.insertContentAt(from, selection.toJSON().content[0]);
+        // const selection = editor.state.selection.content();
+        // editor.commands.deleteRange({
+        //     from: from,
+        //     to: to,
+        // });
+        // editor.commands.insertContentAt(from, selection.toJSON().content[0]);
     }
 
     if (textSelection.length === 0) {
@@ -61,9 +61,10 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
 
         const onResponseComplete = (response: string): void => {
             // responseText = response
-            editor.commands.deleteRange({ from: from, to: to });
-            editor.commands.insertContentAt(from, response);
-            to = from + response.length + 1;
+            // editor.commands.deleteRange({ from: from, to: to });
+            // editor.commands.insertContentAt(from, response);
+            editor.commands.insertContentAt({ from: from, to: to }, response);
+            // to = from + response.length + 1;
             // editor.commands.selectParentNode()
             editorChat.setMessages((prev) => {
                 return prev.map((message, index) => {

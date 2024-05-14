@@ -27,7 +27,7 @@ export type Template = {
     name: string;
     description: string;
     timestamp: string;
-    type: "document" | "template";
+    type: "report" | "template";
     content?: JSONContent;
     status?: string;
 };

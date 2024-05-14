@@ -27,15 +27,23 @@ export const ResponseAction = ({
         if (responseText.current.length > 0) {
             // const node = editor.state.doc.nodeAt(from.current)
             // const nodeSize = node?.nodeSize
-            editor.commands.deleteRange({ from: from.current, to: to.current });
-            if (value === "original") {
-                editor.commands.insertContentAt(from.current, textSelection.current);
-                to.current = from.current + textSelection.current.length + 1;
-            } else {
-                editor.commands.insertContentAt(from.current, responseText.current);
-                to.current = from.current + responseText.current.length + 1;
-            }
-            // editor.commands.selectParentNode()
+
+            editor.commands.selectParentNode();
+            from.current = editor.state.selection.from;
+            to.current = editor.state.selection.to;
+            editor.commands.insertContentAt(
+                { from: from.current, to: to.current },
+                value === "original" ? textSelection.current : responseText.current,
+            );
+
+            // editor.commands.deleteRange({ from: from.current, to: to.current });
+            // if (value === "original") {
+            //     editor.commands.insertContentAt(from.current, textSelection.current);
+            //     to.current = from.current + textSelection.current.length + 1;
+            // } else {
+            //     editor.commands.insertContentAt(from.current, responseText.current);
+            //     to.current = from.current + responseText.current.length + 1;
+            // }
         }
     };
     return (
