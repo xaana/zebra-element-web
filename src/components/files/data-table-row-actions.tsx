@@ -61,7 +61,7 @@ export function DataTableRowActions<TData>({ row,onDelete,userId }: DataTableRow
                         <IconZebra className="h-5 w-5" />
                     </DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                
                 {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -74,10 +74,13 @@ export function DataTableRowActions<TData>({ row,onDelete,userId }: DataTableRow
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                {userId===row.original.sender&&<DropdownMenuItem onClick={()=>setDialogOpen(true)}>
+                {userId===row.original.sender&&
+                <div>
+                 <DropdownMenuSeparator />   
+                    <DropdownMenuItem onClick={()=>setDialogOpen(true)}>
                     Delete
                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                </DropdownMenuItem>}
+                </DropdownMenuItem></div>}
             </DropdownMenuContent>
         </DropdownMenu>
         {userId===row.original.sender&&<Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
