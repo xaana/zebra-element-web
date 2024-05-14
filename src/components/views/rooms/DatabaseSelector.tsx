@@ -4,6 +4,7 @@ import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
