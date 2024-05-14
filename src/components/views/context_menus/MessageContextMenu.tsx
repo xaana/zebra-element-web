@@ -174,7 +174,8 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
         const canRedact =
             !!room?.currentState.maySendRedactionForEvent(this.props.mxEvent, cli.getSafeUserId()) &&
             this.props.mxEvent.getType() !== EventType.RoomServerAcl &&
-            this.props.mxEvent.getType() !== EventType.RoomEncryption;
+            this.props.mxEvent.getType() !== EventType.RoomEncryption&&
+            this.props.mxEvent.getSender() === cli.getUserId();
 
         let canPin =
             !!room?.currentState.mayClientSendStateEvent(EventType.RoomPinnedEvents, cli) &&
