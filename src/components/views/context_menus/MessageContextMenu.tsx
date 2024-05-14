@@ -693,7 +693,7 @@ export default class MessageContextMenu extends React.Component<IProps, IState> 
                 {externalURLButton}
                 {jumpToRelatedEventButton}
                 {unhidePreviewButton}
-                {viewSourceButton}
+                {/* {viewSourceButton} */}
                 {resendReactionsButton}
                 {collapseReplyChainButton}
             </IconizedContextMenuOptionList>
