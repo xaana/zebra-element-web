@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
-import { useAtomValue } from "jotai";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { MsgType } from "matrix-js-sdk/src/matrix";
+import { RowSelectionState } from "@tanstack/react-table";
+
+import type { File } from "@/plugins/files/types";
 
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -17,7 +21,11 @@ import { tones } from "@/lib/constants";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
-import { selectedFilesAtom } from "@/plugins/reports/stores/store";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { getUserFiles } from "@/lib/utils/getUserFiles";
+import { FilesTable } from "@/components/files/FilesTable";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export interface DataProps {
     text: string;
@@ -44,9 +52,22 @@ export const AiWriterView = ({
     });
     const currentTone = tones.find((t) => t.value === data.tone);
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
+    const [documents, setDocuments] = useState<File[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [isFetching, setIsFetching] = useState(false);
+    const [filesDialogOpen, setFilesDialogOpen] = useState(false);
     const textareaId = useMemo(() => uuid(), []);
-    const selectedFiles = useAtomValue(selectedFilesAtom);
+    const client = useMatrixClientContext();
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = await getUserFiles(client);
+        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+    };
+
+    useEffect(() => {
+        setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
+    }, [rowSelection, documents]);
 
     const generateText = useCallback(async () => {
         const { text: dataText, tone, textLength, textUnit, addHeading, language } = data;
@@ -184,6 +205,19 @@ export const AiWriterView = ({
         [updateAttributes],
     );
 
+    const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+        if (open) {
+            await fetchFiles();
+        } else {
+            setFilesDialogOpen(false);
+        }
+    };
+
+    const handleRemoveFile = (file: File): void => {
+        setSelectedFiles(selectedFiles.filter((f) => f.id !== file.id));
+        setRowSelection({});
+    };
+
     return (
         <NodeViewWrapper data-drag-handle>
             <Panel noShadow className="w-full">
@@ -213,45 +247,106 @@ export const AiWriterView = ({
                     />
                     <div className="flex flex-row items-center justify-between gap-1">
                         <div className="flex justify-between w-auto gap-1">
-                            <Dropdown.Root>
-                                <Dropdown.Trigger asChild>
-                                    <Button variant="tertiary">
-                                        <Icon name="Mic" />
-                                        {currentTone?.label || "Change tone"}
-                                        <Icon name="ChevronDown" />
-                                    </Button>
-                                </Dropdown.Trigger>
-                                <Dropdown.Portal>
-                                    <Dropdown.Content side="bottom" align="start" asChild>
-                                        <Surface className="p-2 min-w-[12rem]">
-                                            {!!data.tone && (
-                                                <>
-                                                    <Dropdown.Item asChild>
+                            <div className="flex items-center gap-3">
+                                <Dropdown.Root>
+                                    <Dropdown.Trigger asChild>
+                                        <Button variant="tertiary">
+                                            <Icon name="Mic" />
+                                            {currentTone?.label || "Change tone"}
+                                            <Icon name="ChevronDown" />
+                                        </Button>
+                                    </Dropdown.Trigger>
+                                    <Dropdown.Portal>
+                                        <Dropdown.Content side="bottom" align="start" asChild>
+                                            <Surface className="p-2 min-w-[12rem]">
+                                                {!!data.tone && (
+                                                    <>
+                                                        <Dropdown.Item asChild>
+                                                            <DropdownButton
+                                                                isActive={data.tone === undefined}
+                                                                onClick={onUndoClick}
+                                                            >
+                                                                <Icon name="Undo2" />
+                                                                Reset
+                                                            </DropdownButton>
+                                                        </Dropdown.Item>
+                                                        <Toolbar.Divider horizontal />
+                                                    </>
+                                                )}
+                                                {tones.map((tone) => (
+                                                    <Dropdown.Item asChild key={tone.value}>
                                                         <DropdownButton
-                                                            isActive={data.tone === undefined}
-                                                            onClick={onUndoClick}
+                                                            isActive={tone.value === data.tone}
+                                                            onClick={createItemClickHandler(tone)}
                                                         >
-                                                            <Icon name="Undo2" />
-                                                            Reset
+                                                            {tone.label}
                                                         </DropdownButton>
                                                     </Dropdown.Item>
-                                                    <Toolbar.Divider horizontal />
-                                                </>
-                                            )}
-                                            {tones.map((tone) => (
-                                                <Dropdown.Item asChild key={tone.value}>
-                                                    <DropdownButton
-                                                        isActive={tone.value === data.tone}
-                                                        onClick={createItemClickHandler(tone)}
+                                                ))}
+                                            </Surface>
+                                        </Dropdown.Content>
+                                    </Dropdown.Portal>
+                                </Dropdown.Root>
+
+                                {selectedFiles.length > 0 ? (
+                                    <div className="flex items-center gap-2">
+                                        {selectedFiles.map((file, index) => (
+                                            <Badge key={index} variant="outline" className="flex items-center gap-2">
+                                                <div className="text-sm">{file.name}</div>
+                                                <Button
+                                                    onClick={() => handleRemoveFile(file)}
+                                                    variant="ghost"
+                                                    className="w-auto h-auto px-1 py-2 rounded-full"
+                                                >
+                                                    <Icon name="X" />
+                                                </Button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <Dialog open={filesDialogOpen} onOpenChange={handleDialogOpenChange}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="tertiary" onClick={() => setFilesDialogOpen(true)}>
+                                                <Icon name="Files" className="w-5 h-5 mr-2" />
+                                                Select Files...
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
+                                            <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                                                <h2 className="text-2xl font-semibold tracking-tight my-1">
+                                                    Select Files
+                                                </h2>
+                                                <FilesTable
+                                                    data={documents}
+                                                    rowSelection={rowSelection}
+                                                    setRowSelection={setRowSelection}
+                                                    mode="dialog"
+                                                />
+
+                                                <div
+                                                    className={cn(
+                                                        "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                                        selectedFiles.length > 0 ? "justify-between" : "justify-end",
+                                                    )}
+                                                >
+                                                    {selectedFiles.length > 0 && (
+                                                        <div className="text-sm text-muted-foreground ml-2">
+                                                            {selectedFiles.length}{" "}
+                                                            {selectedFiles.length === 1 ? "file" : "files"} selected
+                                                        </div>
+                                                    )}
+                                                    <Button
+                                                        disabled={selectedFiles.length === 0}
+                                                        onClick={() => setFilesDialogOpen(false)}
                                                     >
-                                                        {tone.label}
-                                                    </DropdownButton>
-                                                </Dropdown.Item>
-                                            ))}
-                                        </Surface>
-                                    </Dropdown.Content>
-                                </Dropdown.Portal>
-                            </Dropdown.Root>
+                                                        Done
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                )}
+                            </div>
                         </div>
                         <div className="flex justify-between w-auto gap-1">
                             {previewText && (
@@ -277,6 +372,7 @@ export const AiWriterView = ({
                                     await generateText();
                                 }}
                                 style={{ whiteSpace: "nowrap" }}
+                                disabled={isFetching || selectedFiles.length === 0}
                             >
                                 {previewText ? <Icon name="Repeat" /> : <Icon name="Sparkles" />}
                                 {previewText ? "Regenerate" : "Generate text"}

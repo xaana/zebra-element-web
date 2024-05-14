@@ -4,14 +4,11 @@ import { createPortal } from "react-dom";
 import { useAtomValue } from "jotai";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { TextMenu } from "../menus/TextMenu";
 import type { Editor as TiptapEditor } from "@tiptap/react";
 
+import { TextMenu } from "@/components/reports/menus/TextMenu";
 import { ContentItemMenu } from "@/components/reports/menus/ContentItemMenu";
 import { TableOfContents } from "@/components/reports/TableOfContents";
-import { ChatContent } from "@/components/reports/Chat/chat-content";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@/components/ui/Icon";
 import "@/plugins/reports/styles/editor.css";
 import "@/plugins/reports/styles/index.css";
 import { LinkMenu } from "@/components/reports/menus";
@@ -21,11 +18,13 @@ import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/I
 import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
 import { TableColumnMenu, TableRowMenu } from "@/plugins/reports/extensions/Table/menus";
 import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
-import { ChatQueryForm } from "@/components/reports/Chat/chat-query-form";
 import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
 import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
-import { generateText } from "@/plugins/reports/utils/generateText";
+import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+
 type ContentResponse = {
     content: string | null;
     isRendered: boolean;
@@ -42,9 +41,8 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
     const menuContainerRef = useRef(null);
     const editorRef = useRef<HTMLDivElement | null>(null);
 
-    const { editorChat, isAiLoading } = useContext(EditorContext);
+    const { isAiLoading } = useContext(EditorContext);
 
-    const [chatInput, setChatInput] = useState("");
     // State for content outline from store
     const generatedOutline = useAtomValue(generatedOutlineAtom);
     // State to ensure content generation is not triggered multiple times
@@ -141,23 +139,24 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
 
     const aiLoaderPortal = createPortal(<Loader label="Zebra is generating content..." />, document.body);
 
-    const handleChatStop = (): void => {
-        console.log("Stop");
-    };
-
-    const handleQueryFormSubmit = async (): Promise<void> => {
-        if (chatInput.length === 0 || !editorChat || !editor) return;
-        await generateText(chatInput, editor, editorChat);
-    };
-
     return (
-        <>
-            <div className="flex h-full relative" ref={menuContainerRef}>
-                <Sidebar side="left" isOpen={leftSidebar.isOpen}>
-                    <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
-                </Sidebar>
-                <div className="relative flex flex-col flex-1 h-full overflow-visible">
-                    <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
+        <div className="w-full h-full overflow-y-auto relative flex">
+            <Sidebar side="left" isOpen={leftSidebar.isOpen}>
+                <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
+            </Sidebar>
+            <div className="flex-1 flex h-max relative justify-center overflow-y-auto" ref={menuContainerRef}>
+                <div className="editor__container relative flex flex-col h-full shrink basis-[55em]">
+                    <Separator className="h-6 invisible" />
+                    <EditorContent
+                        editor={editor}
+                        ref={editorRef}
+                        className={cn(
+                            "flex-1 w-full h-full border-2 rounded-2xl transition-all outline-none",
+                            editor.isFocused &&
+                                "outline outline-[2.5px] -outline-offset-[3.5px] outline-primary/40  dark:outline-primary-500",
+                        )}
+                        style={{ minHeight: "calc(100vh - 108px)" }}
+                    />
                     <ContentItemMenu editor={editor} />
                     <LinkMenu editor={editor} appendTo={menuContainerRef} />
                     <TextMenu editor={editor} />
@@ -165,39 +164,11 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
                     <TableRowMenu editor={editor} appendTo={menuContainerRef} />
                     <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
                     <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
+                    <Separator className="h-6 invisible" />
                 </div>
-                <Sidebar side="right" isOpen={rightSidebar.isOpen}>
-                    <div className="w-full h-full relative bg-card">
-                        <div className="absolute top-1.5 right-2 w-full flex justify-end gap-1.5 items-center z-10">
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => editorChat?.reset()}
-                                className="p-1 h-auto rounded-full"
-                            >
-                                <Icon name="Trash2" strokeWidth={1.75} className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={rightSidebar.close}
-                                className="p-1 h-auto rounded-full"
-                            >
-                                <Icon name="X" className="w-3.5 h-3.5" />
-                            </Button>
-                        </div>
-                        <ChatContent isLoading={editorChat?.isLoading ?? false} />
-                        <ChatQueryForm
-                            input={chatInput}
-                            isLoading={editorChat?.isLoading ?? false}
-                            setInput={setChatInput}
-                            onQueryFormSubmit={handleQueryFormSubmit}
-                            onStop={handleChatStop}
-                        />
-                    </div>
-                </Sidebar>
             </div>
+            <ChatSidebar sidebar={rightSidebar} />
             {(isAiLoading || isLoadingContent) && aiLoaderPortal}
-        </>
+        </div>
     );
 };

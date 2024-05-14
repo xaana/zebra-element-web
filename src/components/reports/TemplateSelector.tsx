@@ -93,8 +93,8 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (filterValue === "documents") {
-            setFilteredTemplates(templates.filter((template) => template.type === "document"));
+        if (filterValue === "reports") {
+            setFilteredTemplates(templates.filter((template) => template.type === "report"));
         } else if (filterValue === "templates") {
             setFilteredTemplates(templates.filter((template) => template.type === "template"));
         } else {
@@ -178,13 +178,13 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
                         <Icon name="AlignJustify" className="mr-2" />
                         All
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="templates" aria-label="Toggle favourites">
+                    <ToggleGroupItem value="templates" aria-label="Toggle templates">
                         <Icon name="LayoutTemplate" className="mr-2" />
                         Templates
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="documents" aria-label="Toggle favourites">
+                    <ToggleGroupItem value="reports" aria-label="Toggle reports">
                         <Icon name="FileCheck2" className="mr-2" />
-                        Documents
+                        Reports
                     </ToggleGroupItem>
                 </ToggleGroup>
 

@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { QueryResultTable, DataItem } from "./QueryResultTable";
 
@@ -46,7 +47,7 @@ export const AiDataQueryView = ({
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
     useEffect(() => {
         const getDbList = async (): Promise<void> => {
-            const apiUrl = process.env.REACT_APP_API_URL;
+            const apiUrl = SettingsStore.getValue("botApiUrl");
             if (apiUrl) {
                 setApi(apiUrl);
                 const resp = await fetch(`${apiUrl}/database_list`);

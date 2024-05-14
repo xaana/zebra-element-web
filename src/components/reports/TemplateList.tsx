@@ -92,13 +92,11 @@ export const TemplateList = ({
                 );
             },
             cell: ({ row }): JSX.Element => {
-                // const date: Date = row.getValue("timestamp");
                 const date = parseISO(row.getValue("timestamp"));
 
                 const formatted = isToday(date) ? format(date, "h:mm a") : format(date, "MMM d, yyyy");
 
-                return <div className="text-left ml-3">{formatted}</div>;
-                // return <div className="text-right">{row.getValue("timestamp")}</div>;
+                return <div className="text-left ml-3">{Number(row.original.id) < 0 ? "–" : formatted}</div>;
             },
         },
         {

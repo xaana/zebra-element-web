@@ -45,7 +45,7 @@ import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { AudioCapture } from "./audio-capture";
 import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
 import { DatabaseSelector } from "./DatabaseSelector";
-import { FileSelector } from "./FileSelector"
+import { FileSelector } from "./FileSelector";
 import EditorDialog from "../../rich-text-editor/EditorDialog";
 
 interface IProps {
@@ -65,8 +65,8 @@ interface IProps {
     onStartVoiceBroadcastClick: () => void;
     isRichTextEnabled: boolean;
     onComposerModeClick: () => void;
-    onRichTextEditorDestroyCallback?:(data:string)=>void;
-    onSendCallback: (content: string, rawContent:string)=>void;
+    onRichTextEditorDestroyCallback?: (data: string) => void;
+    onSendCallback: (content: string, rawContent: string) => void;
 }
 
 type OverflowMenuCloser = () => void;
@@ -74,7 +74,7 @@ export const OverflowMenuContext = createContext<OverflowMenuCloser | null>(null
 
 const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     const matrixClient = useContext(MatrixClientContext);
-    const { room, narrow,timelineRenderingType } = useContext(RoomContext);
+    const { room, narrow, timelineRenderingType } = useContext(RoomContext);
     const isWysiwygLabEnabled = useSettingValue<boolean>("feature_wysiwyg_composer");
     if (!matrixClient || !room || props.haveRecording) {
         return null;
@@ -91,7 +91,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                     onClick={props.onComposerModeClick}
                 />
             ) : (
-                (emojiButton(props))
+                emojiButton(props)
             ),
         ];
         moreButtons = [
@@ -104,7 +104,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     } else {
         mainButtons = [
-            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
+            // richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
             isWysiwygLabEnabled ? (
                 <ComposerModeButton
                     key="composerModeButton"
@@ -114,15 +114,24 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ) : (
                 emojiButton(props)
             ),
-            uploadButton(), // props passed via UploadButtonContext
-            audioCaptureButton(),
-            voiceBotButton(matrixClient,room),
+            // uploadButton(), // props passed via UploadButtonContext
+            // audioCaptureButton(),
+            // voiceBotButton(matrixClient, room),
             // (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:databaseSelector(),
             // (props.relation&&props.relation["rel_type"]&&props.relation["rel_type"].includes("m.thread"))?null:filesSelector(room.roomId),
-            databaseSelector(),
-            filesSelector(room.roomId),
+            // databaseSelector(),
+            // filesSelector(room.roomId),
         ];
         moreButtons = [
+            // Transfer buttons from message bar to here
+            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
+            uploadButton(), // props passed via UploadButtonContext
+            audioCaptureButton(),
+            voiceBotButton(matrixClient, room),
+            databaseSelector(),
+            filesSelector(room.roomId),
+
+            // Below are original four buttons in more options
             showStickersButton(props),
             voiceRecordingButton(props, narrow),
             startVoiceBroadcastButton(props),
@@ -147,9 +156,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     mainButtons = filterBoolean(mainButtons);
     moreButtons = filterBoolean(moreButtons);
 
-    const moreOptionsClasses = classNames({
-        mx_MessageComposer_button: true,
-        mx_MessageComposer_buttonMenu: true,
+    const moreOptionsClasses = classNames("mx_MessageComposer_button mx_MessageComposer_buttonMenu", {
         mx_MessageComposer_closeButtonMenu: props.isMenuOpen,
     });
 
@@ -202,18 +209,20 @@ function filesSelector(roomId: string): ReactElement {
     return <FileSelector key="controls_filesSelector" roomId={roomId} />;
 }
 
-function voiceBotButton(matrixClient: MatrixClient,room: Room): ReactElement {
+function voiceBotButton(matrixClient: MatrixClient, room: Room): ReactElement {
     return <VoiceBotButton key="controls_voicebot" client={matrixClient} room={room.roomId} />;
 }
 
 function richTextEditorButton(
-    onSendCallback: (content: string, rawContent:string)=>void,
-    onRichTextEditorDestroyCallback?:(data:string)=>void,
+    onSendCallback: (content: string, rawContent: string) => void,
+    onRichTextEditorDestroyCallback?: (data: string) => void,
 ): ReactElement {
     const trigger = (
-        <AccessibleTooltipButton
-            title="Open Rich Text Editor"
-            className="mx_MessageComposer_button editor_button"
+        <CollapsibleButton
+            title="Rich Text Editor"
+            className="mx_MessageComposer_button"
+            iconClassName="editor_button"
+            onClick={null}
             // onClick={() => {
             //     dis.dispatch({
             //         action: "select_database",
@@ -222,12 +231,17 @@ function richTextEditorButton(
             //         context: room.,
             //     });
             // }}
-        >
-            <div className="hidden" />
-        </AccessibleTooltipButton>
-    )
+        />
+    );
 
-    return <EditorDialog trigger={trigger} onDestroyCallback={onRichTextEditorDestroyCallback} onSendCallback={onSendCallback} />
+    return (
+        <EditorDialog
+            key="controls_rich_text_editor"
+            trigger={trigger}
+            onDestroyCallback={onRichTextEditorDestroyCallback}
+            onSendCallback={onSendCallback}
+        />
+    );
 }
 
 type UploadButtonFn = () => void;
