@@ -70,6 +70,9 @@ import { DocFile } from "./FileSelector";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WebSearchPill from "@/components/ui/WebSearchPill";
+import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
+import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
+import SmartReply from "@/components/ui/SmartReply";
 
 let instanceCount = 0;
 
@@ -117,6 +120,7 @@ interface IState {
     isWysiwygLabEnabled: boolean;
     isRichTextEnabled: boolean;
     initialComposerContent: string;
+    smartReply: string[];
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -155,6 +159,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             isWysiwygLabEnabled: SettingsStore.getValue<boolean>("feature_wysiwyg_composer"),
             isRichTextEnabled: true,
             initialComposerContent: "",
+            smartReply: [],
         };
 
         this.instanceId = instanceCount++;
@@ -194,6 +199,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         UIStore.instance.trackElementDimensions(`MessageComposer${this.instanceId}`, this.ref.current!);
         UIStore.instance.on(`MessageComposer${this.instanceId}`, this.onResize);
         this.updateRecordingState(); // grab any cached recordings
+        this.getSmartReplies();
     }
 
     private onResize = (type: UI_EVENTS, entry: ResizeObserverEntry): void => {
@@ -486,6 +492,30 @@ export class MessageComposer extends React.Component<IProps, IState> {
             this.toggleButtonMenu();
         }
     };
+    private setReply = (): void => {
+        this.setState({
+            smartReply:[],
+        })
+    }
+    private getSmartReplies = (): void => {
+        
+        if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return
+        const lastEvent = this.props.room.getLiveTimeline().getEvents()[this.props.room.getLiveTimeline().getEvents().length-1];
+        if (!lastEvent) return
+        if (lastEvent.getType() !== "m.room.message"&&lastEvent.getType() !== "m.room.encrypted") return
+        const currentUserId = MatrixClientPeg.safeGet().getUserId();
+        if (!currentUserId) return
+        const functionalUsers = getFunctionalMembers(this.props.room);
+        const lastEventSender = lastEvent.getSender();
+        if (lastEventSender === currentUserId) return
+        if (lastEventSender&&functionalUsers.includes(lastEventSender)) return
+        // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
+        
+    }
+
+
+
+
 
     public render(): React.ReactNode {
         const hasE2EIcon = Boolean(!this.state.isWysiwygLabEnabled && this.props.e2eStatus);
@@ -530,6 +560,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         database={this.props.database}
                         files={this.props.files}
                         onSendCallback={this.props.onSendCallback}
+                        resetReplies={this.setReply}
                     />
                 );
             }
@@ -626,6 +657,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
             >
                 {recordingTooltip}
                 <div className={`mx_MessageComposer_wrapper shadow-2xl${this.props.fromHomepage && " text-start"}`}>
+                    <div className="flex flex-row ml-50 justify-end">
+                        {this.state.smartReply.map((reply:string)=><SmartReply key={reply} reply={reply} client={MatrixClientPeg.safeGet()} roomId={this.context.roomId} setReply={this.setReply} />)}
+                    </div>
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
@@ -635,7 +669,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread&&!this.props.database&&this.props.files?.length===0&&<WebSearchPill />}
                     <div className="mx_MessageComposer_row">
                         {e2eIcon}
-                        {composer}
+                        <div onClick={()=>{this.getSmartReplies()}} className="w-full">
+                            {composer}
+                        </div>
                         <div className="mx_MessageComposer_actions">
                             {controls}
                             {(canSendMessages || this.props.fromHomepage) && (
