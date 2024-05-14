@@ -577,3 +577,34 @@
         }
     }
 }
+
+.mx_RoomSearch {
+    flex: 1;
+    min-width: 0;
+    border-radius: 8px;
+    background-color: $panel-actions;
+    /* keep border thickness consistent to prevent movement */
+    border: 1px solid transparent;
+    height: 32px;
+    padding: 4px;
+
+    /* Create a flexbox for the icons (easier to manage) */
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.mx_RoomListHeader {
+    .mx_RoomListHeader_plusButton {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        position: relative;
+        padding: 8px;
+        margin: 8px;
+        background-color: $panel-actions;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+}
