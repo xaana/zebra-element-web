@@ -26,9 +26,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
     onDelete?: (currentFile:any) => void;
+    userId:string
 }
 
-export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActionsProps<TData>): JSX.Element {
+export function DataTableRowActions<TData>({ row,onDelete,userId }: DataTableRowActionsProps<TData>): JSX.Element {
     // const matrixClient = useMatrixClientContext();
     const [dialogOpen, setDialogOpen] = useState(false);
     // const onDelete = ():void => {
@@ -73,13 +74,13 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                <DropdownMenuItem onClick={()=>setDialogOpen(true)}>
+                {userId===row.original.sender&&<DropdownMenuItem onClick={()=>setDialogOpen(true)}>
                     Delete
                     <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                </DropdownMenuItem>
+                </DropdownMenuItem>}
             </DropdownMenuContent>
         </DropdownMenu>
-        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        {userId===row.original.sender&&<Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
@@ -93,7 +94,7 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
                     <Button onClick={()=>onDelete&&onDelete(row.original)}>confirm</Button>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog>}
         </>
     );
 }

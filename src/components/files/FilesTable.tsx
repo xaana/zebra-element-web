@@ -148,7 +148,20 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
     ({ data, rowSelection, setRowSelection, mode,onDelete }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
         const [dialogOpen, setDialogOpen] = React.useState(false);
+        const [showDelete, setShowDelete] = React.useState(true);
         const client = useMatrixClientContext();
+
+        React.useEffect(() => {
+            let temp = true
+            for (const key in rowSelection) {
+                if(data[Number(key)].sender!==client.getUserId()){
+                temp = false
+                setShowDelete(false)}
+            }
+            if (temp) {
+                setShowDelete(true)
+            }
+        },[client, data, rowSelection]);
         const handleDialogOpenChange = async (open: boolean): Promise<void> => {
             if (open) {
                 setDialogOpen(open);
@@ -277,7 +290,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
             {
                 id: "actions",
-                cell: ({ row }) => <DataTableRowActions row={row} onDelete={onDelete} />,
+                cell: ({ row }) => <DataTableRowActions row={row} onDelete={onDelete} userId={client.getUserId()!} />,
             },
         ];
 
@@ -313,13 +326,12 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             }
             onDelete&&setRowSelection({});
         }
-
         return (
             <>
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <DataTableToolbar table={table} />
-                    {onDelete&&Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
+                    {onDelete&&showDelete&&Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
                 </div>
                 
                 <div className="rounded-md border">
