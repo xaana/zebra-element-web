@@ -10,7 +10,7 @@ import "../style/button.css";
 import { IContent } from "matrix-js-sdk/src/models/event";
 import { MatrixClient } from "matrix-js-sdk/src/matrix";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
+import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
 
 import { Dialog, DialogContent, DialogTrigger } from "../../../ui/dialog";
 import type { SpeechCommandRecognizer } from "@tensorflow-models/speech-commands";
@@ -568,55 +568,49 @@ export const VoiceBotButton = ({ client, room }: { client: MatrixClient; room: s
         }
     };
     return (
-        <div className="flex items-center justify-center place-content-center w-[26px] h-[26px]">
-            <Dialog
-                open={voiceBotEnabled}
-                onOpenChange={(open: boolean) => {
-                    setVoiceBotEnabled(open);
-                    !open && updateStatus("loading");
-                }}
-            >
-                <DialogTrigger className="border-0 flex items-center justify-center bg-transparent !w-[26px] !h-[26px]">
-                    <AccessibleTooltipButton
-                        title="Voice Chat"
-                        className="mx_MessageComposer_button voice_bot_button"
-                        onClick={null}
-                    >
-                        <div className="hidden" />
-                    </AccessibleTooltipButton>
-                    {/* <div className="!ml-0" /> */}
-                    {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" /> */}
-                </DialogTrigger>
+        <Dialog
+            open={voiceBotEnabled}
+            onOpenChange={(open: boolean) => {
+                setVoiceBotEnabled(open);
+                !open && updateStatus("loading");
+            }}
+        >
+            <DialogTrigger asChild>
+                <CollapsibleButton
+                    title="Voice Chat"
+                    className="mx_MessageComposer_button"
+                    iconClassName="voice_bot_button"
+                    onClick={null}
+                />
+                {/* <div className="!ml-0" /> */}
+                {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button voice_bot_button" /> */}
+            </DialogTrigger>
 
-                <DialogStyle>
-                    <DialogContent
-                        className="w-[90vw] sm:w-[50vw] sm:max-w-[400px] h-[400px] !p-0 bg-white dark:bg-black overflow-hidden"
-                        style={{ transform: "translate(-50%, -50%)" }}
-                    >
-                        <FadeTransition
-                            in={status === "loading"}
-                            nodeRef={loaderRef}
-                            duration={300}
-                            className="z-[2] h-full w-full absolute top-0 left-0"
-                        >
-                            <div className="h-full w-full bg-white dark:bg-black" ref={loaderRef}>
-                                <LoadingAnimation />
-                            </div>
-                        </FadeTransition>
-                        <Visualizer status={status} />
-                        <div className="absolute bottom-0 left-0 mb-8 w-full z-[3]">
-                            <SwitchFadeTransition switcher={statusMap[status]} nodeRef={statusRef}>
-                                <p
-                                    ref={statusRef}
-                                    className="animated-text text-center text-sm uppercase tracking-widest"
-                                >
-                                    {statusMap[status]}
-                                </p>
-                            </SwitchFadeTransition>
-                        </div>
-                    </DialogContent>
-                </DialogStyle>
-            </Dialog>
-        </div>
+            {/* <DialogStyle> */}
+            <DialogContent
+                className="w-[90vw] sm:w-[50vw] sm:max-w-[400px] h-[400px] !p-0 bg-white dark:bg-black overflow-hidden"
+                style={{ transform: "translate(-50%, -50%)" }}
+            >
+                <FadeTransition
+                    in={status === "loading"}
+                    nodeRef={loaderRef}
+                    duration={300}
+                    className="z-[2] h-full w-full absolute top-0 left-0"
+                >
+                    <div className="h-full w-full bg-white dark:bg-black" ref={loaderRef}>
+                        <LoadingAnimation />
+                    </div>
+                </FadeTransition>
+                <Visualizer status={status} />
+                <div className="absolute bottom-0 left-0 mb-8 w-full z-[3]">
+                    <SwitchFadeTransition switcher={statusMap[status]} nodeRef={statusRef}>
+                        <p ref={statusRef} className="animated-text text-center text-sm uppercase tracking-widest">
+                            {statusMap[status]}
+                        </p>
+                    </SwitchFadeTransition>
+                </div>
+            </DialogContent>
+            {/* </DialogStyle> */}
+        </Dialog>
     );
 };
