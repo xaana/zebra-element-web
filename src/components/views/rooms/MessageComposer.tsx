@@ -121,6 +121,8 @@ interface IState {
     isRichTextEnabled: boolean;
     initialComposerContent: string;
     smartReply: string[];
+    isInputBoxVisible: boolean;
+    isButtonGroupVisible: boolean;
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -130,7 +132,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
     private voiceRecordingButton = createRef<VoiceRecordComposerTile>();
     private ref: React.RefObject<HTMLDivElement> = createRef();
     private instanceId: number;
-
     private _voiceRecording: Optional<VoiceMessageRecording>;
 
     public static contextType = RoomContext;
@@ -160,9 +161,12 @@ export class MessageComposer extends React.Component<IProps, IState> {
             isRichTextEnabled: true,
             initialComposerContent: "",
             smartReply: [],
+            isInputBoxVisible: true,
+            isButtonGroupVisible: true,
         };
 
         this.instanceId = instanceCount++;
+        this.updateVisibilities = this.updateVisibilities.bind(this);
 
         SettingsStore.monitorSetting("MessageComposerInput.showStickersButton", null);
         SettingsStore.monitorSetting("MessageComposerInput.showPollsButton", null);
@@ -200,6 +204,34 @@ export class MessageComposer extends React.Component<IProps, IState> {
         UIStore.instance.on(`MessageComposer${this.instanceId}`, this.onResize);
         this.updateRecordingState(); // grab any cached recordings
         this.getSmartReplies();
+    }
+
+    private updateVisibilities = ():void => {
+        if (this.ref.current) {
+            const currentWidth = this.ref.current.offsetWidth;
+            // if (currentWidth < 540 && this.state.isInputBoxVisible) {
+            //     this.setState({
+            //         isInputBoxVisible: false
+            //     })
+            // } else if (currentWidth > 540 && !this.state.isInputBoxVisible) {
+            //     this.setState({
+            //         isInputBoxVisible: true,
+            //     })
+            // }
+            if (currentWidth < 305 && this.state.isButtonGroupVisible) {
+                this.setState({
+                    isButtonGroupVisible: false,
+                })
+            } else if (currentWidth > 305 && !this.state.isButtonGroupVisible) {
+                this.setState({
+                    isButtonGroupVisible: true,
+                })
+            }
+        }
+    }
+
+    public componentDidUpdate(): void {
+        this.updateVisibilities();
     }
 
     private onResize = (type: UI_EVENTS, entry: ResizeObserverEntry): void => {
@@ -660,6 +692,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     <div className="flex flex-row ml-50 justify-end">
                         {this.state.smartReply.map((reply:string)=><SmartReply key={reply} reply={reply} client={MatrixClientPeg.safeGet()} roomId={this.context.roomId} setReply={this.setReply} />)}
                     </div>
+                <div className={`mx_MessageComposer_wrapper shadow-2xl${this.props.fromHomepage ? " text-start": ""}`}>
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
@@ -669,68 +702,72 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread&&!this.props.database&&this.props.files?.length===0&&<WebSearchPill />}
                     <div className="mx_MessageComposer_row">
                         {e2eIcon}
+                        {/* {this.state.isInputBoxVisible && (composer)} */}
                         <div onClick={()=>{this.getSmartReplies()}} className="w-full">
                             {composer}
                         </div>
-                        <div className="mx_MessageComposer_actions">
-                            {controls}
-                            {(canSendMessages || this.props.fromHomepage) && (
-                                <MessageComposerButtons
-                                    addEmoji={this.addEmoji}
-                                    haveRecording={this.state.haveRecording}
-                                    isMenuOpen={this.state.isMenuOpen}
-                                    isStickerPickerOpen={this.state.isStickerPickerOpen}
-                                    menuPosition={menuPosition}
-                                    relation={this.props.relation}
-                                    onRecordStartEndClick={this.onRecordStartEndClick}
-                                    setStickerPickerOpen={this.setStickerPickerOpen}
-                                    showLocationButton={
-                                        !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
-                                    }
-                                    showPollsButton={this.state.showPollsButton}
-                                    showStickersButton={this.showStickersButton}
-                                    isRichTextEnabled={this.state.isRichTextEnabled}
-                                    onComposerModeClick={this.onRichTextToggle}
-                                    toggleButtonMenu={this.toggleButtonMenu}
-                                    showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
-                                    onStartVoiceBroadcastClick={() => {
-                                        setUpVoiceBroadcastPreRecording(
-                                            this.props.room,
-                                            MatrixClientPeg.safeGet(),
-                                            SdkContextClass.instance.voiceBroadcastPlaybacksStore,
-                                            SdkContextClass.instance.voiceBroadcastRecordingsStore,
-                                            SdkContextClass.instance.voiceBroadcastPreRecordingStore,
-                                        );
-                                        this.toggleButtonMenu();
-                                    }}
-                                    onRichTextEditorDestroyCallback={(data:string)=>{
-                                        this.setState({
-                                            composerContent: data,
-                                        })
-                                    }}
-                                    onSendCallback={(content: string, rawContent:string)=>{
-                                        this.props.mxClient.sendMessage(this.context.roomId!, {
-                                            msgtype: "m.text",
-                                            format: "org.matrix.custom.html",
-                                            body: rawContent,
-                                            formatted_body: content
-                                        });
-                                    }}
+                        {this.state.isButtonGroupVisible && (
+                            <div className="mx_MessageComposer_actions">
+                                {controls}
+                                {(canSendMessages || this.props.fromHomepage) && (
+                                    <MessageComposerButtons
+                                        addEmoji={this.addEmoji}
+                                        haveRecording={this.state.haveRecording}
+                                        isMenuOpen={this.state.isMenuOpen}
+                                        isStickerPickerOpen={this.state.isStickerPickerOpen}
+                                        menuPosition={menuPosition}
+                                        relation={this.props.relation}
+                                        onRecordStartEndClick={this.onRecordStartEndClick}
+                                        setStickerPickerOpen={this.setStickerPickerOpen}
+                                        showLocationButton={
+                                            !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
+                                        }
+                                        showPollsButton={this.state.showPollsButton}
+                                        showStickersButton={this.showStickersButton}
+                                        isRichTextEnabled={this.state.isRichTextEnabled}
+                                        onComposerModeClick={this.onRichTextToggle}
+                                        toggleButtonMenu={this.toggleButtonMenu}
+                                        showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
+                                        onStartVoiceBroadcastClick={() => {
+                                            setUpVoiceBroadcastPreRecording(
+                                                this.props.room,
+                                                MatrixClientPeg.safeGet(),
+                                                SdkContextClass.instance.voiceBroadcastPlaybacksStore,
+                                                SdkContextClass.instance.voiceBroadcastRecordingsStore,
+                                                SdkContextClass.instance.voiceBroadcastPreRecordingStore,
+                                            );
+                                            this.toggleButtonMenu();
+                                        }}
+                                        onRichTextEditorDestroyCallback={(data:string)=>{
+                                            this.setState({
+                                                composerContent: data,
+                                            })
+                                        }}
+                                        onSendCallback={(content: string, rawContent:string)=>{
+                                            this.props.mxClient.sendMessage(this.context.roomId!, {
+                                                msgtype: "m.text",
+                                                format: "org.matrix.custom.html",
+                                                body: rawContent,
+                                                formatted_body: content
+                                            });
+                                        }}
 
-                                />
-                            )}
-                            {(showSendButton && !SdkContextClass.instance.roomViewStore.getUploading()) && (
-                                <SendButton
-                                    key="controls_send"
-                                    onClick={this.sendMessage}
-                                    title={
-                                        this.state.haveRecording ? _t("composer|send_button_voice_message") : undefined
-                                    }
-                                />
-                            )}
-                        </div>
+                                    />
+                                )}
+                                {(showSendButton && !SdkContextClass.instance.roomViewStore.getUploading()) && (
+                                    <SendButton
+                                        key="controls_send"
+                                        onClick={this.sendMessage}
+                                        title={
+                                            this.state.haveRecording ? _t("composer|send_button_voice_message") : undefined
+                                        }
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
+            </div>
             </div>
         );
     }

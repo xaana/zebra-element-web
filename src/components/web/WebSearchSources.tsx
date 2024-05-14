@@ -12,7 +12,9 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }) => {
         <>
             {data && data.length > 0 && (
                 <div className="flex gap-2 mt-4 items-center flex-wrap">
-                    <div className="text-sm text-muted-foreground font-bold">Sources:</div>
+                    <div className="text-base text-muted-foreground font-bold mt-1 mb-1">
+                        Sources:
+                    </div>
                     {data.map((item, index) => (
                         <Tooltip key={index}>
                             <TooltipTrigger asChild>

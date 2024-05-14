@@ -55,6 +55,7 @@ import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
 import { SuggestionPrompt } from "./SuggestionPrompt";
+import { Separator } from "../../ui/separator";
 
 import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
@@ -618,7 +619,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private getSectionTitle = (title: string): React.ReactNode => {
         return (
-            <div className="text-base text-muted-foreground font-bold mt-3 mb-3">
+            <div className="text-base text-muted-foreground font-bold mt-1 mb-1">
                 {title}:
             </div>
         )
@@ -693,7 +694,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
-                    <br />
+                    <Separator />
                     {this.getSectionTitle("Answer")}
                     {body}
                     {roomId && (
@@ -845,7 +846,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
-                    <br />
+                    <Separator />
                     {this.getSectionTitle("Answer")}
                     {body}
                     <div className="flex flex-col gap-y-2">
