@@ -1,10 +1,8 @@
-import { Editor, JSONContent, useEditor } from "@tiptap/react";
+import { JSONContent, useEditor } from "@tiptap/react";
 import { EditorState } from "prosemirror-state";
 
-import { useSidebar } from "./useSidebar";
-import type { SidebarState } from "./useSidebar";
+import type { Editor } from "@tiptap/react";
 
-import { initialContent } from "@/plugins/reports/initialContent";
 import { ExtensionKit } from "@/plugins/reports/extensions/extension-kit";
 import { Template } from "@/plugins/reports/types";
 
@@ -20,17 +18,16 @@ export const useBlockEditor = ({
 }: {
     editorState?: JSONContent;
     template?: Template;
-}): { editor: Editor | null; characterCount: any; leftSidebar: SidebarState } => {
-    const leftSidebar = useSidebar();
-
+}): {
+    editor: Editor | null;
+} => {
     const editor = useEditor(
         {
             autofocus: true,
+            // @ts-expect-error @tiptap/react Editor
             onCreate: ({ editor }: { editor: Editor }) => {
                 if (editor.isEmpty) {
-                    editor.commands.setContent(
-                        editorState ? editorState : template ? template.content : initialContent,
-                    );
+                    editor.commands.setContent(editorState || template?.content || null);
                     // The following code clears the history. Hopefully without side effects.
                     const newEditorState = EditorState.create({
                         doc: editor.state.doc,
@@ -54,12 +51,7 @@ export const useBlockEditor = ({
         [],
     );
 
-    const characterCount = editor?.storage.characterCount || {
-        characters: () => 0,
-        words: () => 0,
-    };
-
     window.editor = editor;
 
-    return { editor, characterCount, leftSidebar };
+    return { editor };
 };

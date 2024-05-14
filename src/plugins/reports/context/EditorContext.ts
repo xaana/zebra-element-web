@@ -1,15 +1,22 @@
-import { createContext } from 'react'
+import { Editor } from "@tiptap/react";
+import { createContext } from "react";
+
+import { Chat } from "@/plugins/reports/hooks/use-chat";
 
 interface IEditorContext {
-  isAiLoading: boolean
-  aiError?: string | null
-  setIsAiLoading: Function
-  setAiError: Function
+    editor: Editor | null;
+    editorChat: Chat | null;
+    isAiLoading: boolean;
+    aiError?: string | null;
+    setIsAiLoading: Function;
+    setAiError: Function;
 }
 
 export const EditorContext = createContext<IEditorContext>({
-  isAiLoading: false,
-  aiError: null,
-  setIsAiLoading: () => {},
-  setAiError: () => {},
-})
+    editor: null,
+    editorChat: null,
+    isAiLoading: false,
+    aiError: null,
+    setIsAiLoading: () => {},
+    setAiError: () => {},
+});

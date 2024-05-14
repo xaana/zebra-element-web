@@ -3,7 +3,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/ButtonAlt";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
-import { Toggle } from "@/components/ui/Toggle";
+import { Toggle } from "@/components/ui/ToggleAlt";
 
 export type LinkEditorPanelProps = {
     initialUrl?: string;
@@ -42,8 +42,12 @@ export const useLinkEditorState = ({ initialUrl, initialOpenInNewTab, onSetLink 
     };
 };
 
-export const LinkEditorPanel = ({ onSetLink, initialOpenInNewTab, initialUrl }: LinkEditorPanelProps) => {
-    const state = useLinkEditorState({ onSetLink, initialOpenInNewTab, initialUrl });
+export const LinkEditorPanel = ({ onSetLink, initialOpenInNewTab, initialUrl }: LinkEditorPanelProps): JSX.Element => {
+    const state = useLinkEditorState({
+        onSetLink,
+        initialOpenInNewTab,
+        initialUrl,
+    });
 
     return (
         <Surface className="p-2">

@@ -15,7 +15,7 @@ export type ContentItemMenuProps = {
     editor: Editor;
 };
 
-export const ContentItemMenu = ({ editor }: ContentItemMenuProps) => {
+export const ContentItemMenu = ({ editor }: ContentItemMenuProps): JSX.Element => {
     const [menuOpen, setMenuOpen] = useState(false);
     const data = useData();
     const actions = useContentItemActions(editor, data.currentNode, data.currentNodePos);

@@ -1,48 +1,50 @@
 import React from "react";
-import { useAtomValue, useSetAtom } from "jotai";
 
-import { ContentHeader } from "./ContentHeader";
+import type { Editor } from "@tiptap/react";
 
-import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
-import {
-    selectedTemplateAtom,
-    editorStateAtom,
-    editorContentAtom,
-    previousTemplateAtom,
-} from "@/plugins/reports/stores/store";
+import { EditorHeader } from "@/components/reports/BlockEditor/EditorHeader";
 import { BlockEditor } from "@/components/reports/BlockEditor";
-import { reportsStore } from "@/plugins/reports/MainPanel";
+import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
+
 interface ReportEditorProps {
+    editor: Editor | null;
     nextStep: (htmlContent?: string) => void;
     prevStep: () => void;
+    leftSidebar: SidebarState;
+    rightSidebar: SidebarState;
 }
-export const ReportEditor = ({ nextStep, prevStep }: ReportEditorProps) => {
-    const selectedTemplate = useAtomValue(selectedTemplateAtom);
-    const setEditorState = useSetAtom(editorStateAtom);
-    const setEditorContent = useSetAtom(editorContentAtom);
-    const setPreviousTemplate = useSetAtom(previousTemplateAtom);
-    const { editor, characterCount, leftSidebar } = useBlockEditor({
-        template: selectedTemplate || undefined,
-        editorState: reportsStore.get(editorStateAtom),
-    });
-
-    const proceedToGeneratePdf = () => {
-        setEditorContent(() => editor?.getHTML());
-        setEditorState(() => editor?.getJSON());
-        nextStep(editor?.getHTML());
+export const ReportEditor = ({
+    editor,
+    nextStep,
+    prevStep,
+    leftSidebar,
+    rightSidebar,
+}: ReportEditorProps): JSX.Element => {
+    const proceedToGeneratePdf = (): void => {
+        nextStep();
     };
 
-    const backToTemplateSelect = () => {
-        setEditorState(() => editor?.getJSON());
-        setPreviousTemplate(() => selectedTemplate);
+    const backToTemplateSelect = (): void => {
         prevStep();
     };
 
     return (
         <>
-            <ContentHeader nextStepAction={proceedToGeneratePdf} prevStepAction={backToTemplateSelect} />
-            <div className="rounded-lg border overflow-hidden">
-                <BlockEditor editor={editor} characterCount={characterCount} leftSidebar={leftSidebar} />
+            <div className="w-full p-3 border-b bg-background">
+                {editor && (
+                    <EditorHeader
+                        isLeftSidebarOpen={leftSidebar.isOpen}
+                        isRightSidebarOpen={rightSidebar.isOpen}
+                        toggleLeftSidebar={leftSidebar.toggle}
+                        toggleRightSidebar={rightSidebar.toggle}
+                        editor={editor}
+                        goBack={backToTemplateSelect}
+                        generateReport={proceedToGeneratePdf}
+                    />
+                )}
+            </div>
+            <div style={{ height: "calc(100vh - 66px)" }} className="rounded-b-md border overflow-auto">
+                <BlockEditor editor={editor} leftSidebar={leftSidebar} rightSidebar={rightSidebar} />
             </div>
         </>
     );

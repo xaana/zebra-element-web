@@ -34,7 +34,7 @@ const isOption = (option: ContentTypePickerOption | ContentTypePickerCategory): 
 const isCategory = (option: ContentTypePickerOption | ContentTypePickerCategory): option is ContentTypePickerCategory =>
     option.type === "category";
 
-export const ContentTypePicker = ({ options }: ContentTypePickerProps) => {
+export const ContentTypePicker = ({ options }: ContentTypePickerProps): JSX.Element => {
     const activeItem = useMemo(
         () => options.find((option) => option.type === "option" && option.isActive()),
         [options],

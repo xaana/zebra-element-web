@@ -16,7 +16,15 @@ limitations under the License.
 
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
-import { MenuItem, Tooltip, Separator, ToggleMenuItem, Text, Badge, Heading } from "matrix-react-sdk/node_modules/@vector-im/compound-web";
+import {
+    MenuItem,
+    Tooltip,
+    Separator,
+    ToggleMenuItem,
+    Text,
+    Badge,
+    Heading,
+} from "matrix-react-sdk/node_modules/@vector-im/compound-web";
 import { Icon as SearchIcon } from "@vector-im/compound-design-tokens/icons/search.svg";
 import { Icon as FavouriteIcon } from "@vector-im/compound-design-tokens/icons/favourite-off.svg";
 import { Icon as UserAddIcon } from "@vector-im/compound-design-tokens/icons/user-add.svg";
@@ -54,7 +62,11 @@ import { E2EStatus } from "matrix-react-sdk/src/utils/ShieldUtils";
 import { RoomPermalinkCreator } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { UIComponent, UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
-import { ChevronFace, ContextMenuTooltipButton, useContextMenu } from "matrix-react-sdk/src/components/structures/ContextMenu";
+import {
+    ChevronFace,
+    ContextMenuTooltipButton,
+    useContextMenu,
+} from "matrix-react-sdk/src/components/structures/ContextMenu";
 import { WidgetContextMenu } from "matrix-react-sdk/src/components/views/context_menus/WidgetContextMenu";
 import { useFeatureEnabled } from "matrix-react-sdk/src/hooks/useSettings";
 import { usePinnedEvents } from "matrix-react-sdk/src/components/views/right_panel/PinnedMessagesCard";
@@ -337,7 +349,7 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                         as="h1"
                         size="md"
                         weight="semibold"
-                        className="mx_RoomSummaryCard_roomName text-primary"
+                        className="mx_RoomSummaryCard_roomName text-primary-default"
                         title={name}
                     >
                         {name}
@@ -435,12 +447,14 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                 // XXX: https://github.com/element-hq/compound/issues/288
                 onSelect={() => {}}
             />
-            {!isDirectMessage&&<MenuItem
-                Icon={UserAddIcon}
-                label={_t("action|invite")}
-                disabled={!canInviteTo(room)}
-                onSelect={() => inviteToRoom(room)}
-            />}
+            {!isDirectMessage && (
+                <MenuItem
+                    Icon={UserAddIcon}
+                    label={_t("action|invite")}
+                    disabled={!canInviteTo(room)}
+                    onSelect={() => inviteToRoom(room)}
+                />
+            )}
             {/* <MenuItem Icon={LinkIcon} label={_t("action|copy_link")} onSelect={onShareRoomClick} /> */}
             <MenuItem Icon={SettingsIcon} label={_t("common|settings")} onSelect={onRoomSettingsClick} />
 

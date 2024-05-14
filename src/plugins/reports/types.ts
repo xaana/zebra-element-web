@@ -1,3 +1,18 @@
+import { JSONContent } from "@tiptap/core";
+
+export type MatrixFile = {
+    id: string;
+    name: string;
+    downloadUrl: string;
+    timestamp: Date;
+    sender: string;
+    roomId: string;
+    //   room?: Room
+    isEncrypted: boolean;
+    //   mediaHelper: MediaEventHelper
+    mediaId: string;
+};
+
 export type StepItem = {
     id: number;
     text: string;
@@ -11,8 +26,10 @@ export type Template = {
     id: string;
     name: string;
     description: string;
-    createdAt: Date;
-    content?: Object;
+    timestamp: string;
+    type: "document" | "template";
+    content?: JSONContent;
+    status?: string;
 };
 
 export type File = {
@@ -20,4 +37,16 @@ export type File = {
     name: string;
     owner: string;
     createdAt: Date;
+};
+
+export type Message = {
+    id: string;
+    content: string;
+    role: "system" | "user";
+    messageUid?: string;
+    createdAt?: Date;
+    children?: React.ReactNode | null;
+    childrenContent?: any;
+    messageActions?: boolean;
+    model?: string;
 };

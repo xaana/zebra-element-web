@@ -11,7 +11,7 @@ import {
 } from "@/plugins/reports/extensions";
 import { TableOfContentsNode } from "@/plugins/reports/extensions/TableOfContentsNode";
 
-export const isTableGripSelected = (node: HTMLElement) => {
+export const isTableGripSelected = (node: HTMLElement): boolean => {
     let container = node;
 
     while (container && !["TD", "TH"].includes(container.tagName)) {
@@ -28,7 +28,7 @@ export const isTableGripSelected = (node: HTMLElement) => {
     return false;
 };
 
-export const isCustomNodeSelected = (editor: Editor, node: HTMLElement) => {
+export const isCustomNodeSelected = (editor: Editor, node: HTMLElement): boolean => {
     const customNodes = [
         HorizontalRule.name,
         ImageBlock.name,

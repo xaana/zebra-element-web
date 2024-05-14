@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import { useAtomValue } from "jotai";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -17,8 +18,6 @@ import { Toolbar } from "@/components/ui/Toolbar";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { selectedFilesAtom } from "@/plugins/reports/stores/store";
-import { reportsStore } from "@/plugins/reports/MainPanel";
-import { apiUrlAtom } from "@/plugins/reports/stores/store";
 
 export interface DataProps {
     text: string;
@@ -29,7 +28,13 @@ export interface DataProps {
     language?: string;
 }
 
-export const AiWriterView = ({ editor, node, getPos, deleteNode, updateAttributes }: NodeViewWrapperProps) => {
+export const AiWriterView = ({
+    editor,
+    node,
+    getPos,
+    deleteNode,
+    updateAttributes,
+}: NodeViewWrapperProps): JSX.Element => {
     const [data, setData] = useState<DataProps>({
         text: node.attrs.prompt,
         tone: node.attrs.tone || undefined,
@@ -63,7 +68,7 @@ export const AiWriterView = ({ editor, node, getPos, deleteNode, updateAttribute
             language,
         };
 
-        function processStream(reader: ReadableStreamDefaultReader<any>) {
+        function processStream(reader: ReadableStreamDefaultReader<any>): Promise<void> | void {
             // let responseBuffer: string = ''
             const decoder = new TextDecoder();
 
@@ -110,17 +115,20 @@ export const AiWriterView = ({ editor, node, getPos, deleteNode, updateAttribute
                 extractedFilenames.every((element) => element === null)
             )
                 throw new Error("No attached files found");
-            const res: Response = await fetch(`${reportsStore.get(apiUrlAtom)}/api/matrix_pdf/generate_pdf`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const res: Response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/matrix_pdf/generate_pdf`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        user_requirement: payload.text,
+                        // tone: payload.tone || "",
+                        media_ids: extractedFilenames,
+                    }),
                 },
-                body: JSON.stringify({
-                    user_requirement: payload.text,
-                    // tone: payload.tone || "",
-                    media_ids: extractedFilenames,
-                }),
-            });
+            );
 
             if (!res.body) {
                 throw new Error("No ReadableStream received");

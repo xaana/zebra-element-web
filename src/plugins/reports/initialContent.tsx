@@ -1,275 +1,36 @@
-import type { Template, File } from "@/plugins/reports/types";
+import type { Template, StepItem } from "@/plugins/reports/types";
 
-export const initialContent = {
-    type: "doc",
-    content: [
-        {
-            type: "heading",
-            attrs: {
-                textAlign: "left",
-                level: 1,
-            },
-            content: [
-                {
-                    type: "text",
-                    text: "Zebra Reports Generator",
-                },
-            ],
-        },
-        {
-            type: "paragraph",
-            attrs: {
-                class: null,
-                textAlign: "left",
-            },
-            content: [
-                {
-                    type: "text",
-                    text: "Welcome to our reports editor template.",
-                },
-            ],
-        },
-        {
-            type: "paragraph",
-            attrs: {
-                class: null,
-                textAlign: "left",
-            },
-            content: [
-                {
-                    type: "text",
-                    text: "This editor includes features like:",
-                },
-            ],
-        },
-        {
-            type: "bulletList",
-            content: [
-                {
-                    type: "listItem",
-                    content: [
-                        {
-                            type: "paragraph",
-                            attrs: {
-                                class: null,
-                                textAlign: "left",
-                            },
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "A DragHandle including a DragHandle menu",
-                                },
-                            ],
-                        },
-                    ],
-                },
-                {
-                    type: "listItem",
-                    content: [
-                        {
-                            type: "paragraph",
-                            attrs: {
-                                class: null,
-                                textAlign: "left",
-                            },
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "A Slash menu that can be triggered via typing a ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "code",
-                                        },
-                                    ],
-                                    text: "/",
-                                },
-                                {
-                                    type: "text",
-                                    text: " into an empty paragraph or by using the ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "bold",
-                                        },
-                                    ],
-                                    text: "+ Button",
-                                },
-                                {
-                                    type: "text",
-                                    text: " next to the drag handle",
-                                },
-                            ],
-                        },
-                    ],
-                },
-                {
-                    type: "listItem",
-                    content: [
-                        {
-                            type: "paragraph",
-                            attrs: {
-                                class: null,
-                                textAlign: "left",
-                            },
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "A TextFormatting menu that allows you to change the ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "textStyle",
-                                            attrs: {
-                                                fontSize: "18px",
-                                                fontFamily: null,
-                                                color: null,
-                                            },
-                                        },
-                                    ],
-                                    text: "font size",
-                                },
-                                {
-                                    type: "text",
-                                    text: ", ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "bold",
-                                        },
-                                    ],
-                                    text: "font weight",
-                                },
-                                {
-                                    type: "text",
-                                    text: ", ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "textStyle",
-                                            attrs: {
-                                                fontSize: null,
-                                                fontFamily: "Georgia",
-                                                color: null,
-                                            },
-                                        },
-                                    ],
-                                    text: "font family",
-                                },
-                                {
-                                    type: "text",
-                                    text: ", ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "textStyle",
-                                            attrs: {
-                                                fontSize: null,
-                                                fontFamily: null,
-                                                color: "#b91c1c",
-                                            },
-                                        },
-                                    ],
-                                    text: "color",
-                                },
-                                {
-                                    type: "text",
-                                    text: ", ",
-                                },
-                                {
-                                    type: "text",
-                                    marks: [
-                                        {
-                                            type: "highlight",
-                                            attrs: {
-                                                color: "#7e7922",
-                                            },
-                                        },
-                                    ],
-                                    text: "highlight",
-                                },
-                                {
-                                    type: "text",
-                                    text: " and more",
-                                },
-                            ],
-                        },
-                    ],
-                },
-                {
-                    type: "listItem",
-                    content: [
-                        {
-                            type: "paragraph",
-                            attrs: {
-                                class: null,
-                                textAlign: "left",
-                            },
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "A Table of Contents that can be viewed via clicking on the button on the top left corner",
-                                },
-                            ],
-                        },
-                    ],
-                },
-                {
-                    type: "listItem",
-                    content: [
-                        {
-                            type: "paragraph",
-                            attrs: {
-                                class: null,
-                                textAlign: "left",
-                            },
-                            content: [
-                                {
-                                    type: "text",
-                                    text: "AI implementation with text generation using Zebra LLM",
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-        {
-            type: "imageBlock",
-            attrs: {
-                src: "/img/placeholder-image.jpg",
-                width: "100%",
-                align: "center",
-            },
-        },
-        {
-            type: "paragraph",
-            attrs: {
-                class: null,
-                textAlign: "left",
-            },
-        },
-    ],
-};
+export const steps: StepItem[] = [
+    {
+        id: 0,
+        text: "Select a Template",
+        title: "Select Template",
+        description: `Zebra will follow the structure of the selected report template to generate a content draft.`,
+        nextStepTitle: "Edit Template",
+    },
+    {
+        id: 1,
+        text: "Generate the Report",
+        title: "Customize the Report",
+        description: `Edit the content of the report template using Zebra AI's tools`,
+        nextStepTitle: "Generate Report",
+    },
+    {
+        id: 2,
+        text: "Finalise the Report",
+        title: `Finalise the Report`,
+        description: "View the generated report and export it as a PDF",
+        nextStepTitle: "Save Report",
+    },
+];
 
-export const sampleTemplate = {
-    name: "Financial Report",
+export const sampleTemplate: Template = {
+    name: "Zebra Reports Tips & Tricks",
     description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hicconsequatur ab animi sunt sed voluptas corporis et ad at saepe.",
-    id: "0",
-    createdAt: new Date(),
+    id: "-3",
+    timestamp: new Date().toISOString(),
+    type: "template",
     content: {
         type: "doc",
         content: [
@@ -282,7 +43,7 @@ export const sampleTemplate = {
                 content: [
                     {
                         type: "text",
-                        text: "Financial Report [Year]",
+                        text: "Zebra Reports Generator",
                     },
                 ],
             },
@@ -295,7 +56,7 @@ export const sampleTemplate = {
                 content: [
                     {
                         type: "text",
-                        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                        text: "Welcome to our reports editor template.",
                     },
                 ],
             },
@@ -308,12 +69,7 @@ export const sampleTemplate = {
                 content: [
                     {
                         type: "text",
-                        marks: [
-                            {
-                                type: "bold",
-                            },
-                        ],
-                        text: "Lorem ipsum:",
+                        text: "This editor includes features like:",
                     },
                 ],
             },
@@ -332,7 +88,7 @@ export const sampleTemplate = {
                                 content: [
                                     {
                                         type: "text",
-                                        text: "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit",
+                                        text: "A DragHandle including a DragHandle menu",
                                     },
                                 ],
                             },
@@ -350,7 +106,51 @@ export const sampleTemplate = {
                                 content: [
                                     {
                                         type: "text",
-                                        text: "change the ",
+                                        text: "A Slash menu that can be triggered via typing a ",
+                                    },
+                                    {
+                                        type: "text",
+                                        marks: [
+                                            {
+                                                type: "code",
+                                            },
+                                        ],
+                                        text: "/",
+                                    },
+                                    {
+                                        type: "text",
+                                        text: " into an empty paragraph or by using the ",
+                                    },
+                                    {
+                                        type: "text",
+                                        marks: [
+                                            {
+                                                type: "bold",
+                                            },
+                                        ],
+                                        text: "+ Button",
+                                    },
+                                    {
+                                        type: "text",
+                                        text: " next to the drag handle",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        type: "listItem",
+                        content: [
+                            {
+                                type: "paragraph",
+                                attrs: {
+                                    class: null,
+                                    textAlign: "left",
+                                },
+                                content: [
+                                    {
+                                        type: "text",
+                                        text: "A TextFormatting menu that allows you to change the ",
                                     },
                                     {
                                         type: "text",
@@ -451,7 +251,25 @@ export const sampleTemplate = {
                                 content: [
                                     {
                                         type: "text",
-                                        text: "consectetur adipiscing elit, sed do eiusmod",
+                                        text: "A Table of Contents that can be viewed via clicking on the button on the top left corner",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        type: "listItem",
+                        content: [
+                            {
+                                type: "paragraph",
+                                attrs: {
+                                    class: null,
+                                    textAlign: "left",
+                                },
+                                content: [
+                                    {
+                                        type: "text",
+                                        text: "AI implementation with text generation using Zebra LLM",
                                     },
                                 ],
                             },
@@ -468,32 +286,6 @@ export const sampleTemplate = {
                 },
             },
             {
-                type: "heading",
-                attrs: {
-                    textAlign: "left",
-                    level: 2,
-                },
-                content: [
-                    {
-                        type: "text",
-                        text: "Ullamco Laboris",
-                    },
-                ],
-            },
-            {
-                type: "paragraph",
-                attrs: {
-                    class: null,
-                    textAlign: "left",
-                },
-                content: [
-                    {
-                        type: "text",
-                        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum",
-                    },
-                ],
-            },
-            {
                 type: "paragraph",
                 attrs: {
                     class: null,
@@ -504,12 +296,13 @@ export const sampleTemplate = {
     },
 };
 
-const logTemplate = {
-    name: "Log Report",
+export const logTemplate: Template = {
+    name: "Log Review Report",
     description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hicconsequatur ab animi sunt sed voluptas corporis et ad at saepe.",
-    id: "1",
-    createdAt: new Date(),
+    id: "-1",
+    timestamp: new Date().toISOString(),
+    type: "template",
     content: {
         type: "doc",
         content: [
@@ -1430,24 +1223,3 @@ const logTemplate = {
 };
 
 export const templatesData: Template[] = [sampleTemplate, logTemplate];
-
-export const filesData: File[] = [
-    {
-        id: "a",
-        name: "Invoice.pdf",
-        owner: "zebra_admin",
-        createdAt: new Date(),
-    },
-    {
-        id: "b",
-        name: "Defence Strategic Review.pdf",
-        owner: "zebra_admin",
-        createdAt: new Date(),
-    },
-    {
-        id: "c",
-        name: "Report.pdf",
-        owner: "zebra_admin",
-        createdAt: new Date(),
-    },
-];

@@ -35,22 +35,22 @@ export const AiWriter = Node.create({
         return {
             id: {
                 default: undefined,
-                parseHTML: (element) => element.getAttribute("data-id"),
-                renderHTML: (attributes) => ({
+                parseHTML: (element): any => element.getAttribute("data-id"),
+                renderHTML: (attributes): any => ({
                     "data-id": attributes.id,
                 }),
             },
             authorId: {
                 default: undefined,
-                parseHTML: (element) => element.getAttribute("data-author-id"),
-                renderHTML: (attributes) => ({
+                parseHTML: (element): any => element.getAttribute("data-author-id"),
+                renderHTML: (attributes): any => ({
                     "data-author-id": attributes.authorId,
                 }),
             },
             authorName: {
                 default: undefined,
-                parseHTML: (element) => element.getAttribute("data-author-name"),
-                renderHTML: (attributes) => ({
+                parseHTML: (element): any => element.getAttribute("data-author-name"),
+                renderHTML: (attributes): any => ({
                     "data-author-name": attributes.authorName,
                 }),
             },
@@ -79,7 +79,7 @@ export const AiWriter = Node.create({
         return {
             setAiWriter:
                 () =>
-                ({ chain }) =>
+                ({ chain }): any =>
                     chain()
                         .focus()
                         .insertContent({

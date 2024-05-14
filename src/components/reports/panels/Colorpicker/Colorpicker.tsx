@@ -13,7 +13,7 @@ export type ColorPickerProps = {
     onClear?: () => void;
 };
 
-export const ColorPicker = ({ color, onChange, onClear }: ColorPickerProps) => {
+export const ColorPicker = ({ color, onChange, onClear }: ColorPickerProps): JSX.Element => {
     const [colorInputValue, setColorInputValue] = useState(color || "");
 
     const handleColorUpdate = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
