@@ -257,6 +257,7 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     database?:string;
     files?: DocFile[];
     onSendCallback?: () => void;
+    resetReplies?: () => void;
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -455,6 +456,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             // do not send messages if the upload is in progress
             return;
         }
+        this.props.resetReplies&&this.props.resetReplies();
         const model = this.model;
         if (model.isEmpty) {
             return;
@@ -469,9 +471,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         if (posthogEvent.inThread && this.props.relation!.event_id) {
             const threadRoot = this.props.room.findEventById(this.props.relation!.event_id);
             posthogEvent.startsThread = threadRoot?.getThread()?.events.length === 1;
-            for (const event of threadRoot?.getThread()?.events || []) {
-                console.log(event.getContent(),'event in thread');
-            }
+            // for (const event of threadRoot?.getThread()?.events || []) {
+            //     console.log(event.getContent(),'event in thread');
+            // }
         }
         PosthogAnalytics.instance.trackEvent<ComposerEvent>(posthogEvent);
 

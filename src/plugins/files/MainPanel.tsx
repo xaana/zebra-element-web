@@ -36,7 +36,6 @@ export const MainPanel = (): JSX.Element => {
         if (currentFile.type === MsgType.File){
             setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
         }else if (currentFile.type === MsgType.Image){
-            console.log('removing media',currentFile);
             setMedia((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
         }
     }

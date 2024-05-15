@@ -5,8 +5,6 @@ import { ImageContent } from "matrix-react-sdk/src/customisations/models/IMediaE
 import { _t } from "@/languageHandler";
 import ImageView from "matrix-react-sdk/src/components/views/elements/ImageView";
 import Modal from "matrix-react-sdk/src/Modal";
-import { Button } from "../ui/button";
-import { IconTable } from "../ui/icons";
 import MImageBody from "matrix-react-sdk/src/components/views/messages/MImageBody";
 
 // eslint-disable-next-line import/order

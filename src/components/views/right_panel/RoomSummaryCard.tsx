@@ -493,9 +493,9 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
 
             <MenuItem Icon={LeaveIcon} kind="critical" label={_t("action|leave_room")} onSelect={onLeaveRoomClick} />
 
-            {SettingsStore.getValue(UIFeature.Widgets) &&
+            {/* {SettingsStore.getValue(UIFeature.Widgets) &&
                 !isVideoRoom &&
-                shouldShowComponent(UIComponent.AddIntegrations) && <AppsSection room={room} />}
+                shouldShowComponent(UIComponent.AddIntegrations) && <AppsSection room={room} />} */}
         </BaseCard>
     );
 };

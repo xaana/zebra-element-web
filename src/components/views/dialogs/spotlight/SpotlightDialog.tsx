@@ -567,47 +567,47 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
     const otherSearchesSection: JSX.Element | undefined = <></>;
     // if (trimmedQuery || (filter !== Filter.PublicRooms && filter !== Filter.PublicSpaces)) {
     //     otherSearchesSection = (
-            
-            // <div
-            //     className="mx_SpotlightDialog_section mx_SpotlightDialog_otherSearches"
-            //     role="group"
-            //     aria-labelledby="mx_SpotlightDialog_section_otherSearches"
-            // >
-            //     <h4 id="mx_SpotlightDialog_section_otherSearches">
-            //         {trimmedQuery
-            //             ? _t("spotlight_dialog|heading_with_query", { query })
-            //             : _t("spotlight_dialog|heading_without_query")}
-            //     </h4>
-            //     <div>
-            //         {filter !== Filter.PublicSpaces && supportsSpaceFiltering && (
-            //             <Option
-            //                 id="mx_SpotlightDialog_button_explorePublicSpaces"
-            //                 className="mx_SpotlightDialog_explorePublicSpaces"
-            //                 onClick={() => setFilter(Filter.PublicSpaces)}
-            //             >
-            //                 {filterToLabel(Filter.PublicSpaces)}
-            //             </Option>
-            //         )}
-            //         {filter !== Filter.PublicRooms && (
-            //             <Option
-            //                 id="mx_SpotlightDialog_button_explorePublicRooms"
-            //                 className="mx_SpotlightDialog_explorePublicRooms"
-            //                 onClick={() => setFilter(Filter.PublicRooms)}
-            //             >
-            //                 {filterToLabel(Filter.PublicRooms)}
-            //             </Option>
-            //         )}
-            //         {filter !== Filter.People && (
-            //             <Option
-            //                 id="mx_SpotlightDialog_button_startChat"
-            //                 className="mx_SpotlightDialog_startChat"
-            //                 onClick={() => setFilter(Filter.People)}
-            //             >
-            //                 {filterToLabel(Filter.People)}
-            //             </Option>
-            //         )}
-            //     </div>
-            // </div>
+
+    // <div
+    //     className="mx_SpotlightDialog_section mx_SpotlightDialog_otherSearches"
+    //     role="group"
+    //     aria-labelledby="mx_SpotlightDialog_section_otherSearches"
+    // >
+    //     <h4 id="mx_SpotlightDialog_section_otherSearches">
+    //         {trimmedQuery
+    //             ? _t("spotlight_dialog|heading_with_query", { query })
+    //             : _t("spotlight_dialog|heading_without_query")}
+    //     </h4>
+    //     <div>
+    //         {filter !== Filter.PublicSpaces && supportsSpaceFiltering && (
+    //             <Option
+    //                 id="mx_SpotlightDialog_button_explorePublicSpaces"
+    //                 className="mx_SpotlightDialog_explorePublicSpaces"
+    //                 onClick={() => setFilter(Filter.PublicSpaces)}
+    //             >
+    //                 {filterToLabel(Filter.PublicSpaces)}
+    //             </Option>
+    //         )}
+    //         {filter !== Filter.PublicRooms && (
+    //             <Option
+    //                 id="mx_SpotlightDialog_button_explorePublicRooms"
+    //                 className="mx_SpotlightDialog_explorePublicRooms"
+    //                 onClick={() => setFilter(Filter.PublicRooms)}
+    //             >
+    //                 {filterToLabel(Filter.PublicRooms)}
+    //             </Option>
+    //         )}
+    //         {filter !== Filter.People && (
+    //             <Option
+    //                 id="mx_SpotlightDialog_button_startChat"
+    //                 className="mx_SpotlightDialog_startChat"
+    //                 onClick={() => setFilter(Filter.People)}
+    //             >
+    //                 {filterToLabel(Filter.People)}
+    //             </Option>
+    //         )}
+    //     </div>
+    // </div>
     //     );
     // }
 
@@ -837,7 +837,7 @@ const SpotlightDialog: React.FC<IProps> = ({ initialText = "", initialFilter = n
                     <div className="mx_SpotlightDialog_sectionHeader">
                         <h4 id="mx_SpotlightDialog_section_publicRooms">{_t("common|suggestions")}</h4>
                         <div className="mx_SpotlightDialog_options">
-                            <NetworkDropdown protocols={protocols} config={config ?? null} setConfig={setConfig} />
+                            {/* <NetworkDropdown protocols={protocols} config={config ?? null} setConfig={setConfig} /> */}
                         </div>
                     </div>
                     <div>{content}</div>

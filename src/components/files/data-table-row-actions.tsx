@@ -24,9 +24,15 @@ interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
     onDelete?: (currentFile: any) => void;
     mode: "dialog" | "standalone";
+    userId: string;
 }
 
-export function DataTableRowActions<TData>({ row, onDelete, mode }: DataTableRowActionsProps<TData>): JSX.Element {
+export function DataTableRowActions<TData>({
+    row,
+    onDelete,
+    mode,
+    userId,
+}: DataTableRowActionsProps<TData>): JSX.Element {
     // const matrixClient = useMatrixClientContext();
     const [dialogOpen, setDialogOpen] = useState(false);
     // const onDelete = ():void => {
@@ -52,17 +58,13 @@ export function DataTableRowActions<TData>({ row, onDelete, mode }: DataTableRow
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[160px]">
-                    {mode === "standalone" && (
-                        <>
-                            <DropdownMenuItem>
-                                AI Query
-                                <DropdownMenuShortcut>
-                                    <IconZebra className="h-5 w-5" />
-                                </DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                        </>
-                    )}
+                    <DropdownMenuItem>
+                        AI Query
+                        <DropdownMenuShortcut>
+                            <IconZebra className="h-5 w-5" />
+                        </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+
                     {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
@@ -75,26 +77,33 @@ export function DataTableRowActions<TData>({ row, onDelete, mode }: DataTableRow
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                    <DropdownMenuItem onClick={() => setDialogOpen(true)}>
-                        Delete
-                        <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    {userId === row.original.sender && (
+                        <div>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                                Delete
+                                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </div>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
-            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
-                        <DialogDescription>
-                            The action will delete the file permanently, the message will be unrecoverable.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button onClick={() => setDialogOpen(false)}>cancel</Button>
-                        <Button onClick={() => onDelete && onDelete(row.original)}>confirm</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            {userId === row.original.sender && (
+                <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
+                            <DialogDescription>
+                                The action will delete the file permanently, the message will be unrecoverable.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                            <Button onClick={() => onDelete && onDelete(row.original)}>confirm</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </>
     );
 }
