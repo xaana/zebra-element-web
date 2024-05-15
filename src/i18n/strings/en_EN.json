@@ -12,7 +12,8 @@
     },
     "common":{
         "favourites": "Pinned",
-        "rooms": "Recent"
+        "rooms": "Recent",
+        "matrix": "Zebra"
     },
     "context_menu": {
         "favourite": "Pin",
