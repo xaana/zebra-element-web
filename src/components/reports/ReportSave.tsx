@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { convertImageUrlToBase64 } from "@/plugins/reports/utils/generatePdf";
 
 export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
     const [name, setName] = useState("");
@@ -42,6 +43,24 @@ export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
 
     const handleSubmit = async (): Promise<void> => {
         setLoading(true);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(editor.getHTML(), "text/html");
+        const images = doc.querySelectorAll("img");
+
+        // Map each image to a promise
+        const imagePromises = Array.from(images).map(async (img) => {
+            const src = img.getAttribute("src");
+            if (src?.startsWith("blob:")) {
+                const base64: any = await convertImageUrlToBase64(src);
+                img.src = base64.toString();
+            } else if (src?.startsWith("/")) {
+                const base64: any = await convertImageUrlToBase64(window.location.origin + src);
+                img.src = base64.toString();
+            }
+        });
+
+        // Wait for all promises to resolve
+        await Promise.all(imagePromises);
         const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/create_document`, {
             method: "POST",
             headers: {
@@ -50,7 +69,8 @@ export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
             body: JSON.stringify({
                 user_id: client.getSafeUserId(),
                 document_name: name,
-                document_data: JSON.stringify(editor.getJSON()),
+                // document_data: JSON.stringify(editor.getJSON()),
+                document_data: doc.body.innerHTML,
                 document_type: type,
             }),
         });

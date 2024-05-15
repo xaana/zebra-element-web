@@ -20,7 +20,7 @@ export const useTextmenuStates = (editor: Editor) => {
                 return false;
             }
 
-            return isTextSelected({ editor });
+            return isTextSelected({ editor }) && editor.isFocused;
         },
         [editor],
     );

@@ -32,7 +32,7 @@ export const TemplateCard = ({
                 />
             </div>
             <div className="p-3">
-                <div className="flex w-full flex-col gap-2">
+                <div className="flex w-full flex-col gap-2 relative">
                     <div className={cn("font-semibold", selected && "text-primary-default")}>{template.name}</div>
                     {/* <div className="line-clamp-2 text-xs text-muted-foreground">{template.description}</div> */}
                     <div>
@@ -40,16 +40,18 @@ export const TemplateCard = ({
                             className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
                             variant="secondary"
                         >
-                            {template.type === "document" ? "Document" : "Template"}
+                            {template.type === "report" ? "Report" : "Template"}
                         </Badge>
                     </div>
-                    <div className="flex justify-between items-start">
-                        <div className="text-[10px] mt-2 text-muted-foreground">
-                            Edited{" "}
-                            {formatDistanceToNow(new Date(template.timestamp), {
-                                addSuffix: true,
-                            })}
-                        </div>
+                    <div className="text-[10px] text-muted-foreground">
+                        {Number(template.id) < 0
+                            ? "Preset template"
+                            : "Edited " +
+                              formatDistanceToNow(new Date(template.timestamp), {
+                                  addSuffix: true,
+                              })}
+                    </div>
+                    <div className="absolute bottom-0.5 right-0.5">
                         <TemplateActions row={template} />
                     </div>
                 </div>

@@ -35,7 +35,6 @@ import dis, { defaultDispatcher } from "matrix-react-sdk/src/dispatcher/dispatch
 import { IMatrixClientCreds } from "matrix-react-sdk/src/MatrixClientPeg";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
-import ResizeHandle from "matrix-react-sdk/src/components/views/elements/ResizeHandle";
 import { CollapseDistributor } from "matrix-react-sdk/src/resizer/";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
@@ -86,6 +85,7 @@ import { IScreen } from "./MatrixChat";
 import ToggleResizer from "@/resizer/toggleResizer";
 
 import { getPlugin, Plugin, PluginActions } from "@/plugins";
+import ToggleResizeHandle from "../views/elements/ToggleResizeHandle";
 
 // We need to fetch each pinned message individually (if we don't already have it)
 // so each pinned message may trigger a request. Limit the number per room for sanity.
@@ -756,7 +756,11 @@ class LoggedInView extends React.Component<IProps, IState> {
                                 )}
                             </div>
                         </div>
-                        <ResizeHandle passRef={this.resizeHandler} id="lp-resizer" />
+                        <ToggleResizeHandle
+                            collapse={this.props.collapseLhs}
+                            passRef={this.resizeHandler}
+                            id="lp-resizer"
+                        />
                         <div className="mx_RoomView_wrapper shadow-xl">{pageElement}</div>
                     </div>
                 </div>

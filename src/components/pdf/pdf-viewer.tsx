@@ -18,7 +18,7 @@ export const PdfViewer = ({
     citations: any[];
     content: IContent;
     mxEvent: MatrixEvent;
-}): JSX.Element => {
+}): JSX.Element|null => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     // const [events, setEvents] = useState<MatrixEvent[]>([]);
@@ -53,34 +53,35 @@ export const PdfViewer = ({
                     }
                 }
             }
-            console.log(files);
-
             // const files = content.files_.map((file:any)=>{
             //     return file.mediaId
             // })
             const temp = fetchedFiles.filter((file) => {
                 return files.includes(file.mediaId);
             });
-            console.log(temp);
             const tempFiles = temp.map(async (file) => {
                 if (file.name.endsWith(".pdf")) {
                     if (file.mxEvent?.isEncrypted()) {
-                        const blob = await file.mediaHelper.sourceBlob.value;
-                        const Pdf = new Blob([blob], { type: "application/pdf" });
-                        const pdfUrl = URL.createObjectURL(Pdf);
-                        return { name: file.name, url: pdfUrl };
+                        // encrypted pdf
+                        // const blob = await file.mediaHelper.sourceBlob.value;
+                        const url = await file.mediaHelper.sourceUrl.value;
+                        // const Pdf = new Blob([blob], { type: "application/pdf" });
+                        // const pdfUrl = URL.createObjectURL(Pdf);
+                        return { name: file.name, url: url };
                     } else {
-                        const downloadUrl = file.downloadUrl;
-                        if (downloadUrl) {
-                            const data = await fetchResourceAsBlob(downloadUrl);
-                            if (data) {
-                                const pdfUrl = URL.createObjectURL(data);
-                                return { name: file.name, url: pdfUrl };
-                            }
-                        }
+                        // const downloadUrl = file.downloadUrl;
+                        // if (downloadUrl) {
+                        //     const data = await fetchResourceAsBlob(downloadUrl);
+                        //     if (data) {
+                        //         const pdfUrl = URL.createObjectURL(data);
+                        //         return { name: file.name, url: pdfUrl };
+                        //     }
+                        // }
+                        // unencrypted pdf
+                        const url = await file.mediaHelper.sourceUrl.value;
+                        return { name: file.name, url: url };
                     }
                 } else if (file.name.endsWith(".doc") || file.name.endsWith(".docx")) {
-                    console.log("download doc");
                     const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop() || "");
                     return pdfUrl;
                 }
@@ -151,7 +152,6 @@ export const PdfViewer = ({
             const payload = {
                 media_ids: mediaId,
             };
-            console.log(apiUrl);
             const url = `${apiUrl}/api/get_docfile`;
             const request = new Request(url, {
                 method: "POST",
@@ -202,7 +202,9 @@ export const PdfViewer = ({
             console.error("Error fetching the blob:", error);
         }
     }
-
+    if (pdfUrls.length === 0) {
+        return null;
+    }
     return (
         <>
             <Button

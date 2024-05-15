@@ -35,7 +35,16 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
 
     return (
         <BubbleMenu
-            tippyOptions={{ popperOptions: { placement: "top-start" } }}
+            tippyOptions={{
+                popperOptions: {
+                    placement: "auto",
+                    strategy: "fixed",
+                },
+                // offset: [-2, 16],
+                // inlinePositioning: true,
+                placement: "auto",
+                // zIndex: 999,
+            }}
             editor={editor}
             pluginKey="textMenu"
             shouldShow={states.shouldShow}
@@ -98,7 +107,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     <Icon name="Code" />
                 </MemoButton>
                 <MemoButton tooltip="Code block" onClick={commands.onCodeBlock}>
-                    <Icon name="Code2" />
+                    <Icon name="SquareCode" />
                 </MemoButton>
                 <EditLinkPopover onSetLink={commands.onLink} />
                 <Popover.Root>
@@ -136,7 +145,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                 <Popover.Root>
                     <Popover.Trigger asChild>
                         <MemoButton tooltip="More options">
-                            <Icon name="MoreVertical" />
+                            <Icon name="EllipsisVertical" />
                         </MemoButton>
                     </Popover.Trigger>
                     <Popover.Content side="top" asChild>

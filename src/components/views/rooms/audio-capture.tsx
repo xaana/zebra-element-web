@@ -1,12 +1,11 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import RecordRTC, { StereoAudioRecorder } from "recordrtc";
 import { Pipeline, pipeline } from "@xenova/transformers";
-import React from "react";
-
-import { cn } from "../../../lib/utils";
+import classNames from "classnames";
 import WaveformLoader from "../../ui/waveform-loader";
 import RingLoader from "../../ui/ring-loader";
+import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
 
 declare global {
     interface Navigator {
@@ -117,7 +116,8 @@ export const AudioCapture = ({ onCapture }: { onCapture: (transcription: string)
     };
 
     return (
-        <RecorderStyle>
+        // <RecorderStyle>
+        <>
             {isLoadingModel || isProcessingAudio ? (
                 <div className="flex flex-row items-center w-min gap-2">
                     {isLoadingModel && (
@@ -129,14 +129,21 @@ export const AudioCapture = ({ onCapture }: { onCapture: (transcription: string)
                     {isProcessingAudio && <RingLoader />}
                 </div>
             ) : (
-                <div
-                    className={cn(
-                        "recorder  mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage w-[26px] h-[26px]",
-                        isRecording ? "!bg-[#5734d3] strobing" : "",
-                    )}
+                // <div
+                //     className={classNames(
+                //         "recorder mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage w-[26px] h-[26px]",
+                //         isRecording ? "!bg-[#5734d3] strobing" : "",
+                //     )}
+                //     onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
+                // />
+                <CollapsibleButton
+                    title="Audio Capture"
+                    className={classNames("mx_MessageComposer_button", { "!bg-[#5734d3] strobing": isRecording })}
+                    iconClassName="mx_MessageComposer_voiceMessage"
                     onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
                 />
             )}
-        </RecorderStyle>
+            {/* </RecorderStyle> */}
+        </>
     );
 };

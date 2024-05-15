@@ -26,6 +26,7 @@ import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import type { File } from "@/plugins/files/types";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 import { PluginActions } from "@/plugins";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,7 +47,6 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -145,10 +145,24 @@ export interface FilesTableProps {
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
-    ({ data, rowSelection, setRowSelection, mode,onDelete }, ref): JSX.Element => {
+    ({ data, rowSelection, setRowSelection, mode, onDelete }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
         const [dialogOpen, setDialogOpen] = React.useState(false);
+        const [showDelete, setShowDelete] = React.useState(true);
         const client = useMatrixClientContext();
+
+        React.useEffect(() => {
+            let temp = true;
+            for (const key in rowSelection) {
+                if (data[Number(key)].sender !== client.getUserId()) {
+                    temp = false;
+                    setShowDelete(false);
+                }
+            }
+            if (temp) {
+                setShowDelete(true);
+            }
+        }, [client, data, rowSelection]);
         const handleDialogOpenChange = async (open: boolean): Promise<void> => {
             if (open) {
                 setDialogOpen(open);
@@ -277,10 +291,11 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
             {
                 id: "actions",
-                cell: ({ row }) => <DataTableRowActions row={row} onDelete={onDelete} />,
+                cell: ({ row }) => (
+                    <DataTableRowActions row={row} onDelete={onDelete} mode={mode} userId={client.getUserId()!} />
+                ),
             },
         ];
-
 
         const table = useReactTable({
             data,
@@ -306,74 +321,79 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             },
         }));
 
-        const deleteMultiFiles = () : void => {
+        const deleteMultiFiles = (): void => {
             for (const key in rowSelection) {
-                onDelete&&onDelete(data[Number(key)]);
-                setDialogOpen(false)
+                onDelete && onDelete(data[Number(key)]);
+                setDialogOpen(false);
             }
-            onDelete&&setRowSelection({});
-        }
-
+            onDelete && setRowSelection({});
+        };
         return (
             <>
-            <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <DataTableToolbar table={table} />
-                    {onDelete&&Object.keys(rowSelection).length !== 0&&(<Button variant="destructive" onClick={()=>setDialogOpen(true)}><Icon name="Trash2" className="w-5 h-5" strokeWidth={2} /></Button>)}
-                </div>
-                
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => {
-                                        return (
-                                            <TableHead key={header.id} colSpan={header.colSpan}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(header.column.columnDef.header, header.getContext())}
-                                            </TableHead>
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
-                        </TableHeader>
-                        <TableBody>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                        <DataTableToolbar table={table} />
+                        {onDelete && showDelete && Object.keys(rowSelection).length !== 0 && (
+                            <Button variant="destructive" onClick={() => setDialogOpen(true)}>
+                                <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
+                            </Button>
+                        )}
+                    </div>
+
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <TableRow key={headerGroup.id}>
+                                        {headerGroup.headers.map((header) => {
+                                            return (
+                                                <TableHead key={header.id} colSpan={header.colSpan}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                              header.column.columnDef.header,
+                                                              header.getContext(),
+                                                          )}
+                                                </TableHead>
+                                            );
+                                        })}
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        No results.
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                ))}
+                            </TableHeader>
+                            <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                    table.getRowModel().rows.map((row) => (
+                                        <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            No results.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <DataTablePagination table={table} />
                 </div>
-                <DataTablePagination table={table} />
-            </div>
                 <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Are you sure you want to delete all files?</DialogTitle>
-                                <DialogDescription>
-                                    The action will delete files permanently, messages will be unrecoverable.
-                                </DialogDescription>
-
+                            <DialogDescription>
+                                The action will delete files permanently, messages will be unrecoverable.
+                            </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
-                            <Button onClick={()=>deleteMultiFiles()}>confirm</Button>
+                            <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                            <Button onClick={() => deleteMultiFiles()}>confirm</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

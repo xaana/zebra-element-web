@@ -50,7 +50,6 @@ export function Citations({
         highlights: BoundingBox[];
     } | null>(null);
     const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
-        console.log('Successfully loaded document');
         setNumPages(numPages);
         pageRefs.current = Array(numPages)
             .fill(null)

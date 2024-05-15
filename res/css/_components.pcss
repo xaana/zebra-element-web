@@ -487,6 +487,10 @@
 }
 
 .mx_ResizeHandle {
+    cursor: row-resize;
+    flex: 0 0 auto;
+    z-index: 100;
+
     &.mx_ResizeHandle--horizontal {
         margin: 0 -5px;
         padding: 0 5px;
@@ -495,6 +499,158 @@
         > div {
             width: 1px;
             height: 100%;
+        }
+    }
+
+    &.mx_ResizeHandle--vertical {
+        margin: -5px 0;
+        padding: 5px 0;
+
+        > div {
+            height: 1px;
+        }
+    }
+}
+
+.mx_MatrixChat > .mx_ResizeHandle--to-left {
+    &:hover {
+        position: relative;
+
+        &::before,
+        &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            border-radius: 4px;
+            content: " ";
+            background-color: $primary-content;
+            opacity: 0.8;
+        }
+
+        &::before {
+            margin-bottom: 12px;
+            height: 14px; /* Height of the top segment */
+            transform-origin: bottom center;
+            transform: rotate(20deg);
+        }
+
+        &::after {
+            margin-top: 12px;
+            height: 14px; /* Height of the bottom segment */
+            transform-origin: top center;
+            transform: rotate(-20deg);
+        }
+    }
+}
+
+.mx_MatrixChat > .mx_ResizeHandle--to-right {
+    &:hover {
+        position: relative;
+
+        &::before,
+        &::after {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            border-radius: 4px;
+            content: " ";
+            background-color: $primary-content;
+            opacity: 0.8;
+        }
+
+        &::before {
+            margin-bottom: 12px;
+            height: 14px; /* Height of the top segment */
+            transform-origin: bottom center;
+            transform: rotate(-20deg);
+        }
+
+        &::after {
+            margin-top: 12px;
+            height: 14px; /* Height of the bottom segment */
+            transform-origin: top center;
+            transform: rotate(20deg);
+        }
+    }
+}
+
+.mx_RoomSearch {
+    flex: 1;
+    min-width: 0;
+    border-radius: 8px;
+    background-color: $panel-actions;
+    /* keep border thickness consistent to prevent movement */
+    border: 1px solid transparent;
+    height: 32px;
+    padding: 4px;
+
+    /* Create a flexbox for the icons (easier to manage) */
+    display: flex;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.mx_RoomListHeader {
+    .mx_RoomListHeader_plusButton {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        position: relative;
+        padding: 8px;
+        margin: 8px;
+        background-color: $panel-actions;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+}
+.mx_SpacePanel {
+    .mx_SpaceButton {
+        &.mx_SpaceButton_home,
+        &.mx_SpaceButton_favourites,
+        &.mx_SpaceButton_people,
+        &.mx_SpaceButton_orphans {
+            .mx_SpaceButton_icon {
+                background-color: rgba(0, 0, 0, 0);
+            }
+        }
+    }
+}
+
+.mx_MessageComposer_e2eIcon.mx_E2EIcon {
+    position: absolute;
+    top: 50%;
+    transform: translate(0%, -50%);
+    margin-right: 0; /* Counteract the E2EIcon class */
+    margin-left: 3px; /* Counteract the E2EIcon class */
+    width: 12px;
+    height: 12px;
+}
+
+.mx_SpacePanel {
+    .mx_SpaceButton {
+        .mx_SpaceButton_icon {
+            width: var(--height-topLevel);
+            min-width: var(--height-topLevel);
+            height: var(--height-topLevel);
+            border-radius: 8px;
+            position: relative;
+
+            &::before {
+                position: absolute;
+                content: "";
+                width: var(--height-topLevel);
+                height: var(--height-topLevel);
+                top: 0;
+                left: 0;
+                mask-position: center;
+                mask-repeat: no-repeat;
+                mask-size: 24px;
+            }
         }
     }
 }

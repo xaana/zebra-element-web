@@ -8,13 +8,15 @@ import type { Template } from "@/plugins/reports/types";
 import { TemplateList } from "./TemplateList";
 import { ReportGenerator } from "./ReportGenerator";
 import type { Editor } from "@tiptap/react";
+import { FileUpload } from "./FileUpload";
 
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { sampleTemplate, logTemplate, financeTemplate } from "@/plugins/reports/initialContent";
+import { sampleTemplate, logTemplate } from "@/plugins/reports/initialContent";
+import { getTemplateContent } from "@/plugins/reports/utils/getTemplateContent";
 
 interface TemplateSelectorProps {
     editor: Editor | null;
@@ -30,7 +32,7 @@ export type GeneratedOutline = {
     targetAudience: string;
 };
 
-const defaultTemplates = [sampleTemplate, logTemplate, financeTemplate];
+const defaultTemplates = [sampleTemplate, logTemplate];
 export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelectorProps): JSX.Element => {
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null | undefined>(undefined);
     const setGeneratorOutline = useSetAtom(generatedOutlineAtom);
@@ -92,35 +94,14 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        if (filterValue === "documents") {
-            setFilteredTemplates(templates.filter((template) => template.type === "document"));
+        if (filterValue === "reports") {
+            setFilteredTemplates(templates.filter((template) => template.type === "report"));
         } else if (filterValue === "templates") {
             setFilteredTemplates(templates.filter((template) => template.type === "template"));
         } else {
             setFilteredTemplates(templates);
         }
     }, [filterValue, templates]);
-
-    const fetchTemplateContent = async (): Promise<string | void> => {
-        const templateId: string = selectedTemplate?.id ?? "";
-        try {
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/get_document`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ template_id: templateId }),
-            });
-            const data = await response.json();
-            setSelectedTemplate((prev) => {
-                return prev ? { ...prev, content: data.content } : undefined;
-            });
-            return data.content;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            return;
-        }
-    };
 
     const handleSelectTemplate = async (template: Template | null): Promise<void> => {
         // Editor initialization priorities: editorState > template > blank
@@ -132,8 +113,14 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
             setSelectedTemplate(() => template);
             // If template is not from preset templates, fetch its content
             if (Number(template.id) >= 0) {
-                const templateContent = await fetchTemplateContent();
-                template && templateContent && editor?.commands.setContent(templateContent);
+                const templateContentString = await getTemplateContent(template.id);
+                templateContentString && editor?.commands.setContent(templateContentString);
+                // templateContentString &&
+                //     setSelectedTemplate((prev) => {
+                //         return prev ? { ...prev, content: JSON.parse(templateContentString) } : undefined;
+                //     });
+                // const templateContentJson = JSON.parse(templateContentString ?? "");
+                // template && templateContentJson && editor?.commands.setContent(templateContentJson);
             } else {
                 template.content && editor?.commands.setContent(template.content);
             }
@@ -166,12 +153,13 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
             </div>
             <div className="flex items-center gap-2 mb-6">
                 <ReportGenerator onReportGenerate={handleReportGenerateAI} />
+                {editor && <FileUpload nextStep={nextStep} editor={editor} />}
                 <Button
                     className="font-semibold text-sm"
                     onClick={() => handleSelectTemplate(null)}
                     size="sm"
                     disabled={selectedTemplate === null}
-                    variant="secondary"
+                    variant="outline"
                 >
                     <Icon name="Plus" className="mr-2" />
                     New From Blank
@@ -192,13 +180,13 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
                         <Icon name="AlignJustify" className="mr-2" />
                         All
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="templates" aria-label="Toggle favourites">
+                    <ToggleGroupItem value="templates" aria-label="Toggle templates">
                         <Icon name="LayoutTemplate" className="mr-2" />
                         Templates
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="documents" aria-label="Toggle favourites">
+                    <ToggleGroupItem value="reports" aria-label="Toggle reports">
                         <Icon name="FileCheck2" className="mr-2" />
-                        Documents
+                        Reports
                     </ToggleGroupItem>
                 </ToggleGroup>
 

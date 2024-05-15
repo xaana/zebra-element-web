@@ -1426,20 +1426,20 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                 {},
                 {
                     userId: () => (
-                        <a
-                            className="mx_InviteDialog_helpText_userId"
-                            href={makeUserPermalink(userId)}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            {userId}
-                        </a>
+                        <>{userId}</>
+                        // <a
+                        //     className="mx_InviteDialog_helpText_userId"
+                        //     href={makeUserPermalink(userId)}
+                        //     rel="noreferrer noopener"
+                        //     target="_blank"
+                        // >
+                        //     {userId}
+                        // </a>
                     ),
-                    a: (sub) => (
-                        <a href={makeRoomPermalink(cli, roomId)} rel="noreferrer noopener" target="_blank">
-                            {sub}
-                        </a>
-                    ),
+                    a: (sub) => <>{sub}</>,
+                    // <a href={makeRoomPermalink(cli, roomId)} rel="noreferrer noopener" target="_blank">
+                    //     {sub}
+                    // </a>
                 },
             );
 

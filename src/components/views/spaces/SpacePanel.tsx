@@ -70,7 +70,7 @@ import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { NotificationState } from "matrix-react-sdk/src/stores/notifications/NotificationState";
 import { ALTERNATE_KEY_NAME } from "matrix-react-sdk/src/accessibility/KeyboardShortcuts";
 // import { shouldShowComponent } from "matrix-react-sdk/src/customisations/helpers/UIComponents";
-// import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature";
+// import { UIComponent } from "matrix-react-sdk/src/settings/UIFeature"
 
 import { PluginButton } from "./PluginButton";
 
@@ -346,7 +346,7 @@ const InnerSpacePanel = React.memo<IInnerSpacePanelProps>(
                         name={plugin.name}
                         label={plugin.label}
                         isPanelCollapsed={isPanelCollapsed}
-                        icon={plugin.icon}
+                        Icon={plugin.Icon}
                         activeSpace={activeSpace}
                         spaceKey={`plugin.${plugin.name}`}
                         selected={activeSpace === `plugin.${plugin.name}`}

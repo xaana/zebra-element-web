@@ -10,7 +10,6 @@ import type { Plugin } from "./plugin";
 export * from "./plugin";
 
 export const pluginList: Plugin[] = [VideoPlugin, FilesPlugin, ReportsPlugin, AlgologyIntegrationPlugin];
-
 export interface PluginActionPayload extends ActionPayload {
     plugin: string;
 }

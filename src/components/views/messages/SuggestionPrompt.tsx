@@ -1,10 +1,9 @@
 import React, { useContext } from 'react'
 import { IContent } from 'matrix-js-sdk/src/matrix'
 import MatrixClientContext from 'matrix-react-sdk/src/contexts/MatrixClientContext'
-import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 
 import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
+
 
   export const SuggestionPrompt = ({ suggestions,rootId,roomId,type}: { suggestions: string[], rootId?: string, roomId: string,type?: any[] | string|boolean}) => {
     const client = useContext(MatrixClientContext)
@@ -43,7 +42,6 @@ import { Skeleton } from '@/components/ui/skeleton'
                   else if (typeof type === 'boolean'){
                     content.web=type
                   }
-                  console.log(content)
                   await client.sendMessage(roomId, rootId, content);
                 }}
                 key={suggestion}

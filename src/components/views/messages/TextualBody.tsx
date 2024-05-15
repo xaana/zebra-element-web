@@ -55,6 +55,7 @@ import { Citation } from "../../pdf/citations-table";
 import { EChartPanel } from "../../database/echart-panel";
 import { PdfViewer } from "../../pdf/pdf-viewer";
 import { SuggestionPrompt } from "./SuggestionPrompt";
+import { Separator } from "../../ui/separator";
 
 import AlertMessagePanel from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
@@ -618,7 +619,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private getSectionTitle = (title: string): React.ReactNode => {
         return (
-            <div className="text-sm text-muted-foreground font-bold">
+            <div className="text-base text-muted-foreground font-bold mt-1 mb-1">
                 {title}:
             </div>
         )
@@ -693,7 +694,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
-                    <br />
+                    <Separator />
                     {this.getSectionTitle("Answer")}
                     {body}
                     {roomId && (
@@ -832,7 +833,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (databaseTable && roomId&&mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
-            console.log(content)
             body = (
                 <>
                     <h2>
@@ -846,7 +846,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
-                    <br />
+                    <Separator />
                     {this.getSectionTitle("Answer")}
                     {body}
                     <div className="flex flex-col gap-y-2">
@@ -914,7 +914,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if ((this.state.echartsOption && this.state.echartsQuery) || this.state.generating) {
-            console.log("echartsOption", this.state.echartsOption, "echartsQuery", this.state.echartsQuery);
             body = (
                 <>
                     {body}

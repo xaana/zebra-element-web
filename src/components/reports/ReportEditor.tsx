@@ -43,7 +43,7 @@ export const ReportEditor = ({
                     />
                 )}
             </div>
-            <div style={{ height: "calc(100vh - 66px)" }} className="rounded-b-md border overflow-auto">
+            <div style={{ height: "calc(100vh - 60px)" }} className="w-full">
                 <BlockEditor editor={editor} leftSidebar={leftSidebar} rightSidebar={rightSidebar} />
             </div>
         </>

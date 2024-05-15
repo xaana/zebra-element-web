@@ -25,9 +25,9 @@ interface PluginButtonProps extends Omit<Plugin, "MainPanel" | "LeftPanel"> {
 
 export const PluginButton = ({
     name,
-    isPanelCollapsed,
-    // Icon,
     label,
+    isPanelCollapsed,
+    Icon,
     onClick,
     activeSpace,
     className,
@@ -69,9 +69,10 @@ export const PluginButton = ({
                         <div className="mx_SpaceButton_avatarPlaceholder">
                             <div
                                 className="mx_SpaceButton_icon flex justify-center items-center"
-                                style={{ backgroundColor: "var(--cpd-color-alpha-gray-300)" }}
+                                style={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
                             >
-                                {props.icon({ className: "w-5 h-5", fill: "var(--cpd-color-text-secondary)" })}
+                                {/* {props.icon({ className: "w-5 h-5", fill: "var(--cpd-color-text-secondary)" })} */}
+                                <Icon />
                                 {/* <Icon name="Plug" className="w-5 h-5 fill-[var(--cpd-color-text-secondary)]" /> */}
                             </div>
                         </div>

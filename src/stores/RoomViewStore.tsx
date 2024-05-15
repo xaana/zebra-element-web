@@ -414,15 +414,21 @@ export class RoomViewStore extends EventEmitter {
                                 t.mediaId === item.mediaId && t.name === item.name
                             )))
                         const fileList = uniqueList.map((file:DocFile) => {
-                            return {
-                                mediaId: file.mediaId,
-                                name: file.name,
-                                eventId: file.eventId,
-                                roomId: file.roomId,
-                            };
+                            if (this.state.roomId&&file.eventId&&(!this.stores.client?.getRoom(this.state.roomId)?.findEventById(file.eventId)?.isRedacted()||!this.stores.client?.getRoom(this.state.roomId)?.findEventById(file.eventId))){
+                                return {
+                                    mediaId: file.mediaId,
+                                    name: file.name,
+                                    eventId: file.eventId,
+                                    roomId: file.roomId,
+                                };
+                            }
+                            
                         })
-                        this.setState({
-                            files: fileList,
+                        // console.log(this.stores.client?.mxcUrlToHttp(fileList[0].mediaId),'trying to get url')
+                        // console.log(this.state.roomId&&this.stores.client?.getRoom(this.state.roomId)?.findEventById(fileList[0].eventId)?.getClearContent())
+                        const filteredList = fileList.filter(item => item !== undefined);
+                        filteredList&&this.setState({
+                            files: filteredList,
                         });}
                     else{
                         this.setState({

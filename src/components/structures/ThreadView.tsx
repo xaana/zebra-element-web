@@ -108,13 +108,18 @@ export default class ThreadView extends React.Component<IProps, IState> {
         if (this.state.thread) {
             this.postThreadUpdate(this.state.thread)
             for (let i = this.state.thread.timeline.length - 1; i >= 0; i--) {
-                console.log(this.state.thread.timeline[i]?.getContent())
                 if(this.state.thread.timeline[i]?.getContent().database){
                     this.setState({database: this.state.thread.timeline[i].getContent().database,files:[]})
                     break
                 }
                 else if(this.state.thread.timeline[i]?.getContent().fileSelected){
-                    this.setState({files: this.state.thread.timeline[i].getContent().fileSelected,database:''})
+                    const fileList = this.state.thread.timeline[i].getContent().fileSelected.map((file:DocFile)=>{
+                        if (this.props.room&&file.eventId&&!this.props.room.findEventById(file.eventId)?.isRedacted()){
+                            return file
+                        }
+                    })
+                    const filteredList = fileList.filter(item => item !== undefined);
+                    this.setState({files: filteredList,database:''})
                     break
                 }else if (this.state.thread.timeline[i]?.getContent().web) {
                     this.setState({database:'',files:[]})
@@ -214,7 +219,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 }
                 break;
             case "select_database":
-                console.log('database selected in thread',payload)
                 if (payload.context === TimelineRenderingType.Thread) {
                     this.setState({
                         database: payload.database,
@@ -224,6 +228,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
+                    console.log('select file in thread')
                     if (payload.roomId===this.props.room.roomId){
                     if (payload.files.length > 0) {
                         const newState = [...this.state.files,...payload.files]
@@ -232,15 +237,19 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 t.mediaId === item.mediaId && t.name === item.name
                             )))
                             const fileList = uniqueList.map((file:DocFile) => {
-                                return {
-                                    mediaId: file.mediaId,
-                                    name: file.name,
-                                    eventId: file.eventId,
-                                    roomId: file.roomId,
-                                };
+                                console.log(this.props.room.findEventById(file.eventId!),this.props.room.findEventById(file.eventId!)?.isRedacted())
+                                if (this.props.room&&file.eventId&&(!this.props.room.findEventById(file.eventId)?.isRedacted()||!this.props.room.findEventById(file.eventId))){
+                                    return {
+                                        mediaId: file.mediaId,
+                                        name: file.name,
+                                        eventId: file.eventId,
+                                        roomId: file.roomId,
+                                    };
+                                }
                             })
+                        const filteredList = fileList.filter(item => item !== undefined);
                         this.setState({
-                            files: fileList,
+                            files: filteredList,
                         });
                     }
                     else {
