@@ -140,8 +140,8 @@ export const FileSelector = (props: IProps): JSX.Element => {
                     onClick={handleDialogOpen}
                 />
             </DialogTrigger>
-            <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+            <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-y-auto">
+                <div className="relative w-[90vw] max-w-[90vw] h-full p-4">
                     <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
                     <FilesTabs
                         className="mb-4"
@@ -149,16 +149,18 @@ export const FileSelector = (props: IProps): JSX.Element => {
                         setDisplayType={setDisplayType}
                         setRowSelection={setRowSelection}
                     />
-                    {displayType === "documents" && (
-                        <FilesTable
-                            data={documents}
-                            rowSelection={rowSelection}
-                            setRowSelection={setRowSelection}
-                            mode="dialog"
-                        />
-                    )}
-                    <div style={{ display: displayType === "media" ? "block" : "none" }}>
-                        <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
+                    <div className="mb-14">
+                        {displayType === "documents" && (
+                            <FilesTable
+                                data={documents}
+                                rowSelection={rowSelection}
+                                setRowSelection={setRowSelection}
+                                mode="dialog"
+                            />
+                        )}
+                        <div style={{ display: displayType === "media" ? "block" : "none" }}>
+                            <MediaGrid media={media} mode="dialog" onImageSelect={handleImageSelect} />
+                        </div>
                     </div>
 
                     <div
