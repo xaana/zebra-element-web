@@ -110,11 +110,11 @@ export const ReportGenerator = ({
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
                 <Button className="font-semibold text-sm" size="sm">
-                    Create New
-                    <div className="ml-1.5 relative overflow-visible">
+                    <div className="mr-2 relative overflow-visible">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2" />
                     </div>
+                    Create New
                 </Button>
             </DialogTrigger>
             <DialogContent className="h-screen max-w-[100vw] bg-card p-0 overflow-hidden">

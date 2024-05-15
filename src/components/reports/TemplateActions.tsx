@@ -2,7 +2,6 @@ import React, { useContext } from "react";
 import { useSetAtom } from "jotai";
 import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
 
-import { IconEllipses } from "@/components/ui/icons";
 import { Icon } from "@/components/ui/Icon";
 import { steps } from "@/plugins/reports/initialContent";
 import { Button } from "@/components/ui/button";
@@ -77,8 +76,9 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
         <div className="flex items-center justify-end gap-4">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted rounded-full">
-                        <IconEllipses className="w-6 h-6 text-muted-foreground" />
+                    <Button variant="ghost" className="flex h-auto w-auto p-1 data-[state=open]:bg-muted rounded-full">
+                        {/* <IconEllipses className="w-6 h-6 text-muted-foreground" /> */}
+                        <Icon name="Ellipsis" className="w-4 h-4 text-muted-foreground" strokeWidth={1} />
                         <span className="sr-only">Open menu</span>
                     </Button>
                 </DropdownMenuTrigger>

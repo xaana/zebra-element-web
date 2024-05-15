@@ -3,6 +3,7 @@ import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
 import { IconZebra } from "../ui/icons";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,17 +19,14 @@ import {
     // DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { File } from '@/plugins/files/types';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-
-
 
 interface DataTableRowActionsProps<TData> {
     row: Row<TData>;
-    onDelete?: (currentFile:any) => void;
+    onDelete?: (currentFile: any) => void;
+    mode: "dialog" | "standalone";
 }
 
-export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActionsProps<TData>): JSX.Element {
+export function DataTableRowActions<TData>({ row, onDelete, mode }: DataTableRowActionsProps<TData>): JSX.Element {
     // const matrixClient = useMatrixClientContext();
     const [dialogOpen, setDialogOpen] = useState(false);
     // const onDelete = ():void => {
@@ -46,22 +44,26 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
     };
     return (
         <>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
-                    <DotsHorizontalIcon className="h-4 w-4" />
-                    <span className="sr-only">Open menu</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
-                <DropdownMenuItem>
-                    AI Query
-                    <DropdownMenuShortcut>
-                        <IconZebra className="h-5 w-5" />
-                    </DropdownMenuShortcut>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {/* <DropdownMenuSub>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                        <span className="sr-only">Open menu</span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[160px]">
+                    {mode === "standalone" && (
+                        <>
+                            <DropdownMenuItem>
+                                AI Query
+                                <DropdownMenuShortcut>
+                                    <IconZebra className="h-5 w-5" />
+                                </DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                        </>
+                    )}
+                    {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             <DropdownMenuRadioGroup value={task.label}>
@@ -73,27 +75,26 @@ export function DataTableRowActions<TData>({ row,onDelete }: DataTableRowActions
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub> */}
-                <DropdownMenuItem onClick={()=>setDialogOpen(true)}>
-                    Delete
-                    <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
+                    <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                        Delete
+                        <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
                         <DialogDescription>
                             The action will delete the file permanently, the message will be unrecoverable.
                         </DialogDescription>
-
-                </DialogHeader>
-                <DialogFooter>
-                    <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
-                    <Button onClick={()=>onDelete&&onDelete(row.original)}>confirm</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                        <Button onClick={() => onDelete && onDelete(row.original)}>confirm</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

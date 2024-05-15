@@ -11,7 +11,8 @@ import { RowSelectionState } from "@tanstack/react-table";
 
 import type { File } from "@/plugins/files/types";
 
-import { Button } from "@/components/ui/ButtonAlt";
+// import { Button } from "@/components/ui/ButtonAlt";
+import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
 import { Textarea } from "@/components/ui/TextareaAlt";
@@ -64,10 +65,6 @@ export const AiWriterView = ({
         const fetchedFiles = await getUserFiles(client);
         setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
     };
-
-    useEffect(() => {
-        setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
-    }, [rowSelection, documents]);
 
     const generateText = useCallback(async () => {
         const { text: dataText, tone, textLength, textUnit, addHeading, language } = data;
@@ -218,6 +215,13 @@ export const AiWriterView = ({
         setRowSelection({});
     };
 
+    useEffect(() => {
+        if (Object.keys(rowSelection).length === 1) {
+            setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
+            setFilesDialogOpen(false);
+        }
+    }, [rowSelection, documents]);
+
     return (
         <NodeViewWrapper data-drag-handle>
             <Panel noShadow className="w-full">
@@ -250,10 +254,10 @@ export const AiWriterView = ({
                             <div className="flex items-center gap-3">
                                 <Dropdown.Root>
                                     <Dropdown.Trigger asChild>
-                                        <Button variant="tertiary">
-                                            <Icon name="Mic" />
+                                        <Button variant="outline" size="sm">
+                                            <Icon name="Mic" className="mr-2" />
                                             {currentTone?.label || "Change tone"}
-                                            <Icon name="ChevronDown" />
+                                            <Icon name="ChevronDown" className="ml-1" />
                                         </Button>
                                     </Dropdown.Trigger>
                                     <Dropdown.Portal>
@@ -291,14 +295,19 @@ export const AiWriterView = ({
                                 {selectedFiles.length > 0 ? (
                                     <div className="flex items-center gap-2">
                                         {selectedFiles.map((file, index) => (
-                                            <Badge key={index} variant="outline" className="flex items-center gap-2">
-                                                <div className="text-sm">{file.name}</div>
+                                            <Badge
+                                                key={index}
+                                                variant="outline"
+                                                className="flex items-center gap-2 h-8"
+                                            >
+                                                <div className="text-xs">{file.name}</div>
                                                 <Button
                                                     onClick={() => handleRemoveFile(file)}
                                                     variant="ghost"
-                                                    className="w-auto h-auto px-1 py-2 rounded-full"
+                                                    size="sm"
+                                                    className="w-auto h-auto p-0.5 rounded-full"
                                                 >
-                                                    <Icon name="X" />
+                                                    <Icon name="X" className="w-3 h-3" />
                                                 </Button>
                                             </Badge>
                                         ))}
@@ -306,9 +315,13 @@ export const AiWriterView = ({
                                 ) : (
                                     <Dialog open={filesDialogOpen} onOpenChange={handleDialogOpenChange}>
                                         <DialogTrigger asChild>
-                                            <Button variant="tertiary" onClick={() => setFilesDialogOpen(true)}>
-                                                <Icon name="Files" className="w-5 h-5 mr-2" />
-                                                Select Files...
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setFilesDialogOpen(true)}
+                                            >
+                                                <Icon name="FileText" className="mr-2" />
+                                                Add context file
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
@@ -336,6 +349,7 @@ export const AiWriterView = ({
                                                         </div>
                                                     )}
                                                     <Button
+                                                        size="sm"
                                                         disabled={selectedFiles.length === 0}
                                                         onClick={() => setFilesDialogOpen(false)}
                                                     >
@@ -351,7 +365,8 @@ export const AiWriterView = ({
                         <div className="flex justify-between w-auto gap-1">
                             {previewText && (
                                 <Button
-                                    variant="ghost"
+                                    variant="outline"
+                                    size="sm"
                                     className="text-red-500 hover:bg-red-500/10 hover:text-red-500"
                                     onClick={discard}
                                 >
@@ -366,15 +381,19 @@ export const AiWriterView = ({
                                 </Button>
                             )}
                             <Button
-                                variant="primary"
+                                variant="default"
+                                size="sm"
                                 onClick={async () => {
                                     previewText && setPreviewText(undefined);
                                     await generateText();
                                 }}
-                                style={{ whiteSpace: "nowrap" }}
-                                disabled={isFetching || selectedFiles.length === 0}
+                                disabled={isFetching || selectedFiles.length === 0 || data.text.length < 3}
                             >
-                                {previewText ? <Icon name="Repeat" /> : <Icon name="Sparkles" />}
+                                {previewText ? (
+                                    <Icon className="mr-2" name="Repeat" />
+                                ) : (
+                                    <Icon className="mr-2" name="Sparkles" />
+                                )}
                                 {previewText ? "Regenerate" : "Generate text"}
                             </Button>
                         </div>

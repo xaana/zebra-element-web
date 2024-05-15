@@ -8,6 +8,7 @@ import type { Template } from "@/plugins/reports/types";
 import { TemplateList } from "./TemplateList";
 import { ReportGenerator } from "./ReportGenerator";
 import type { Editor } from "@tiptap/react";
+import { FileUpload } from "./FileUpload";
 
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
@@ -152,12 +153,13 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
             </div>
             <div className="flex items-center gap-2 mb-6">
                 <ReportGenerator onReportGenerate={handleReportGenerateAI} />
+                {editor && <FileUpload nextStep={nextStep} editor={editor} />}
                 <Button
                     className="font-semibold text-sm"
                     onClick={() => handleSelectTemplate(null)}
                     size="sm"
                     disabled={selectedTemplate === null}
-                    variant="secondary"
+                    variant="outline"
                 >
                     <Icon name="Plus" className="mr-2" />
                     New From Blank
