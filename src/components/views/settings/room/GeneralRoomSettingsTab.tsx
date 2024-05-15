@@ -66,7 +66,7 @@ export default class GeneralRoomSettingsTab extends React.Component<IProps, ISta
         const canSetAliases = true; // Previously, we arbitrarily only allowed admins to do this
         const canSetCanonical = room.currentState.mayClientSendStateEvent("m.room.canonical_alias", client);
         const canonicalAliasEv = room.currentState.getStateEvents("m.room.canonical_alias", "") ?? undefined;
-        
+
         const nameEvent = room.currentState.getStateEvents(EventType.RoomName, "");
         const name = nameEvent && nameEvent.getContent() ? nameEvent.getContent()["name"] : "";
 
@@ -87,12 +87,11 @@ export default class GeneralRoomSettingsTab extends React.Component<IProps, ISta
 
         return (
             <SettingsTab data-testid="General">
-                { name && (
+                {name && (
                     <SettingsSection heading={_t("common|general")}>
                         <RoomProfileSettings roomId={room.roomId} />
                     </SettingsSection>
                 )}
-                
 
                 <SettingsSection heading={_t("room_settings|general|aliases_section")}>
                     <AliasSettings
@@ -104,7 +103,7 @@ export default class GeneralRoomSettingsTab extends React.Component<IProps, ISta
                 </SettingsSection>
 
                 <SettingsSection heading={_t("room_settings|general|other_section")}>
-                    {urlPreviewSettings}
+                    {/* {urlPreviewSettings} */}
                     {leaveSection}
                 </SettingsSection>
             </SettingsTab>

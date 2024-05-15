@@ -367,7 +367,7 @@ const RoomContextMenu: React.FC<IProps> = ({ room, onFinished, ...props }) => {
                 {pinsOption}
                 {widgetsOption}
                 {lowPriorityOption}
-                {copyLinkOption}
+                {/* {copyLinkOption} */}
 
                 <IconizedContextMenuOption
                     onClick={(ev: ButtonEvent) => {

@@ -7,13 +7,15 @@
         "sign_in": "Sign in"
     },
     "auth": {
-        "server_picker_description": "You can use the custom server options to sign into other Matrix servers by specifying a different homeserver URL.",
+        "server_picker_explainer": "Use your preferred homeserver if you have one, or host your own.",
+        "server_picker_description": "You can use the custom server options to sign into other servers by specifying a different homeserver URL.",
         "sso_complete_in_browser_dialog_title": "Go to your browser to complete Sign In"
     },
     "common":{
         "favourites": "Pinned",
+        "matrix": "Zebra",
         "rooms": "Recent",
-        "matrix": "Zebra"
+        "thread": "Topic"
     },
     "context_menu": {
         "favourite": "Pin",
