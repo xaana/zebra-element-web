@@ -1,10 +1,18 @@
 import { JSONContent, useEditor } from "@tiptap/react";
 import { EditorState } from "prosemirror-state";
+import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
+import Collaboration from "@tiptap/extension-collaboration";
+import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
+import { useEffect, useMemo, useState } from "react";
 
+import type { Doc as YDoc } from "yjs";
 import type { Editor } from "@tiptap/react";
 
 import { ExtensionKit } from "@/plugins/reports/extensions/extension-kit";
 import { Template } from "@/plugins/reports/types";
+import { EditorUser } from "@/components/reports/BlockEditor/types";
+import { randomElement } from "@/lib/utils";
+import { userNames, userColors } from "@/lib/constants";
 
 declare global {
     interface Window {
@@ -13,14 +21,21 @@ declare global {
 }
 
 export const useBlockEditor = ({
+    ydoc,
+    collabProvider,
     editorState,
     template,
 }: {
+    ydoc: YDoc;
+    collabProvider?: HocuspocusProvider | null | undefined;
     editorState?: JSONContent;
     template?: Template;
 }): {
     editor: Editor | null;
+    collabState: WebSocketStatus;
+    users: EditorUser[];
 } => {
+    const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting);
     const editor = useEditor(
         {
             autofocus: true,
@@ -38,7 +53,20 @@ export const useBlockEditor = ({
                 }
             },
             // eslint-disable-next-line new-cap
-            extensions: [...ExtensionKit({})],
+            extensions: [
+                // eslint-disable-next-line new-cap
+                ...ExtensionKit({}),
+                Collaboration.configure({
+                    document: ydoc,
+                }),
+                CollaborationCursor.configure({
+                    provider: collabProvider,
+                    user: {
+                        name: randomElement(userNames),
+                        color: randomElement(userColors),
+                    },
+                }),
+            ],
             editorProps: {
                 attributes: {
                     autocomplete: "off",
@@ -48,10 +76,29 @@ export const useBlockEditor = ({
                 },
             },
         },
-        [],
+        [ydoc, collabProvider],
     );
+    const users = useMemo((): EditorUser[] => {
+        if (!editor?.storage.collaborationCursor?.users) {
+            return [];
+        }
 
+        return editor.storage.collaborationCursor?.users.map((user: EditorUser) => {
+            const names = user.name?.split(" ");
+            const firstName = names?.[0];
+            const lastName = names?.[names.length - 1];
+            const initials = `${firstName?.[0] || "?"}${lastName?.[0] || "?"}`;
+
+            return { ...user, initials: initials.length ? initials : "?" };
+        });
+    }, [editor?.storage.collaborationCursor?.users]);
+
+    useEffect(() => {
+        collabProvider?.on("status", (event: { status: WebSocketStatus }) => {
+            setCollabState(event.status);
+        });
+    }, [collabProvider]);
     window.editor = editor;
 
-    return { editor };
+    return { editor, collabState, users };
 };
