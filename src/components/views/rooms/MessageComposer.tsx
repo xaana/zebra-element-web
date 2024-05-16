@@ -689,7 +689,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                 aria-label={_t("a11y|message_composer")}
             >
                 {recordingTooltip}
-                <div className={`mx_MessageComposer_wrapper shadow-2xl${this.props.fromHomepage && " text-start"}`}>
+                <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage && " text-start"}`}>
                     <div className="flex flex-row ml-50 justify-end">
                         {this.state.smartReply.map((reply: string) => (
                             <SmartReply
@@ -702,7 +702,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         ))}
                     </div>
                     <div
-                        className={`mx_MessageComposer_wrapper shadow-2xl${this.props.fromHomepage ? " text-start" : ""}`}
+                        className={`mx_MessageComposer_wrapper shadow-lg ${this.props.fromHomepage ? " text-start" : ""}`}
                     >
                         <ReplyPreview
                             replyToEvent={this.props.replyToEvent}

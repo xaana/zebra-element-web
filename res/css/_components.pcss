@@ -401,7 +401,9 @@
 
 .mx_HomePage_default {
     .mx_HomePage_default_wrapper {
-        margin: auto auto 0 auto;
+        position: absolute;
+        top: 50%;
+        transform: translate(0%, -35%);
     }
 
     img {
@@ -623,10 +625,9 @@
 
 .mx_MessageComposer_e2eIcon.mx_E2EIcon {
     position: absolute;
-    top: 50%;
-    transform: translate(0%, -50%);
-    margin-right: 0; /* Counteract the E2EIcon class */
-    margin-left: 3px; /* Counteract the E2EIcon class */
+    bottom: 28px;
+    transform: translate(0%, 50%);
+    margin: 0px 3px 0px 3px;
     width: 12px;
     height: 12px;
 }
