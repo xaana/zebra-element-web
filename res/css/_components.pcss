@@ -421,11 +421,46 @@
 }
 
 .mx_SpacePanel {
+    background-color: $background;
+
     .mx_UserMenu {
         padding: 0 2px 8px;
         border-bottom: 1px solid $separator;
         margin: 12px 14px 12px 18px;
         max-width: 226px;
+    }
+
+    .mx_SpaceButton {
+        &.mx_SpaceButton_home,
+        &.mx_SpaceButton_favourites,
+        &.mx_SpaceButton_people,
+        &.mx_SpaceButton_orphans {
+            .mx_SpaceButton_icon {
+                background-color: rgba(0, 0, 0, 0);
+            }
+        }
+    }
+
+    .mx_SpaceButton {
+        .mx_SpaceButton_icon {
+            width: var(--height-topLevel);
+            min-width: var(--height-topLevel);
+            height: var(--height-topLevel);
+            border-radius: 8px;
+            position: relative;
+
+            &::before {
+                position: absolute;
+                content: "";
+                width: var(--height-topLevel);
+                height: var(--height-topLevel);
+                top: 0;
+                left: 0;
+                mask-position: center;
+                mask-repeat: no-repeat;
+                mask-size: 24px;
+            }
+        }
     }
 }
 
@@ -610,18 +645,6 @@
         flex-shrink: 0;
     }
 }
-.mx_SpacePanel {
-    .mx_SpaceButton {
-        &.mx_SpaceButton_home,
-        &.mx_SpaceButton_favourites,
-        &.mx_SpaceButton_people,
-        &.mx_SpaceButton_orphans {
-            .mx_SpaceButton_icon {
-                background-color: rgba(0, 0, 0, 0);
-            }
-        }
-    }
-}
 
 .mx_MessageComposer_e2eIcon.mx_E2EIcon {
     position: absolute;
@@ -630,28 +653,4 @@
     margin: 0px 3px 0px 3px;
     width: 12px;
     height: 12px;
-}
-
-.mx_SpacePanel {
-    .mx_SpaceButton {
-        .mx_SpaceButton_icon {
-            width: var(--height-topLevel);
-            min-width: var(--height-topLevel);
-            height: var(--height-topLevel);
-            border-radius: 8px;
-            position: relative;
-
-            &::before {
-                position: absolute;
-                content: "";
-                width: var(--height-topLevel);
-                height: var(--height-topLevel);
-                top: 0;
-                left: 0;
-                mask-position: center;
-                mask-repeat: no-repeat;
-                mask-size: 24px;
-            }
-        }
-    }
 }
