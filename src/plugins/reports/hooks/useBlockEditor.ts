@@ -27,7 +27,7 @@ export const useBlockEditor = ({
     editorState,
     template,
 }: {
-    ydoc: YDoc;
+    ydoc: YDoc|undefined;
     collabProvider?: HocuspocusProvider | null | undefined;
     editorState?: JSONContent;
     template?: Template;
@@ -58,16 +58,18 @@ export const useBlockEditor = ({
             extensions: [
                 // eslint-disable-next-line new-cap
                 ...ExtensionKit({}),
-                Collaboration.configure({
-                    document: ydoc,
-                }),
-                CollaborationCursor.configure({
-                    provider: collabProvider,
-                    user: {
-                        name: client.getSafeUserId(),
-                        color: randomElement(userColors),
-                    },
-                }),
+                ...(ydoc ? [
+                    Collaboration.configure({
+                        document: ydoc,
+                    }),
+                    CollaborationCursor.configure({
+                        provider: collabProvider,
+                        user: {
+                            name: client.getSafeUserId(),
+                            color: randomElement(userColors),
+                        },
+                    })
+                ] : [])
             ],
             editorProps: {
                 attributes: {
