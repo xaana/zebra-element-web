@@ -4,6 +4,7 @@ import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import { useEffect, useMemo, useState } from "react";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import type { Doc as YDoc } from "yjs";
 import type { Editor } from "@tiptap/react";
@@ -12,7 +13,7 @@ import { ExtensionKit } from "@/plugins/reports/extensions/extension-kit";
 import { Template } from "@/plugins/reports/types";
 import { EditorUser } from "@/components/reports/BlockEditor/types";
 import { randomElement } from "@/lib/utils";
-import { userNames, userColors } from "@/lib/constants";
+import { userColors } from "@/lib/constants";
 
 declare global {
     interface Window {
@@ -35,6 +36,7 @@ export const useBlockEditor = ({
     collabState: WebSocketStatus;
     users: EditorUser[];
 } => {
+    const client = useMatrixClientContext();
     const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting);
     const editor = useEditor(
         {
@@ -62,7 +64,7 @@ export const useBlockEditor = ({
                 CollaborationCursor.configure({
                     provider: collabProvider,
                     user: {
-                        name: randomElement(userNames),
+                        name: client.getSafeUserId(),
                         color: randomElement(userColors),
                     },
                 }),
