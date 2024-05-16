@@ -55,6 +55,7 @@
     "src/components/views/settings/tabs/user/HelpUserSettingsTab.tsx": "src/components/views/settings/HelpUserSettingsTab.tsx",
     "src/components/views/spaces/QuickSettingsButton.tsx": "src/components/views/spaces/QuickSettingsButton.tsx",
     "src/components/views/spaces/SpacePanel.tsx": "src/components/views/spaces/SpacePanel.tsx",
+    "src/components/views/spaces/SpaceTreeLevel.tsx": "src/components/views/spaces/SpaceTreeLevel.tsx",
     "src/ContentMessages.ts": "src/ContentMessages.ts",
     "src/DeviceListener.ts": "src/DeviceListener.ts",
     "src/settings/Settings.tsx": "src/settings/Settings.tsx",

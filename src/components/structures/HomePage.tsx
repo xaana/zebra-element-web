@@ -36,10 +36,9 @@ import { findDMRoom } from "matrix-react-sdk/src/utils/dm/findDMRoom";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import classNames from "classnames";
 
-import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
-import ZebiaAlert from "../ui/zebiaAlert";
+import ZebraAlert from "../ui/zebraAlert";
 
 interface IProps {
     justRegistered?: boolean;
@@ -124,26 +123,51 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         console.log("Audio module is currently disabled, please contact Administrator");
     };
 
-    const brandingConfig = SdkConfig.getObject("branding");
+    // const brandingConfig = SdkConfig.getObject("branding");
     // const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
     const isDarkTheme =
         JSON.parse(localStorage.getItem("mx_local_settings") ?? '{"theme":"light"}')["theme"] === "dark";
-    const classname = classNames(
+    const logoClass = classNames(
         "mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
         { "border-slate-700 invert": isDarkTheme },
         { "border-slate-300": !isDarkTheme },
     );
 
-    const introSection: JSX.Element = (
-        <React.Fragment>
-            {/* <img className={classname} src={logoUrl} alt={config.brand} /> */}
-            <div className={classname}>
+    const BrandSection = () => (
+        <>
+            <div className={logoClass}>
                 <IconTurium className="w-15 h-15" />
             </div>
             <h1>
                 <strong>Where Universe Connects</strong>
             </h1>
-        </React.Fragment>
+        </>
+    );
+
+    const QueryButton = ({
+        title,
+        query,
+        onClick,
+        Icon,
+    }: {
+        title: string;
+        query: string;
+        onClick: () => void;
+        Icon: JSX.Element;
+    }) => (
+        <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClick}>
+            <div className="w-full text-start">
+                <h2>
+                    <strong>{title}</strong>
+                </h2>
+            </div>
+            <div className="w-5/6 text-start">
+                <p>{query}</p>
+            </div>
+            <div className="w-1/6 mr-0">
+                <Icon />
+            </div>
+        </Button>
     );
 
     if (pageUrl) {
@@ -154,81 +178,32 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
             <div className="mx_HomePage_default_wrapper">
-                {introSection}
+                <BrandSection />
                 <div className="mx_HomePage_default_buttons gap-x-8 gap-y-4 justify-center">
-                    <Button
-                        className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start"
-                        variant="outline"
+                    <QueryButton
+                        title="Search"
+                        query="What's the weather in Sydney?"
                         onClick={onClickWebSearchHandler}
-                    >
-                        <div className="w-full text-start">
-                            <h2>
-                                <strong>Search</strong>
-                            </h2>
-                        </div>
-                        <div className="w-5/6 text-start">
-                            <p>What's the weather in Sydney?</p>
-                        </div>
-                        <div className="w-1/6 mr-0">
-                            <Search />
-                        </div>
-                    </Button>
-
-                    <Button
-                        className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start"
-                        variant="outline"
+                        Icon={File}
+                    />
+                    <QueryButton
+                        title="Document"
+                        query="Document prompt 1"
                         onClick={onClickDocumentHandler}
-                        disabled
-                    >
-                        <div className="w-full text-start">
-                            <h2>
-                                <strong>Document</strong>
-                            </h2>
-                        </div>
-                        <div className="w-5/6 text-start">
-                            <p>Document prompt 1</p>
-                        </div>
-                        <div className="w-1/6 mr-0">
-                            <File />
-                        </div>
-                    </Button>
-
-                    <Button
-                        className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start"
-                        variant="outline"
+                        Icon={Search}
+                    />
+                    <QueryButton
+                        title="Datastore"
+                        query="List top 5 contracts by values"
                         onClick={onClickDatabaseHandler}
-                    >
-                        <div className="w-full text-start">
-                            <h2>
-                                <strong>Datastore</strong>
-                            </h2>
-                        </div>
-                        <div className="w-5/6 text-start">
-                            <p>List top 5 contracts by values</p>
-                        </div>
-                        <div className="w-1/6 mr-0">
-                            <Database />
-                        </div>
-                    </Button>
-
-                    <Button
-                        className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start"
-                        variant="outline"
+                        Icon={Database}
+                    />
+                    <QueryButton
+                        title="Audio Model"
+                        query="Audio prompt 1"
                         onClick={onClickAudioHandler}
-                        disabled
-                    >
-                        <div className="w-full text-start">
-                            <h2>
-                                <strong>Audio Model</strong>
-                            </h2>
-                        </div>
-                        <div className="w-5/6 text-start">
-                            <p>Audio prompt 1</p>
-                        </div>
-                        <div className="w-1/6 mr-0">
-                            <Headphones />
-                        </div>
-                    </Button>
+                        Icon={Headphones}
+                    />
                 </div>
             </div>
             <div className="absolute w-full bottom-0">
@@ -246,7 +221,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                                 });
                             }}
                         />
-                        <ZebiaAlert />
+                        <ZebraAlert />
                     </>
                 )}
             </div>

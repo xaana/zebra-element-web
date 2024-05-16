@@ -2,11 +2,7 @@ import React, { memo, useCallback, useMemo, useRef } from "react";
 import { EditorContent, EditorContext } from "@tiptap/react";
 
 import { Button } from "../ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { BlockEditor } from "../reports/BlockEditor";
 import Editor from "./Editor";
 import { ContentItemMenu, LinkMenu, TextMenuProps } from "../reports/menus";
@@ -36,19 +32,17 @@ import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Sidebar } from "@/components/reports/Sidebar";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 
-
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
 const MemoFontFamilyPicker = memo(FontFamilyPicker);
 const MemoFontSizePicker = memo(FontSizePicker);
 const MemoContentTypePicker = memo(ContentTypePicker);
 
-
 const EditorDialog = (props: {
-    trigger?: React.JSX.Element
-    onDestroyCallback?: (data:string)=>void
-    onSendCallback: (content: string, rawContent:string)=>void
-}):React.JSX.Element => {
+    trigger?: React.JSX.Element;
+    onDestroyCallback?: (data: string) => void;
+    onSendCallback: (content: string, rawContent: string) => void;
+}): React.JSX.Element => {
     const [open, setOpen] = React.useState(false);
     const { editor } = useBlockEditor({});
 
@@ -57,14 +51,14 @@ const EditorDialog = (props: {
 
     const leftSidebar = useSidebar();
     const rightSidebar = useSidebar();
-    const chat =useChat({
+    const chat = useChat({
         isOpen: rightSidebar.isOpen,
-        open:rightSidebar.open,
+        open: rightSidebar.open,
         close: rightSidebar.close,
         toggle: rightSidebar.toggle,
     });
     const aiState = useAIState();
-    const providerValue = useMemo(()=>{
+    const providerValue = useMemo(() => {
         return {
             isAiLoading: aiState.isAiLoading,
             aiError: aiState.aiError,
@@ -72,8 +66,8 @@ const EditorDialog = (props: {
             setAiError: aiState.setAiError,
             editor: editor,
             editorChat: chat,
-        }
-    }, [aiState, chat, editor])
+        };
+    }, [aiState, chat, editor]);
 
     const handlePotentialCloseLeft = useCallback(() => {
         if (window.innerWidth < 1024) {
@@ -242,15 +236,14 @@ const EditorDialog = (props: {
                 </Toolbar.Wrapper>
             </div>
         );
-    }
+    };
 
     const EditorFooter = (props: {
-        onSendCallback: (content: string, rawContent:string) => void;
+        onSendCallback: (content: string, rawContent: string) => void;
         onCancelCallback: () => void;
     }): React.JSX.Element => {
-
         const sendHandler = (): void => {
-            props.onSendCallback && editor && props.onSendCallback(editor.getHTML(),editor.getText());
+            props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
         };
 
         return (
@@ -268,12 +261,8 @@ const EditorDialog = (props: {
     return (
         <EditorContext.Provider value={providerValue}>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    {props.trigger ?? (<Button>
-                        Open
-                    </Button>)}
-                </DialogTrigger>
-                <DialogContent className="w-[90vw] max-w-[90vw] h-[95vh] p-0 overflow-hidden gap-y-1">
+                <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
+                <DialogContent className="w-[80vw] max-w-[80vw] h-[95vh] p-0 overflow-hidden gap-y-1">
                     <div className="h-[45px]">
                         <EditorHeader editor={editor} />
                     </div>
@@ -281,7 +270,10 @@ const EditorDialog = (props: {
                         {/* <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                             <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
                         </Sidebar> */}
-                        <div className="flex-1 flex h-max relative justify-center overflow-y-auto" ref={menuContainerRef}>
+                        <div
+                            className="flex-1 flex h-max relative justify-center overflow-y-auto"
+                            ref={menuContainerRef}
+                        >
                             <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
@@ -294,8 +286,10 @@ const EditorDialog = (props: {
                     </div>
                     <div>
                         <EditorFooter
-                            onCancelCallback={()=>{setOpen(false)}}
-                            onSendCallback={(content: string, rawContent:string): void => {
+                            onCancelCallback={() => {
+                                setOpen(false);
+                            }}
+                            onSendCallback={(content: string, rawContent: string): void => {
                                 props.onSendCallback(content, rawContent);
                                 setOpen(false);
                             }}
@@ -304,7 +298,7 @@ const EditorDialog = (props: {
                 </DialogContent>
             </Dialog>
         </EditorContext.Provider>
-    )
-}
+    );
+};
 
 export default EditorDialog;

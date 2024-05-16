@@ -45,7 +45,7 @@ import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 import { File } from "@/plugins/files/types";
-import ZebiaAlert from "../ui/zebiaAlert";
+import ZebiaAlert from "../ui/zebraAlert";
 
 interface IProps {
     room: Room;
