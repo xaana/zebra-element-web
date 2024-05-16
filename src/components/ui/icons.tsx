@@ -377,6 +377,27 @@ export function IconVideoFilled({ className, ...props }: React.ComponentProps<"s
     );
 }
 
+export function IconVideo({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#7C7C7C"
+            className={cn("h-6 w-6", className)}
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            {...props}
+        >
+            <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
+            <rect x="2" y="6" width="14" height="12" rx="2" />
+        </svg>
+    );
+}
+
 export function IconPdfDoc({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg
@@ -405,31 +426,77 @@ export function IconWordDoc({ className, ...props }: React.ComponentProps<"svg">
     );
 }
 
+// export function IconDocumentDuplicate({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+//     return (
+//         <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             fill={props.fill || "currentColor"}
+//             className={cn("h-4 w-4", className)}
+//             viewBox="0 0 24 24"
+//             {...props}
+//         >
+//             <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
+//             <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
+//         </svg>
+//     );
+// }
+
 export function IconDocumentDuplicate({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill={props.fill || "currentColor"}
-            className={cn("h-4 w-4", className)}
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
+            fill="none"
+            stroke="#7C7C7C"
+            className={cn("h-6 w-6", className)}
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
             {...props}
         >
-            <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
-            <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
+            <path d="M20 7h-3a2 2 0 0 1-2-2V2" />
+            <path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z" />
+            <path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8" />
         </svg>
     );
 }
 
-export function IconFileChartFill({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+// export function IconFileChartFill({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+//     return (
+//         <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             fill={props.fill || "currentColor"}
+//             className={cn("h-4 w-4", className)}
+//             viewBox="0 0 24 24"
+//             {...props}
+//         >
+//             <path d="M16 2L21 7V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918C3 2.44405 3.44495 2 3.9934 2H16ZM11 7V17H13V7H11ZM15 11V17H17V11H15ZM7 13V17H9V13H7Z" />
+//         </svg>
+//     );
+// }
+
+export function IconFileChart({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill={props.fill || "currentColor"}
-            className={cn("h-4 w-4", className)}
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
+            fill="none"
+            stroke="#7C7C7C"
+            className={cn("h-6 w-6", className)}
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
             {...props}
         >
-            <path d="M16 2L21 7V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5447 3 21.0082V2.9918C3 2.44405 3.44495 2 3.9934 2H16ZM11 7V17H13V7H11ZM15 11V17H17V11H15ZM7 13V17H9V13H7Z" />
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M8 18v-1" />
+            <path d="M12 18v-6" />
+            <path d="M16 18v-3" />
         </svg>
     );
 }
@@ -463,7 +530,7 @@ export function IconAlgology({ className, ...props }: React.ComponentProps<"svg"
             viewBox="0 0 720 720"
             xmlns="http://www.w3.org/2000/svg"
             fill={props.fill || "currentColor"}
-            className={cn("h-4 w-4", className)}
+            className={cn("h-6 w-6", className)}
             {...props}
         >
             <g id="Group-copy-2">

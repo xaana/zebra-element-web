@@ -6,6 +6,6 @@ import { IconAlgology } from "@/components/ui/icons";
 export const AlgologyIntegrationPlugin: Plugin = {
     name: "algology",
     label: "Algology",
-    icon: IconAlgology,
+    Icon: IconAlgology,
     MainPanel: MainPanel,
 };
