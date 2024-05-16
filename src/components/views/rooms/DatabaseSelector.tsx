@@ -36,7 +36,7 @@ export const DatabaseSelector = () => {
     return (
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger
-                asChild
+                // asChild
                 // onClick={() => {
                 //     dis.dispatch({
                 //         action: "select_database",
@@ -51,10 +51,10 @@ export const DatabaseSelector = () => {
                 //         context: timelineRenderingType,
                 //     });
                 // }}
-            >
+            >   
                 <CollapsibleButton
                     title="Select Database"
-                    className="mx_MessageComposer_button"
+                    className="mx_MessageComposer_button z-[-100]"
                     iconClassName="database_button"
                     onClick={() => {
                         dis.dispatch({
@@ -69,11 +69,12 @@ export const DatabaseSelector = () => {
                             roomId: roomId,
                             context: timelineRenderingType,
                         });
+                        console.log('open database selector');
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
             </PopoverTrigger>
-            <PopoverContent className="!p-1" side="top" align="start" sideOffset={6}>
+            <PopoverContent className="!p-1" side="left" align="start" sideOffset={6}>
                 <Command>
                     <CommandInput placeholder="Search by Database Name..." className="text-xs" />
                     <CommandList>
