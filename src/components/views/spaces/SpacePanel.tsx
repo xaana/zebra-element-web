@@ -393,7 +393,7 @@ const SpacePanel: React.FC = () => {
                     }}
                 >
                     <nav
-                        className={classNames("mx_SpacePanel", { collapsed: isPanelCollapsed })}
+                        className={classNames("mx_SpacePanel shadow-lg", { collapsed: isPanelCollapsed })}
                         onKeyDown={onKeyDownHandler}
                         ref={ref}
                         aria-label={_t("common|spaces")}

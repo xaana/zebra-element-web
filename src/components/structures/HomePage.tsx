@@ -39,6 +39,7 @@ import classNames from "classnames";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
+import ZebiaAlert from "../ui/zebiaAlert";
 
 interface IProps {
     justRegistered?: boolean;
@@ -232,20 +233,22 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             </div>
             <div className="absolute w-full bottom-0">
                 {targetDMRoom && (
-                    <MessageComposer
-                        room={targetDMRoom}
-                        resizeNotifier={new ResizeNotifier()}
-                        mxClient={cli}
-                        fromHomepage={true}
-                        onSendCallback={() => {
-                            dis.dispatch({
-                                action: "view_room",
-                                room_id: targetDMRoom.roomId,
-                            });
-                        }}
-                    />
+                    <>
+                        <MessageComposer
+                            room={targetDMRoom}
+                            resizeNotifier={new ResizeNotifier()}
+                            mxClient={cli}
+                            fromHomepage={true}
+                            onSendCallback={() => {
+                                dis.dispatch({
+                                    action: "view_room",
+                                    room_id: targetDMRoom.roomId,
+                                });
+                            }}
+                        />
+                        <ZebiaAlert />
+                    </>
                 )}
-                {targetDMRoom && <Label className="text-slate-500">Zebra can make mistakes, please review.</Label>}
             </div>
         </AutoHideScrollbar>
     );
