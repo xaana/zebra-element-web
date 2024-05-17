@@ -175,7 +175,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     }
 
     return (
-        <AutoHideScrollbar className="mx_HomePage mx_HomePage_default" element="main">
+        <AutoHideScrollbar className="mx_HomePage mx_HomePage_default justify-center" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
             <div className="mx_HomePage_default_wrapper">
                 <BrandSection />

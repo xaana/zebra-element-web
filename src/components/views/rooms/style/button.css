@@ -18,3 +18,8 @@
     -webkit-mask-image: url("text-editor.svg") !important;
     mask-image: url("text-editor.svg") !important;
 }
+
+.mx_MessageComposer_buttonMenu::before {
+    -webkit-mask-image: url("plus.svg") !important;
+    mask-image: url("plus.svg") !important;
+}

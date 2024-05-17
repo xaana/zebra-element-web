@@ -701,9 +701,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                             />
                         ))}
                     </div>
-                    <div
-                        className={`mx_MessageComposer_wrapper shadow-lg ${this.props.fromHomepage ? " text-start" : ""}`}
-                    >
+                    <div>
                         <ReplyPreview
                             replyToEvent={this.props.replyToEvent}
                             permalinkCreator={this.props.permalinkCreator}
@@ -721,6 +719,10 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                             !this.props.database &&
                             this.props.files?.length === 0 && <WebSearchPill />}
+                    </div>
+                    <div
+                        className={`mx_MessageComposer_wrapper shadow-lg rounded-full ${this.props.fromHomepage ? " text-start" : ""}`}
+                    >
                         <div className="mx_MessageComposer_row">
                             {e2eIcon}
                             {/* {this.state.isInputBoxVisible && (composer)} */}
