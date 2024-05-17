@@ -1,10 +1,8 @@
 import React, { memo, useCallback, useMemo, useRef } from "react";
-import { EditorContent, EditorContext } from "@tiptap/react";
+import { EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { BlockEditor } from "../reports/BlockEditor";
-import Editor from "./Editor";
 import { ContentItemMenu, LinkMenu, TextMenuProps } from "../reports/menus";
 import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
 import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
@@ -18,18 +16,20 @@ import { ColorPicker } from "../reports/panels";
 import { Surface } from "../ui/Surface";
 import { Toolbar } from "../ui/Toolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
+import { IconZebra } from "../ui/icons";
 
 import { Icon } from "@/components/ui/Icon";
 import { TableOfContents } from "@/components/reports/TableOfContents";
 import { TableRowMenu, TableColumnMenu } from "@/plugins/reports/extensions/Table/menus";
 import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
-import { cn } from "@/lib/utils";
 import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
 import { useAIState } from "@/plugins/reports/hooks/useAIState";
-import { useChat } from "@/plugins/reports/hooks/use-chat";
+import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
 import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Sidebar } from "@/components/reports/Sidebar";
+import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 
 const MemoButton = memo(Toolbar.Button);
@@ -44,6 +44,8 @@ const EditorDialog = (props: {
     onSendCallback: (content: string, rawContent: string) => void;
 }): React.JSX.Element => {
     const [open, setOpen] = React.useState(false);
+    // const ydoc = useMemo(() => new YDoc(), []);
+    // const { editor } = useBlockEditor({ydoc:ydoc});
     const { editor } = useBlockEditor({});
 
     const menuContainerRef = useRef(null);
@@ -51,7 +53,7 @@ const EditorDialog = (props: {
 
     const leftSidebar = useSidebar();
     const rightSidebar = useSidebar();
-    const chat = useChat({
+    const chat: Chat = useChat({
         isOpen: rightSidebar.isOpen,
         open: rightSidebar.open,
         close: rightSidebar.close,
@@ -69,6 +71,11 @@ const EditorDialog = (props: {
         };
     }, [aiState, chat, editor]);
 
+    const characterCount = editor?.storage.characterCount || {
+        characters: () => 0,
+        words: () => 0,
+    };
+
     const handlePotentialCloseLeft = useCallback(() => {
         if (window.innerWidth < 1024) {
             leftSidebar.close();
@@ -83,6 +90,18 @@ const EditorDialog = (props: {
         return (
             <div className="flex-1 flex w-full relative justify-center overflow-y-auto z-30">
                 <Toolbar.Wrapper className="border border-slate-300 shadow-xl">
+                    <Toolbar.Button
+                        tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
+                        onClick={leftSidebar.toggle}
+                        active={leftSidebar.isOpen}
+                        className={leftSidebar.isOpen ? "bg-transparent" : ""}
+                    >
+                        <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
+                    </Toolbar.Button>
+                    <div className="ml-4">
+                        <EditorInfo characters={characterCount.characters()} words={characterCount.words()} />
+                    </div>
+                    <Toolbar.Divider />
                     <AIDropdown
                         onCompleteSentence={commands.onCompleteSentence}
                         onFixSpelling={commands.onFixSpelling}
@@ -233,6 +252,24 @@ const EditorDialog = (props: {
                             </Toolbar.Wrapper>
                         </PopoverContent>
                     </Popover>
+                    <Toolbar.Divider />
+                    <MemoButton
+                        tooltip="Toggle Zebra"
+                        onClick={rightSidebar.toggle}
+                        active={rightSidebar.isOpen}
+                    >
+                        <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
+                    </MemoButton>
+                    {/* <Toggle
+                        aria-label="Toggle bold"
+                        size="sm"
+                        // onClick={toggleRightSidebar}
+                        className="relative"
+                        pressed={rightSidebar.isOpen}
+                        onPressedChange={() => rightSidebar.toggle}
+                    >
+                        <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
+                    </Toggle> */}
                 </Toolbar.Wrapper>
             </div>
         );
@@ -258,18 +295,22 @@ const EditorDialog = (props: {
         );
     };
 
+    if (!editor) {
+        return <></>
+    }
+
     return (
-        <EditorContext.Provider value={providerValue}>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
-                <DialogContent className="w-[80vw] max-w-[80vw] h-[95vh] p-0 overflow-hidden gap-y-1">
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
+            <DialogContent className="w-[80vw] max-w-[80vw] h-[95vh] p-0 overflow-hidden gap-y-1">
+                <EditorContext.Provider value={providerValue}>
                     <div className="h-[45px]">
                         <EditorHeader editor={editor} />
                     </div>
-                    <div style={{ height: "calc(-150px + 100vh)" }} className="rounded-b-md border-b-2 overflow-auto">
-                        {/* <Sidebar side="left" isOpen={leftSidebar.isOpen}>
+                    <div style={{ height: "calc(-150px + 100vh)" }} className="rounded-b-md border-b-2 w-full h-full overflow-y-auto relative flex">
+                        <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                             <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
-                        </Sidebar> */}
+                        </Sidebar>
                         <div
                             className="flex-1 flex h-max relative justify-center overflow-y-auto"
                             ref={menuContainerRef}
@@ -282,7 +323,7 @@ const EditorDialog = (props: {
                             <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
                             <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                         </div>
-                        {/* <ChatSidebar sidebar={rightSidebar} /> */}
+                        <ChatSidebar sidebar={rightSidebar} />
                     </div>
                     <div>
                         <EditorFooter
@@ -295,9 +336,9 @@ const EditorDialog = (props: {
                             }}
                         />
                     </div>
-                </DialogContent>
-            </Dialog>
-        </EditorContext.Provider>
+                </EditorContext.Provider>
+            </DialogContent>
+        </Dialog>
     );
 };
 

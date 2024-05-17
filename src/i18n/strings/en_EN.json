@@ -45,7 +45,9 @@
     },
     "invite":{
         "name_email_mxid_share_room": "Invite someone using their name, email address or username (like <userId/>).",
-        "name_email_mxid_share_space": "Invite someone using their name, email address or username (like <userId/>)."
+        "name_email_mxid_share_space": "Invite someone using their name, email address or username (like <userId/>).",
+        "name_mxid_share_room": "Invite someone using their name, username (like <userId/>).",
+        "name_mxid_share_space": "Invite someone using their name, username (like <userId/>)."
     },
     "seshat":{
         "warning_kind_files_app": "",

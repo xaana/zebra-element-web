@@ -36,6 +36,7 @@ export const DatabaseSelector = () => {
     return (
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger
+                style={{ padding: 0 }}
                 // asChild
                 // onClick={() => {
                 //     dis.dispatch({
@@ -51,8 +52,9 @@ export const DatabaseSelector = () => {
                 //         context: timelineRenderingType,
                 //     });
                 // }}
-            >   
+            >
                 <CollapsibleButton
+                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px" }}
                     title="Select Database"
                     className="mx_MessageComposer_button z-[-100]"
                     iconClassName="database_button"
@@ -69,7 +71,7 @@ export const DatabaseSelector = () => {
                             roomId: roomId,
                             context: timelineRenderingType,
                         });
-                        console.log('open database selector');
+                        console.log("open database selector");
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}

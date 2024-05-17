@@ -1347,14 +1347,11 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                     "invite|start_conversation_name_email_mxid_prompt",
                     {},
                     {
-                        userId: () => {
-                            return (
-                                // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
-                                //     {userId}
-                                // </a>
-                                userId
-                            );
-                        },
+                        userId: () =>
+                            // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
+                            //     {userId}
+                            // </a>
+                            userId,
                     },
                 );
             } else {
@@ -1362,14 +1359,11 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                     "invite|start_conversation_name_mxid_prompt",
                     {},
                     {
-                        userId: () => {
-                            return (
-                                // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
-                                //     {userId}
-                                // </a>
-                                userId
-                            );
-                        },
+                        userId: () =>
+                            // <a href={makeUserPermalink(userId)} rel="noreferrer noopener" target="_blank">
+                            //     {userId}
+                            // </a>
+                            userId,
                     },
                 );
             }
@@ -1406,37 +1400,29 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                       roomName: room?.name || _t("common|unnamed_room"),
                   });
 
-            let helpTextUntranslated;
-            if (isSpace) {
-                if (identityServersEnabled) {
-                    helpTextUntranslated = _td("invite|name_email_mxid_share_space");
-                } else {
-                    helpTextUntranslated = _td("invite|name_mxid_share_space");
-                }
+            let helpTextRaw = "invite|";
+            if (identityServersEnabled) {
+                helpTextRaw += isSpace ? "name_email_mxid_share_space" : "name_email_mxid_share_room";
             } else {
-                if (identityServersEnabled) {
-                    helpTextUntranslated = _td("invite|name_email_mxid_share_room");
-                } else {
-                    helpTextUntranslated = _td("invite|name_mxid_share_room");
-                }
+                helpTextRaw += isSpace ? "name_mxid_share_space" : "name_mxid_share_room";
             }
 
+            console.log(helpTextRaw);
+
             helpText = _t(
-                helpTextUntranslated,
+                helpTextRaw,
                 {},
                 {
-                    userId: () => (
-                        <>{userId}</>
-                        // <a
-                        //     className="mx_InviteDialog_helpText_userId"
-                        //     href={makeUserPermalink(userId)}
-                        //     rel="noreferrer noopener"
-                        //     target="_blank"
-                        // >
-                        //     {userId}
-                        // </a>
-                    ),
-                    a: (sub) => <>{sub}</>,
+                    userId: () => userId,
+                    // <a
+                    //     className="mx_InviteDialog_helpText_userId"
+                    //     href={makeUserPermalink(userId)}
+                    //     rel="noreferrer noopener"
+                    //     target="_blank"
+                    // >
+                    //     {userId}
+                    // </a>
+                    // a: (sub) => <>{sub}</>,
                     // <a href={makeRoomPermalink(cli, roomId)} rel="noreferrer noopener" target="_blank">
                     //     {sub}
                     // </a>
@@ -1515,7 +1501,7 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
         const usersSection = (
             <React.Fragment>
                 <p className="mx_InviteDialog_helpText">{helpText}</p>
-                <div className="mx_InviteDialog_addressBar">
+                <div className="mx_InviteDialog_addressBar items-center">
                     {this.renderEditor()}
                     <div className="mx_InviteDialog_buttonAndSpinner">
                         {goButton}
