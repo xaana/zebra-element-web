@@ -56,7 +56,7 @@ export const DatabaseSelector = () => {
                 <CollapsibleButton
                     style={{ borderRadius: 0, padding: "8px 16px 8px 11px" }}
                     title="Select Database"
-                    className="mx_MessageComposer_button z-[-100]"
+                    className="mx_MessageComposer_button"
                     iconClassName="database_button"
                     onClick={() => {
                         dis.dispatch({
