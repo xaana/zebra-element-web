@@ -660,7 +660,22 @@
     position: absolute;
     bottom: 28px;
     transform: translate(0%, 50%);
-    margin: 0px 3px 0px 3px;
+    margin: 0px 6px;
     width: 12px;
     height: 12px;
+}
+
+.mx_InviteDialog_tile {
+    &.mx_InviteDialog_tile--room {
+        .mx_InviteDialog_tile--room_selected {
+            border-radius: 36px;
+            background-color: $background;
+        }
+    }
+}
+
+.mx_InviteDialog_userTile {
+    .mx_InviteDialog_userTile_pill {
+        background-color: $background;
+    }
 }
