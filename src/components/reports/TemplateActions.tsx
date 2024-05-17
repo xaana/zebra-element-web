@@ -43,20 +43,15 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
         // Handle other actions specific to TemplateActions here
     };
     useEffect(() => {
-        getVectorConfig().then((configData) => {
-            if (configData?.plugins["reports"]) {
-                const apiUrl = configData?.plugins["reports"].api;
-                const url = `${apiUrl}/api/get_users`;
-                const request = new Request(url, {
-                    method: "GET",
-                });
-                fetch(request)
-                    .then((response) => response.json())
-                    .then((data) => {
-                    setUserIds(data.user.filter((item)=> item !== "@zebra:securezebra.com"));
-                    });
-            }
+        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
+        const request = new Request(url, {
+            method: "GET",
         });
+        fetch(request)
+            .then((response) => response.json())
+            .then((data) => {
+            setUserIds(data.user.filter((item)=> item !== "@zebra:securezebra.com"));
+            });
     },[])
 
 
@@ -150,7 +145,7 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
                                     const headers = {
                                         "Content-Type": "application/json",
                                     }
-                                    const request = new Request(`${SettingsStore.getValue("reportsApiUrl")}/api/approval/send_request_message`, {
+                                    const request = new Request(`${SettingsStore.getValue("workflowUrl")}/webhook/approval`, {
                                         method: "POST",
                                         body: JSON.stringify(payload),
                                         headers: headers

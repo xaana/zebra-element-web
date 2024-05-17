@@ -231,7 +231,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
-                    console.log("select file in thread");
                     if (payload.roomId === this.props.room.roomId) {
                         if (payload.files.length > 0) {
                             const newState = [...this.state.files, ...payload.files];
@@ -240,10 +239,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                     index === self.findIndex((t) => t.mediaId === item.mediaId && t.name === item.name),
                             );
                             const fileList = uniqueList.map((file: DocFile) => {
-                                console.log(
-                                    this.props.room.findEventById(file.eventId!),
-                                    this.props.room.findEventById(file.eventId!)?.isRedacted(),
-                                );
                                 if (
                                     this.props.room &&
                                     file.eventId &&

@@ -626,8 +626,11 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     configData.plugins.reports.api,
                 );
             }
+            if(configData?.plugins.workflow.url) {
+                await SettingsStore.setValue("workflowUrl", null, SettingLevel.DEVICE, configData.plugins.workflow.url);
+            }
         } catch (e) {
-            console.error(`Error in setting botApiUrl|reportsApiUrl`, e);
+            console.error(`Error in setting botApiUrl|reportsApiUrl|workflowUrl`, e);
         }
     }
 

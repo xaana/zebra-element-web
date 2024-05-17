@@ -71,7 +71,6 @@ export const DatabaseSelector = () => {
                             roomId: roomId,
                             context: timelineRenderingType,
                         });
-                        console.log("open database selector");
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
