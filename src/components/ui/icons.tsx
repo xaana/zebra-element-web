@@ -387,9 +387,9 @@ export function IconVideo({ className, ...props }: React.ComponentProps<"svg">):
             fill="none"
             stroke="currentColor"
             className={cn("h-6 w-6", className)}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             {...props}
         >
             <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5" />
@@ -451,9 +451,9 @@ export function IconDocumentDuplicate({ className, ...props }: React.ComponentPr
             fill="none"
             stroke="currentColor"
             className={cn("h-6 w-6", className)}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             {...props}
         >
             <path d="M20 7h-3a2 2 0 0 1-2-2V2" />
@@ -487,9 +487,9 @@ export function IconFileChart({ className, ...props }: React.ComponentProps<"svg
             fill="none"
             stroke="currentColor"
             className={cn("h-6 w-6", className)}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             {...props}
         >
             <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
@@ -532,9 +532,9 @@ export function IconAlgology({ className, ...props }: React.ComponentProps<"svg"
             fill="none"
             stroke="currentColor"
             className={cn("h-6 w-6", className)}
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             {...props}
         >
             <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
