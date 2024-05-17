@@ -262,7 +262,7 @@ const EditorDialog = (props: {
         <EditorContext.Provider value={providerValue}>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
-                <DialogContent className="w-[80vw] max-w-[80vw] h-[95vh] p-0 overflow-hidden gap-y-1">
+                <DialogContent className="w-[70vw] h-[80vh] p-0 overflow-hidden gap-y-1">
                     <div className="h-[45px]">
                         <EditorHeader editor={editor} />
                     </div>

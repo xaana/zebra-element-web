@@ -36,22 +36,23 @@ export const DatabaseSelector = () => {
     return (
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger
-                // asChild
-                // onClick={() => {
-                //     dis.dispatch({
-                //         action: "select_database",
-                //         database: "",
-                //         roomId: roomId,
-                //         context: timelineRenderingType,
-                //     });
-                //     dis.dispatch({
-                //         action: "select_files",
-                //         files: [],
-                //         roomId: roomId,
-                //         context: timelineRenderingType,
-                //     });
-                // }}
-            >   
+
+            // asChild
+            // onClick={() => {
+            //     dis.dispatch({
+            //         action: "select_database",
+            //         database: "",
+            //         roomId: roomId,
+            //         context: timelineRenderingType,
+            //     });
+            //     dis.dispatch({
+            //         action: "select_files",
+            //         files: [],
+            //         roomId: roomId,
+            //         context: timelineRenderingType,
+            //     });
+            // }}
+            >
                 <CollapsibleButton
                     title="Select Database"
                     className="mx_MessageComposer_button z-[-100]"
@@ -69,7 +70,7 @@ export const DatabaseSelector = () => {
                             roomId: roomId,
                             context: timelineRenderingType,
                         });
-                        console.log('open database selector');
+                        console.log("open database selector");
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
