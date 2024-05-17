@@ -22,10 +22,10 @@ import { Separator } from '@/components/ui/separator'
 
     if (!suggestions || suggestions.length===0)return null;
     return (
-      
+
       <div className='space-y-2 mt-2'>
         <Separator />
-        <div className="text-sm text-muted-foreground font-bold">
+        <div className="text-base text-muted-foreground font-bold">
             Related:
         </div>
       {suggestions.map((suggestion,index)=>{
@@ -50,8 +50,7 @@ import { Separator } from '@/components/ui/separator'
         </div>
         )
       })}
-        
+
       </div>
     )
   }
-  
