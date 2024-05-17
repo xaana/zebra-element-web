@@ -57,7 +57,7 @@ import { PdfViewer } from "../../pdf/pdf-viewer";
 import { SuggestionPrompt } from "./SuggestionPrompt";
 import { Separator } from "../../ui/separator";
 
-import AlertMessagePanel from "@/components/alert/AlertMessage";
+import {AlertMessagePanel, AlertMessageWithColsPanel} from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
@@ -824,7 +824,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
 
         if (alertContent) {
-            body = (
+            body = alertContent.column ? (
+                <>
+                    {body}
+                    <AlertMessageWithColsPanel data={alertContent.data} targetCols={alertContent.column} status={content.status} />
+                </>
+            ): (
                 <>
                     {body}
                     <AlertMessagePanel content={alertContent} />
