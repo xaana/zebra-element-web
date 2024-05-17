@@ -36,24 +36,25 @@ export const DatabaseSelector = () => {
     return (
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger
-
-            // asChild
-            // onClick={() => {
-            //     dis.dispatch({
-            //         action: "select_database",
-            //         database: "",
-            //         roomId: roomId,
-            //         context: timelineRenderingType,
-            //     });
-            //     dis.dispatch({
-            //         action: "select_files",
-            //         files: [],
-            //         roomId: roomId,
-            //         context: timelineRenderingType,
-            //     });
-            // }}
+                style={{ padding: 0 }}
+                // asChild
+                // onClick={() => {
+                //     dis.dispatch({
+                //         action: "select_database",
+                //         database: "",
+                //         roomId: roomId,
+                //         context: timelineRenderingType,
+                //     });
+                //     dis.dispatch({
+                //         action: "select_files",
+                //         files: [],
+                //         roomId: roomId,
+                //         context: timelineRenderingType,
+                //     });
+                // }}
             >
                 <CollapsibleButton
+                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px" }}
                     title="Select Database"
                     className="mx_MessageComposer_button z-[-100]"
                     iconClassName="database_button"
