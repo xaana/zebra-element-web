@@ -52,7 +52,8 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
-            "api": "https://dev-api-2.securezebra.com"
+            "api": "https://dev-api-2.securezebra.com",
+            "collabServer": "wss://dev-api-3.securezebra.com"
         },
         "algology": {
             "url": "https://algology-dev.securezebra.com"

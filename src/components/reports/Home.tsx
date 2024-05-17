@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import { useAtom } from "jotai";
 import { motion } from "framer-motion";
+import { Doc as YDoc } from "yjs";
+import { HocuspocusProvider } from "@hocuspocus/provider";
 
 import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
@@ -14,7 +16,7 @@ import { useAIState } from "@/plugins/reports/hooks/useAIState";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
 
-export const Home = (): JSX.Element => {
+export const Home = ({ collabProvider, ydoc }: { collabProvider: HocuspocusProvider; ydoc: YDoc }): JSX.Element => {
     // Use stored state for active step
     const [activeStep, setActiveStep] = useAtom(activeStepAtom);
 
@@ -44,7 +46,10 @@ export const Home = (): JSX.Element => {
         }
     };
 
-    const { editor } = useBlockEditor({});
+    const { editor, collabState, users } = useBlockEditor({
+        collabProvider,
+        ydoc,
+    });
 
     const leftSidebar = useSidebar();
     const rightSidebar = useSidebar();
@@ -66,8 +71,10 @@ export const Home = (): JSX.Element => {
             setAiError: aiState.setAiError,
             editor: editor,
             editorChat: chat,
+            collabState: collabState,
+            users: users,
         };
-    }, [aiState, chat, editor]);
+    }, [aiState, chat, editor, collabState, users]);
 
     return (
         <EditorContext.Provider value={providerValue}>

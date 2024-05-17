@@ -27,7 +27,7 @@ import { convertImageUrlToBase64 } from "@/plugins/reports/utils/generatePdf";
 
 export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
     const [name, setName] = useState("");
-    const [type, setType] = useState<string>("document");
+    const [type, setType] = useState<string>("report");
     const [saveResult, setSaveResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -127,8 +127,8 @@ export function ReportSave({ editor }: { editor: Editor }): JSX.Element {
                                 </Label>
                                 <RadioGroup className="flex items-center gap-4" value={type} onValueChange={setType}>
                                     <div className="flex items-center space-x-1">
-                                        <RadioGroupItem value="document" id="document" />
-                                        <Label htmlFor="document">Document</Label>
+                                        <RadioGroupItem value="report" id="report" />
+                                        <Label htmlFor="report">Report</Label>
                                     </div>
                                     <div className="flex items-center space-x-1">
                                         <RadioGroupItem value="template" id="template" />

@@ -178,6 +178,7 @@ export interface IBaseSetting<T extends SettingValueType = SettingValueType> {
 
     botApiUrl?: string | null;
     reportsApiUrl?: string | null;
+    workflowUrl?: string | null;
 }
 
 export interface IFeature extends Omit<IBaseSetting<boolean>, "isFeature"> {
@@ -1173,6 +1174,10 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         default: null,
     },
     "reportsApiUrl": {
+        supportedLevels: [SettingLevel.DEVICE],
+        default: null,
+    },
+    "workflowUrl": {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },

@@ -4498,15 +4498,15 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-code/-/extension-code-2.2.4.tgz#ba77dc56daac75bdf83a2aaecff896e9301c2cdf"
   integrity sha512-JB4SJ2mUU/9qXFUf+K5K9szvovnN9AIcCb0f0UlcVBuddKHSqCl3wO3QJgYt44BfQTLMNuyzr+zVqfFd6BNt/g==
 
-"@tiptap/extension-collaboration-cursor@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-collaboration-cursor/-/extension-collaboration-cursor-2.2.4.tgz#f26ac842fa0318c9c72b04264548efca00784b5e"
-  integrity sha512-G0j08yGwFaq3AiaNHR+CUVCqLQv0fZhmwy9V1ByE7YkIgiDs9icCuKo1cbY2riW/Sn874rIHEctMxA8hVsNttw==
+"@tiptap/extension-collaboration-cursor@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-collaboration-cursor/-/extension-collaboration-cursor-2.4.0.tgz#bcc85f83b3f6d51372831e223eac422d2302ead4"
+  integrity sha512-BTVy9FCTGdHxYieJ4lteVLrRY5qAPQyfunhMwakVf1NT3iU9quE6CaeaIwt6wEDJPMPPKzOHg1/ltSz9nIDe4A==
 
-"@tiptap/extension-collaboration@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@tiptap/extension-collaboration/-/extension-collaboration-2.2.4.tgz#65d2d781e1dd020d9b5ae34158dfa7e6dbb96223"
-  integrity sha512-Q9DnGeTYhB8TDud9B2zbRZqbNdBi0C/zzTYora2bFRRXnUzQUJgvV7HeIcHajj2wdKe8HXGwXjrCzORUtwUFgA==
+"@tiptap/extension-collaboration@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-collaboration/-/extension-collaboration-2.4.0.tgz#d830694ac61a4b9857ffb77f24585e13a9cd6a0c"
+  integrity sha512-achU+GU9tqxn3zsU61CbwWrCausf0U23MJIpo8vnywOIx6E955by6okHEHoUazLIGVFXVc5DBzBP7bf+Snzk0Q==
 
 "@tiptap/extension-color@^2.2.4":
   version "2.2.4"
@@ -18630,10 +18630,10 @@ xmlchars@^2.2.0:
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
 
-y-prosemirror@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/y-prosemirror/-/y-prosemirror-1.2.3.tgz#331e902be5b939adaca49675dc795aee45aba0e4"
-  integrity sha512-0e9QB78hcAT3l+ml26x+f7K9xmP1tqHGzbKTfe+JuPpKFBLpr2NUwH7D+J7uKhtMAmOhHUMFtd7Zd2mNKyP2+A==
+y-prosemirror@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/y-prosemirror/-/y-prosemirror-1.2.5.tgz#c448f80a6017190bc69a30a33f3930e9924fad3a"
+  integrity sha512-T/JATxC8P2Dbvq/dAiaiztD1a8KEwRP8oLRlT8YlaZdNlLGE1Ea0IJ8If25UlDYmk+4+uqLbqT/S+dzUmwwgbA==
   dependencies:
     lib0 "^0.2.42"
 
@@ -18735,10 +18735,10 @@ yargs@^17.0.0, yargs@^17.3.1, yargs@^17.5.1, yargs@^17.7.2:
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
 
-yjs@^13.6.14:
-  version "13.6.14"
-  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.6.14.tgz#9326dfa03d1be3fb9af9ef7e41de4bfc78849a9f"
-  integrity sha512-D+7KcUr0j+vBCUSKXXEWfA+bG4UQBviAwP3gYBhkstkgwy5+8diOPMx0iqLIOxNo/HxaREUimZRxqHGAHCL2BQ==
+yjs@^13.6.15:
+  version "13.6.15"
+  resolved "https://registry.yarnpkg.com/yjs/-/yjs-13.6.15.tgz#5a2402632aabf83e5baf56342b4c82fe40859306"
+  integrity sha512-moFv4uNYhp8BFxIk3AkpoAnnjts7gwdpiG8RtyFiKbMtxKCS0zVZ5wPaaGpwC3V2N/K8TK8MwtSI3+WO9CHWjQ==
   dependencies:
     lib0 "^0.2.86"
 

@@ -20,6 +20,7 @@ import { cn } from "../../lib/utils";
 import { PluginActions } from "../../plugins";
 
 import { getVectorConfig } from "@/vector/getconfig";
+import { DataTable } from "./DataTable";
 
 const TableStyle = styled.div`
     .table__container > div::-webkit-scrollbar {
@@ -115,65 +116,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                 <div className="table__container rounded-md border border-solid scrollbar--custom">
                     {data && data.length > 0 && (
                         <>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        {Object.keys(data[0]).map((column, index) => (
-                                            <TableHead key={index} className="font-normal">
-                                                {column
-                                                    .split("_")
-                                                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                                    .join(" ")}
-                                            </TableHead>
-                                        ))}
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody className="font-mono">
-                                    {data.map((row, index) => (
-                                        <TableRow key={index}>
-                                            {Object.values(row).map((column, index) => (
-                                                <TableCell
-                                                    className={cn(
-                                                        "table-cell font-normal",
-                                                        column && column.toString().length > 55 && `min-w-[450px]`,
-                                                    )}
-                                                    key={index}
-                                                >
-                                                    {column ? (
-                                                        !isNaN(Number(column)) &&
-                                                        !isNaN(parseFloat(column.toString())) &&
-                                                        ![
-                                                            "day",
-                                                            "date",
-                                                            "year",
-                                                            "month",
-                                                            "time",
-                                                            "id",
-                                                            "code",
-                                                            "abn",
-                                                            "phone",
-                                                            "title",
-                                                            "name",
-                                                        ].some((substring) =>
-                                                            Object.keys(data[0])
-                                                                [index].toLowerCase()
-                                                                .includes(substring),
-                                                        ) ? (
-                                                            <span>
-                                                                {parseFloat(column.toString()).toLocaleString("en-AU")}
-                                                            </span>
-                                                        ) : (
-                                                            column
-                                                        )
-                                                    ) : (
-                                                        "-"
-                                                    )}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            <DataTable data={data} />
                             <div className="border-t w-full">
                                 <div className="flex items-center justify-between">
                                     {totalEntries && (

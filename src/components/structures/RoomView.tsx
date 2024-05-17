@@ -134,6 +134,8 @@ import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import TimelinePanel from "./TimelinePanel";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
+import { Label } from "../ui/label";
+import ZebiaAlert from "../ui/zebraAlert";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -676,8 +678,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
             activeCall: roomId ? CallStore.instance.getActiveCall(roomId) : null,
             promptAskToJoin: this.context.roomViewStore.promptAskToJoin(),
             viewRoomOpts: this.context.roomViewStore.getViewRoomOpts(),
-            database: this.context.roomViewStore.getDatabase()?? undefined,
-            files: this.context.roomViewStore.getFiles()?? undefined,
+            database: this.context.roomViewStore.getDatabase() ?? undefined,
+            files: this.context.roomViewStore.getFiles() ?? undefined,
         };
 
         if (
@@ -1311,13 +1313,13 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     RightPanelStore.instance.pushCard({
                         phase: RightPanelPhases.EchartsView,
                         state: { echartsOption: payload.echartsOption, echartsQuery: payload.echartsQuery },
-                    });}
-                    else{
-                        RightPanelStore.instance.pushCard({
-                            phase: RightPanelPhases.EchartsView,
-                            state: { echartsOption: payload.echartsOption, echartsQuery: payload.echartsQuery },
-                        });
-                    }
+                    });
+                } else {
+                    RightPanelStore.instance.pushCard({
+                        phase: RightPanelPhases.EchartsView,
+                        state: { echartsOption: payload.echartsOption, echartsQuery: payload.echartsQuery },
+                    });
+                }
 
                 break;
             case "view_citations":
@@ -1325,13 +1327,13 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     RightPanelStore.instance.pushCard({
                         phase: RightPanelPhases.CitationsView,
                         state: { pdfUrls: payload.pdfUrls, citations: payload.citations },
-                    });}
-                    else{
-                        RightPanelStore.instance.pushCard({
-                            phase: RightPanelPhases.CitationsView,
-                            state: { pdfUrls: payload.pdfUrls, citations: payload.citations },
-                        });
-                    }
+                    });
+                } else {
+                    RightPanelStore.instance.pushCard({
+                        phase: RightPanelPhases.CitationsView,
+                        state: { pdfUrls: payload.pdfUrls, citations: payload.citations },
+                    });
+                }
 
                 break;
         }
@@ -2124,10 +2126,10 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
         for (const upload of uploads) {
             if (upload.relation?.rel_type !== THREAD_RELATION_TYPE.name) {
                 return true;
+            }
+            return false;
         }
-        return false;
-    }
-}
+    };
 
     /**
      * Handles the cancellation of a request to join a room.
@@ -2322,8 +2324,11 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
 
         let statusBar: JSX.Element | undefined;
         let isStatusAreaExpanded = true;
-        if (this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads())&&(ContentMessages.sharedInstance().getCurrentUploads().length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) {
-
+        if (
+            this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads()) &&
+            (ContentMessages.sharedInstance().getCurrentUploads().length > 0 ||
+                SdkContextClass.instance.roomViewStore.getUploading())
+        ) {
             statusBar = <UploadBar room={this.state.room} />;
         } else if (!this.state.search) {
             isStatusAreaExpanded = this.state.statusBarVisible;
@@ -2583,6 +2588,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         {statusBarArea}
                         {previewBar}
                         {messageComposer}
+                        <ZebiaAlert />
                     </>
                 );
                 break;

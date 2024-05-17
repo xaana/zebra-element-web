@@ -52,14 +52,19 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
-            "api": "http://localhost:8000"
+            "api": "http://localhost:8000",
+            "collabServer": "ws://localhost:63043"
         },
         "algology": {
             "url": "http://localhost:3001"
         },
         "websocket": {
             "url": "ws://localhost:8000/ws"
+        },
+        "workflow": {
+            "url": "http://locahost:5678"
         }
+        
     },
     "bot_api": "http://localhost:29316/_matrix/maubot/plugin/zebra"
 }

@@ -45,6 +45,7 @@ import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 import { File } from "@/plugins/files/types";
+import ZebiaAlert from "../ui/zebraAlert";
 
 interface IProps {
     room: Room;
@@ -65,7 +66,7 @@ interface IState {
     editState?: EditorStateTransfer;
     replyToEvent?: MatrixEvent;
     narrow: boolean;
-    database:string;
+    database: string;
     files: DocFile[];
 }
 
@@ -95,8 +96,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
             lastReply: thread?.lastReply((ev: MatrixEvent) => {
                 return ev.isRelation(THREAD_RELATION_TYPE.name) && !ev.status;
             }),
-            database:'',
-            files:[],
+            database: "",
+            files: [],
         };
 
         this.layoutWatcherRef = SettingsStore.watchSetting("layout", null, (...[, , , value]) =>
@@ -106,27 +107,29 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
     public componentDidMount(): void {
         if (this.state.thread) {
-            this.postThreadUpdate(this.state.thread)
+            this.postThreadUpdate(this.state.thread);
             for (let i = this.state.thread.timeline.length - 1; i >= 0; i--) {
-                if(this.state.thread.timeline[i]?.getContent().database){
-                    this.setState({database: this.state.thread.timeline[i].getContent().database,files:[]})
-                    break
-                }
-                else if(this.state.thread.timeline[i]?.getContent().fileSelected){
-                    const fileList = this.state.thread.timeline[i].getContent().fileSelected.map((file:DocFile)=>{
-                        if (this.props.room&&file.eventId&&!this.props.room.findEventById(file.eventId)?.isRedacted()){
-                            return file
+                if (this.state.thread.timeline[i]?.getContent().database) {
+                    this.setState({ database: this.state.thread.timeline[i].getContent().database, files: [] });
+                    break;
+                } else if (this.state.thread.timeline[i]?.getContent().fileSelected) {
+                    const fileList = this.state.thread.timeline[i].getContent().fileSelected.map((file: DocFile) => {
+                        if (
+                            this.props.room &&
+                            file.eventId &&
+                            !this.props.room.findEventById(file.eventId)?.isRedacted()
+                        ) {
+                            return file;
                         }
-                    })
-                    const filteredList = fileList.filter(item => item !== undefined);
-                    this.setState({files: filteredList,database:''})
-                    break
-                }else if (this.state.thread.timeline[i]?.getContent().web) {
-                    this.setState({database:'',files:[]})
-                    break
+                    });
+                    const filteredList = fileList.filter((item) => item !== undefined);
+                    this.setState({ files: filteredList, database: "" });
+                    break;
+                } else if (this.state.thread.timeline[i]?.getContent().web) {
+                    this.setState({ database: "", files: [] });
+                    break;
                 }
             }
-            
         }
 
         this.setupThread(this.props.mxEvent);
@@ -228,17 +231,20 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
-                    console.log('select file in thread')
-                    if (payload.roomId===this.props.room.roomId){
-                    if (payload.files.length > 0) {
-                        const newState = [...this.state.files,...payload.files]
-                        const uniqueList =newState.filter((item, index, self) =>
-                            index === self.findIndex((t) => (
-                                t.mediaId === item.mediaId && t.name === item.name
-                            )))
-                            const fileList = uniqueList.map((file:DocFile) => {
-                                console.log(this.props.room.findEventById(file.eventId!),this.props.room.findEventById(file.eventId!)?.isRedacted())
-                                if (this.props.room&&file.eventId&&(!this.props.room.findEventById(file.eventId)?.isRedacted()||!this.props.room.findEventById(file.eventId))){
+                    if (payload.roomId === this.props.room.roomId) {
+                        if (payload.files.length > 0) {
+                            const newState = [...this.state.files, ...payload.files];
+                            const uniqueList = newState.filter(
+                                (item, index, self) =>
+                                    index === self.findIndex((t) => t.mediaId === item.mediaId && t.name === item.name),
+                            );
+                            const fileList = uniqueList.map((file: DocFile) => {
+                                if (
+                                    this.props.room &&
+                                    file.eventId &&
+                                    (!this.props.room.findEventById(file.eventId)?.isRedacted() ||
+                                        !this.props.room.findEventById(file.eventId))
+                                ) {
                                     return {
                                         mediaId: file.mediaId,
                                         name: file.name,
@@ -246,19 +252,17 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                         roomId: file.roomId,
                                     };
                                 }
-                            })
-                        const filteredList = fileList.filter(item => item !== undefined);
-                        this.setState({
-                            files: filteredList,
-                        });
+                            });
+                            const filteredList = fileList.filter((item) => item !== undefined);
+                            this.setState({
+                                files: filteredList,
+                            });
+                        } else {
+                            this.setState({
+                                files: payload.files,
+                            });
+                        }
                     }
-                    else {
-                        this.setState({
-                            files: payload.files,
-                        });
-                    }}
-
-                    
                 }
                 break;
             default:
@@ -433,10 +437,10 @@ export default class ThreadView extends React.Component<IProps, IState> {
         for (const upload of uploads) {
             if (upload.relation?.rel_type === THREAD_RELATION_TYPE.name) {
                 return true;
+            }
+            return false;
         }
-        return false;
-        }
-    }
+    };
 
     public render(): React.ReactNode {
         const highlightedEventId = this.props.isInitialEventHighlighted ? this.props.initialEvent?.getId() : undefined;
@@ -516,22 +520,27 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     {this.card.current && <Measured sensor={this.card.current} onMeasurement={this.onMeasurement} />}
                     <div className="mx_ThreadView_timelinePanelWrapper">{timeline}</div>
 
-                    {this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads(threadRelation))&&((ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 || SdkContextClass.instance.roomViewStore.getUploading())) && (
-                        <UploadBar room={this.props.room} relation={threadRelation} />
-                    )}
+                    {this.checkInThread(ContentMessages.sharedInstance().getCurrentUploads(threadRelation)) &&
+                        (ContentMessages.sharedInstance().getCurrentUploads(threadRelation).length > 0 ||
+                            SdkContextClass.instance.roomViewStore.getUploading()) && (
+                            <UploadBar room={this.props.room} relation={threadRelation} />
+                        )}
 
                     {this.state.thread?.timelineSet && (
-                        <MessageComposer
-                            room={this.props.room}
-                            resizeNotifier={this.props.resizeNotifier}
-                            relation={threadRelation}
-                            replyToEvent={this.state.replyToEvent}
-                            permalinkCreator={this.props.permalinkCreator}
-                            e2eStatus={this.props.e2eStatus}
-                            compact={true}
-                            database={this.state.database}
-                            files={this.state.files}
-                        />
+                        <>
+                            <MessageComposer
+                                room={this.props.room}
+                                resizeNotifier={this.props.resizeNotifier}
+                                relation={threadRelation}
+                                replyToEvent={this.state.replyToEvent}
+                                permalinkCreator={this.props.permalinkCreator}
+                                e2eStatus={this.props.e2eStatus}
+                                compact={true}
+                                database={this.state.database}
+                                files={this.state.files}
+                            />
+                            <ZebiaAlert />
+                        </>
                     )}
                 </BaseCard>
             </RoomContext.Provider>

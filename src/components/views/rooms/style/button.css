@@ -6,6 +6,7 @@
 .database_button::before {
     -webkit-mask-image: url("database.svg") !important;
     mask-image: url("database.svg") !important;
+    left: 0px; /* due to database selector style change to match menu style*/
 }
 
 .files_button::before {
@@ -16,4 +17,9 @@
 .editor_button::before {
     -webkit-mask-image: url("text-editor.svg") !important;
     mask-image: url("text-editor.svg") !important;
+}
+
+.mx_MessageComposer_buttonMenu::before {
+    -webkit-mask-image: url("plus.svg") !important;
+    mask-image: url("plus.svg") !important;
 }
