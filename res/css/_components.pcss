@@ -478,8 +478,16 @@
     vertical-align: middle;
     margin: auto;
     position: relative;
-    padding-left: 42px;
-    padding-right: 16px;
+    padding: 0 16px 0 42px;
+}
+
+.mx_MessageComposer.mx_MessageComposer--compact {
+    .mx_MessageComposer_wrapper {
+        padding: 0 16px 0 42px;
+    }
+    .mx_MessageComposer_e2eIcon {
+        left: 20px;
+    }
 }
 
 .mx_LeftPanel_wrapper {
