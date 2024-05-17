@@ -200,7 +200,7 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
                             <Icon name="ArrowDownToLine" className="w-4 h-4" />
                         </DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    {(row.type==="document")&&approveElement}
+                    {(row.type==="report")&&approveElement}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="text-red-600">
                         Delete

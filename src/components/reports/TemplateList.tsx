@@ -69,7 +69,7 @@ export const TemplateList = ({
                         className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
                         variant="secondary"
                     >
-                        {row.getValue("type") === "document" ? "Document" : "Template"}
+                        {row.getValue("type") === "report" ? "Report" : "Template"}
                     </Badge>
                 </div>
             ),
