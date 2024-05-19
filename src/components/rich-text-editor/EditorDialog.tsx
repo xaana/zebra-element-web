@@ -88,8 +88,8 @@ const EditorDialog = (props: {
         const blockOptions = useTextmenuContentTypes(editor);
 
         return (
-            <div className="flex-1 flex w-full relative justify-center overflow-y-auto z-30">
-                <Toolbar.Wrapper className="border border-slate-300 shadow-xl">
+            <div className="flex-1 flex w-full relative justify-center overflow-y-auto">
+                <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30">
                     <Toolbar.Button
                         tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
                         onClick={leftSidebar.toggle}
