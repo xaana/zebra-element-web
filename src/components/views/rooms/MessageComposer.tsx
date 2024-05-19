@@ -116,6 +116,7 @@ interface IState {
     haveRecording: boolean;
     recordingTimeLeftSeconds?: number;
     me?: RoomMember;
+    isFileMenuOpen: boolean;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     showStickersButton: boolean;
@@ -486,6 +487,12 @@ export class MessageComposer extends React.Component<IProps, IState> {
         this.setStickerPickerOpen(!this.state.isStickerPickerOpen);
     };
 
+    private toggleFileButtonMenu = (): void => {
+        this.setState({
+            isFileMenuOpen: !this.state.isFileMenuOpen,
+        });
+    };
+
     private toggleButtonMenu = (): void => {
         this.setState({
             isMenuOpen: !this.state.isMenuOpen,
@@ -741,6 +748,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         <MessageComposerButtons
                                             addEmoji={this.addEmoji}
                                             haveRecording={this.state.haveRecording}
+                                            isFileMenuOpen={this.state.isFileMenuOpen}
                                             isMenuOpen={this.state.isMenuOpen}
                                             isStickerPickerOpen={this.state.isStickerPickerOpen}
                                             menuPosition={menuPosition}
@@ -754,6 +762,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                             showStickersButton={this.showStickersButton}
                                             isRichTextEnabled={this.state.isRichTextEnabled}
                                             onComposerModeClick={this.onRichTextToggle}
+                                            toggleFileButtonMenu={this.toggleFileButtonMenu}
                                             toggleButtonMenu={this.toggleButtonMenu}
                                             showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
                                             onStartVoiceBroadcastClick={() => {
