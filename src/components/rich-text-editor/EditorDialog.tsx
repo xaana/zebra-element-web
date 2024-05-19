@@ -98,8 +98,15 @@ const EditorDialog = (props: {
                     >
                         <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
                     </Toolbar.Button>
-                    <div className="ml-4">
-                        <EditorInfo characters={characterCount.characters()} words={characterCount.words()} />
+                    <div className="flex items-center mx-4">
+                        <div className="flex flex-col justify-center">
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                {characterCount.words()} {characterCount.words() === 1 ? "word" : "words"}
+                            </div>
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                {characterCount.characters()} {characterCount.characters() === 1 ? "character" : "characters"}
+                            </div>
+                        </div>
                     </div>
                     <Toolbar.Divider />
                     <AIDropdown
