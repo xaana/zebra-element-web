@@ -96,8 +96,8 @@ export const AlertMessageWithColsPanel = (props: {
 }): React.JSX.Element => {
     const formatedData = generateAlertFromCols(props.data, props.targetCols)
     return (
-        <Card className="w-[600px]">
-            <CardHeader>{status === "alert" ? `❗️Alerting❗️` : `🔔Resolved🔔`}</CardHeader>
+        <Card className="w-full">
+            <CardHeader>{status === "alert" ? `❗️Alerting` : `🔔Resolved`}</CardHeader>
             <CardContent className="p-2 pt-3">
                 {formatedData.length >= 1 && (
                     <Table>
@@ -105,15 +105,15 @@ export const AlertMessageWithColsPanel = (props: {
                             <TableRow>
                                 <TableHead>No.</TableHead>
                                 {props.targetCols.map(item=>{
-                                    return (<TableHead>item</TableHead>)
+                                    return (<TableHead>{item}</TableHead>)
                                 })}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {formatedData.map((item, index) => (
                                 <TableRow key={index}>
-                                    <TableCell>{index}</TableCell>
-                                    {item.map(i=><TableCell>{i}</TableCell>)}
+                                    <TableCell>{index+1}</TableCell>
+                                    {Object.values(item).map(i=><TableCell>{i}</TableCell>)}
                                 </TableRow>
                             ))}
                         </TableBody>
