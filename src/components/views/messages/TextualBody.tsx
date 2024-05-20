@@ -721,15 +721,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <div className="flex gap-2 justify-end">
                         <Button
                             onClick={() => {
-                                content["approvalId"] = null;
-                                const temp = content;
-                                mxEvent.setContent(temp);
+                                // content["approvalId"] = null;
+                                // const temp = content;
+                                // mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
+                                    status: "approved",
                                 };
-                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/set_approve`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -745,15 +746,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </Button>
                         <Button
                             onClick={() => {
-                                content["approvalId"] = null;
-                                const temp = content;
-                                mxEvent.setContent(temp);
+                                // content["approvalId"] = null;
+                                // const temp = content;
+                                // mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
+                                    status: "rejected",
                                 };
-                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/set_reject`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
