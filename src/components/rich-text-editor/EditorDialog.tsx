@@ -88,8 +88,8 @@ const EditorDialog = (props: {
         const blockOptions = useTextmenuContentTypes(editor);
 
         return (
-            <div className="flex-1 flex w-full relative justify-center overflow-y-auto z-30">
-                <Toolbar.Wrapper className="border border-slate-300 shadow-xl">
+            <div className="flex-1 flex w-full relative justify-center overflow-y-auto">
+                <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30">
                     <Toolbar.Button
                         tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
                         onClick={leftSidebar.toggle}
@@ -98,8 +98,15 @@ const EditorDialog = (props: {
                     >
                         <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
                     </Toolbar.Button>
-                    <div className="ml-4">
-                        <EditorInfo characters={characterCount.characters()} words={characterCount.words()} />
+                    <div className="flex items-center mx-4">
+                        <div className="flex flex-col justify-center">
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                {characterCount.words()} {characterCount.words() === 1 ? "word" : "words"}
+                            </div>
+                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                                {characterCount.characters()} {characterCount.characters() === 1 ? "character" : "characters"}
+                            </div>
+                        </div>
                     </div>
                     <Toolbar.Divider />
                     <AIDropdown

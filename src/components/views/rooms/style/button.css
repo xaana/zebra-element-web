@@ -23,3 +23,8 @@
     -webkit-mask-image: url("plus.svg") !important;
     mask-image: url("plus.svg") !important;
 }
+
+.mx_MessageComposer_audioCapture::before {
+    -webkit-mask-image: url("audio-capture.svg") !important;
+    mask-image: url("audio-capture.svg") !important;
+}
