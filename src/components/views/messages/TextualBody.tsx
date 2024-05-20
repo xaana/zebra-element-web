@@ -77,7 +77,6 @@ interface IState {
     widgetHidden: boolean;
     pdfUrls: any[];
     citations: Citation[];
-    botApi: null | string;
     echartsOption: string | undefined;
     echartsQuery: string | undefined;
     echartsCode:string | undefined;
@@ -103,7 +102,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             widgetHidden: false,
             pdfUrls: [],
             citations: [],
-            botApi: null,
             echartsOption: undefined,
             echartsQuery: undefined,
             echartsCode: undefined,
@@ -115,15 +113,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (!this.props.editState) {
             this.applyFormatting();
         }
-        this.getBotApi();
     }
-
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private getBotApi = () => {
-        const botApiUrl = SettingsStore.getValue("botApiUrl");
-        this.setState({ botApi: botApiUrl });
-    };
-
     private applyFormatting(): void {
         // Function is only called from render / componentDidMount → contentRef is set
         const content = this.contentRef.current!;
@@ -739,7 +729,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
                                 };
-                                const url = `${this.state.botApi}/approve`;
+                                const url = `${SettingsStore.getValue("botApiUrl")}/approve`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -763,7 +753,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
                                 };
-                                const url = `${this.state.botApi}/reject`;
+                                const url = `${SettingsStore.getValue("botApiUrl")}/reject`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -878,7 +868,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             eventId: rootId,
                                             user_id: mxEvent.getSender(),
                                         };
-                                        const request = new Request(`${this.state.botApi}/echarts/${roomId}`, {
+                                        const request = new Request(`${SettingsStore.getValue("botApiUrl")}/echarts/${roomId}`, {
                                             method: "POST",
                                             // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),
