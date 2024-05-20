@@ -97,7 +97,11 @@ export const AlertMessageWithColsPanel = (props: {
     const formatedData = generateAlertFromCols(props.data, props.targetCols)
     return (
         <Card className="w-full">
-            <CardHeader>{status === "alert" ? `❗️Alerting` : `🔔Resolved`}</CardHeader>
+            <CardHeader>
+                <div className="font-bold text-2xl">
+                    {props.status === "alert" ? `❗️Alerting` : `🔔Resolved`}
+                </div>
+            </CardHeader>
             <CardContent className="p-2 pt-3">
                 {formatedData.length >= 1 && (
                     <Table>

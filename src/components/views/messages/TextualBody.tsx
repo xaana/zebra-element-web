@@ -827,7 +827,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = alertContent.column ? (
                 <>
                     {body}
-                    <AlertMessageWithColsPanel data={alertContent.data} targetCols={alertContent.column} status={content.status} />
+                    <AlertMessageWithColsPanel data={alertContent.data} targetCols={alertContent.column} status={alertContent.status} />
                 </>
             ): (
                 <>
