@@ -736,6 +736,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
+                                    roomId: roomId,
+                                    eventId:mxEvent.getId(),
                                 };
                                 const url = `${this.state.botApi}/approve`;
                                 const request = new Request(url, {
@@ -758,6 +760,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
+                                    roomId: roomId,
+                                    eventId:mxEvent.getId(),
                                 };
                                 const url = `${this.state.botApi}/reject`;
                                 const request = new Request(url, {
