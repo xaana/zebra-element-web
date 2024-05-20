@@ -775,24 +775,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
             body = (
                 <>
-                    {/* <h2>
+                    <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
-                    {fileSelected ? (
-                        <>
-                            {this.getSectionTitle("Source")}
-                            <FilesPill files={fileSelected} />
-                        </>
-                    ) : (
-                        <Skeleton className="w-full h-[30px] rounded-full" />
-                    )}
-                    <br />
-                    {this.getSectionTitle("Answer")} */}
-                    {body}
-                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {content.is_image && (
                         <div className="flex flex-row items-center gap-x-2">
-                            <div className="text-sm text-muted-foreground font-bold">Sources:</div>
+                            {this.getSectionTitle("Source")}
                             {content.file_ids.map(
                                 (eventId: string) =>
                                     this.context.room && (
@@ -801,6 +789,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
+                    {content.files_ ? (
+                        <>
+                            {this.getSectionTitle("Source")}
+                            <FilesPill files={content.files_} />
+                        </>
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    {this.getSectionTitle("Answer")}
+                    {body}
+                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
