@@ -729,7 +729,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
                                 };
-                                const url = `${SettingsStore.getValue("botApiUrl")}/approve`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/set_approve`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -753,7 +753,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId: roomId,
                                     eventId:mxEvent.getId(),
                                 };
-                                const url = `${SettingsStore.getValue("botApiUrl")}/reject`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/set_reject`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
