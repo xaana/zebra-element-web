@@ -14,7 +14,7 @@ const WebSearchPill = (): React.JSX.Element | null => {
     // }
 
     return (
-        <div className="inline-block px-2 bg-muted rounded-full gap-2">
+        <div className="inline-block px-2 py-1 bg-muted rounded-full gap-2">
             <div className="flex flex-row text-xs">
                 <Earth size={16} />
                 <span>Web Search</span>

@@ -138,7 +138,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             // databaseSelector(),
             // filesSelector(room.roomId),
 
-            showStickersButton(props),
+            // showStickersButton(props),
             // startVoiceBroadcastButton(props),
             props.showPollsButton ? pollButton(room, props.relation) : null,
             showLocationButton(props, room, matrixClient),
