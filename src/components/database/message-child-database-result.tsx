@@ -49,6 +49,7 @@ interface TableProps<T extends DataItem> {
     echartsData: string;
     eventId: string;
     echartsCode?: string;
+    requestTime: string;
     handleViewCharts: () => void;
 }
 
@@ -60,6 +61,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     echartsData,
     eventId,
     echartsCode,
+    requestTime,
     handleViewCharts,
 }) => {
     const client = React.useContext(MatrixClientContext)
@@ -115,7 +117,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                 <div className="table__container rounded-md border border-solid scrollbar--custom">
                     {data && data.length > 0 && (
                         <>
-                            <DataTable data={data} eventId={eventId} totalEntries={totalEntries} />
+                            <DataTable data={data} eventId={eventId} totalEntries={totalEntries!} requestTime={requestTime} />
                             <div className="border-t w-full">
                                 <div className="flex items-center justify-between">
                                     {totalEntries && (

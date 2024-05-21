@@ -871,6 +871,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     echartsData={tableJson}
                                     eventId={mxEvent.getId() || ""}
                                     echartsCode={this.state.echartsCode}
+                                    requestTime={content.request_time}
                                     handleViewCharts={() => {
                                         this.setState({ generating: true });
                                         const jsonData = {

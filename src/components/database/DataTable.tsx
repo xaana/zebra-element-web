@@ -17,13 +17,26 @@ export const DataTable = ({
     data,
     eventId,
     totalEntries,
+    requestTime,
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-}:{data:DataItem[];eventId:string;totalEntries:string}) => {
+}:{data:DataItem[];eventId:string;totalEntries:string;requestTime:string}) => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(Math.ceil(Number(totalEntries)/10));
     const [tableData, setTableData] = useState(data);
-    console.log(eventId)
+    const [showPagination, setShowPagination] = useState(true);
+    useEffect(() => {
+        const pythonDate = new Date(requestTime);
+        const now = new Date();
+        const diff = now.getTime() - pythonDate.getTime();
+        const days = diff / (1000 * 60 * 60 * 24);
+        if (days < 1) {
+            setShowPagination(true);
+        } else {
+            setShowPagination(false);
+        }
+    },[])
+
     useEffect(() => {
         if(currentPage!==1){
             fetchData(currentPage);
@@ -166,7 +179,7 @@ export const DataTable = ({
                         ))}
                     </TableBody>
                 </Table>
-                {totalPages>1&&<div className="flex justify-end flex-col">
+                {totalPages>1&&showPagination&&<div className="flex justify-end flex-col">
                     <Pagination>
                         <PaginationContent>
                             <PaginationItem>
