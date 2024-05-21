@@ -66,6 +66,7 @@ import { ImageViewer } from "@/components/pdf/ImageViewer";
 import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
+import WeatherWidget from "@/components/weather/WeatherWidget";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -655,6 +656,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if(content.weather){
+            console.log(content.weather)
+            body = (
+                <>
+                <WeatherWidget weatherData={content.weather} />
+                {body}
+                </>
+            )
+            
+        }
         // if (query) {
         //     <h2><strong>{query}</strong></h2>
         //     {body}
