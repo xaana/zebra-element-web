@@ -7,7 +7,6 @@ import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientConte
 
 import { Button } from "../ui/button";
 import { IconChartDonut } from "../ui/icons";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -116,12 +115,12 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                 <div className="table__container rounded-md border border-solid scrollbar--custom">
                     {data && data.length > 0 && (
                         <>
-                            <DataTable data={data} />
+                            <DataTable data={data} eventId={eventId} totalEntries={totalEntries} />
                             <div className="border-t w-full">
                                 <div className="flex items-center justify-between">
                                     {totalEntries && (
                                         <div className="font-normal text-muted-foreground text-xs px-0">
-                                            {data.length} of {totalEntries} rows displayed
+                                            {totalEntries} rows of data found
                                         </div>
                                     )}
                                     <DropdownMenu>
