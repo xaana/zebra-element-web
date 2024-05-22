@@ -400,32 +400,40 @@
 }
 
 .mx_HomePage_default {
-    .mx_HomePage_default_wrapper {
-        top: 70%;
+    .brand {
+        position: absolute;
+        top: 40%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    img {
-        height: 100px;
-    }
-
-    h2 {
+    .default_buttons h2 {
         color: $primary-content;
     }
 
-    .mx_HomePage_default_buttons {
-        bottom: 20%;
+    .default_buttons {
+        position: absolute;
+        bottom: 15%;
         display: flex;
-        flex-direction: row;
         flex-wrap: wrap;
-        padding: 30px;
-        margin: 60px auto 0;
-        width: fit-content;
+        color: $primary-content;
+        justify-content: center;
     }
-}
 
-.HomePage_default_button {
-    &:hover {
-        background-color: $roomlist-bg-color;
+    .default_button {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: start;
+
+        margin: 8px;
+        padding: 16px;
+        width: 40%;
+
+        &:hover {
+            background-color: $roomlist-bg-color;
+        }
     }
 }
 

@@ -38,7 +38,7 @@ import classNames from "classnames";
 
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
-import ZebraAlert from "../ui/zebraAlert";
+import ZebraAlert from "../ui/ZebraAlert";
 
 interface IProps {
     justRegistered?: boolean;
@@ -134,14 +134,14 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     // );
 
     const BrandSection = () => (
-        <>
-            <div className="mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8">
+        <div className="brand">
+            <div className="w-24 rounded-full border-2 p-4 self-center">
                 <IconTurium className="w-15 h-15" />
             </div>
             <h1>
                 <strong>Where Universe Connects</strong>
             </h1>
-        </>
+        </div>
     );
 
     const DefaultButton = ({
@@ -155,11 +155,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         onClick: () => void;
         Icon: JSX.Element;
     }) => (
-        <Button
-            className="w-2/5 h-18 p-4 flex flex-wrap flex-row justify-start HomePage_default_button"
-            variant="outline"
-            onClick={onClick}
-        >
+        <Button className="h-18 default_button" variant="outline" onClick={onClick}>
             <div className="w-full text-start">
                 <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
             </div>
@@ -179,34 +175,32 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     return (
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default justify-center" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
-            <div className="mx_HomePage_default_wrapper">
-                <BrandSection />
-                <div className="mx_HomePage_default_buttons gap-x-8 gap-y-4 justify-center">
-                    <DefaultButton
-                        title="Search"
-                        query="What's the weather in Sydney?"
-                        onClick={onClickWebSearchHandler}
-                        Icon={File}
-                    />
-                    <DefaultButton
-                        title="Document"
-                        query="Document prompt 1"
-                        onClick={onClickDocumentHandler}
-                        Icon={Search}
-                    />
-                    <DefaultButton
-                        title="Datastore"
-                        query="List top 5 contracts by values"
-                        onClick={onClickDatabaseHandler}
-                        Icon={Database}
-                    />
-                    <DefaultButton
-                        title="Audio Model"
-                        query="Audio prompt 1"
-                        onClick={onClickAudioHandler}
-                        Icon={Headphones}
-                    />
-                </div>
+            <BrandSection />
+            <div className="default_buttons">
+                <DefaultButton
+                    title="Search"
+                    query="What's the weather in Sydney?"
+                    onClick={onClickWebSearchHandler}
+                    Icon={File}
+                />
+                <DefaultButton
+                    title="Document"
+                    query="Document prompt 1"
+                    onClick={onClickDocumentHandler}
+                    Icon={Search}
+                />
+                <DefaultButton
+                    title="Datastore"
+                    query="List top 5 contracts by values"
+                    onClick={onClickDatabaseHandler}
+                    Icon={Database}
+                />
+                <DefaultButton
+                    title="Audio Model"
+                    query="Audio prompt 1"
+                    onClick={onClickAudioHandler}
+                    Icon={Headphones}
+                />
             </div>
             <div className="absolute w-full bottom-0">
                 {targetDMRoom && (
