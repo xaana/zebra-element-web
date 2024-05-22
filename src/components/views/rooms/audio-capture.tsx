@@ -139,7 +139,7 @@ export const AudioCapture = ({ onCapture }: { onCapture: (transcription: string)
                 <CollapsibleButton
                     title="Audio Capture"
                     className={classNames("mx_MessageComposer_button", { "!bg-[#5734d3] strobing": isRecording })}
-                    iconClassName="mx_MessageComposer_voiceMessage"
+                    iconClassName="mx_MessageComposer_audioCapture"
                     onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
                 />
             )}

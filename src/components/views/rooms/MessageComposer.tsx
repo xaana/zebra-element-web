@@ -116,6 +116,7 @@ interface IState {
     haveRecording: boolean;
     recordingTimeLeftSeconds?: number;
     me?: RoomMember;
+    isFileMenuOpen: boolean;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     showStickersButton: boolean;
@@ -486,6 +487,12 @@ export class MessageComposer extends React.Component<IProps, IState> {
         this.setStickerPickerOpen(!this.state.isStickerPickerOpen);
     };
 
+    private toggleFileButtonMenu = (): void => {
+        this.setState({
+            isFileMenuOpen: !this.state.isFileMenuOpen,
+        });
+    };
+
     private toggleButtonMenu = (): void => {
         this.setState({
             isMenuOpen: !this.state.isMenuOpen,
@@ -534,6 +541,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         });
     };
     private getSmartReplies = (): void => {
+        // this.setState({ smartReply: ["Yes, I will", "No, I won't", "Sure!"] });
         if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return;
         const lastEvent = this.props.room.getLiveTimeline().getEvents()[
             this.props.room.getLiveTimeline().getEvents().length - 1
@@ -546,7 +554,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const lastEventSender = lastEvent.getSender();
         if (lastEventSender === currentUserId) return;
         if (lastEventSender && functionalUsers.includes(lastEventSender)) return;
-        // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
     };
 
     public render(): React.ReactNode {
@@ -673,8 +680,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const showSendButton =
             (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
 
-        const classes = classNames({
-            "mx_MessageComposer": true,
+        const classes = classNames("mx_MessageComposer px-8", {
             "mx_MessageComposer--compact": this.props.compact,
             "mx_MessageComposer_e2eStatus": hasE2EIcon,
             "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
@@ -689,112 +695,111 @@ export class MessageComposer extends React.Component<IProps, IState> {
                 aria-label={_t("a11y|message_composer")}
             >
                 {recordingTooltip}
-                <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage && " text-start"}`}>
-                    <div className="flex flex-row ml-50 justify-end">
-                        {this.state.smartReply.map((reply: string) => (
-                            <SmartReply
-                                key={reply}
-                                reply={reply}
-                                client={MatrixClientPeg.safeGet()}
-                                roomId={this.context.roomId}
-                                setReply={this.setReply}
-                            />
-                        ))}
-                    </div>
-                    <div>
-                        <ReplyPreview
-                            replyToEvent={this.props.replyToEvent}
-                            permalinkCreator={this.props.permalinkCreator}
-                        />
-                        <DatabasePill
-                            database={this.props.database}
-                            timelineRenderingType={this.context.timelineRenderingType}
+
+                <div className="flex flex-row ml-50 mb-2 justify-end">
+                    {this.state.smartReply.map((reply: string) => (
+                        <SmartReply
+                            key={reply}
+                            reply={reply}
+                            client={MatrixClientPeg.safeGet()}
                             roomId={this.context.roomId}
+                            setReply={this.setReply}
                         />
-                        <FilesPill
-                            files={this.props.files}
-                            timelineRenderingType={this.context.timelineRenderingType}
-                            roomId={this.context.roomId}
-                        />
-                        {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
-                            !this.props.database &&
-                            this.props.files?.length === 0 && <WebSearchPill />}
-                    </div>
-                    <div
-                        className={`mx_MessageComposer_wrapper shadow-lg rounded-full ${this.props.fromHomepage ? " text-start" : ""}`}
-                    >
-                        <div className="mx_MessageComposer_row">
-                            {e2eIcon}
-                            {/* {this.state.isInputBoxVisible && (composer)} */}
-                            <div
-                                onClick={() => {
-                                    this.getSmartReplies();
-                                }}
-                                className="w-full"
-                            >
-                                {composer}
-                            </div>
-                            {this.state.isButtonGroupVisible && (
-                                <div className="mx_MessageComposer_actions">
-                                    {controls}
-                                    {(canSendMessages || this.props.fromHomepage) && (
-                                        <MessageComposerButtons
-                                            addEmoji={this.addEmoji}
-                                            haveRecording={this.state.haveRecording}
-                                            isMenuOpen={this.state.isMenuOpen}
-                                            isStickerPickerOpen={this.state.isStickerPickerOpen}
-                                            menuPosition={menuPosition}
-                                            relation={this.props.relation}
-                                            onRecordStartEndClick={this.onRecordStartEndClick}
-                                            setStickerPickerOpen={this.setStickerPickerOpen}
-                                            showLocationButton={
-                                                !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
-                                            }
-                                            showPollsButton={this.state.showPollsButton}
-                                            showStickersButton={this.showStickersButton}
-                                            isRichTextEnabled={this.state.isRichTextEnabled}
-                                            onComposerModeClick={this.onRichTextToggle}
-                                            toggleButtonMenu={this.toggleButtonMenu}
-                                            showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
-                                            onStartVoiceBroadcastClick={() => {
-                                                setUpVoiceBroadcastPreRecording(
-                                                    this.props.room,
-                                                    MatrixClientPeg.safeGet(),
-                                                    SdkContextClass.instance.voiceBroadcastPlaybacksStore,
-                                                    SdkContextClass.instance.voiceBroadcastRecordingsStore,
-                                                    SdkContextClass.instance.voiceBroadcastPreRecordingStore,
-                                                );
-                                                this.toggleButtonMenu();
-                                            }}
-                                            onRichTextEditorDestroyCallback={(data: string) => {
-                                                this.setState({
-                                                    composerContent: data,
-                                                });
-                                            }}
-                                            onSendCallback={(content: string, rawContent: string) => {
-                                                this.props.mxClient.sendMessage(this.context.roomId!, {
-                                                    msgtype: "m.text",
-                                                    format: "org.matrix.custom.html",
-                                                    body: rawContent,
-                                                    formatted_body: content,
-                                                });
-                                            }}
-                                        />
-                                    )}
-                                    {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && (
-                                        <SendButton
-                                            key="controls_send"
-                                            onClick={this.sendMessage}
-                                            title={
-                                                this.state.haveRecording
-                                                    ? _t("composer|send_button_voice_message")
-                                                    : undefined
-                                            }
-                                        />
-                                    )}
-                                </div>
-                            )}
+                    ))}
+                </div>
+                <div className="mb-2">
+                    <ReplyPreview
+                        replyToEvent={this.props.replyToEvent}
+                        permalinkCreator={this.props.permalinkCreator}
+                    />
+                    <DatabasePill
+                        database={this.props.database}
+                        timelineRenderingType={this.context.timelineRenderingType}
+                        roomId={this.context.roomId}
+                    />
+                    <FilesPill
+                        files={this.props.files}
+                        timelineRenderingType={this.context.timelineRenderingType}
+                        roomId={this.context.roomId}
+                    />
+                    {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
+                        !this.props.database &&
+                        this.props.files?.length === 0 && <WebSearchPill />}
+                </div>
+                <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
+                    <div className="mx_MessageComposer_row">
+                        {e2eIcon}
+                        {/* {this.state.isInputBoxVisible && (composer)} */}
+                        <div
+                            onClick={() => {
+                                this.getSmartReplies();
+                            }}
+                            className="w-full"
+                        >
+                            {composer}
                         </div>
+                        {this.state.isButtonGroupVisible && (
+                            <div className="mx_MessageComposer_actions">
+                                {controls}
+                                {(canSendMessages || this.props.fromHomepage) && (
+                                    <MessageComposerButtons
+                                        addEmoji={this.addEmoji}
+                                        haveRecording={this.state.haveRecording}
+                                        isFileMenuOpen={this.state.isFileMenuOpen}
+                                        isMenuOpen={this.state.isMenuOpen}
+                                        isStickerPickerOpen={this.state.isStickerPickerOpen}
+                                        menuPosition={menuPosition}
+                                        relation={this.props.relation}
+                                        onRecordStartEndClick={this.onRecordStartEndClick}
+                                        setStickerPickerOpen={this.setStickerPickerOpen}
+                                        showLocationButton={
+                                            !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
+                                        }
+                                        showPollsButton={this.state.showPollsButton}
+                                        showStickersButton={this.showStickersButton}
+                                        isRichTextEnabled={this.state.isRichTextEnabled}
+                                        onComposerModeClick={this.onRichTextToggle}
+                                        toggleFileButtonMenu={this.toggleFileButtonMenu}
+                                        toggleButtonMenu={this.toggleButtonMenu}
+                                        showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
+                                        onStartVoiceBroadcastClick={() => {
+                                            setUpVoiceBroadcastPreRecording(
+                                                this.props.room,
+                                                MatrixClientPeg.safeGet(),
+                                                SdkContextClass.instance.voiceBroadcastPlaybacksStore,
+                                                SdkContextClass.instance.voiceBroadcastRecordingsStore,
+                                                SdkContextClass.instance.voiceBroadcastPreRecordingStore,
+                                            );
+                                            this.toggleButtonMenu();
+                                        }}
+                                        onRichTextEditorDestroyCallback={(data: string) => {
+                                            this.setState({
+                                                composerContent: data,
+                                            });
+                                        }}
+                                        onSendCallback={(content: string, rawContent: string) => {
+                                            this.props.mxClient.sendMessage(this.context.roomId!, {
+                                                msgtype: "m.text",
+                                                format: "org.matrix.custom.html",
+                                                body: rawContent,
+                                                formatted_body: content,
+                                            });
+                                        }}
+                                    />
+                                )}
+                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && (
+                                    <SendButton
+                                        key="controls_send"
+                                        onClick={this.sendMessage}
+                                        title={
+                                            this.state.haveRecording
+                                                ? _t("composer|send_button_voice_message")
+                                                : undefined
+                                        }
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

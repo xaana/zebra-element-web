@@ -57,7 +57,7 @@ import { PdfViewer } from "../../pdf/pdf-viewer";
 import { SuggestionPrompt } from "./SuggestionPrompt";
 import { Separator } from "../../ui/separator";
 
-import AlertMessagePanel from "@/components/alert/AlertMessage";
+import {AlertMessagePanel, AlertMessageWithColsPanel} from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
@@ -66,6 +66,7 @@ import { ImageViewer } from "@/components/pdf/ImageViewer";
 import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
+import WeatherWidget from "@/components/weather/WeatherWidget";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -77,7 +78,6 @@ interface IState {
     widgetHidden: boolean;
     pdfUrls: any[];
     citations: Citation[];
-    botApi: null | string;
     echartsOption: string | undefined;
     echartsQuery: string | undefined;
     echartsCode:string | undefined;
@@ -103,7 +103,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             widgetHidden: false,
             pdfUrls: [],
             citations: [],
-            botApi: null,
             echartsOption: undefined,
             echartsQuery: undefined,
             echartsCode: undefined,
@@ -115,15 +114,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (!this.props.editState) {
             this.applyFormatting();
         }
-        this.getBotApi();
     }
-
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    private getBotApi = () => {
-        const botApiUrl = SettingsStore.getValue("botApiUrl");
-        this.setState({ botApi: botApiUrl });
-    };
-
     private applyFormatting(): void {
         // Function is only called from render / componentDidMount → contentRef is set
         const content = this.contentRef.current!;
@@ -665,6 +656,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if(content.weather){
+            console.log(content.weather)
+            body = (
+                <>
+                <WeatherWidget weatherData={content.weather} />
+                {body}
+                </>
+            )
+            
+        }
         // if (query) {
         //     <h2><strong>{query}</strong></h2>
         //     {body}
@@ -731,13 +732,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <div className="flex gap-2 justify-end">
                         <Button
                             onClick={() => {
-                                content["approvalId"] = null;
-                                const temp = content;
-                                mxEvent.setContent(temp);
+                                // content["approvalId"] = null;
+                                // const temp = content;
+                                // mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
+                                    roomId: roomId,
+                                    eventId:mxEvent.getId(),
+                                    status: "approved",
                                 };
-                                const url = `${this.state.botApi}/approve`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -753,13 +757,16 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         </Button>
                         <Button
                             onClick={() => {
-                                content["approvalId"] = null;
-                                const temp = content;
-                                mxEvent.setContent(temp);
+                                // content["approvalId"] = null;
+                                // const temp = content;
+                                // mxEvent.setContent(temp);
                                 const payload = {
                                     approvalId: approvalId,
+                                    roomId: roomId,
+                                    eventId:mxEvent.getId(),
+                                    status: "rejected",
                                 };
-                                const url = `${this.state.botApi}/reject`;
+                                const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
                                 const request = new Request(url, {
                                     method: "POST",
                                     body: JSON.stringify(payload),
@@ -779,24 +786,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
             body = (
                 <>
-                    {/* <h2>
+                    <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
-                    {fileSelected ? (
-                        <>
-                            {this.getSectionTitle("Source")}
-                            <FilesPill files={fileSelected} />
-                        </>
-                    ) : (
-                        <Skeleton className="w-full h-[30px] rounded-full" />
-                    )}
-                    <br />
-                    {this.getSectionTitle("Answer")} */}
-                    {body}
-                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {content.is_image && (
                         <div className="flex flex-row items-center gap-x-2">
-                            <div className="text-sm text-muted-foreground font-bold">Sources:</div>
+                            {this.getSectionTitle("Source")}
                             {content.file_ids.map(
                                 (eventId: string) =>
                                     this.context.room && (
@@ -805,6 +800,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
+                    {content.files_ ? (
+                        <>
+                            {this.getSectionTitle("Source")}
+                            <FilesPill files={content.files_} />
+                        </>
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    {this.getSectionTitle("Answer")}
+                    {body}
+                    {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -824,7 +830,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
 
         if (alertContent) {
-            body = (
+            body = alertContent.column ? (
+                <>
+                    {body}
+                    <AlertMessageWithColsPanel data={alertContent.data} targetCols={alertContent.column} status={alertContent.status} />
+                </>
+            ): (
                 <>
                     {body}
                     <AlertMessagePanel content={alertContent} />
@@ -860,6 +871,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     echartsData={tableJson}
                                     eventId={mxEvent.getId() || ""}
                                     echartsCode={this.state.echartsCode}
+                                    requestTime={content.request_time}
                                     handleViewCharts={() => {
                                         this.setState({ generating: true });
                                         const jsonData = {
@@ -869,7 +881,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             eventId: rootId,
                                             user_id: mxEvent.getSender(),
                                         };
-                                        const request = new Request(`${this.state.botApi}/echarts/${roomId}`, {
+                                        const request = new Request(`${SettingsStore.getValue("botApiUrl")}/echarts/${roomId}`, {
                                             method: "POST",
                                             // This is the part that tries to bypass CORS, but it has limitations
                                             body: JSON.stringify(jsonData),

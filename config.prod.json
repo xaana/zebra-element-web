@@ -60,6 +60,9 @@
         },
         "websocket": {
             "url": "wss://dev-api-2.securezebra.com/ws"
+        },
+        "workflow": {
+            "url": "http://heugo.algoreus.net:5678"
         }
     },
     "bot_api": "https://dev-api-1.securezebra.com/_matrix/maubot/plugin/zebra"

@@ -51,6 +51,7 @@ import EditorDialog from "../../rich-text-editor/EditorDialog";
 interface IProps {
     addEmoji: (emoji: string) => boolean;
     haveRecording: boolean;
+    isFileMenuOpen: boolean;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     menuPosition?: MenuProps;
@@ -60,6 +61,7 @@ interface IProps {
     showLocationButton: boolean;
     showPollsButton: boolean;
     showStickersButton: boolean;
+    toggleFileButtonMenu: () => void;
     toggleButtonMenu: () => void;
     showVoiceBroadcastButton: boolean;
     onStartVoiceBroadcastClick: () => void;
@@ -81,6 +83,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     }
 
     let mainButtons: ReactNode[];
+    let fileButtons: ReactNode[];
     let moreButtons: ReactNode[];
     if (narrow) {
         mainButtons = [
@@ -94,6 +97,8 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                 emojiButton(props)
             ),
         ];
+        fileButtons = [uploadButton(), databaseSelector(), filesSelector(room.roomId)];
+
         moreButtons = [
             uploadButton(), // props passed via UploadButtonContext
             showStickersButton(props),
@@ -104,7 +109,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         ];
     } else {
         mainButtons = [
-            // richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
             isWysiwygLabEnabled ? (
                 <ComposerModeButton
                     key="composerModeButton"
@@ -114,6 +118,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ) : (
                 emojiButton(props)
             ),
+            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
             // uploadButton(), // props passed via UploadButtonContext
             // audioCaptureButton(),
             // voiceBotButton(matrixClient, room),
@@ -122,19 +127,19 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             // databaseSelector(),
             // filesSelector(room.roomId),
         ];
+        fileButtons = [uploadButton(), databaseSelector(), filesSelector(room.roomId)];
         moreButtons = [
             // Transfer buttons from message bar to here
-            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
-            uploadButton(), // props passed via UploadButtonContext
-            audioCaptureButton(),
-            voiceBotButton(matrixClient, room),
-            databaseSelector(),
-            filesSelector(room.roomId),
-
-            // Below are original four buttons in more options
-            showStickersButton(props),
+            // richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
+            // uploadButton(), // props passed via UploadButtonContext
             voiceRecordingButton(props, narrow),
-            startVoiceBroadcastButton(props),
+            audioCaptureButton(),
+            // voiceBotButton(matrixClient, room),
+            // databaseSelector(),
+            // filesSelector(room.roomId),
+
+            // showStickersButton(props),
+            // startVoiceBroadcastButton(props),
             props.showPollsButton ? pollButton(room, props.relation) : null,
             showLocationButton(props, room, matrixClient),
         ];
@@ -154,7 +159,12 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
         );
     }
     mainButtons = filterBoolean(mainButtons);
+    fileButtons = filterBoolean(fileButtons);
     moreButtons = filterBoolean(moreButtons);
+
+    const moreFileOptionsClasses = classNames("mx_MessageComposer_button mx_MessageComposer_upload", {
+        mx_MessageComposer_closeButtonMenu: props.isFileMenuOpen,
+    });
 
     const moreOptionsClasses = classNames("mx_MessageComposer_button mx_MessageComposer_buttonMenu", {
         mx_MessageComposer_closeButtonMenu: props.isMenuOpen,
@@ -163,6 +173,25 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     return (
         <UploadButtonContextProvider roomId={room.roomId} relation={props.relation}>
             {mainButtons}
+            {fileButtons.length > 0 && (
+                <AccessibleTooltipButton
+                    className={moreFileOptionsClasses}
+                    onClick={props.toggleFileButtonMenu}
+                    title={_t("quick_settings|sidebar_settings")}
+                />
+            )}
+            {props.isFileMenuOpen && (
+                <IconizedContextMenu
+                    onFinished={props.toggleFileButtonMenu}
+                    {...props.menuPosition}
+                    wrapperClassName="mx_MessageComposer_Menu"
+                    compact={true}
+                >
+                    <OverflowMenuContext.Provider value={props.toggleFileButtonMenu}>
+                        <IconizedContextMenuOptionList>{fileButtons}</IconizedContextMenuOptionList>
+                    </OverflowMenuContext.Provider>
+                </IconizedContextMenu>
+            )}
             {moreButtons.length > 0 && (
                 <AccessibleTooltipButton
                     className={moreOptionsClasses}

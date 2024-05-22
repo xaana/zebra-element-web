@@ -4,7 +4,8 @@
         "dismiss": "Dismiss",
         "explore_rooms": "Explore rooms",
         "open": "Open",
-        "sign_in": "Sign in"
+        "sign_in": "Sign in",
+        "reply_in_thread": "Reply in topic"
     },
     "auth": {
         "server_picker_explainer": "Use your preferred homeserver if you have one, or host your own.",
@@ -15,7 +16,12 @@
         "favourites": "Pinned",
         "matrix": "Zebra",
         "rooms": "Recent",
-        "thread": "Topic"
+        "thread": "Topic",
+        "threads": "Topics"
+    },
+    "composer": {
+        "placeholder_thread": "Reply to topic…",
+        "placeholder_thread_encrypted": "Reply to encrypted topic…"
     },
     "context_menu": {
         "favourite": "Pin",
@@ -49,6 +55,11 @@
         "name_mxid_share_room": "Invite someone using their name, username (like <userId/>).",
         "name_mxid_share_space": "Invite someone using their name, username (like <userId/>)."
     },
+    "right_panel": {
+        "thread_list": {
+            "context_menu_label": "Topic options"
+        }
+    },
     "seshat":{
         "warning_kind_files_app": "",
         "warning_kind_search_app": ""
@@ -61,6 +72,39 @@
             "network_dropdown_selected_label": "Show: Zebra rooms",
             "network_dropdown_selected_label_instance": "Show: Zebra rooms (%(server)s)"
         }
+    },
+    "thread_view_back_action_label": "Back to topic",
+    "threads": {
+        "all_threads": "All topics",
+        "all_threads_description": "Shows all topics from current room",
+        "count_of_reply": {
+            "one": "%(count)s reply",
+            "other": "%(count)s replies"
+        },
+        "empty_explainer": "Topics help keep your conversations on-topic and easy to track.",
+        "empty_has_threads_tip": "Reply to an ongoing topic or use “%(Topic)s” when hovering over a message to start a new one.",
+        "empty_heading": "Keep discussions organised with topics",
+        "empty_tip": "<b>Tip:</b> Use “%(replyInTopic)s” when hovering over a message.",
+        "error_start_thread_existing_relation": "Can't create a topic from an event with an existing relation",
+        "mark_all_read": "Mark all as read",
+        "my_threads": "My topics",
+        "my_threads_description": "Shows all topics you've participated in",
+        "open_thread": "Open topic",
+        "show_all_threads": "Show all topics",
+        "show_thread_filter": "Show:"
+    },
+    "threads_activity_centre": {
+        "header": "Threads activity",
+        "no_rooms_with_threads_notifs": "You don't have rooms with topic notifications yet.",
+        "no_rooms_with_unread_threads": "You don't have rooms with unread topics yet.",
+        "release_announcement_description": "Topics notifications have moved, find them here from now on.",
+        "release_announcement_header": "Topics Activity Centre"
+    },
+    "timeline": {
+        "mab": {
+            "copy_link_thread": "Copy link to topic"
+        },
+        "thread_info_basic": "From a topic"
     },
     "powered_by_matrix": "Powered by Turium",
     "powered_by_matrix_with_logo": "Decentralised, encrypted chat &amp; collaboration powered by $matrixLogo",

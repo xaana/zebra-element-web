@@ -3,16 +3,7 @@ export const generateAlertBody = (content:{
     status: string,
     alerts: {status:string, startsAt:string, endsAt: string}[]
 }) => {
-    const result = [
-        // {
-        //     name: "Summary",
-        //     value: content.commonAnnotations.summary
-        // },
-        // {
-        //     name: "Alert name",
-        //     value: content.commonLabels.alertname
-        // } 
-    ]
+    const result = []
     for (const alert of content.alerts) {
         const subUriPos = alert.generatorURL.indexOf('/',10);
         result.push({
@@ -24,4 +15,16 @@ export const generateAlertBody = (content:{
         })
     }
     return result;
+}
+
+export const generateAlertFromCols = (data:{[key: string]: any}[], targetCols:string[]):{[key: string]: any}[] => {
+    return data.map(item=>{
+        const filtered:{[key: string]: any} = {};
+        targetCols.forEach(col => {
+            if (item.hasOwnProperty(col)) {
+                filtered[col] = item[col]
+            }
+        });
+        return filtered;
+    })
 }

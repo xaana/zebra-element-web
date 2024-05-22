@@ -1,4 +1,5 @@
 {
+    "src/SlashCommands.tsx": "src/SlashCommands.tsx",
     "src/components/structures/grouper/CreationGrouper.tsx": "src/components/structures/CreationGrouper.tsx",
     "src/components/structures/HomePage.tsx": "src/components/structures/HomePage.tsx",
     "src/components/structures/LeftPanel.tsx": "src/components/structures/LeftPanel.tsx",
@@ -44,6 +45,7 @@
     "src/components/views/rooms/WhoIsTypingTile.tsx": "src/components/views/rooms/WhoIsTypingTile.tsx",
     "src/components/views/rooms/MemberList.tsx": "src/components/views/rooms/MemberList.tsx",
     "src/components/views/settings/EventIndexPanel.tsx": "src/components/views/settings/EventIndexPanel.tsx",
+    "src/components/views/settings/LayoutSwitcher.tsx": "src/components/views/settings/LayoutSwitcher.tsx",
     "src/components/views/settings/tabs/room/GeneralRoomSettingsTab.tsx": "src/components/views/settings/room/GeneralRoomSettingsTab.tsx",
     "src/components/views/settings/tabs/room/SecurityRoomSettingsTab.tsx": "src/components/views/settings/room/SecurityRoomSettingsTab.tsx",
     "src/components/views/settings/tabs/room/RolesRoomSettingsTab.tsx": "src/components/views/settings/room/RolesRoomSettingsTab.tsx",

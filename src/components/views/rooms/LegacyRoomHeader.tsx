@@ -588,13 +588,13 @@ export default class RoomHeader extends React.Component<IProps, IState> {
     private renderButtons(isVideoRoom: boolean): React.ReactNode {
         const startButtons: JSX.Element[] = [];
 
-        // if (!this.props.viewingCall && this.props.inRoom && !this.context.tombstone) {
-        //     startButtons.push(<CallButtons key="calls" room={this.props.room} />);
-        // }
+        if (!this.props.viewingCall && this.props.inRoom && !this.context.tombstone) {
+            startButtons.push(<CallButtons key="calls" room={this.props.room} />);
+        }
 
-        // if (this.props.viewingCall && this.props.activeCall instanceof ElementCall) {
-        //     startButtons.push(<CallLayoutSelector key="layout" call={this.props.activeCall} />);
-        // }
+        if (this.props.viewingCall && this.props.activeCall instanceof ElementCall) {
+            startButtons.push(<CallLayoutSelector key="layout" call={this.props.activeCall} />);
+        }
 
         if (!this.props.viewingCall && this.props.onForgetClick) {
             startButtons.push(

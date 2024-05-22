@@ -363,7 +363,7 @@ const RoomContextMenu: React.FC<IProps> = ({ room, onFinished, ...props }) => {
                 {notificationOption}
                 {favouriteOption}
                 {peopleOption}
-                {filesOption}
+                {/* {filesOption} */}
                 {pinsOption}
                 {/* {widgetsOption} */}
                 {lowPriorityOption}

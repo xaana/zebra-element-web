@@ -29,7 +29,7 @@ import MatrixClientContext, { useMatrixClientContext } from "matrix-react-sdk/sr
 import MiniAvatarUploader, { AVATAR_SIZE } from "matrix-react-sdk/src/components/views/elements/MiniAvatarUploader";
 import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import EmbeddedPage from "matrix-react-sdk/src/components/structures/EmbeddedPage";
-import { Search, File, Database, Headphones } from "lucide-react";
+import { Search, File, Database, Headphones, Divide } from "lucide-react";
 import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
 import { MessageComposer } from "matrix-react-sdk/src/components/views/rooms/MessageComposer";
 import { findDMRoom } from "matrix-react-sdk/src/utils/dm/findDMRoom";
@@ -38,7 +38,7 @@ import classNames from "classnames";
 
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
-import ZebraAlert from "../ui/zebraAlert";
+import ZebraAlert from "../ui/ZebraAlert";
 
 interface IProps {
     justRegistered?: boolean;
@@ -125,26 +125,26 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     // const brandingConfig = SdkConfig.getObject("branding");
     // const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
-    const isDarkTheme =
-        JSON.parse(localStorage.getItem("mx_local_settings") ?? '{"theme":"light"}')["theme"] === "dark";
-    const logoClass = classNames(
-        "mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
-        { "border-slate-700 invert": isDarkTheme },
-        { "border-slate-300": !isDarkTheme },
-    );
+    // const isDarkTheme =
+    //     JSON.parse(localStorage.getItem("mx_local_settings") ?? '{"theme":"light"}')["theme"] === "dark";
+    // const logoClass = classNames(
+    //     "mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
+    //     // { "border-slate-700 invert": isDarkTheme },
+    //     // { "border-slate-300": !isDarkTheme },
+    // );
 
     const BrandSection = () => (
-        <>
-            <div className={logoClass}>
+        <div className="brand">
+            <div className="w-24 rounded-full border-2 p-4 self-center">
                 <IconTurium className="w-15 h-15" />
             </div>
             <h1>
                 <strong>Where Universe Connects</strong>
             </h1>
-        </>
+        </div>
     );
 
-    const QueryButton = ({
+    const DefaultButton = ({
         title,
         query,
         onClick,
@@ -155,14 +155,12 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         onClick: () => void;
         Icon: JSX.Element;
     }) => (
-        <Button className="w-2/5 h-18 p-3 flex flex-wrap flex-row justify-start" variant="outline" onClick={onClick}>
+        <Button className="h-18 default_button" variant="outline" onClick={onClick}>
             <div className="w-full text-start">
-                <h2>
-                    <strong>{title}</strong>
-                </h2>
+                <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
             </div>
             <div className="w-5/6 text-start">
-                <p>{query}</p>
+                <p style={{ fontSize: 16, fontWeight: 100 }}>{query}</p>
             </div>
             <div className="w-1/6 mr-0">
                 <Icon />
@@ -177,34 +175,32 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     return (
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default justify-center" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
-            <div className="mx_HomePage_default_wrapper">
-                <BrandSection />
-                <div className="mx_HomePage_default_buttons gap-x-8 gap-y-4 justify-center">
-                    <QueryButton
-                        title="Search"
-                        query="What's the weather in Sydney?"
-                        onClick={onClickWebSearchHandler}
-                        Icon={File}
-                    />
-                    <QueryButton
-                        title="Document"
-                        query="Document prompt 1"
-                        onClick={onClickDocumentHandler}
-                        Icon={Search}
-                    />
-                    <QueryButton
-                        title="Datastore"
-                        query="List top 5 contracts by values"
-                        onClick={onClickDatabaseHandler}
-                        Icon={Database}
-                    />
-                    <QueryButton
-                        title="Audio Model"
-                        query="Audio prompt 1"
-                        onClick={onClickAudioHandler}
-                        Icon={Headphones}
-                    />
-                </div>
+            <BrandSection />
+            <div className="default_buttons">
+                <DefaultButton
+                    title="Search"
+                    query="What's the weather in Sydney?"
+                    onClick={onClickWebSearchHandler}
+                    Icon={File}
+                />
+                <DefaultButton
+                    title="Document"
+                    query="Document prompt 1"
+                    onClick={onClickDocumentHandler}
+                    Icon={Search}
+                />
+                <DefaultButton
+                    title="Datastore"
+                    query="List top 5 contracts by values"
+                    onClick={onClickDatabaseHandler}
+                    Icon={Database}
+                />
+                <DefaultButton
+                    title="Audio Model"
+                    query="Audio prompt 1"
+                    onClick={onClickAudioHandler}
+                    Icon={Headphones}
+                />
             </div>
             <div className="absolute w-full bottom-0">
                 {targetDMRoom && (

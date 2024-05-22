@@ -468,7 +468,7 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
             />
             {!isVideoRoom && (
                 <>
-                    <MenuItem Icon={FilesIcon} label={_t("right_panel|files_button")} onSelect={onRoomFilesClick} />
+                    {/* <MenuItem Icon={FilesIcon} label={_t("right_panel|files_button")} onSelect={onRoomFilesClick} /> */}
                     <MenuItem
                         Icon={PollsIcon}
                         label={_t("right_panel|polls_button")}
