@@ -401,7 +401,7 @@
 
 .mx_HomePage_default {
     .mx_HomePage_default_wrapper {
-        top: 50%;
+        top: 70%;
     }
 
     img {
@@ -413,12 +413,19 @@
     }
 
     .mx_HomePage_default_buttons {
+        bottom: 20%;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         padding: 30px;
         margin: 60px auto 0;
         width: fit-content;
+    }
+}
+
+.HomePage_default_button {
+    &:hover {
+        background-color: $roomlist-bg-color;
     }
 }
 
@@ -482,7 +489,6 @@
     border-top: 1px solid #cbd5e1;
     border: 1px solid #cbd5e1;
     border-radius: 8px;
-    margin: 0px 32px;
 }
 
 .mx_MessageComposer_wrapper.mx_MessageComposer--compact {
@@ -714,4 +720,14 @@
 .mx_DecryptionFailureBody {
     color: $primary-content;
     font-style: italic;
+}
+
+.SmartReply_Button {
+    color: var(--cpd-color-zebra-900);
+    border: 1px solid var(--cpd-color-zebra-900);
+    background-color: transparent;
+
+    &:hover {
+        background-color: transparent;
+    }
 }

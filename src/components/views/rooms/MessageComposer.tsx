@@ -541,6 +541,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         });
     };
     private getSmartReplies = (): void => {
+        // this.setState({ smartReply: ["Yes, I will", "No, I won't", "Sure!"] });
         if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return;
         const lastEvent = this.props.room.getLiveTimeline().getEvents()[
             this.props.room.getLiveTimeline().getEvents().length - 1
@@ -553,7 +554,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const lastEventSender = lastEvent.getSender();
         if (lastEventSender === currentUserId) return;
         if (lastEventSender && functionalUsers.includes(lastEventSender)) return;
-        // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
     };
 
     public render(): React.ReactNode {
@@ -680,8 +680,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const showSendButton =
             (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
 
-        const classes = classNames({
-            "mx_MessageComposer": true,
+        const classes = classNames("mx_MessageComposer px-8", {
             "mx_MessageComposer--compact": this.props.compact,
             "mx_MessageComposer_e2eStatus": hasE2EIcon,
             "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
@@ -697,7 +696,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             >
                 {recordingTooltip}
 
-                <div className="flex flex-row ml-50 justify-end">
+                <div className="flex flex-row ml-50 mb-2 justify-end">
                     {this.state.smartReply.map((reply: string) => (
                         <SmartReply
                             key={reply}
@@ -708,7 +707,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         />
                     ))}
                 </div>
-                <div className="mx-8 py-1">
+                <div className="mb-2">
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}
