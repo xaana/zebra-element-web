@@ -7,14 +7,12 @@ export type WebSearchSourceItem = {
     link: string;
     hostname: string;
 };
-export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }):React.JSX.Element => {
+export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): React.JSX.Element => {
     return (
         <>
             {data && data.length > 0 && (
                 <>
-                    <div className="text-base text-muted-foreground font-bold mt-1 mb-1">
-                        Sources:
-                    </div>
+                    <div className="text-base text-muted-foreground font-bold my-1">Sources:</div>
                     <div className="flex-row mt-4 items-center flex-wrap grid grid-cols-5 gap-4 my-4">
                         {data.map((item, index) => (
                             <Tooltip key={index}>
