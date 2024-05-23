@@ -229,9 +229,11 @@ export default class DecoratedRoomAvatar extends React.PureComponent<IProps, ISt
                     viewAvatarOnClick={this.props.viewAvatarOnClick}
                 />
                 {icon && (
-                    <Tooltip label={tooltipText(this.state.icon)!} side="bottom">
-                        {icon}
-                    </Tooltip>
+                    // <Tooltip label={tooltipText(this.state.icon)!} side="bottom">
+                        <div>
+                            {icon}
+                        </div>
+                    // </Tooltip>
                 )}
                 {badge}
             </div>
