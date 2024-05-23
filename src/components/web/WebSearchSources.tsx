@@ -32,7 +32,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }):Reac
                                             className="h-6 w-6"
                                             // onError={handleFaviconError}
                                         />
-                                        <span>{item.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")}</span>
+                                        <span>{`${item.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")} · ${index+1}`}</span>
                                     </a>
                                 </TooltipTrigger>
                                 {/* <TooltipContent>{item.title}</TooltipContent> */}
