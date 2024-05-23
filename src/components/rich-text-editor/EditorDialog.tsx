@@ -345,7 +345,7 @@ const EditorDialog = (props: {
                             <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
                         </Sidebar> */}
                         <div
-                            className="flex-1 flex h-max relative justify-center overflow-y-auto"
+                            className="flex-1 flex h-full relative justify-center overflow-y-auto"
                             ref={menuContainerRef}
                         >
                             <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
