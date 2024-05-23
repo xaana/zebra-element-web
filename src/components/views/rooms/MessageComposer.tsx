@@ -544,6 +544,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
     };
     private getSmartReplies = (): void => {
         if(this.state.smartReply.length !== 0) return;
+        if (this.context.timelineRenderingType !== TimelineRenderingType.Room) return;
         if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return;
         const lastEvent = this.props.room.getLiveTimeline().getEvents()[
             this.props.room.getLiveTimeline().getEvents().length - 1
