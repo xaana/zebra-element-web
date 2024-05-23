@@ -130,7 +130,7 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
                     {uploadText} 
                     {/* ({uploadSize}) */}
                 </div>
-                <AccessibleButton onClick={this.onCancelClick} className="mx_UploadBar_cancel" />
+                {/* <AccessibleButton onClick={this.onCancelClick} className="mx_UploadBar_cancel" /> */}
                 <ProgressBar value={this.state.currentLoaded!} max={this.state.currentTotal!} />
             </div>
         );
