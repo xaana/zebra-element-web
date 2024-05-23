@@ -32,6 +32,7 @@ import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
+import { LinkEditorPanel } from "@/components/reports/panels";
 
 import {
     DropdownMenu,
@@ -175,7 +176,18 @@ const EditorDialog = (props: {
                     <MemoButton tooltip="Code block" onClick={commands.onCodeBlock}>
                         <Icon name="SquareCode" />
                     </MemoButton>
-                    <EditLinkPopover onSetLink={commands.onLink} />
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <MemoButton tooltip="Set Link">
+                                <Icon name="Link" />
+                            </MemoButton>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <LinkEditorPanel onSetLink={commands.onLink} />
+                        </PopoverContent>
+                    </Popover>
+
                     <Popover>
                         <PopoverTrigger asChild>
                             <MemoButton active={!!states.currentHighlight} tooltip="Highlight text">
