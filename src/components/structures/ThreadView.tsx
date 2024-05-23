@@ -68,6 +68,8 @@ interface IState {
     narrow: boolean;
     database: string;
     files: DocFile[];
+    showStop: boolean;
+    botStreamId?: string;
 }
 
 export default class ThreadView extends React.Component<IProps, IState> {
@@ -98,6 +100,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
             }),
             database: "",
             files: [],
+            showStop:false,
+            botStreamId: "",
         };
 
         this.layoutWatcherRef = SettingsStore.watchSetting("layout", null, (...[, , , value]) =>
@@ -163,6 +167,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
     }
 
     public componentDidUpdate(prevProps: IProps): void {
+        
         if (prevProps.mxEvent !== this.props.mxEvent) {
             this.setEventId(this.props.mxEvent);
             this.setupThread(this.props.mxEvent);
@@ -298,7 +303,31 @@ export default class ThreadView extends React.Component<IProps, IState> {
         this.setState({
             lastReply: this.threadLastReply,
         });
+        if(this.state.botStreamId&&this.threadLastReply?.getId()!==this.state.botStreamId){
+            this.setState({showStop: false});
+        }
+        if(this.threadLastReply?.getContent().open==="open"){
+            console.log(this.threadLastReply.getId());
+            this.threadLastReply.getId()&&this.setState({botStreamId: this.threadLastReply.getId()});
+            this.setState({showStop: true});
+            console.log("open in the content is null or open");
+        }
     };
+    public stopBotStream=():void=>{
+        this.setState({showStop: false});
+        //send http request for endpoint in the bot.
+        const payload = {
+            eventId:this.state.botStreamId,
+        };
+        const url = `${SettingsStore.getValue("botApiUrl")}/stop_streaming`;
+        const request = new Request(url, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+        fetch(request).then((res)=>res.json()).then((data)=>{
+            console.log(data)
+        });
+    }
 
     private get threadLastReply(): MatrixEvent | undefined {
         return (
@@ -310,7 +339,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
     private updateThread = (thread?: Thread): void => {
         if (this.state.thread === thread) return;
-
         this.setupThreadListeners(thread, this.state.thread);
         if (thread) {
             this.setState(
@@ -538,6 +566,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 compact={true}
                                 database={this.state.database}
                                 files={this.state.files}
+                                showStop={this.state.showStop}
+                                stopBotStream={this.stopBotStream}
                             />
                             <ZebraAlert />
                         </>
