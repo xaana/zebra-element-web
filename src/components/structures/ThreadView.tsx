@@ -45,7 +45,7 @@ import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 import { File } from "@/plugins/files/types";
-import ZebiaAlert from "../ui/zebraAlert";
+import ZebraAlert from "../ui/ZebraAlert";
 
 interface IProps {
     room: Room;
@@ -539,7 +539,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 database={this.state.database}
                                 files={this.state.files}
                             />
-                            <ZebiaAlert />
+                            <ZebraAlert />
                         </>
                     )}
                 </BaseCard>

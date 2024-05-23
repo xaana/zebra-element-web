@@ -18,7 +18,7 @@ import { Toolbar } from "../ui/Toolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
 import { IconZebra } from "../ui/icons";
-import { SendHorizontal, PanelRightClose, PanelRight } from "lucide-react";
+import { SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
 
 import { Icon } from "@/components/ui/Icon";
 import { TableOfContents } from "@/components/reports/TableOfContents";
@@ -32,6 +32,14 @@ import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
+import { LinkEditorPanel } from "@/components/reports/panels";
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
@@ -90,15 +98,15 @@ const EditorDialog = (props: {
 
         return (
             <div className="flex-1 flex w-full relative justify-center overflow-y-auto">
-                <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30 pt-2 border-t-0">
-                    <Toolbar.Button
+                <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30 border-t-0">
+                    {/* <Toolbar.Button
                         tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
                         onClick={leftSidebar.toggle}
                         active={leftSidebar.isOpen}
                         className={leftSidebar.isOpen ? "bg-transparent" : ""}
                     >
                         <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
-                    </Toolbar.Button>
+                    </Toolbar.Button> */}
                     <div className="flex items-center mx-4">
                         <div className="flex flex-col justify-center">
                             <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
@@ -168,7 +176,18 @@ const EditorDialog = (props: {
                     <MemoButton tooltip="Code block" onClick={commands.onCodeBlock}>
                         <Icon name="SquareCode" />
                     </MemoButton>
-                    <EditLinkPopover onSetLink={commands.onLink} />
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <MemoButton tooltip="Set Link">
+                                <Icon name="Link" />
+                            </MemoButton>
+                        </PopoverTrigger>
+                        <PopoverContent>
+                            <LinkEditorPanel onSetLink={commands.onLink} />
+                        </PopoverContent>
+                    </Popover>
+
                     <Popover>
                         <PopoverTrigger asChild>
                             <MemoButton active={!!states.currentHighlight} tooltip="Highlight text">
@@ -292,20 +311,28 @@ const EditorDialog = (props: {
             props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
         };
 
-        const SendIcon = () => (
-            <div className="pl-2">
-                <SendHorizontal size={20} />
-            </div>
-        );
-
         return (
             <div className="flex flex-row justify-end gap-x-3 pb-1 pr-4">
-                <Button variant="default" onClick={props.onScheduleSendCallback}>
-                    Schedule Send <SendIcon />
-                </Button>
-                <Button variant="default" onClick={sendHandler}>
-                    Send <SendIcon />
-                </Button>
+                <DropdownMenu>
+                    <div>
+                        <DropdownMenuTrigger>
+                            <Button className="rounded-full px-2" variant="outline" onClick={sendHandler}>
+                                <ChevronDown size={20} />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <Button
+                            className="px-8 rounded-full border-0 shadow-none"
+                            variant="outline"
+                            onClick={sendHandler}
+                        >
+                            <SendHorizontal size={20} />
+                        </Button>
+                    </div>
+
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         );
     };
@@ -319,18 +346,18 @@ const EditorDialog = (props: {
             <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
             <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 980, height: "80%" }}>
                 <EditorContext.Provider value={providerValue}>
-                    <div className="h-[45px]">
+                    <div className="h-[45px] mt-8">
                         <EditorHeader editor={editor} />
                     </div>
                     <div
-                        // style={{ height: "calc(-150px + 100vh)" }}
-                        className="rounded-b-md border-b-2 w-full h-full overflow-y-auto relative flex"
+                        style={{ height: "calc(-150px + 80vh)" }}
+                        className="rounded-b-md border-b-2 w-full overflow-y-auto relative flex"
                     >
-                        <Sidebar side="left" isOpen={leftSidebar.isOpen}>
+                        {/* <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                             <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
-                        </Sidebar>
+                        </Sidebar> */}
                         <div
-                            className="flex-1 flex h-max relative justify-center overflow-y-auto"
+                            className="flex-1 flex h-full relative justify-center overflow-y-auto"
                             ref={menuContainerRef}
                         >
                             <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
@@ -341,6 +368,8 @@ const EditorDialog = (props: {
                             <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
                             <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                         </div>
+                    </div>
+                    <div style={{ height: "calc(-150px + 80vh)", top: 85, right: 0, position: "absolute" }}>
                         <ChatSidebar sidebar={rightSidebar} />
                     </div>
                     <div>

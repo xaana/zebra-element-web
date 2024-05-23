@@ -704,8 +704,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const showSendButton =
             (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
 
-        const classes = classNames({
-            "mx_MessageComposer": true,
+        const classes = classNames("mx_MessageComposer px-8", {
             "mx_MessageComposer--compact": this.props.compact,
             "mx_MessageComposer_e2eStatus": hasE2EIcon,
             "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
@@ -721,7 +720,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             >
                 {recordingTooltip}
 
-                <div className="flex flex-row ml-50 justify-end">
+                <div className="flex flex-row ml-50 mb-2 justify-end">
                     {this.state.smartReply.map((reply: string) => (
                         <SmartReply
                             key={reply}
@@ -732,7 +731,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         />
                     ))}
                 </div>
-                <div className="mx-8 py-1">
+                <div className="mb-2">
                     <ReplyPreview
                         replyToEvent={this.props.replyToEvent}
                         permalinkCreator={this.props.permalinkCreator}

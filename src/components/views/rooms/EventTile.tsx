@@ -427,7 +427,12 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
             return true;
         }
 
-        if (objectHasDiff(this.props.mxEvent.getContent()["loading_status"], nextProps.mxEvent.getContent()["loading_status"])) {
+        if (
+            objectHasDiff(
+                this.props.mxEvent.getContent()["loading_status"],
+                nextProps.mxEvent.getContent()["loading_status"],
+            )
+        ) {
             return true;
         }
 
@@ -946,7 +951,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
 
         const isProbablyMedia = MediaEventHelper.isEligible(this.props.mxEvent);
         const lineClasses = classNames("mx_EventTile_line", {
-            mx_EventTile_sendByZebra: this.props.mxEvent.sender?.userId=== "@zebra:securezebra.com",
+            mx_EventTile_sendByZebra: this.props.mxEvent.sender?.userId === "@zebra:securezebra.com",
             mx_EventTile_mediaLine: isProbablyMedia,
             mx_EventTile_image:
                 this.props.mxEvent.getType() === EventType.RoomMessage &&
@@ -1003,9 +1008,9 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
         const ariaLive = this.props.eventSendStatus !== null ? "off" : undefined;
 
         let permalink = "#";
-        if (this.props.permalinkCreator) {
-            permalink = this.props.permalinkCreator.forEvent(this.props.mxEvent.getId()!);
-        }
+        // if (this.props.permalinkCreator) {
+        //     permalink = this.props.permalinkCreator.forEvent(this.props.mxEvent.getId()!);
+        // }
 
         // we can't use local echoes as scroll tokens, because their event IDs change.
         // Local echos have a send "status".
@@ -1065,7 +1070,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                 ![TimelineRenderingType.ThreadsList, TimelineRenderingType.Notification].includes(
                     this.context.timelineRenderingType,
                 );
-            const avatarClassNames = `mx_EventTile_avatar ${(this.props.mxEvent.getContent()["loading_status"] ?  "whoistyping-loader":"")}`;
+            const avatarClassNames = `mx_EventTile_avatar ${this.props.mxEvent.getContent()["loading_status"] ? "whoistyping-loader" : ""}`;
             avatar = (
                 <div className={avatarClassNames}>
                     <MemberAvatar
@@ -1230,11 +1235,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                             {avatar}
                             {sender}
                         </div>,
-                        <div 
-                            className={lineClasses} 
-                            key="mx_EventTile_line" 
-                            onContextMenu={this.onContextMenu}
-                        >
+                        <div className={lineClasses} key="mx_EventTile_line" onContextMenu={this.onContextMenu}>
                             {this.renderContextMenu()}
                             {replyChain}
                             {renderTile(
@@ -1326,10 +1327,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                         ) : (
                             avatar
                         )}
-                        <div   
-                            className={lineClasses} 
-                            key="mx_EventTile_line"
-                        >
+                        <div className={lineClasses} key="mx_EventTile_line">
                             <div className="mx_EventTile_body">
                                 {this.props.mxEvent.isRedacted() ? (
                                     <RedactedBody mxEvent={this.props.mxEvent} />
@@ -1363,11 +1361,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                         "data-scroll-tokens": scrollToken,
                     },
                     [
-                        <div 
-                            className={lineClasses} 
-                            key="mx_EventTile_line" 
-                            onContextMenu={this.onContextMenu}
-                        >
+                        <div className={lineClasses} key="mx_EventTile_line" onContextMenu={this.onContextMenu}>
                             {this.renderContextMenu()}
                             {renderTile(
                                 TimelineRenderingType.File,
@@ -1426,11 +1420,7 @@ export class UnwrappedEventTile extends React.Component<EventTileProps, IState> 
                         {sender}
                         {ircPadlock}
                         {avatar}
-                        <div  
-                            className={lineClasses} 
-                            key="mx_EventTile_line" 
-                            onContextMenu={this.onContextMenu}
-                        >
+                        <div className={lineClasses} key="mx_EventTile_line" onContextMenu={this.onContextMenu}>
                             {this.renderContextMenu()}
                             {groupTimestamp}
                             {groupPadlock}

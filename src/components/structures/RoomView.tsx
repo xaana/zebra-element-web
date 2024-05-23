@@ -135,7 +135,7 @@ import MessageComposer from "../views/rooms/MessageComposer";
 import TimelinePanel from "./TimelinePanel";
 import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 import { Label } from "../ui/label";
-import ZebiaAlert from "../ui/zebraAlert";
+import ZebraAlert from "../ui/ZebraAlert";
 
 const DEBUG = false;
 const PREVENT_MULTIPLE_JITSI_WITHIN = 30_000;
@@ -2588,7 +2588,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         {statusBarArea}
                         {previewBar}
                         {messageComposer}
-                        <ZebiaAlert />
+                        <ZebraAlert />
                     </>
                 );
                 break;
