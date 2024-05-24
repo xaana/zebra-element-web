@@ -40,6 +40,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import classNames from "classnames";
 
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
@@ -350,8 +351,8 @@ const EditorDialog = (props: {
                         <EditorHeader editor={editor} />
                     </div>
                     <div
-                        style={{ height: "calc(-150px + 80vh)" }}
-                        className="rounded-b-md border-b-2 w-full overflow-y-auto relative flex"
+                        style={{ height: "calc(-150px + 80vh)", paddingRight: rightSidebar.isOpen ? 320 : 0 }}
+                        className="w-full overflow-y-auto relative flex"
                     >
                         {/* <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                             <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
