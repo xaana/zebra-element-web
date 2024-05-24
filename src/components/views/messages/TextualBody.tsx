@@ -691,11 +691,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
-                    {citations ? (
-                        <WebSearchSources data={citations} />
-                    ) : (
-                        <Skeleton className="w-full h-[30px] rounded-full" />
-                    )}
                     <Separator />
                     {this.getSectionTitle("Answer", Bell)}
                     {body}

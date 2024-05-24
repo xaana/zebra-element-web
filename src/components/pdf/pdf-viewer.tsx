@@ -217,7 +217,7 @@ export const PdfViewer = ({
             >
                 <IconTable className="mr-2" />
                 {/* {showCitations ? "Hide Citations" : "Show Citations"} */}
-                Show Citations
+                Show Files
             </Button>
             <Sheet open={showCitations} onOpenChange={(open: boolean) => setShowCitations(open)} modal={false}>
                 <SheetPortal>
