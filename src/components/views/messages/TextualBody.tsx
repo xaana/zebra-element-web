@@ -801,7 +801,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_ ? (
+                    {content.files_&&!content.is_image ? (
                         <>
                             {this.getSectionTitle("Source", AlignLeft)}
                             <FilesPill files={content.files_} />
