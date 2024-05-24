@@ -116,7 +116,10 @@ export const MenuList = React.forwardRef((props: MenuListProps, ref) => {
     }
 
     return (
-        <Surface ref={scrollContainer} className="text-black max-h-[min(80vh,24rem)] overflow-auto flex-wrap mb-8 p-2">
+        <Surface
+            ref={scrollContainer}
+            className="text-black max-h-[min(80vh,24rem)] overflow-auto flex-wrap mb-8 p-2 w-60"
+        >
             <div className="grid grid-cols-1 gap-0.5">
                 {props.items.map((group, groupIndex: number) => (
                     <React.Fragment key={`${group.title}-wrapper`}>

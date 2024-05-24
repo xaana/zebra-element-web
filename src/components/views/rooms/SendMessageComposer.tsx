@@ -71,7 +71,7 @@ import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/components/views/rooms/BasicMessageComposer";
 import { data } from "@tensorflow/tfjs";
 import { DocFile } from "./FileSelector";
-import { ShowThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ShowThreadPayload";
+import { Square } from "lucide-react";
 
 
 
@@ -258,6 +258,9 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     files?: DocFile[];
     onSendCallback?: () => void;
     resetReplies?: () => void;
+    stopBotStream?: () => void;
+    showStop?: boolean;
+
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -838,18 +841,23 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         const threadId =
             this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : undefined;
         return (
-            <div className="mx_SendMessageComposer" onClick={this.focusComposer} onKeyDown={this.onKeyDown}>
-                <BasicMessageComposer
-                    onChange={this.onChange}
-                    ref={this.editorRef}
-                    model={this.model}
-                    room={this.props.room}
-                    threadId={threadId}
-                    label={this.props.placeholder}
-                    placeholder={this.props.placeholder}
-                    onPaste={this.onPaste}
-                    disabled={this.props.disabled}
-                />
+            <div className="flex flex-row items-center">
+                <div className="mx_SendMessageComposer" onClick={this.focusComposer} onKeyDown={this.onKeyDown}>
+                    <BasicMessageComposer
+                        onChange={this.onChange}
+                        ref={this.editorRef}
+                        model={this.model}
+                        room={this.props.room}
+                        threadId={threadId}
+                        label={this.props.placeholder}
+                        placeholder={this.props.placeholder}
+                        onPaste={this.onPaste}
+                        disabled={this.props.disabled}
+                    />
+                </div>
+                {this.props.showStop&&<div className="w-7 h-7 bg-foreground rounded-full flex items-center justify-center cursor-pointer" onClick={this.props.stopBotStream}>
+                    <Square className="h-4 w-4 fill-background" />
+                </div>}
             </div>
         );
     }

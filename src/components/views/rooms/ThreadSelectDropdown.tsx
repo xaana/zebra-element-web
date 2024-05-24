@@ -58,14 +58,18 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
         return thread.timeline.length ? thread.timeline.slice(-1)[0].localTimestamp : thread.rootEvent?.localTimestamp;
     };
 
-    const groupThreadsByDate = (threads: Thread[]): { today: Thread[]; lastWeek: Thread[]; earlier: Thread[] } => {
+    const groupThreadsByDate = (
+        threads: Thread[],
+    ): { today: Thread[]; yesterday: Thread[]; lastWeek: Thread[]; earlier: Thread[] } => {
         const now = new Date();
         const oneDay = 1000 * 60 * 60 * 24;
+        const twoDays = oneDay * 2;
         const sevenDays = oneDay * 7;
-        const groups: { today: Thread[]; lastWeek: Thread[]; earlier: Thread[] } = {
-            today: [],
-            lastWeek: [],
-            earlier: [],
+        const groups: { today: Thread[]; yesterday: Thread[]; lastWeek: Thread[]; earlier: Thread[] } = {
+            today: [], // 0 - 24 h
+            yesterday: [], // 24 - 48 h
+            lastWeek: [], // 48 - 144 h
+            earlier: [], // 144+ h
         };
 
         threads.reverse().forEach((thread) => {
@@ -75,6 +79,8 @@ export const ThreadSelectDropdown = (props: Props): React.JSX.Element => {
             const diff = now.getTime() - new Date(timestamp).getTime();
             if (diff < oneDay) {
                 groups.today.push(thread);
+            } else if (diff < twoDays) {
+                groups.yesterday.push(thread);
             } else if (diff < sevenDays) {
                 groups.lastWeek.push(thread);
             } else {

@@ -57,7 +57,7 @@ import { PdfViewer } from "../../pdf/pdf-viewer";
 import { SuggestionPrompt } from "./SuggestionPrompt";
 import { Separator } from "../../ui/separator";
 
-import {AlertMessagePanel, AlertMessageWithColsPanel} from "@/components/alert/AlertMessage";
+import { AlertMessagePanel, AlertMessageWithColsPanel } from "@/components/alert/AlertMessage";
 import { Button } from "@/components/ui/button";
 import DatabasePrefix from "@/components/ui/DatabasePrefix";
 import FilesPrefix from "@/components/ui/FilesPrefix";
@@ -67,6 +67,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
+import { Bell, AlignLeft } from "lucide-react";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -80,7 +81,7 @@ interface IState {
     citations: Citation[];
     echartsOption: string | undefined;
     echartsQuery: string | undefined;
-    echartsCode:string | undefined;
+    echartsCode: string | undefined;
     generating: boolean;
 }
 
@@ -347,8 +348,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 this.props.isSeeingThroughMessageHiddenForModeration ||
             nextState.echartsOption !== this.state.echartsOption ||
             nextState.echartsQuery !== this.state.echartsQuery ||
-            nextState.generating !== this.state.generating||
-            nextState.echartsCode!==this.state.echartsCode
+            nextState.generating !== this.state.generating ||
+            nextState.echartsCode !== this.state.echartsCode
         );
     }
 
@@ -608,13 +609,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return citations;
     };
 
-    private getSectionTitle = (title: string): React.ReactNode => {
+    private getSectionTitle = (title: string, Icon: React.FC | null): React.ReactNode => {
         return (
-            <div className="text-base text-muted-foreground font-bold mt-1 mb-1">
-                {title}:
+            <div className="flex-row items-center">
+                {Icon && <Icon />}
+                <div className="text-base text-muted-foreground font-bold m-2">{title}:</div>
             </div>
-        )
-    }
+        );
+    };
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
@@ -656,15 +658,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if(content.weather){
-            console.log(content.weather)
+        if (content.weather) {
+            console.log(content.weather);
             body = (
                 <>
-                <WeatherWidget weatherData={content.weather} />
-                {body}
+                    <WeatherWidget weatherData={content.weather} />
+                    {body}
                 </>
-            )
-            
+            );
         }
         // if (query) {
         //     <h2><strong>{query}</strong></h2>
@@ -676,17 +677,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         //     <br />
         //     {body}
         // }
-        if (content.prompt || content.sources){
+        if (content.prompt || content.sources) {
             // const citations: WebSearchSourceItem[] = this.getCitations(content.body)
-            const citations: WebSearchSourceItem[] = content.sources.map((item: string)=>{
-                const url = new URL(item)
+            const citations: WebSearchSourceItem[] = content.sources.map((item: string) => {
+                const url = new URL(item);
                 return {
                     link: item,
-                    hostname: url.hostname
-                }
-            })
+                    hostname: url.hostname,
+                };
+            });
             body = (
-                <>
+                <div className="p-4">
                     <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
@@ -696,7 +697,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
                     <Separator />
-                    {this.getSectionTitle("Answer")}
+                    {this.getSectionTitle("Answer", Bell)}
                     {body}
                     {roomId && (
                         <SuggestionPrompt
@@ -706,7 +707,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             type={content.web}
                         />
                     )}
-                </>
+                </div>
             );
         }
         if (database) {
@@ -738,7 +739,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 const payload = {
                                     approvalId: approvalId,
                                     roomId: roomId,
-                                    eventId:mxEvent.getId(),
+                                    eventId: mxEvent.getId(),
                                     status: "approved",
                                 };
                                 const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
@@ -763,7 +764,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 const payload = {
                                     approvalId: approvalId,
                                     roomId: roomId,
-                                    eventId:mxEvent.getId(),
+                                    eventId: mxEvent.getId(),
                                     status: "rejected",
                                 };
                                 const url = `${SettingsStore.getValue("workflowUrl")}/webhook/modify_document_status`;
@@ -791,7 +792,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.is_image && (
                         <div className="flex flex-row items-center gap-x-2">
-                            {this.getSectionTitle("Source")}
+                            {this.getSectionTitle("Source", AlignLeft)}
                             {content.file_ids.map(
                                 (eventId: string) =>
                                     this.context.room && (
@@ -800,15 +801,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_ ? (
+                    {content.files_&&!content.is_image ? (
                         <>
-                            {this.getSectionTitle("Source")}
+                            {this.getSectionTitle("Source", AlignLeft)}
                             <FilesPill files={content.files_} />
                         </>
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
-                    {this.getSectionTitle("Answer")}
+                    {this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
@@ -833,16 +834,20 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = alertContent.column ? (
                 <>
                     {body}
-                    <AlertMessageWithColsPanel data={alertContent.data} targetCols={alertContent.column} status={alertContent.status} />
+                    <AlertMessageWithColsPanel
+                        data={alertContent.data}
+                        targetCols={alertContent.column}
+                        status={alertContent.status}
+                    />
                 </>
-            ): (
+            ) : (
                 <>
                     {body}
                     <AlertMessagePanel content={alertContent} />
                 </>
             );
         }
-        if (databaseTable && roomId&&mxEvent.getId()) {
+        if (databaseTable && roomId && mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
             body = (
                 <>
@@ -851,14 +856,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.database_ ? (
                         <>
-                            {this.getSectionTitle("Source")}
+                            {this.getSectionTitle("Source", AlignLeft)}
                             <DatabasePill database={content.database_} />
                         </>
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
                     )}
                     <Separator />
-                    {this.getSectionTitle("Answer")}
+                    {this.getSectionTitle("Answer", Bell)}
                     {body}
                     <div className="flex flex-col gap-y-2">
                         {tableJson && tableJson.length > 0 && query && (
@@ -881,11 +886,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             eventId: rootId,
                                             user_id: mxEvent.getSender(),
                                         };
-                                        const request = new Request(`${SettingsStore.getValue("botApiUrl")}/echarts/${roomId}`, {
-                                            method: "POST",
-                                            // This is the part that tries to bypass CORS, but it has limitations
-                                            body: JSON.stringify(jsonData),
-                                        });
+                                        const request = new Request(
+                                            `${SettingsStore.getValue("botApiUrl")}/echarts/${roomId}`,
+                                            {
+                                                method: "POST",
+                                                // This is the part that tries to bypass CORS, but it has limitations
+                                                body: JSON.stringify(jsonData),
+                                            },
+                                        );
                                         fetch(request)
                                             .then((data) => data.json())
                                             .then((res) => {

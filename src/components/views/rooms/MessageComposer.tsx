@@ -108,6 +108,8 @@ interface IProps extends MatrixClientProps {
     files?: DocFile[];
     fromHomepage?: boolean;
     onSendCallback?: () => void;
+    showStop?: boolean;
+    stopBotStream?: () => void;
 }
 
 interface IState {
@@ -541,19 +543,40 @@ export class MessageComposer extends React.Component<IProps, IState> {
         });
     };
     private getSmartReplies = (): void => {
-        // this.setState({ smartReply: ["Yes, I will", "No, I won't", "Sure!"] });
+        if(this.state.smartReply.length !== 0) return;
+        if (this.context.timelineRenderingType !== TimelineRenderingType.Room) return;
         if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return;
         const lastEvent = this.props.room.getLiveTimeline().getEvents()[
             this.props.room.getLiveTimeline().getEvents().length - 1
         ];
         if (!lastEvent) return;
+        if (!lastEvent.getContent().body) return;
         if (lastEvent.getType() !== "m.room.message" && lastEvent.getType() !== "m.room.encrypted") return;
+        // if (lastEvent.getContent().body.split(' ').length < 5) return;
         const currentUserId = MatrixClientPeg.safeGet().getUserId();
         if (!currentUserId) return;
         const functionalUsers = getFunctionalMembers(this.props.room);
         const lastEventSender = lastEvent.getSender();
         if (lastEventSender === currentUserId) return;
         if (lastEventSender && functionalUsers.includes(lastEventSender)) return;
+        const payload={
+            user_question:lastEvent.getContent().body,
+        }
+        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/suggested_msg`
+        const request = new Request(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload),
+        });
+        fetch(request).then((res)=>res.json()).then((data)=>{
+            data.result&&this.setState({smartReply:data.result})
+        }).catch((err)=>{
+            console.error(err)
+        });
+        
+        // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
     };
 
     public render(): React.ReactNode {
@@ -600,6 +623,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         files={this.props.files}
                         onSendCallback={this.props.onSendCallback}
                         resetReplies={this.setReply}
+                        stopBotStream={this.props.stopBotStream}
+                        showStop={this.props.showStop}
                     />
                 );
             }

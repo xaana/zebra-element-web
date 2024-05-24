@@ -155,7 +155,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         onClick: () => void;
         Icon: JSX.Element;
     }) => (
-        <Button className="h-18 default_button" variant="outline" onClick={onClick}>
+        <Button className="h-18 default_button rounded-lg" variant="outline" onClick={onClick}>
             <div className="w-full text-start">
                 <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
             </div>
