@@ -804,12 +804,12 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         }}
                                         editorContent={this.state.composerContent}
                                         onSendCallback={(content: string, rawContent: string) => {
-                                            // this.props.mxClient.sendMessage(this.context.roomId!, {
-                                            //     msgtype: "m.text",
-                                            //     format: "org.matrix.custom.html",
-                                            //     body: rawContent,
-                                            //     formatted_body: content,
-                                            // });
+                                            this.props.mxClient.sendMessage(this.context.roomId!, {
+                                                msgtype: "m.text",
+                                                format: "org.matrix.custom.html",
+                                                body: rawContent,
+                                                formatted_body: content,
+                                            });
                                             this.setState({
                                                 composerContent: "",
                                                 initialComposerContent: "",
