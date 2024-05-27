@@ -59,7 +59,12 @@ import { decorateStartSendingTime, sendRoundTripMetric } from "matrix-react-sdk/
 import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
 import DocumentPosition from "matrix-react-sdk/src/editor/position";
 import { ComposerType } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import { getSlashCommand, isSlashCommand, runSlashCommand, shouldSendAnyway } from "matrix-react-sdk/src/editor/commands";
+import {
+    getSlashCommand,
+    isSlashCommand,
+    runSlashCommand,
+    shouldSendAnyway,
+} from "matrix-react-sdk/src/editor/commands";
 import { KeyBindingAction } from "matrix-react-sdk/src/accessibility/KeyboardShortcuts";
 import { PosthogAnalytics } from "matrix-react-sdk/src/PosthogAnalytics";
 import { addReplyToMessageContent } from "matrix-react-sdk/src/utils/Reply";
@@ -72,8 +77,6 @@ import BasicMessageComposer, { REGEX_EMOTICON } from "matrix-react-sdk/src/compo
 import { data } from "@tensorflow/tfjs";
 import { DocFile } from "./FileSelector";
 import { Square } from "lucide-react";
-
-
 
 /**
  * Build the mentions information based on the editor model (and any related events):
@@ -254,13 +257,12 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     onChange?(model: EditorModel): void;
     includeReplyLegacyFallback?: boolean;
     toggleStickerPickerOpen: () => void;
-    database?:string;
+    database?: string;
     files?: DocFile[];
     onSendCallback?: () => void;
     resetReplies?: () => void;
     stopBotStream?: () => void;
     showStop?: boolean;
-
 }
 
 export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
@@ -455,11 +457,11 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     }
 
     public async sendMessage(): Promise<void> {
-        if (SdkContextClass.instance.roomViewStore.getUploading()){
+        if (SdkContextClass.instance.roomViewStore.getUploading()) {
             // do not send messages if the upload is in progress
             return;
         }
-        this.props.resetReplies&&this.props.resetReplies();
+        this.props.resetReplies && this.props.resetReplies();
         const model = this.model;
         if (model.isEmpty) {
             return;
@@ -567,9 +569,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
-            if(content&&this.props.database){
-                content['database'] = this.props.database;
-                if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
+            if (content && this.props.database) {
+                content["database"] = this.props.database;
+                if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
                     dis.dispatch({
                         action: "select_database",
                         database: "",
@@ -577,11 +579,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                         context: this.context.timelineRenderingType,
                     });
                 }
-                
             }
-            if(content&&this.props.files&&this.props.files?.length>0){
-                content['fileSelected'] = this.props.files;
-                if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
+            if (content && this.props.files && this.props.files?.length > 0) {
+                content["fileSelected"] = this.props.files;
+                if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
                     dis.dispatch({
                         action: "select_files",
                         files: [],
@@ -589,7 +590,6 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                         context: this.context.timelineRenderingType,
                     });
                 }
-                
             }
             const prom = doMaybeLocalRoomAction(
                 roomId,
@@ -624,17 +624,20 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
 
         this.sendHistoryManager.save(model, replyToEvent);
-        // clear composer
-        model.reset([]);
-        this.editorRef.current?.clearUndoHistory();
-        this.editorRef.current?.focus();
-        this.clearStoredEditorState();
+        this.clearComposer();
         if (shouldSend && SettingsStore.getValue("scrollToBottomOnMessageSent")) {
             dis.dispatch({
                 action: "scroll_to_bottom",
                 timelineRenderingType: this.context.timelineRenderingType,
             });
         }
+    }
+
+    public clearComposer(): void {
+        this.model.reset([]);
+        this.editorRef.current?.clearUndoHistory();
+        this.editorRef.current?.focus();
+        this.clearStoredEditorState();
     }
 
     public componentWillUnmount(): void {
@@ -664,8 +667,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
 
         const json = localStorage.getItem(this.editorStateKey);
-        const database = localStorage.getItem(`database_${this.editorStateKey}`)
-        const files = localStorage.getItem(`files_${this.editorStateKey}`)
+        const database = localStorage.getItem(`database_${this.editorStateKey}`);
+        const files = localStorage.getItem(`files_${this.editorStateKey}`);
         if (json) {
             try {
                 const { parts: serializedParts, replyEventId } = JSON.parse(json);
@@ -682,23 +685,24 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 logger.error(e);
             }
         }
-        if (this.context.timelineRenderingType===TimelineRenderingType.Room) {
-        if (database){
-            dis.dispatch({
-                action: "select_database",
-                database: database,
-                roomId: this.context.roomId,
-                context: this.context.timelineRenderingType,
-            });
+        if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
+            if (database) {
+                dis.dispatch({
+                    action: "select_database",
+                    database: database,
+                    roomId: this.context.roomId,
+                    context: this.context.timelineRenderingType,
+                });
+            }
+            if (files && files?.length > 0) {
+                dis.dispatch({
+                    action: "select_files",
+                    files: JSON.parse(files),
+                    roomId: this.context.roomId,
+                    context: this.context.timelineRenderingType,
+                });
+            }
         }
-        if (files&&files?.length>0){
-            dis.dispatch({
-                action: "select_files",
-                files: JSON.parse(files),
-                roomId: this.context.roomId,
-                context: this.context.timelineRenderingType,
-            });
-        }}
         return null;
     }
 
@@ -708,21 +712,21 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     };
 
     private saveStoredEditorState = (): void => {
-        let clear=true;
+        let clear = true;
         if (this.shouldSaveStoredEditorState()) {
             const item = SendHistoryManager.createItem(this.model, this.props.replyToEvent);
             localStorage.setItem(this.editorStateKey, JSON.stringify(item));
-            clear=false
-        } 
-        if (this.props.files&&this.props.files.length>0){
-            localStorage.setItem(`files_${this.editorStateKey}`,JSON.stringify(this.props.files))
-            clear=false
+            clear = false;
         }
-        if (this.props.database){
-            localStorage.setItem(`database_${this.editorStateKey}`,this.props.database)
-            clear=false
+        if (this.props.files && this.props.files.length > 0) {
+            localStorage.setItem(`files_${this.editorStateKey}`, JSON.stringify(this.props.files));
+            clear = false;
         }
-        if (clear){
+        if (this.props.database) {
+            localStorage.setItem(`database_${this.editorStateKey}`, this.props.database);
+            clear = false;
+        }
+        if (clear) {
             this.clearStoredEditorState();
         }
     };
@@ -855,9 +859,14 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                         disabled={this.props.disabled}
                     />
                 </div>
-                {this.props.showStop&&<div className="w-7 h-7 bg-foreground rounded-full flex items-center justify-center cursor-pointer" onClick={this.props.stopBotStream}>
-                    <Square className="h-4 w-4 fill-background" />
-                </div>}
+                {this.props.showStop && (
+                    <div
+                        className="w-7 h-7 bg-foreground rounded-full flex items-center justify-center cursor-pointer"
+                        onClick={this.props.stopBotStream}
+                    >
+                        <Square className="h-4 w-4 fill-background" />
+                    </div>
+                )}
             </div>
         );
     }
