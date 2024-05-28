@@ -83,7 +83,7 @@ interface IState {
     echartsQuery: string | undefined;
     echartsCode: string | undefined;
     generating: boolean;
-    streamContent:string;
+    streamContent: string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -109,14 +109,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             echartsQuery: undefined,
             echartsCode: undefined,
             generating: false,
-            streamContent:'',
-            
+            streamContent: "",
         };
     }
 
     public componentDidMount(): void {
         if (!this.props.editState) {
-            this.props.mxEvent.getSender()!=="@rob:securezebra.com"&&this.applyFormatting();
+            this.props.mxEvent.getSender() !== "@rob:securezebra.com" && this.applyFormatting();
         }
     }
 
@@ -129,7 +128,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     //         if (i + step > text.length) {
     //             this.setState({streamContent:text})
     //         }
-    
+
     //         i += step;
     //         this.setState({streamContent:text.substring(0,i)})
     //         if (i < text.length) {
@@ -636,7 +635,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         return (
             <div className="flex flex-row items-center">
                 {Icon && <Icon />}
-                <div className="text-base text-muted-foreground font-bold m-2">{title}:</div>
+                <div className="text-base font-bold m-2">{title}:</div>
             </div>
         );
     };
