@@ -162,7 +162,7 @@ export function Citations({
         <>
             {pdfUrls ? (
                 <div className="flex flex-col gap-y-3 h-full">
-                    <div className="basis-3/5 min-h-[300px] overflow-hidden flex flex-col grow shrink-0">
+                    <div className="basis-full min-h-[300px] overflow-hidden flex flex-col grow shrink-0">
                         <div className="flex items-center justify-between pt-4 pb-2">
                             <div className="basis-1/2">
                                 <Select
@@ -227,11 +227,11 @@ export function Citations({
                             </div>
                         </div>
                     </div>
-                    <div className="shrink-0 basis-2/5 rounded-md border overflow-hidden">
+                    {/* <div className="shrink-0 rounded-md border overflow-hidden">
                         <div className="bg-background h-full w-full overflow-auto scrollbar--custom">
                             <CitationsTable data={citations} onViewCitation={handleViewCitation} />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             ) : (
                 <Loader className="flex justify-center mt-[100px] w-full h-full" height="100" width="100" />
