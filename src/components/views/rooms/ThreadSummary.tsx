@@ -67,6 +67,7 @@ const ThreadSummary: React.FC<IProps> = ({ mxEvent, thread, ...props }) => {
             {...props}
             className="mx_ThreadSummary"
             onClick={(ev: ButtonEvent) => {
+                ev.stopPropagation();
                 defaultDispatcher.dispatch<ShowThreadPayload>({
                     action: Action.ShowThread,
                     rootEvent: mxEvent,

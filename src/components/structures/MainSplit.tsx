@@ -165,10 +165,7 @@ export default class MainSplit extends React.Component<IProps, IState> {
                     bodyView={bodyView}
                     onClick={()=>{
                         if (hasResizer){
-                            this.setState(prevState=>({collapseRightPanel: true}));
-                            RightPanelStore.instance.setCards([]);
-                        } else {
-                            this.setState(prevState=>({collapseRightPanel: false}));
+                            RightPanelStore.instance.togglePanel(null)
                         }
                     }}
                 />
