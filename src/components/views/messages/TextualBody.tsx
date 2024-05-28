@@ -67,7 +67,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
-import { Bell, AlignLeft } from "lucide-react";
+import { Bell, List } from "lucide-react";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -792,7 +792,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.is_image && (
                         <div className="flex flex-row items-center gap-x-2">
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
                                 (eventId: string) =>
                                     this.context.room && (
@@ -803,7 +803,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     )}
                     {content.files_ && !content.is_image ? (
                         <>
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
                         </>
                     ) : (
@@ -856,7 +856,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.database_ ? (
                         <>
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             <DatabasePill database={content.database_} />
                         </>
                     ) : (
