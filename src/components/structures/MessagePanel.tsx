@@ -716,8 +716,8 @@ export default class MessagePanel extends React.Component<IProps, IState> {
                     prevEvent = event;
                 }
 
-                const readMarker = this.readMarkerForEvent(eventId, i >= lastShownNonLocalEchoIndex);
-                if (readMarker) ret.push(readMarker);
+                // const readMarker = this.readMarkerForEvent(eventId, i >= lastShownNonLocalEchoIndex);
+                // if (readMarker) ret.push(readMarker);
             }
         }
 
