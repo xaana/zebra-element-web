@@ -83,6 +83,7 @@ interface IState {
     echartsQuery: string | undefined;
     echartsCode: string | undefined;
     generating: boolean;
+    streamContent:string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -108,14 +109,36 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             echartsQuery: undefined,
             echartsCode: undefined,
             generating: false,
+            streamContent:'',
+            
         };
     }
 
     public componentDidMount(): void {
         if (!this.props.editState) {
-            this.applyFormatting();
+            this.props.mxEvent.getSender()!=="@rob:securezebra.com"&&this.applyFormatting();
         }
     }
+
+    // Fake stream in the frontend
+    // private streamPrint(text) {
+    //     let i = 0;
+    //     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    //     const printNext = () => {
+    //         const step = Math.floor(Math.random() * 7) + 1; // Determine the number of characters (1 to 3)
+    //         if (i + step > text.length) {
+    //             this.setState({streamContent:text})
+    //         }
+    
+    //         i += step;
+    //         this.setState({streamContent:text.substring(0,i)})
+    //         if (i < text.length) {
+    //             const delay = Math.random() * (100 - 10) + 10;
+    //             setTimeout(printNext, delay);
+    //         }
+    //     }
+    //     printNext();
+    // }
     private applyFormatting(): void {
         // Function is only called from render / componentDidMount → contentRef is set
         const content = this.contentRef.current!;
