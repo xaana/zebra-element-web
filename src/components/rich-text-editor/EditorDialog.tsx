@@ -40,6 +40,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+// import { MatrixEvent } from "matrix-js-sdk/src/matrix";
+// import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
 
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
@@ -49,7 +51,7 @@ const MemoContentTypePicker = memo(ContentTypePicker);
 
 const EditorDialog = (props: {
     trigger?: React.JSX.Element;
-    previousMessage?: string;
+    // editorReply?: MatrixEvent;
     editorContent: string;
     onSendCallback: (content: string, rawContent: string) => void;
     onScheduleSendCallback: (content: string, rawContent: string) => void;
@@ -369,16 +371,21 @@ const EditorDialog = (props: {
     return (
         <Dialog open={open} onOpenChange={handleOpenClose}>
             <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
-            <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 980, height: "80%" }}>
+            <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 1100, height: "80%" }}>
                 <EditorContext.Provider value={providerValue}>
-                    <div className="h-[45px] mt-8">
+                    <div style={{ height: 42, marginTop: 16 }}>
                         <EditorHeader editor={editor} />
                     </div>
-                    {props.previousMessage && <div style={{ height: 50 }}>{props.previousMessage}</div>}
+                    {/* {props.editorReply && (
+                        <div style={{ margin: "16px 64px 0px 64px" }}>
+                            <ReplyPreview replyToEvent={props.editorReply} isEditor={true} />
+                        </div>
+                    )} */}
 
                     <div
                         style={{
-                            height: props.previousMessage ? "calc(-200px + 80vh)" : "calc(-150px + 80vh)",
+                            // height: props.editorReply ? "calc(-194px + 80vh)" : "calc(-130px + 80vh)",
+                            height: "calc(-130px + 80vh)",
                             paddingRight: rightSidebar.isOpen ? 320 : 0,
                         }}
                         className="w-full overflow-y-auto relative flex"
@@ -390,7 +397,12 @@ const EditorDialog = (props: {
                             className="flex-1 flex h-full relative justify-center overflow-y-auto"
                             ref={menuContainerRef}
                         >
-                            <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
+                            <EditorContent
+                                editor={editor}
+                                ref={editorRef}
+                                className="flex-1 overflow-y-auto"
+                                style={{ padding: "66px 64px 0px 64px" }}
+                            />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
                             <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
@@ -399,7 +411,7 @@ const EditorDialog = (props: {
                             <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                         </div>
                     </div>
-                    <div style={{ height: "calc(-150px + 80vh)", top: 85, right: 0, position: "absolute" }}>
+                    <div style={{ height: "calc(-130px + 80vh)", top: 85, right: 0, position: "absolute" }}>
                         <ChatSidebar sidebar={rightSidebar} />
                     </div>
                     <div>
