@@ -611,7 +611,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private getSectionTitle = (title: string, Icon: React.FC | null): React.ReactNode => {
         return (
-            <div className="flex-row items-center">
+            <div className="flex flex-row items-center">
                 {Icon && <Icon />}
                 <div className="text-base text-muted-foreground font-bold m-2">{title}:</div>
             </div>
@@ -801,7 +801,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_&&!content.is_image ? (
+                    {content.files_ && !content.is_image ? (
                         <>
                             {this.getSectionTitle("Source", AlignLeft)}
                             <FilesPill files={content.files_} />

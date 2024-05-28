@@ -1,5 +1,5 @@
 import React from "react";
-
+import { List } from "lucide-react";
 import { Tooltip, TooltipTrigger } from "../ui/tooltip";
 
 export type WebSearchSourceItem = {
@@ -12,7 +12,11 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
         <>
             {data && data.length > 0 && (
                 <>
-                    <div className="text-base text-muted-foreground font-bold my-1">Sources:</div>
+                    <div className="flex flex-row items-center">
+                        <List />
+                        <div className="text-base text-muted-foreground font-bold m-2">Sources:</div>
+                    </div>
+
                     <div className="flex-row mt-4 items-center flex-wrap grid grid-cols-5 gap-4 my-4">
                         {data.map((item, index) => (
                             <Tooltip key={index}>
@@ -21,7 +25,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
                                         href={item.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-xs text-muted-foreground p-1 border rounded-md cursor-pointer block items-center gap-1 hover:bg-blue-100"
+                                        className="Source_Button text-xs text-muted-foreground p-1 rounded-md cursor-pointer block items-center gap-1 hover:bg-blue-100"
                                     >
                                         <img
                                             // src={`https://${item.hostname}/favicon.ico`}
@@ -30,7 +34,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
                                             className="h-6 w-6"
                                             // onError={handleFaviconError}
                                         />
-                                        <span>{`${item.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")} · ${index+1}`}</span>
+                                        <span>{`${item.hostname.replace(/^(?:https?:\/\/)?(?:www\.)?/i, "")} · ${index + 1}`}</span>
                                     </a>
                                 </TooltipTrigger>
                                 {/* <TooltipContent>{item.title}</TooltipContent> */}
