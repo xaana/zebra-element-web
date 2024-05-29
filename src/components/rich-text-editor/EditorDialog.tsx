@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, { useState, memo, useCallback, useMemo, useRef } from "react";
 import { EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
@@ -40,7 +40,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import classNames from "classnames";
+// import { MatrixEvent } from "matrix-js-sdk/src/matrix";
+// import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
 
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
@@ -50,10 +51,14 @@ const MemoContentTypePicker = memo(ContentTypePicker);
 
 const EditorDialog = (props: {
     trigger?: React.JSX.Element;
-    onDestroyCallback?: (data: string) => void;
+    // editorReply?: MatrixEvent;
+    editorContent: string;
     onSendCallback: (content: string, rawContent: string) => void;
+    onScheduleSendCallback: (content: string, rawContent: string) => void;
+    onDestroyCallback?: (data: string) => void;
 }): React.JSX.Element => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+    const [content, setContent] = useState("");
     // const ydoc = useMemo(() => new YDoc(), []);
     // const { editor } = useBlockEditor({ydoc:ydoc});
     const { editor } = useBlockEditor({});
@@ -313,29 +318,50 @@ const EditorDialog = (props: {
         };
 
         return (
-            <div className="flex flex-row justify-end gap-x-3 pb-1 pr-4">
+            <div className="flex flex-row justify-end pt-2 pr-4 border-t">
                 <DropdownMenu>
                     <div>
                         <DropdownMenuTrigger>
-                            <Button className="rounded-full px-2" variant="outline" onClick={sendHandler}>
+                            <div className="border rounded-full" style={{ padding: 7 }}>
                                 <ChevronDown size={20} />
-                            </Button>
+                            </div>
                         </DropdownMenuTrigger>
-                        <Button
-                            className="px-8 rounded-full border-0 shadow-none"
-                            variant="outline"
-                            onClick={sendHandler}
-                        >
-                            <SendHorizontal size={20} />
-                        </Button>
                     </div>
-
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Button className="ml-2 px-8 rounded-full border-0 shadow-none" variant="outline" onClick={sendHandler}>
+                    <SendHorizontal size={20} />
+                </Button>
             </div>
         );
+    };
+
+    const handleOpenClose = (open: boolean) => {
+        if (open) {
+            setOpen(true);
+            // load content from state or message composer
+            let initialContent = content ? content : props.editorContent;
+            editor?.commands.setContent({
+                type: "doc",
+                content: [
+                    {
+                        type: "paragraph",
+                        content: [
+                            {
+                                type: "text",
+                                text: initialContent,
+                            },
+                        ],
+                    },
+                ],
+            });
+        } else {
+            // save current editor content to state
+            setContent(editor?.getText() || "");
+            setOpen(false);
+        }
     };
 
     if (!editor) {
@@ -343,15 +369,25 @@ const EditorDialog = (props: {
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenClose}>
             <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
-            <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 980, height: "80%" }}>
+            <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 1100, height: "80%" }}>
                 <EditorContext.Provider value={providerValue}>
-                    <div className="h-[45px] mt-8">
+                    <div style={{ height: 42, marginTop: 16 }}>
                         <EditorHeader editor={editor} />
                     </div>
+                    {/* {props.editorReply && (
+                        <div style={{ margin: "16px 64px 0px 64px" }}>
+                            <ReplyPreview replyToEvent={props.editorReply} isEditor={true} />
+                        </div>
+                    )} */}
+
                     <div
-                        style={{ height: "calc(-150px + 80vh)", paddingRight: rightSidebar.isOpen ? 320 : 0 }}
+                        style={{
+                            // height: props.editorReply ? "calc(-194px + 80vh)" : "calc(-130px + 80vh)",
+                            height: "calc(-130px + 80vh)",
+                            paddingRight: rightSidebar.isOpen ? 320 : 0,
+                        }}
                         className="w-full overflow-y-auto relative flex"
                     >
                         {/* <Sidebar side="left" isOpen={leftSidebar.isOpen}>
@@ -361,7 +397,12 @@ const EditorDialog = (props: {
                             className="flex-1 flex h-full relative justify-center overflow-y-auto"
                             ref={menuContainerRef}
                         >
-                            <EditorContent editor={editor} ref={editorRef} className="flex-1 overflow-y-auto" />
+                            <EditorContent
+                                editor={editor}
+                                ref={editorRef}
+                                className="flex-1 overflow-y-auto"
+                                style={{ padding: "66px 64px 0px 64px" }}
+                            />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
                             <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
@@ -370,17 +411,19 @@ const EditorDialog = (props: {
                             <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                         </div>
                     </div>
-                    <div style={{ height: "calc(-150px + 80vh)", top: 85, right: 0, position: "absolute" }}>
+                    <div style={{ height: "calc(-130px + 80vh)", top: 85, right: 0, position: "absolute" }}>
                         <ChatSidebar sidebar={rightSidebar} />
                     </div>
                     <div>
                         <EditorFooter
-                            onScheduleSendCallback={() => {
-                                // TODO
+                            onScheduleSendCallback={(content: string, rawContent: string): void => {
+                                props.onScheduleSendCallback(content, rawContent);
+                                setContent("");
                                 setOpen(false);
                             }}
                             onSendCallback={(content: string, rawContent: string): void => {
                                 props.onSendCallback(content, rawContent);
+                                setContent("");
                                 setOpen(false);
                             }}
                         />

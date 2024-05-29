@@ -67,8 +67,10 @@ interface IProps {
     onStartVoiceBroadcastClick: () => void;
     isRichTextEnabled: boolean;
     onComposerModeClick: () => void;
-    onRichTextEditorDestroyCallback?: (data: string) => void;
+    editorContent: string;
     onSendCallback: (content: string, rawContent: string) => void;
+    onScheduleSendCallback: (content: string, rawContent: string) => void;
+    onRichTextEditorDestroyCallback?: (data: string) => void;
 }
 
 type OverflowMenuCloser = () => void;
@@ -118,7 +120,12 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             ) : (
                 emojiButton(props)
             ),
-            richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
+            richTextEditorButton(
+                props.editorContent,
+                props.onSendCallback,
+                props.onScheduleSendCallback,
+                props.onRichTextEditorDestroyCallback,
+            ),
             // uploadButton(), // props passed via UploadButtonContext
             // audioCaptureButton(),
             // voiceBotButton(matrixClient, room),
@@ -243,7 +250,9 @@ function voiceBotButton(matrixClient: MatrixClient, room: Room): ReactElement {
 }
 
 function richTextEditorButton(
+    editorContent: string,
     onSendCallback: (content: string, rawContent: string) => void,
+    onScheduleSendCallback: (content: string, rawContent: string) => void,
     onRichTextEditorDestroyCallback?: (data: string) => void,
 ): ReactElement {
     const trigger = (
@@ -252,14 +261,6 @@ function richTextEditorButton(
             className="mx_MessageComposer_button"
             iconClassName="editor_button"
             onClick={null}
-            // onClick={() => {
-            //     dis.dispatch({
-            //         action: "select_database",
-            //         database: "",
-            //         roomId: room.roomId,
-            //         context: room.,
-            //     });
-            // }}
         />
     );
 
@@ -267,8 +268,10 @@ function richTextEditorButton(
         <EditorDialog
             key="controls_rich_text_editor"
             trigger={trigger}
-            onDestroyCallback={onRichTextEditorDestroyCallback}
+            editorContent={editorContent}
             onSendCallback={onSendCallback}
+            onScheduleSendCallback={onScheduleSendCallback}
+            onDestroyCallback={onRichTextEditorDestroyCallback}
         />
     );
 }

@@ -226,6 +226,11 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     });
                 }
                 break;
+            case "scroll_to_bottom":
+                if (payload.timelineRenderingType === TimelineRenderingType.Thread) {
+                    this.timelinePanel.current?.jumpToLiveTimeline();
+                }
+                break;
             case "select_database":
                 if (payload.context === TimelineRenderingType.Thread) {
                     this.setState({

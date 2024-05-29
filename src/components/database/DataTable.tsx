@@ -185,17 +185,19 @@ export const DataTable = ({
                             <PaginationItem>
                                 <PaginationPrevious onClick={handlePrevious}  className={currentPage === 1?"pointer-events-none text-gray-500 cursor-not-allowed":"cursor-pointer"} />
                             </PaginationItem>
+                            <div className="gap-x-3 flex flex-row">
                             {getPageNumbers().map((page, index) => (
                                 <PaginationItem key={index} className="cursor-pointer">
                                 {page === '...' ? (
                                     <PaginationEllipsis />
                                 ) : (
-                                    <PaginationLink onClick={() => handlePageClick(page)} isActive={currentPage === page}>
+                                    <PaginationLink onClick={() => handlePageClick(page)} isActive={currentPage === page} className="w-fit min-w-9">
                                     {page}
                                     </PaginationLink>
                                 )}
                                 </PaginationItem>
                             ))}
+                            </div>
                             <PaginationItem>
                                 <PaginationNext onClick={handleNext} className={currentPage === totalPages?"pointer-events-none text-gray-500 cursor-not-allowed":"cursor-pointer"} />
                             </PaginationItem>

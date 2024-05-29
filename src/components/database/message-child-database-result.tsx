@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Sparkles , Download, ExternalLink } from "lucide-react";
+import { Sparkles, Download, ExternalLink } from "lucide-react";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
@@ -64,52 +64,57 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     requestTime,
     handleViewCharts,
 }) => {
-    const client = React.useContext(MatrixClientContext)
+    const client = React.useContext(MatrixClientContext);
 
     const handleDataDownload = (): void => {
         const csv = [];
-        csv.push(Object.keys(data[0])) ;
-        for (const rowItem of data){
-            csv.push(Object.values(rowItem).join(","))
+        csv.push(Object.keys(data[0]));
+        for (const rowItem of data) {
+            csv.push(Object.values(rowItem).join(","));
         }
-        const formattedData = csv.join('\n')
+        const formattedData = csv.join("\n");
         const downloadName = "data.csv";
         const hiddenLink = document.createElement("a");
-        hiddenLink.setAttribute("href", "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData));
+        hiddenLink.setAttribute(
+            "href",
+            "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData),
+        );
         hiddenLink.setAttribute("download", downloadName);
         document.body.appendChild(hiddenLink);
         hiddenLink.click();
         document.body.removeChild(hiddenLink);
-    }
+    };
 
     const handleAlgologyRedirect = async (): Promise<void> => {
-        getVectorConfig().then((config)=>{
-            const payload = {
-                query: query,
-                description: description,
-                user_id: client.getSafeUserId(),
-                eventId: eventId,
-                echartsCode: echartsCode
-            }
-            return fetch(config?.plugins.reports.api + "/api/algology_mapping", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+        getVectorConfig()
+            .then((config) => {
+                const payload = {
+                    query: query,
+                    description: description,
+                    user_id: client.getSafeUserId(),
+                    eventId: eventId,
+                    echartsCode: echartsCode,
+                };
+                return fetch(config?.plugins.reports.api + "/api/algology_mapping", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
             })
-        }).then(res=>res.json())
-        .then(res=>{
-            const dashboardId = res.message.dashboard_id;
-            const panelId = res.message.panel_id;
-            const uri = `d/${dashboardId}?viewPanel=${panelId}&`
-            localStorage.setItem("pluginUri", uri)
-            window.location.hash="/plugins/algology";
-            window.matrixChat.setState({ activePluginName: "algology"});
-            SpaceStore.instance.setActiveSpace("plugin.algology");
-            defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
-        })
-    }
+            .then((res) => res.json())
+            .then((res) => {
+                const dashboardId = res.message.dashboard_id;
+                const panelId = res.message.panel_id;
+                const uri = `d/${dashboardId}?viewPanel=${panelId}&`;
+                localStorage.setItem("pluginUri", uri);
+                window.location.hash = "/plugins/algology";
+                window.matrixChat.setState({ activePluginName: "algology" });
+                SpaceStore.instance.setActiveSpace("plugin.algology");
+                defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
+            });
+    };
 
     return (
         <div className="w-full">
@@ -117,7 +122,12 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                 <div className="table__container rounded-md border border-solid scrollbar--custom">
                     {data && data.length > 0 && (
                         <>
-                            <DataTable data={data} eventId={eventId} totalEntries={totalEntries!} requestTime={requestTime} />
+                            <DataTable
+                                data={data}
+                                eventId={eventId}
+                                totalEntries={totalEntries!}
+                                requestTime={requestTime}
+                            />
                             <div className="border-t w-full">
                                 <div className="flex items-center justify-between">
                                     {totalEntries && (
@@ -127,7 +137,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                     )}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
-                                            <Button className="text-xs gap-0 w-auto h-7">
+                                            <Button variant="outline" className="p-2 rounded-full">
                                                 <Sparkles />
                                             </Button>
                                         </DropdownMenuTrigger>
@@ -135,13 +145,13 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                             <DropdownMenuLabel>Options</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem onSelect={handleViewCharts}>
-                                                <IconChartDonut className="h-3 w-3 mr-1" />  Visualize
+                                                <IconChartDonut className="h-3 w-3 mr-1" /> Visualize
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onSelect={handleDataDownload}>
-                                                <Download className="h-4 w-4 mr-2" />  Download
+                                                <Download className="h-4 w-4 mr-2" /> Download
                                             </DropdownMenuItem>
                                             <DropdownMenuItem onSelect={handleAlgologyRedirect}>
-                                                <ExternalLink className="h-4 w-4 mr-2" />  View In Algology
+                                                <ExternalLink className="h-4 w-4 mr-2" /> View In Algology
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>

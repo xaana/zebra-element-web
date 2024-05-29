@@ -515,7 +515,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
 
     private onWindowResized = (): void => {
         // XXX: This is a very unreliable way to detect whether or not the the devtools are open
-        this.warnInConsole();
+        // this.warnInConsole();
     };
 
     private warnInConsole = throttle((): void => {
@@ -626,7 +626,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     configData.plugins.reports.api,
                 );
             }
-            if(configData?.plugins.workflow.url) {
+            if (configData?.plugins.workflow.url) {
                 await SettingsStore.setValue("workflowUrl", null, SettingLevel.DEVICE, configData.plugins.workflow.url);
             }
         } catch (e) {

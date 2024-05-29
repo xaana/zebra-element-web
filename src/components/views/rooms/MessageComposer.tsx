@@ -77,6 +77,7 @@ import WebSearchPill from "@/components/ui/WebSearchPill";
 import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
+import { isJoinedOrNearlyJoined } from "matrix-react-sdk/src/utils/membership";
 
 let instanceCount = 0;
 
@@ -130,6 +131,7 @@ interface IState {
     smartReply: string[];
     isInputBoxVisible: boolean;
     isButtonGroupVisible: boolean;
+    showWebSearch:boolean;
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -170,6 +172,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             smartReply: [],
             isInputBoxVisible: true,
             isButtonGroupVisible: true,
+            showWebSearch:false,
         };
 
         this.instanceId = instanceCount++;
@@ -211,6 +214,22 @@ export class MessageComposer extends React.Component<IProps, IState> {
         UIStore.instance.on(`MessageComposer${this.instanceId}`, this.onResize);
         this.updateRecordingState(); // grab any cached recordings
         this.getSmartReplies();
+        if (this.context.room){
+            const functionalUsers = getFunctionalMembers(this.context.room);
+            const members = this.context.room.currentState.getMembers();
+            const joinedMembers = members.filter(
+                (m) => !functionalUsers.includes(m.userId) && m.membership && isJoinedOrNearlyJoined(m.membership),
+            );
+            const botMember = joinedMembers.find((m) => m.userId === "@zebra:securezebra.com");
+            if (joinedMembers.length===1){
+                this.setState({showWebSearch:true})
+            }
+            else if (botMember){
+                this.setState({showWebSearch:true})
+            }
+
+        }
+        
     }
 
     private updateVisibilities = (): void => {
@@ -418,7 +437,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
     };
 
     private onChange = (model: EditorModel): void => {
+        // console.log("composer changing: ", model.parts[0]?.text);
         this.setState({
+            composerContent: model.parts[0]?.text ?? "",
             isComposerEmpty: model.isEmpty,
         });
     };
@@ -543,7 +564,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
         });
     };
     private getSmartReplies = (): void => {
-        if(this.state.smartReply.length !== 0) return;
+        if (this.state.smartReply.length !== 0) return;
         if (this.context.timelineRenderingType !== TimelineRenderingType.Room) return;
         if (!DMRoomMap.shared().getRoomIds().has(this.props.room.roomId)) return;
         const lastEvent = this.props.room.getLiveTimeline().getEvents()[
@@ -559,23 +580,26 @@ export class MessageComposer extends React.Component<IProps, IState> {
         const lastEventSender = lastEvent.getSender();
         if (lastEventSender === currentUserId) return;
         if (lastEventSender && functionalUsers.includes(lastEventSender)) return;
-        const payload={
-            user_question:lastEvent.getContent().body,
-        }
-        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/suggested_msg`
+        const payload = {
+            user_question: lastEvent.getContent().body,
+        };
+        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/suggested_msg`;
         const request = new Request(url, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
         });
-        fetch(request).then((res)=>res.json()).then((data)=>{
-            data.result&&this.setState({smartReply:data.result})
-        }).catch((err)=>{
-            console.error(err)
-        });
-        
+        fetch(request)
+            .then((res) => res.json())
+            .then((data) => {
+                data.result && this.setState({ smartReply: data.result });
+            })
+            .catch((err) => {
+                console.error(err);
+            });
+
         // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
     };
 
@@ -749,7 +773,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     />
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                         !this.props.database &&
-                        this.props.files?.length === 0 && <WebSearchPill />}
+                        this.props.files?.length === 0 && this.state.showWebSearch && <WebSearchPill />}
                 </div>
                 <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
                     <div className="mx_MessageComposer_row">
@@ -797,17 +821,30 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                             );
                                             this.toggleButtonMenu();
                                         }}
-                                        onRichTextEditorDestroyCallback={(data: string) => {
-                                            this.setState({
-                                                composerContent: data,
-                                            });
-                                        }}
+                                        editorContent={this.state.composerContent}
                                         onSendCallback={(content: string, rawContent: string) => {
                                             this.props.mxClient.sendMessage(this.context.roomId!, {
                                                 msgtype: "m.text",
                                                 format: "org.matrix.custom.html",
                                                 body: rawContent,
                                                 formatted_body: content,
+                                            });
+                                            this.setState({
+                                                composerContent: "",
+                                                initialComposerContent: "",
+                                            });
+                                            dis.dispatch({
+                                                action: Action.ClearAndFocusSendMessageComposer,
+                                                timelineRenderingType: this.context.timelineRenderingType,
+                                            });
+                                            this.messageComposerInput?.current?.clearComposer();
+                                        }}
+                                        onScheduleSendCallback={(content: string, rawContent: string) => {
+                                            // TODO
+                                        }}
+                                        onRichTextEditorDestroyCallback={(data: string) => {
+                                            this.setState({
+                                                composerContent: data,
                                             });
                                         }}
                                     />

@@ -67,7 +67,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
-import { Bell, AlignLeft } from "lucide-react";
+import { Bell, List } from "lucide-react";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -83,6 +83,7 @@ interface IState {
     echartsQuery: string | undefined;
     echartsCode: string | undefined;
     generating: boolean;
+    streamContent: string;
 }
 
 export default class TextualBody extends React.Component<IBodyProps, IState> {
@@ -108,14 +109,35 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             echartsQuery: undefined,
             echartsCode: undefined,
             generating: false,
+            streamContent: "",
         };
     }
 
     public componentDidMount(): void {
         if (!this.props.editState) {
-            this.applyFormatting();
+            this.props.mxEvent.getSender() !== "@rob:securezebra.com" && this.applyFormatting();
         }
     }
+
+    // Fake stream in the frontend
+    // private streamPrint(text) {
+    //     let i = 0;
+    //     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    //     const printNext = () => {
+    //         const step = Math.floor(Math.random() * 7) + 1; // Determine the number of characters (1 to 3)
+    //         if (i + step > text.length) {
+    //             this.setState({streamContent:text})
+    //         }
+
+    //         i += step;
+    //         this.setState({streamContent:text.substring(0,i)})
+    //         if (i < text.length) {
+    //             const delay = Math.random() * (100 - 10) + 10;
+    //             setTimeout(printNext, delay);
+    //         }
+    //     }
+    //     printNext();
+    // }
     private applyFormatting(): void {
         // Function is only called from render / componentDidMount → contentRef is set
         const content = this.contentRef.current!;
@@ -611,9 +633,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private getSectionTitle = (title: string, Icon: React.FC | null): React.ReactNode => {
         return (
-            <div className="flex-row items-center">
+            <div className="flex flex-row items-center">
                 {Icon && <Icon />}
-                <div className="text-base text-muted-foreground font-bold m-2">{title}:</div>
+                <div className="text-base font-bold m-2">{title}:</div>
             </div>
         );
     };
@@ -792,7 +814,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.is_image && (
                         <div className="flex flex-row items-center gap-x-2">
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
                                 (eventId: string) =>
                                     this.context.room && (
@@ -801,9 +823,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_&&!content.is_image ? (
+                    {content.files_ && !content.is_image ? (
                         <>
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
                         </>
                     ) : (
@@ -856,7 +878,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     </h2>
                     {content.database_ ? (
                         <>
-                            {this.getSectionTitle("Source", AlignLeft)}
+                            {this.getSectionTitle("Source", List)}
                             <DatabasePill database={content.database_} />
                         </>
                     ) : (
