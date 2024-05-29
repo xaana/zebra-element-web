@@ -1,7 +1,7 @@
 {
     "default_server_config": {
         "m.homeserver": {
-            "base_url": "https://demo.securezebra.com",
+            "base_url": "http://192.168.122.150:8008",
             "server_name": "securezebra.com"
         },
         "m.identity_server": {
@@ -52,18 +52,19 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
-            "api": "https://dev-api-2.securezebra.com",
-            "collabServer": "wss://dev-api-3.securezebra.com"
+            "api": "http://192.168.122.150:8000",
+            "collabServer": "ws://localhost:63043"
         },
         "algology": {
-            "url": "https://algology-dev.securezebra.com"
+            "url": "http://192.168.122.150:3001"
         },
         "websocket": {
-            "url": "wss://dev-api-2.securezebra.com/ws"
+            "url": "ws://192.168.122.150:8000/ws"
         },
         "workflow": {
-            "url": "http://heugo.algoreus.net:5678"
+            "url": "http://192.168.122.150:5678"
         }
+        
     },
-    "bot_api": "https://dev-api-1.securezebra.com/_matrix/maubot/plugin/zebra"
+    "bot_api": "http://192.168.122.150:29316/_matrix/maubot/plugin/zebra"
 }
