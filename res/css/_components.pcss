@@ -764,3 +764,23 @@
     padding: 8px 40px;
     margin: 16px 64px 0px 64px;
 }
+
+.mx_BasicMessageComposer {
+    .mx_BasicMessageComposer_input {
+        &.mx_BasicMessageComposer_input_shouldShowPillAvatar {
+            span.mx_UserPill,
+            span.mx_RoomPill,
+            span.mx_SpacePill {
+                /* avatar psuedo element */
+                &::before {
+                    background: $background;
+                    color: var(--cpd-color-zebra-900);
+                }
+            }
+        }
+    }
+}
+
+.mx_Pill {
+    color: $primary-content !important;
+}
