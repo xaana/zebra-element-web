@@ -35,6 +35,9 @@ export const PdfViewer = ({
                 setApiUrl(config?.plugins["reports"].api);
             }
         });
+        return ()=>{pdfUrls.forEach(pdf => {
+            URL.revokeObjectURL(pdf.url);
+        });}
     }, []);
 
     useEffect(() => {
