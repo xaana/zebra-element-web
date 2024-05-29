@@ -74,7 +74,7 @@ import { goto, join } from "matrix-react-sdk/src/slash-commands/join";
 
 export { CommandCategories, Command };
 
-export const Commands = [
+const Commands_original = [
     new Command({
         command: "spoiler",
         args: "<message>",
@@ -1026,14 +1026,16 @@ export const Commands = [
     }),
 ];
 
+export const Commands = [];
+
 // build a map from names and aliases to the Command objects.
 export const CommandMap = new Map<string, Command>();
-Commands.forEach((cmd) => {
-    CommandMap.set(cmd.command, cmd);
-    cmd.aliases.forEach((alias) => {
-        CommandMap.set(alias, cmd);
-    });
-});
+// Commands.forEach((cmd) => {
+//     CommandMap.set(cmd.command, cmd);
+//     cmd.aliases.forEach((alias) => {
+//         CommandMap.set(alias, cmd);
+//     });
+// });
 
 export function parseCommandString(input: string): { cmd?: string; args?: string } {
     // trim any trailing whitespace, as it can confuse the parser for IRC-style commands
