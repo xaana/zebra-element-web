@@ -14,7 +14,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
                 <>
                     <div className="flex flex-row items-center">
                         <List />
-                        <div className="text-base text-muted-foreground font-bold m-2">Sources:</div>
+                        <div className="text-base font-bold m-2">Sources:</div>
                     </div>
 
                     <div className="flex-row mt-4 items-center flex-wrap grid grid-cols-5 gap-4 my-4">
@@ -25,7 +25,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
                                         href={item.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="Source_Button text-xs text-muted-foreground p-1 rounded-md cursor-pointer block items-center gap-1 hover:bg-blue-100"
+                                        className="Source_Button p-1 rounded-lg cursor-pointer block items-center gap-1 hover:bg-grey-500"
                                     >
                                         <img
                                             // src={`https://${item.hostname}/favicon.ico`}
