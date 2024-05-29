@@ -77,6 +77,7 @@ import WebSearchPill from "@/components/ui/WebSearchPill";
 import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
+import { isJoinedOrNearlyJoined } from "matrix-react-sdk/src/utils/membership";
 
 let instanceCount = 0;
 
@@ -130,6 +131,7 @@ interface IState {
     smartReply: string[];
     isInputBoxVisible: boolean;
     isButtonGroupVisible: boolean;
+    showWebSearch:boolean;
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
@@ -170,6 +172,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
             smartReply: [],
             isInputBoxVisible: true,
             isButtonGroupVisible: true,
+            showWebSearch:false,
         };
 
         this.instanceId = instanceCount++;
@@ -211,6 +214,22 @@ export class MessageComposer extends React.Component<IProps, IState> {
         UIStore.instance.on(`MessageComposer${this.instanceId}`, this.onResize);
         this.updateRecordingState(); // grab any cached recordings
         this.getSmartReplies();
+        if (this.context.room){
+            const functionalUsers = getFunctionalMembers(this.context.room);
+            const members = this.context.room.currentState.getMembers();
+            const joinedMembers = members.filter(
+                (m) => !functionalUsers.includes(m.userId) && m.membership && isJoinedOrNearlyJoined(m.membership),
+            );
+            const botMember = joinedMembers.find((m) => m.userId === "@zebra:securezebra.com");
+            if (joinedMembers.length===1){
+                this.setState({showWebSearch:true})
+            }
+            else if (botMember){
+                this.setState({showWebSearch:true})
+            }
+
+        }
+        
     }
 
     private updateVisibilities = (): void => {
@@ -754,7 +773,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     />
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                         !this.props.database &&
-                        this.props.files?.length === 0 && <WebSearchPill />}
+                        this.props.files?.length === 0 && this.state.showWebSearch && <WebSearchPill />}
                 </div>
                 <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
                     <div className="mx_MessageComposer_row">
