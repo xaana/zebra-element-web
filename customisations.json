@@ -1,5 +1,6 @@
 {
     "src/SlashCommands.tsx": "src/SlashCommands.tsx",
+    "node_modules/matrix-js-sdk/src/http-api/errors.ts": "src/http-api/errors.ts",
     "src/components/structures/grouper/CreationGrouper.tsx": "src/components/structures/CreationGrouper.tsx",
     "src/components/structures/HomePage.tsx": "src/components/structures/HomePage.tsx",
     "src/components/structures/LeftPanel.tsx": "src/components/structures/LeftPanel.tsx",
