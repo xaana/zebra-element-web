@@ -24,7 +24,7 @@ const WeatherWidget = ({weatherData}:{weatherData:WeatherData}) => {
     const showCelsius = () => setIsFahrenheit(false);
 
     return (
-        <div className="bg-gray-700 text-white px-4 rounded-lg w-[550px]">
+        <div className="bg-gray-700 text-white px-4 rounded-lg w-[450px]">
             <div className="flex items-center justify-between flex-row">
                 <div className="flex gap-x-2">
                     <WeatherCurrentIcon src={current.condition.icon} />
@@ -42,7 +42,7 @@ const WeatherWidget = ({weatherData}:{weatherData:WeatherData}) => {
                 </div>
             </div>
             <Separator />
-            <div className={`mt-4 grid grid-cols-${forecast.forecastday.length}`}>
+            <div className='mt-4 flex flex-row justify-center'>
                 {forecast.forecastday.map((day, index) => (
                     
                     <div key={index} className={`text-center px-2 border-r-2 border-slate-300${index === forecast.forecastday.length - 1 ? ' border-none' : ''}`}>
