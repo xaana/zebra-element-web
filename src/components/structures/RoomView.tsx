@@ -353,6 +353,7 @@ function LocalRoomView(props: LocalRoomViewProps): ReactElement {
                     </div>
                     {statusBar}
                     {composer}
+                    <ZebraAlert />
                 </main>
             </ErrorBoundary>
         </div>
