@@ -24,7 +24,7 @@ const WeatherWidget = ({weatherData}:{weatherData:WeatherData}) => {
     const showCelsius = () => setIsFahrenheit(false);
 
     return (
-        <div className="bg-gray-700 text-white px-4 rounded-lg w-[450px]">
+        <div className={`bg-gray-700 text-white px-4 rounded-lg w-[${300+forecast.forecastday.length*50}px]`}>
             <div className="flex items-center justify-between flex-row">
                 <div className="flex gap-x-2">
                     <WeatherCurrentIcon src={current.condition.icon} />
