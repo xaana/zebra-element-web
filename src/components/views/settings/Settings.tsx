@@ -700,7 +700,7 @@ export const SETTINGS: { [setting: string]: ISetting } = {
     },
     "use_system_theme": {
         supportedLevels: LEVELS_DEVICE_ONLY_SETTINGS,
-        default: true,
+        default: false,
         displayName: _td("settings|appearance|match_system_theme"),
     },
     "useBundledEmojiFont": {
