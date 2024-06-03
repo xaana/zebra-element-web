@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { MessageCircleQuestion } from "lucide-react";
 import { IContent } from "matrix-js-sdk/src/matrix";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
@@ -31,11 +32,14 @@ export const SuggestionPrompt = ({
     return (
         <div className="space-y-2 mt-2">
             <Separator />
-            <div className="text-base font-bold">Related:</div>
+            <div className="flex flex-row items-center">
+                <MessageCircleQuestion />
+                <div className="text-base font-bold m-2">Related:</div>
+            </div>
             {suggestions.map((suggestion, index) => {
                 return (
                     <div
-                        className="text-xs p-1 border rounded-md cursor-pointer flex items-center gap-1 hover:bg-blue-100"
+                        className="text-xs p-1 border rounded-md cursor-pointer flex items-center gap-1"
                         onClick={async () => {
                             const content = { msgtype: "m.text", body: suggestion } as IContent;
                             if (Array.isArray(type) && type.length > 0) {
