@@ -824,13 +824,19 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_ && !content.is_image ? (
+                    {/* {content.files_ && !content.is_image ? (
                         <>
                             {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
                         </>
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
+                    )} */}
+                    {content.files_ && !content.is_image && (
+                        <>
+                            {this.getSectionTitle("Source", List)}
+                            <FilesPill files={content.files_} />
+                        </>
                     )}
                     {this.getSectionTitle("Answer", Bell)}
                     {body}
@@ -933,13 +939,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                         echartsQuery: echartsQuery,
                                                         echartsCode: echartsCode,
                                                     });
-                                                }
-                                                else{
+                                                } else {
                                                     this.setState({
                                                         echartsOption: undefined,
                                                         echartsQuery: undefined,
                                                         echartsCode: undefined,
-                                                        generating: false
+                                                        generating: false,
                                                     });
                                                     toast.error("Failed to generate echarts. Please try again later.");
                                                 }
@@ -947,7 +952,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             .catch((error) => {
                                                 console.error(error);
                                                 toast.error("Server error. Please try again later.");
-                                                this.setState({generating: false});
+                                                this.setState({ generating: false });
                                             });
                                     }}
                                 />
