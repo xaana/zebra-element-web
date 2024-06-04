@@ -627,17 +627,17 @@ export default class RoomHeader extends React.Component<IProps, IState> {
             );
         }
 
-        if (!this.props.viewingCall && this.props.onSearchClick && this.props.inRoom) {
-            startButtons.push(
-                <AccessibleTooltipButton
-                    className="mx_LegacyRoomHeader_button mx_LegacyRoomHeader_searchButton"
-                    onClick={this.props.onSearchClick}
-                    title={_t("action|search")}
-                    alignment={Alignment.Bottom}
-                    key="search"
-                />,
-            );
-        }
+        // if (!this.props.viewingCall && this.props.onSearchClick && this.props.inRoom) {
+        //     startButtons.push(
+        //         <AccessibleTooltipButton
+        //             className="mx_LegacyRoomHeader_button mx_LegacyRoomHeader_searchButton"
+        //             onClick={this.props.onSearchClick}
+        //             title={_t("action|search")}
+        //             alignment={Alignment.Bottom}
+        //             key="search"
+        //         />,
+        //     );
+        // }
 
         if (this.props.onInviteClick && (!this.props.viewingCall || isVideoRoom) && this.props.inRoom) {
             startButtons.push(
