@@ -709,10 +709,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     hostname: url.hostname,
                 };
             });
+            let question = rawQuestion
+            if (rawQuestion.length>58){
+                const temp = rawQuestion.substring(0, 58)
+                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+            }
             body = (
                 <div className="p-4">
                     <h2>
-                        <strong>{rawQuestion}</strong>
+                        <strong>{question}</strong>
                     </h2>
                     {citations ? (
                         <WebSearchSources data={citations} />
@@ -808,12 +813,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (pdfResponse && roomId && rootId) {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
+            let question = rawQuestion
+            if (rawQuestion.length>58){
+                const temp = rawQuestion.substring(0, 58)
+                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+            }
             body = (
                 <>
                     <h2>
-                        <strong>{rawQuestion}</strong>
+                        <strong>{question}</strong>
                     </h2>
-                    {content.is_image && (
+                    {content.is_image&&!content.open && (
                         <div className="flex flex-row items-center gap-x-2">
                             {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
@@ -836,12 +846,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <>
                             {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
+                            {webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
                         </>
                     )}
-                    {this.getSectionTitle("Answer", Bell)}
+                    {!content.open&&this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
-                    {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
                         rootId={rootId}

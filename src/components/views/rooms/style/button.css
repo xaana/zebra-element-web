@@ -28,3 +28,13 @@
     -webkit-mask-image: url("audio-capture.svg") !important;
     mask-image: url("audio-capture.svg") !important;
 }
+
+.mx_MessageComposer_loading::before {
+    -webkit-mask-image: url("loader.svg") !important;
+    mask-image: url("loader.svg") !important;
+}
+
+.mx_MessageComposer_stop::before {
+    -webkit-mask-image: url("pause.svg") !important;
+    mask-image: url("pause.svg") !important;
+}
