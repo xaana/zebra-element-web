@@ -1,5 +1,5 @@
 export class ReportsAPI {
-    public static uploadImage = async (): Promise<string> => {
+    public static uploadImage = async (file: File): Promise<string> => {
         await new Promise((r) => setTimeout(r, 500));
         return "/img/placeholder-image.jpg";
     };
