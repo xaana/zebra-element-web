@@ -709,10 +709,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     hostname: url.hostname,
                 };
             });
+            let question = rawQuestion
+            if (rawQuestion.length>58){
+                const temp = rawQuestion.substring(0, 58)
+                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+            }
             body = (
                 <div className="p-4">
                     <h2>
-                        <strong>{rawQuestion}</strong>
+                        <strong>{question}</strong>
                     </h2>
                     {citations ? (
                         <WebSearchSources data={citations} />
@@ -808,10 +813,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (pdfResponse && roomId && rootId) {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
+            let question = rawQuestion
+            if (rawQuestion.length>58){
+                const temp = rawQuestion.substring(0, 58)
+                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+            }
             body = (
                 <>
                     <h2>
-                        <strong>{rawQuestion}</strong>
+                        <strong>{question}</strong>
                     </h2>
                     {content.is_image&&!content.open && (
                         <div className="flex flex-row items-center gap-x-2">
