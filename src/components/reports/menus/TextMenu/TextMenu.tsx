@@ -58,7 +58,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     onMakeLonger={commands.onMakeLonger}
                     onMakeShorter={commands.onMakeShorter}
                     onSimplify={commands.onSimplify}
-                    onTldr={commands.onTldr}
+                    // onTldr={commands.onTldr}
                     onTone={commands.onTone}
                 />
                 <Toolbar.Divider />

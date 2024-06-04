@@ -13,7 +13,7 @@ export type AIDropdownProps = {
     onMakeShorter: () => void;
     onMakeLonger: () => void;
     // onEmojify: () => void;
-    onTldr: () => void;
+    // onTldr: () => void;
     onTone: (tone: string) => void;
     onCompleteSentence: () => void;
 };
@@ -25,7 +25,7 @@ export const AIDropdown = ({
     onMakeLonger,
     onMakeShorter,
     onSimplify,
-    onTldr,
+    // onTldr,
     onTone,
 }: AIDropdownProps): JSX.Element => {
     const handleTone = useCallback((tone: string) => () => onTone(tone), [onTone]);
@@ -86,12 +86,12 @@ export const AIDropdown = ({
                             </Surface>
                         </Dropdown.SubContent>
                     </Dropdown.Sub>
-                    <Dropdown.Item onClick={onTldr}>
+                    {/* <Dropdown.Item onClick={onTldr}>
                         <DropdownButton>
                             <Icon name="MoreHorizontal" />
                             Tl;dr:
                         </DropdownButton>
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                     {/* <Dropdown.Item onClick={onEmojify}>
                         <DropdownButton>
                             <Icon name="SmilePlus" />
