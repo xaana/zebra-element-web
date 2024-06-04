@@ -39,7 +39,7 @@ export const SuggestionPrompt = ({
             {suggestions.map((suggestion, index) => {
                 return (
                     <div
-                        className="text-xs p-1 border rounded-md cursor-pointer flex items-center gap-1"
+                        className="suggest-button text-xs p-1 border rounded-md cursor-pointer flex items-center gap-1"
                         onClick={async () => {
                             const content = { msgtype: "m.text", body: suggestion } as IContent;
                             if (Array.isArray(type) && type.length > 0) {
