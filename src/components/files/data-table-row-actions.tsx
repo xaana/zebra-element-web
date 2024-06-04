@@ -101,7 +101,15 @@ export function DataTableRowActions<TData>({
                         </DialogHeader>
                         <DialogFooter>
                             <Button onClick={() => setDialogOpen(false)}>cancel</Button>
-                            <Button onClick={() => {onDelete && onDelete(row.original);setRowSelection({})}}>confirm</Button>
+                            <Button
+                                onClick={() => {
+                                    onDelete?.(row.original);
+                                    setRowSelection({});
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                confirm
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

@@ -15,9 +15,6 @@ import { IconZebra } from "@/components/ui/icons";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
-
-
-
 export const MediaGridItem = ({
     mediaItem,
     showActionButtons,
@@ -27,7 +24,7 @@ export const MediaGridItem = ({
     mediaItem: MediaItem;
     showActionButtons: boolean;
     onImageSelect?: (image: MediaItem) => void;
-    onDelete?: (currentFile:any) => void;
+    onDelete?: (currentFile: any) => void;
 }): JSX.Element => {
     const [hover, setHover] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -59,70 +56,79 @@ export const MediaGridItem = ({
     };
     return (
         <>
-        <li
-            className={cn("relative overflow-hidden rounded", !showActionButtons && "cursor-pointer")}
-            onMouseOver={() => setHover(true)}
-            onMouseOut={() => setHover(false)}
-            onClick={() => onImageSelect?.(mediaItem)}
-        >
-            <img
-                className="object-cover select-none w-full h-auto bg-gray-200 aspect-square"
-                src={mediaItem.thumbnailUrl ?? mediaItem.srcUrl}
-                alt={mediaItem.name}
-            />
-
-            <div
-                className={cn(
-                    "transition-all opacity-0 absolute bottom-0 inset-x-0 w-full p-3 h-full bg-gradient-to-t from-gray-900/80 to-gray-900/10 flex items-center justify-center gap-1 text-white font-bold text-lg",
-                    hover && "opacity-100",
-                )}
+            <li
+                className={cn("relative overflow-hidden rounded", !showActionButtons && "cursor-pointer")}
+                onMouseOver={() => setHover(true)}
+                onMouseOut={() => setHover(false)}
+                onClick={() => onImageSelect?.(mediaItem)}
             >
-                {showActionButtons && (
-                    <>
-                        <Button
-                            className="h-auto w-auto rounded-full p-2"
-                            size="sm"
-                            variant="ghost"
-                            onClick={handleFullscreen}
-                        >
-                            <Icon name="Fullscreen" className="w-5 h-5" strokeWidth={2} />
-                        </Button>
-                        <Button
-                            className="h-auto w-auto rounded-full p-2"
-                            size="sm"
-                            variant="ghost"
-                            onClick={handleZebraChat}
-                        >
-                            <IconZebra className="w-6 h-6" />
-                        </Button>
-                        {onDelete&&mediaItem.currentFile.sender===client.getUserId()&&<Button
-                            className="h-auto w-auto rounded-full p-2"
-                            size="sm"
-                            variant="ghost"
-                            onClick={()=>setDialogOpen(true)}
-                        >
-                            <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
-                        </Button>}
-                        
-                    </>
-                )}
-            </div>
-        </li>
-        {onDelete&&mediaItem.currentFile.sender===client.getUserId()&&<Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
-                        <DialogDescription>
-                            The action will delete the file permanently, the message will be unrecoverable.
-                        </DialogDescription>
+                <img
+                    className="object-cover select-none w-full h-auto bg-gray-200 aspect-square"
+                    src={mediaItem.thumbnailUrl ?? mediaItem.srcUrl}
+                    alt={mediaItem.name}
+                />
 
-                </DialogHeader>
-                <DialogFooter>
-                    <Button onClick={()=>setDialogOpen(false)}>cancel</Button>
-                    <Button onClick={()=>onDelete&&onDelete(mediaItem.currentFile)}>confirm</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>}
+                <div
+                    className={cn(
+                        "transition-all opacity-0 absolute bottom-0 inset-x-0 w-full p-3 h-full bg-gradient-to-t from-gray-900/80 to-gray-900/10 flex items-center justify-center gap-1 text-white font-bold text-lg",
+                        hover && "opacity-100",
+                    )}
+                >
+                    {showActionButtons && (
+                        <>
+                            <Button
+                                className="h-auto w-auto rounded-full p-2"
+                                size="sm"
+                                variant="ghost"
+                                onClick={handleFullscreen}
+                            >
+                                <Icon name="Fullscreen" className="w-5 h-5" strokeWidth={2} />
+                            </Button>
+                            <Button
+                                className="h-auto w-auto rounded-full p-2"
+                                size="sm"
+                                variant="ghost"
+                                onClick={handleZebraChat}
+                            >
+                                <IconZebra className="w-6 h-6" />
+                            </Button>
+                            {onDelete && mediaItem.currentFile.sender === client.getUserId() && (
+                                <Button
+                                    className="h-auto w-auto rounded-full p-2"
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setDialogOpen(true)}
+                                >
+                                    <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
+                                </Button>
+                            )}
+                        </>
+                    )}
+                </div>
+            </li>
+            {onDelete && mediaItem.currentFile.sender === client.getUserId() && (
+                <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
+                            <DialogDescription>
+                                The action will delete the file permanently, the message will be unrecoverable.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                            <Button
+                                onClick={() => {
+                                    onDelete?.(mediaItem.currentFile);
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                confirm
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </>
     );
 };
