@@ -836,12 +836,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <>
                             {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
+                            {webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
                         </>
                     )}
                     {!content.open&&this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
-                    {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
                         rootId={rootId}
