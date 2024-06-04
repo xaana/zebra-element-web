@@ -2581,7 +2581,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         {auxPanel}
                         <main className={timelineClasses}>
                             <FileDropTarget parent={this.roomView.current} onFileDrop={this.onFileDrop} />
-                            {topUnreadMessagesBar}
+                            {/* {topUnreadMessagesBar} */}
                             {jumpToBottom}
                             {messagePanel}
                             {searchResultsPanel}
