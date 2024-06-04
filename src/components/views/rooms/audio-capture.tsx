@@ -99,51 +99,77 @@ export const AudioCapture = ({ onCapture }: { onCapture: (transcription: string)
     };
 
     const processRecording = async (blobUrl: string) => {
-        setIsProcessingAudio(() => true);
+        setIsProcessingAudio(true);
         try {
             // Process the audio using the ASR pipeline
             if (pipelineRef.current) {
                 // Process the audio using the ASR pipeline
                 const transcriptionResult = await pipelineRef.current(blobUrl);
                 if (!transcriptionResult.text) throw new Error("Failed to process microphone input. Please try again.");
-                setIsProcessingAudio(() => false);
                 onCapture(transcriptionResult.text);
             }
         } catch (error: any) {
             console.error("Error processing audio: ", error);
-            setIsProcessingAudio(() => false);
+        } finally {
+            // Clean up
+            setIsProcessingAudio(false);
+        }
+    };
+
+    const title = (): string => {
+        if (isLoadingModel) {
+            return "Loading";
+        } else if (isRecording) {
+            return "Listening";
+        } else if (isProcessingAudio) {
+            return "Processing";
+        } else {
+            return "Audio Capture";
+        }
+    };
+
+    const icon = (): string => {
+        if (isLoadingModel || isProcessingAudio) {
+            return "mx_MessageComposer_loading";
+        } else if (isRecording) {
+            return "mx_MessageComposer_stop";
+        } else {
+            return "mx_MessageComposer_audioCapture";
         }
     };
 
     return (
         // <RecorderStyle>
-        <>
-            {isLoadingModel || isProcessingAudio ? (
-                <div className="flex flex-row items-center w-min gap-2">
-                    {isLoadingModel && (
-                        <>
-                            <div className="text-[8px] max-w-[30px] text-center">Loading Speech Model</div>
-                            <WaveformLoader />
-                        </>
-                    )}
-                    {isProcessingAudio && <RingLoader />}
-                </div>
-            ) : (
-                // <div
-                //     className={classNames(
-                //         "recorder mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage w-[26px] h-[26px]",
-                //         isRecording ? "!bg-[#5734d3] strobing" : "",
-                //     )}
-                //     onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
-                // />
-                <CollapsibleButton
-                    title="Audio Capture"
-                    className={classNames("mx_MessageComposer_button", { "!bg-[#5734d3] strobing": isRecording })}
-                    iconClassName="mx_MessageComposer_audioCapture"
-                    onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
-                />
-            )}
-            {/* </RecorderStyle> */}
-        </>
+        <CollapsibleButton
+            title={title()}
+            className={classNames("mx_MessageComposer_button", { "!bg-[#5734d3] strobing": isRecording })}
+            // iconClassName="mx_MessageComposer_audioCapture"
+            iconClassName={icon()}
+            onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
+            disabled={isLoadingModel || isProcessingAudio}
+        />
+        // <>
+        //     {isLoadingModel || isProcessingAudio ? (
+        //         <div className="flex flex-row items-center w-min gap-2">
+        //             {isLoadingModel && (
+        //                 <>
+        //                     <div className="text-[8px] max-w-[30px] text-center">Loading</div>
+        //                     <WaveformLoader />
+        //                 </>
+        //             )}
+        //             {isProcessingAudio && <RingLoader />}
+        //         </div>
+        //     ) : (
+        //         // <div
+        //         //     className={classNames(
+        //         //         "recorder mx_MessageComposer_button mx_IconizedContextMenu_icon mx_MessageComposer_voiceMessage w-[26px] h-[26px]",
+        //         //         isRecording ? "!bg-[#5734d3] strobing" : "",
+        //         //     )}
+        //         //     onClick={pipelineRef.current ? (isRecording ? stopRecording : startRecording) : loadPipeline}
+        //         // />
+
+        //     )}
+        //     {/* </RecorderStyle> */}
+        // </>
     );
 };
