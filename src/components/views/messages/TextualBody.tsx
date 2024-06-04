@@ -813,7 +813,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
-                    {content.is_image && (
+                    {content.is_image&&!content.open && (
                         <div className="flex flex-row items-center gap-x-2">
                             {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
@@ -838,7 +838,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             <FilesPill files={content.files_} />
                         </>
                     )}
-                    {this.getSectionTitle("Answer", Bell)}
+                    {!content.open&&this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
