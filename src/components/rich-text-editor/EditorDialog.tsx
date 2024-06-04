@@ -18,7 +18,7 @@ import { Toolbar } from "../ui/Toolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
 import { IconZebra } from "../ui/icons";
-import { SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
+import { Mail, SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
 
 import { Icon } from "@/components/ui/Icon";
 import { TableOfContents } from "@/components/reports/TableOfContents";
@@ -33,6 +33,7 @@ import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 import { LinkEditorPanel } from "@/components/reports/panels";
+import classNames from "classnames";
 
 import {
     DropdownMenu,
@@ -313,16 +314,23 @@ const EditorDialog = (props: {
         onSendCallback: (content: string, rawContent: string) => void;
         onScheduleSendCallback: (content: string, rawContent: string) => void;
     }): React.JSX.Element => {
-        const sendHandler = (): void => {
+        const handleSend = (): void => {
             props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
+        };
+
+        const handelMail = (): void => {
+            window.open("mailto:?to=&body=AAA,&subject=BBB");
         };
 
         return (
             <div className="flex flex-row justify-end pt-2 pr-4 border-t">
+                <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handelMail}>
+                    <Mail size={20} />
+                </Button>
                 <DropdownMenu>
                     <div>
                         <DropdownMenuTrigger>
-                            <div className="border rounded-full" style={{ padding: 7 }}>
+                            <div className="mx-4 border rounded-full" style={{ padding: 7 }}>
                                 <ChevronDown size={20} />
                             </div>
                         </DropdownMenuTrigger>
@@ -331,7 +339,7 @@ const EditorDialog = (props: {
                         <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button className="ml-2 px-8 rounded-full border-0 shadow-none" variant="outline" onClick={sendHandler}>
+                <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handleSend}>
                     <SendHorizontal size={20} />
                 </Button>
             </div>
@@ -371,9 +379,9 @@ const EditorDialog = (props: {
     return (
         <Dialog open={open} onOpenChange={handleOpenClose}>
             <DialogTrigger asChild>{props.trigger ?? <Button>Open</Button>}</DialogTrigger>
-            <DialogContent className="p-0 overflow-hidden gap-y-1" style={{ width: 1100, height: "80%" }}>
+            <DialogContent className="p-0 overflow-hidden" style={{ gap: 0, width: 1100, height: "80%" }}>
                 <EditorContext.Provider value={providerValue}>
-                    <div style={{ height: 42, marginTop: 16 }}>
+                    <div style={{ height: 45, marginTop: 15 }}>
                         <EditorHeader editor={editor} />
                     </div>
                     {/* {props.editorReply && (
@@ -386,7 +394,7 @@ const EditorDialog = (props: {
                         style={{
                             // height: props.editorReply ? "calc(-194px + 80vh)" : "calc(-130px + 80vh)",
                             height: "calc(-130px + 80vh)",
-                            paddingRight: rightSidebar.isOpen ? 320 : 0,
+                            paddingRight: rightSidebar.isOpen ? 300 : 0,
                         }}
                         className="w-full overflow-y-auto relative flex"
                     >
@@ -411,10 +419,10 @@ const EditorDialog = (props: {
                             <ImageBlockMenu editor={editor} appendTo={menuContainerRef} />
                         </div>
                     </div>
-                    <div style={{ height: "calc(-130px + 80vh)", top: 85, right: 0, position: "absolute" }}>
+                    <div style={{ height: "calc(-130px + 80vh)", top: 65, right: 0, position: "absolute" }}>
                         <ChatSidebar sidebar={rightSidebar} />
                     </div>
-                    <div>
+                    <div style={{ height: 50 }}>
                         <EditorFooter
                             onScheduleSendCallback={(content: string, rawContent: string): void => {
                                 props.onScheduleSendCallback(content, rawContent);

@@ -11,7 +11,6 @@ import { generateText } from "@/plugins/reports/utils/generateText";
 
 export const ChatSidebar = ({ sidebar }: { sidebar: SidebarState }): JSX.Element => {
     const { editorChat, editor } = useContext(EditorContext);
-
     const [chatInput, setChatInput] = useState("");
 
     const handleChatStop = (): void => {
@@ -20,6 +19,7 @@ export const ChatSidebar = ({ sidebar }: { sidebar: SidebarState }): JSX.Element
 
     const handleQueryFormSubmit = async (): Promise<void> => {
         if (chatInput.length === 0 || !editorChat || !editor) return;
+        setChatInput("");
         await generateText(chatInput, editor, editorChat);
     };
     return (

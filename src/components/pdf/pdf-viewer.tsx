@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { IContent, MatrixEvent } from "matrix-js-sdk/src/matrix";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Button } from "../ui/button";
 import { IconTable } from "../ui/icons";
 import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
-import { getVectorConfig } from "@/vector/getconfig";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
+
 
 export const PdfViewer = ({
     citations,
@@ -30,11 +31,7 @@ export const PdfViewer = ({
     const client = useMatrixClientContext();
 
     useEffect(() => {
-        getVectorConfig().then((config) => {
-            if (config?.plugins["reports"]) {
-                setApiUrl(config?.plugins["reports"].api);
-            }
-        });
+        setApiUrl(SettingsStore.getValue("reportsApiUrl"));
         return ()=>{pdfUrls.forEach(pdf => {
             URL.revokeObjectURL(pdf.url);
         });}
@@ -220,7 +217,7 @@ export const PdfViewer = ({
             >
                 <IconTable className="mr-2" />
                 {/* {showCitations ? "Hide Citations" : "Show Citations"} */}
-                Show Citations
+                {citations.length>0?"Show Citations": "View Files"}
             </Button>
             <Sheet open={showCitations} onOpenChange={(open: boolean) => setShowCitations(open)} modal={false}>
                 <SheetPortal>

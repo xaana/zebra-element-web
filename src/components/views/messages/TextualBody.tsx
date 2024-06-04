@@ -48,6 +48,7 @@ import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
 import { EditWysiwygComposer } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer";
 import { IEventTileOps } from "matrix-react-sdk/src/components/views/rooms/EventTile";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
+import { toast } from "sonner";
 
 import { MessageChildDatabaseResult } from "../../../components/database/message-child-database-result";
 import { CollapsibleMessage } from "../../../components/database/collapsible-message";
@@ -812,7 +813,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <h2>
                         <strong>{rawQuestion}</strong>
                     </h2>
-                    {content.is_image && (
+                    {content.is_image&&!content.open && (
                         <div className="flex flex-row items-center gap-x-2">
                             {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
@@ -823,15 +824,21 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             )}
                         </div>
                     )}
-                    {content.files_ && !content.is_image ? (
+                    {/* {content.files_ && !content.is_image ? (
                         <>
                             {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
                         </>
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
+                    )} */}
+                    {content.files_ && !content.is_image && (
+                        <>
+                            {this.getSectionTitle("Source", List)}
+                            <FilesPill files={content.files_} />
+                        </>
                     )}
-                    {this.getSectionTitle("Answer", Bell)}
+                    {!content.open&&this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     {webCitations.length > 0 && <WebSearchSources data={webCitations} />}
@@ -905,8 +912,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                             query: query,
                                             query_description: queryDescription,
                                             echartsData: tableJson,
-                                            eventId: rootId,
-                                            user_id: mxEvent.getSender(),
+                                            user_id: MatrixClientPeg.safeGet().getUserId(),
                                         };
                                         const request = new Request(
                                             `${SettingsStore.getValue("botApiUrl")}/echarts/${roomId}`,
@@ -933,10 +939,20 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                         echartsQuery: echartsQuery,
                                                         echartsCode: echartsCode,
                                                     });
+                                                } else {
+                                                    this.setState({
+                                                        echartsOption: undefined,
+                                                        echartsQuery: undefined,
+                                                        echartsCode: undefined,
+                                                        generating: false,
+                                                    });
+                                                    toast.error("Failed to generate echarts. Please try again later.");
                                                 }
                                             })
                                             .catch((error) => {
                                                 console.error(error);
+                                                toast.error("Server error. Please try again later.");
+                                                this.setState({ generating: false });
                                             });
                                     }}
                                 />

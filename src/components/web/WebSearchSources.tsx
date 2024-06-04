@@ -25,7 +25,7 @@ export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): Rea
                                         href={item.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="Source_Button p-1 rounded-lg cursor-pointer block items-center gap-1 hover:bg-grey-500"
+                                        className="source-button p-1 rounded-lg cursor-pointer block items-center gap-1 hover:bg-grey-500"
                                     >
                                         <img
                                             // src={`https://${item.hostname}/favicon.ico`}

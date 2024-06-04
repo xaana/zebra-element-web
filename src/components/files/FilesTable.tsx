@@ -292,7 +292,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             {
                 id: "actions",
                 cell: ({ row }) => (
-                    <DataTableRowActions row={row} onDelete={onDelete} mode={mode} userId={client.getUserId()!} />
+                    <DataTableRowActions row={row} onDelete={onDelete} mode={mode} userId={client.getUserId()!} setRowSelection={setRowSelection} />
                 ),
             },
         ];

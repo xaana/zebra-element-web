@@ -42,7 +42,8 @@ const ThreadSummary: React.FC<IProps> = ({ mxEvent, thread, ...props }) => {
     const client = useMatrixClientContext();
     const count = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.length);
     useEffect(() => {
-        if((thread.timeline[1]?.getContent().open==="open")&&client.getUserId()===mxEvent.getSender()){
+        // if(((thread.timeline[1]?.getContent().open==="open")||thread.timeline[0]?.getContent().open==="open")&&client.getUserId()===mxEvent.getSender()){
+        if(((thread.lastReply()?.getContent().open==="open"))&&client.getUserId()===mxEvent.getSender()){
             defaultDispatcher.dispatch<ShowThreadPayload>({
             action: Action.ShowThread,
             rootEvent: mxEvent,
@@ -91,8 +92,8 @@ interface IPreviewProps {
 
 export const ThreadMessagePreview: React.FC<IPreviewProps> = ({ thread, showDisplayname = false }) => {
     const cli = useContext(MatrixClientContext);
-
-    const lastReply = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.replyToEvent) ?? undefined;
+    // const lastReply = useTypedEventEmitterState(thread, ThreadEvent.Update, () => thread.replyToEvent) ?? undefined;
+    const lastReply = thread.lastReply() ?? undefined;
     // track the content as a means to regenerate the thread message preview upon edits & decryption
     const [content, setContent] = useState<IContent | undefined>(lastReply?.getContent());
     useTypedEventEmitter(lastReply, MatrixEventEvent.Replaced, () => {

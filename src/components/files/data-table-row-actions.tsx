@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { Row } from "@tanstack/react-table";
+import { Row, RowSelectionState } from "@tanstack/react-table";
 
 import { IconZebra } from "../ui/icons";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
@@ -25,6 +25,7 @@ interface DataTableRowActionsProps<TData> {
     onDelete?: (currentFile: any) => void;
     mode: "dialog" | "standalone";
     userId: string;
+    setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
 }
 
 export function DataTableRowActions<TData>({
@@ -32,6 +33,7 @@ export function DataTableRowActions<TData>({
     onDelete,
     mode,
     userId,
+    setRowSelection,
 }: DataTableRowActionsProps<TData>): JSX.Element {
     // const matrixClient = useMatrixClientContext();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -99,7 +101,15 @@ export function DataTableRowActions<TData>({
                         </DialogHeader>
                         <DialogFooter>
                             <Button onClick={() => setDialogOpen(false)}>cancel</Button>
-                            <Button onClick={() => onDelete && onDelete(row.original)}>confirm</Button>
+                            <Button
+                                onClick={() => {
+                                    onDelete?.(row.original);
+                                    setRowSelection({});
+                                    setDialogOpen(false);
+                                }}
+                            >
+                                confirm
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

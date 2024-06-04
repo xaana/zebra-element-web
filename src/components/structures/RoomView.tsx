@@ -353,6 +353,7 @@ function LocalRoomView(props: LocalRoomViewProps): ReactElement {
                     </div>
                     {statusBar}
                     {composer}
+                    <ZebraAlert />
                 </main>
             </ErrorBoundary>
         </div>
@@ -2580,7 +2581,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                         {auxPanel}
                         <main className={timelineClasses}>
                             <FileDropTarget parent={this.roomView.current} onFileDrop={this.onFileDrop} />
-                            {topUnreadMessagesBar}
+                            {/* {topUnreadMessagesBar} */}
                             {jumpToBottom}
                             {messagePanel}
                             {searchResultsPanel}

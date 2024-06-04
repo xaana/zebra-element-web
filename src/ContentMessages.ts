@@ -9,6 +9,7 @@ import {
     UploadOpts,
     UploadProgress,
     THREAD_RELATION_TYPE,
+    encodeBase64,
 } from "matrix-js-sdk/src/matrix";
 import encrypt from "matrix-encrypt-attachment";
 import extractPngChunks from "png-chunks-extract";
@@ -336,13 +337,7 @@ export async function uploadFile(
         const data = await readFileAsArrayBuffer(file);
         if (abortController.signal.aborted) throw new UploadCanceledError();
 
-        // Then encrypt the file.
-        const encryptResult = await encrypt.encryptAttachment(data);
-        if (abortController.signal.aborted) throw new UploadCanceledError();
-
-        // Pass the encrypted data as a Blob to the uploader.
-        const blob = new Blob([encryptResult.data]);
-
+        const blob = new Blob([data]);
         const { content_uri: url } = await matrixClient.uploadContent(blob, {
             progressHandler,
             abortController,
@@ -351,11 +346,22 @@ export async function uploadFile(
         });
         if (abortController.signal.aborted) throw new UploadCanceledError();
 
-        // If the attachment is encrypted then bundle the URL along with the information
-        // needed to decrypt the attachment and add it under a file key.
+        const sha256Buffer = await window.crypto.subtle.digest("SHA-256", data);
+        // The hard-coded strings in this following part can be regarded as flags or dummy strings. Leave as it is
         return {
             file: {
-                ...encryptResult.info,
+                v: "v3d",
+                key: {
+                    alg: "A256CTR",
+                    key_ops: ["encrypt", "decrypt"], // eslint-disable-line camelcase
+                    kty: "oct",
+                    k: "QcDchTPTbenAtUfmDOBDgVmhMOtvri21UOymnV9lbHM",
+                    ext: true,
+                },
+                iv: "IlRoaXMgaXMgYSByYXcgZmlsZSBjb250ZW50Ig==",
+                hashes: {
+                    sha256: encodeBase64(new Uint8Array(sha256Buffer))
+                },
                 url,
             } as EncryptedFile,
         };
@@ -372,7 +378,7 @@ export default class ContentMessages {
     private mediaConfig: IMediaConfig | null = null;
     private currentProgress: UploadProgress | null = null;
     private fileUploaded : DocFile[] = [];
-    
+
 
     public sendStickerContentToRoom(
         url: string,
@@ -478,7 +484,7 @@ export default class ContentMessages {
                         replyToEvent ?? undefined,
                         context,
                         loopPromiseBefore,
-                        
+
                     ),
                 matrixClient,
             );
@@ -625,7 +631,7 @@ export default class ContentMessages {
                 }
                 const wsUrl = `${apiUrl}/pdf_upload`;
                 const websocket = new WebSocket(wsUrl);
-                
+
                 let count=0;
                 websocket.onopen = () => {
                     console.log("WebSocket connection established");
@@ -644,13 +650,13 @@ export default class ContentMessages {
                     const reader = new FileReader();
                     reader.readAsDataURL(file);
                     reader.onloadend =  () => {
-                        const base64data = reader.result as string;                
+                        const base64data = reader.result as string;
                         const encodedPdf = base64data?.split(',')[1]; // Remove the data URL part
                         const fileObjects = {
                             filename: [content.body],
                             content: [encodedPdf],
                         };
-            
+
                         // Send encoded PDF data as string
                         websocket.send(JSON.stringify(fileObjects));
                     };
@@ -705,7 +711,7 @@ export default class ContentMessages {
                             toast.error("File upload failed. something wrong when we handle your file");
                             matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                         }
-                        
+
                     };
                   };
                   websocket.onerror = (event) => {
@@ -754,7 +760,7 @@ export default class ContentMessages {
                         roomId: roomId,
                         context:context,
                     });
-                    
+
                 }
             }
 
@@ -799,7 +805,7 @@ export default class ContentMessages {
         if (uploads.length === 0) {
             return null;  // Return null if the list is empty
         }
-    
+
         return uploads.reduce((acc, item) => {
             if (item.total === 0) {
                 return acc;  // Skip items with total as 0 to avoid division by zero
