@@ -193,7 +193,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         const selectedCount = Object.keys(rowSelection).length;
                         if (value && selectedCount < 5) {
                             row.toggleSelected(true);
-                        } else {
+                        } 
+                        else if(!value){
+                            row.toggleSelected(false);
+                        }else if (value && selectedCount === 5) {
                             // toast.info('You can only select up to 5 files at a time');
                             alert('You can only select up to 5 files at a time')
                         }
