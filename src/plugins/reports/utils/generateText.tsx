@@ -9,14 +9,13 @@ import { ResponseAction } from "@/components/reports/Chat/response-action";
 export const generateText = async (task: string, editor: Editor, editorChat: Chat, tone?: string): Promise<void> => {
     let from: number = editor.state.selection.from;
     let to: number = editor.state.selection.to;
-    let textSelection: string = editor.state.doc.textBetween(from, to);
 
     // No explicit text selection
     if (to === from) {
         editor.commands.selectParentNode();
         from = editor.state.selection.from;
         to = editor.state.selection.to;
-        textSelection = editor.state.doc.textBetween(from, to);
+
         // const selection = editor.state.selection.content();
         // editor.commands.deleteRange({
         //     from: from,
@@ -25,8 +24,19 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
         // editor.commands.insertContentAt(from, selection.toJSON().content[0]);
     }
 
+    let textSelection: string = " " + editor.state.doc.textBetween(from, to) + " ";
+
     if (textSelection.length === 0) {
-        toast.error("Please select some text and try again.");
+        // toast.error("Please select some text and try again.");
+        await editorChat.appendMessage(
+            "Please select some text and try again.",
+            "system",
+            false,
+            null,
+            false,
+            false,
+            true,
+        );
         return;
     }
 
@@ -63,6 +73,11 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
             // responseText = response
             // editor.commands.deleteRange({ from: from, to: to });
             // editor.commands.insertContentAt(from, response);
+
+            // process text
+            const paragraphs = response.split(/\r?\n/);
+            response = paragraphs.map((line) => `<p>${line}</p>`).join("");
+
             editor.commands.insertContentAt({ from: from, to: to }, response);
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()

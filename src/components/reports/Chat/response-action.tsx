@@ -24,17 +24,21 @@ export const ResponseAction = ({
     const handleToggleChange = (value: string): void => {
         if (!value) return;
         setActionValue(value);
-        if (responseText.current.length > 0) {
+
+        if (value === "original" && textSelection.current.length > 0) {
+            editor.commands.insertContentAt(
+                { from: from.current, to: from.current + responseText.current.length },
+                textSelection.current,
+            );
+        } else if (value === "suggested" && responseText.current.length > 0) {
+            editor.commands.insertContentAt({ from: from.current, to: to.current }, responseText.current);
+
             // const node = editor.state.doc.nodeAt(from.current)
             // const nodeSize = node?.nodeSize
 
-            editor.commands.selectParentNode();
-            from.current = editor.state.selection.from;
-            to.current = editor.state.selection.to;
-            editor.commands.insertContentAt(
-                { from: from.current, to: to.current },
-                value === "original" ? textSelection.current : responseText.current,
-            );
+            // editor.commands.selectParentNode();
+            // from.current = editor.state.selection.from;
+            // to.current = editor.state.selection.to;
 
             // editor.commands.deleteRange({ from: from.current, to: to.current });
             // if (value === "original") {
