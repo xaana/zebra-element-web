@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
@@ -17,18 +17,29 @@ export const MainPanel = (): JSX.Element => {
     const [documents, setDocuments] = useState<File[]>([]);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    const allFiles = useRef<File[]>([]);
 
     useEffect(() => {
         initRouting();
 
         const fetchFiles = async (): Promise<void> => {
             const fetchedFiles = await getUserFiles(client);
+            allFiles.current = fetchedFiles;
             setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
             setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
         };
 
-        fetchFiles();
+        fetchFiles(); 
     }, [client]);
+
+    useEffect(() => {
+        return () => {
+            allFiles.current.forEach(async (file) => {
+                // Asynchronous cleanup if necessary or synchronous access to URLs
+                file.mediaHelper.destroy();
+            });
+        };
+    }, []);
     const onDelete = (currentFile:any):void=>{
         const roomId = currentFile.roomId;
         const eventId = currentFile.mxEvent?.getId();

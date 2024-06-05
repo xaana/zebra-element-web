@@ -1,4 +1,4 @@
-import React, { useState, memo, useCallback, useMemo, useRef } from "react";
+import React, { useState, memo, useCallback, useMemo, useRef, useContext } from "react";
 import { EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
@@ -314,7 +314,10 @@ const EditorDialog = (props: {
         onSendCallback: (content: string, rawContent: string) => void;
         onScheduleSendCallback: (content: string, rawContent: string) => void;
     }): React.JSX.Element => {
+        const { editorChat } = useContext(EditorContext);
+
         const handleSend = (): void => {
+            editorChat?.reset();
             props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
         };
 
@@ -324,7 +327,7 @@ const EditorDialog = (props: {
 
         return (
             <div className="flex flex-row justify-end pt-2 pr-4 border-t">
-                <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handelMail}>
+                {/* <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handelMail}>
                     <Mail size={20} />
                 </Button>
                 <DropdownMenu>
@@ -338,7 +341,7 @@ const EditorDialog = (props: {
                     <DropdownMenuContent>
                         <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
                 <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handleSend}>
                     <SendHorizontal size={20} />
                 </Button>

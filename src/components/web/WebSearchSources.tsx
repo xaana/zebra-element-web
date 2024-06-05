@@ -7,15 +7,15 @@ export type WebSearchSourceItem = {
     link: string;
     hostname: string;
 };
-export const WebSearchSources = ({ data }: { data: WebSearchSourceItem[] }): React.JSX.Element => {
+export const WebSearchSources = ({ data,hiddenSources }: { data: WebSearchSourceItem[]; hiddenSources?: boolean }): React.JSX.Element => {
     return (
         <>
             {data && data.length > 0 && (
                 <>
-                    <div className="flex flex-row items-center">
+                    {!hiddenSources&&<div className="flex flex-row items-center">
                         <List />
                         <div className="text-base font-bold m-2">Sources:</div>
-                    </div>
+                    </div>}
 
                     <div className="flex-row mt-4 items-center flex-wrap grid grid-cols-5 gap-4 my-4">
                         {data.map((item, index) => (

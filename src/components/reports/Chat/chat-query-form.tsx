@@ -79,7 +79,7 @@ export function ChatQueryForm({
                         <DotPulseLoader />
                     ) : (
                         <Tooltip title="Send" content="Send message">
-                            <Button type="submit" size="sm" className="!px-2" disabled={disabled}>
+                            <Button type="submit" size="sm" className="!px-2" disabled={disabled || !input}>
                                 <Icon name="ArrowUp" />
                                 <span className="sr-only">Send message</span>
                             </Button>

@@ -358,7 +358,7 @@ export async function uploadFile(
                     k: "QcDchTPTbenAtUfmDOBDgVmhMOtvri21UOymnV9lbHM",
                     ext: true,
                 },
-                iv: "IlRoaXMgaXMgYSByYXcgZmlsZSBjb250ZW50Ig==",
+                iv: encodeBase64(new Uint8Array(16)),
                 hashes: {
                     sha256: encodeBase64(new Uint8Array(sha256Buffer))
                 },

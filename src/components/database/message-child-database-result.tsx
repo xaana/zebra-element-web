@@ -20,6 +20,8 @@ import { PluginActions } from "../../plugins";
 
 import { getVectorConfig } from "@/vector/getconfig";
 import { DataTable } from "./DataTable";
+import { toast } from "sonner";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 const TableStyle = styled.div`
     .table__container > div::-webkit-scrollbar {
@@ -67,22 +69,59 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
     const client = React.useContext(MatrixClientContext);
 
     const handleDataDownload = (): void => {
-        const csv = [];
-        csv.push(Object.keys(data[0]));
-        for (const rowItem of data) {
-            csv.push(Object.values(rowItem).join(","));
-        }
-        const formattedData = csv.join("\n");
-        const downloadName = "data.csv";
-        const hiddenLink = document.createElement("a");
-        hiddenLink.setAttribute(
-            "href",
-            "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData),
-        );
-        hiddenLink.setAttribute("download", downloadName);
-        document.body.appendChild(hiddenLink);
-        hiddenLink.click();
-        document.body.removeChild(hiddenLink);
+        // const csv = [];
+        // csv.push(Object.keys(data[0]));
+        // for (const rowItem of data) {
+        //     csv.push(Object.values(rowItem).join(","));
+        // }
+        // const formattedData = csv.join("\n");
+        // const downloadName = "data.csv";
+        // const hiddenLink = document.createElement("a");
+        // hiddenLink.setAttribute(
+        //     "href",
+        //     "data:application/bpmn20-xml;charset=UTF-8," + encodeURIComponent(formattedData),
+        // );
+        // hiddenLink.setAttribute("download", downloadName);
+        // document.body.appendChild(hiddenLink);
+        // hiddenLink.click();
+        // document.body.removeChild(hiddenLink);
+        const fileUrl = `${SettingsStore.getValue("botApiUrl")}/db_download`;
+
+        const options = {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ eventId: eventId })
+        };
+
+        fetch(fileUrl, options)
+            .then(async response => {
+            // Check if the response is ok and what type it is
+            if (!response.ok) {
+                toast.error('Network error. Please try again later.');
+            }
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                toast.error(data.msg);
+            }
+            return response.blob();
+            })
+            .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'data.csv');
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+            console.error('Error:', error);
+            });
     };
 
     const handleAlgologyRedirect = async (): Promise<void> => {

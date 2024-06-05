@@ -63,6 +63,7 @@ import { SubmitAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads
 import { ModuleRunner } from "matrix-react-sdk/src/modules/ModuleRunner";
 import { DocFile } from "@/components/views/rooms/FileSelector";
 import { File } from "@/plugins/files/types";
+import { toast } from "sonner";
 
 const NUM_JOIN_RETRY = 5;
 
@@ -427,6 +428,10 @@ export class RoomViewStore extends EventEmitter {
                         // console.log(this.stores.client?.mxcUrlToHttp(fileList[0].mediaId),'trying to get url')
                         // console.log(this.state.roomId&&this.stores.client?.getRoom(this.state.roomId)?.findEventById(fileList[0].eventId)?.getClearContent())
                         const filteredList = fileList.filter(item => item !== undefined);
+                        if(filteredList.length>5){
+                            filteredList.splice(5,filteredList.length-5)
+                            toast.info("You can only query 5 files at a time, some of the selected files removed")
+                        }
                         filteredList&&this.setState({
                             files: filteredList,
                         });}

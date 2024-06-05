@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IContent, MatrixEvent } from "matrix-js-sdk/src/matrix";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
@@ -8,8 +8,9 @@ import { IconTable } from "../ui/icons";
 import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 // eslint-disable-next-line import/order
 import { Citations } from "./citations";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
 
+import { getUserFiles } from "@/lib/utils/getUserFiles";
+import type { File } from "@/plugins/files/types";
 
 export const PdfViewer = ({
     citations,
@@ -26,20 +27,25 @@ export const PdfViewer = ({
     // const [urls,setUrls] = useState<string[]>([]);
     // const [docFiles,setDocFiles] = useState<File[]>([]);
     const [apiUrl, setApiUrl] = useState<string>("");
+    const allFiles = useRef<File[]>([]);
     // const client = useMatrixClientContext();
 
     const client = useMatrixClientContext();
 
     useEffect(() => {
         setApiUrl(SettingsStore.getValue("reportsApiUrl"));
-        return ()=>{pdfUrls.forEach(pdf => {
-            URL.revokeObjectURL(pdf.url);
-        });}
+        return ()=>{
+            allFiles.current.forEach(async (file) => {
+                // Asynchronous cleanup if necessary or synchronous access to URLs
+                file.mediaHelper.destroy();
+            })
+        }
     }, []);
 
     useEffect(() => {
         const fetchFiles = async (): Promise<void> => {
             const fetchedFiles = await getUserFiles(client);
+            allFiles.current = fetchedFiles;
             const thread = mxEvent.getThread();
             let files: any = [];
             if (thread) {
@@ -203,6 +209,9 @@ export const PdfViewer = ({
         }
     }
     if (pdfUrls.length === 0) {
+        return null;
+    }
+    if (!citations) {
         return null;
     }
     return (
