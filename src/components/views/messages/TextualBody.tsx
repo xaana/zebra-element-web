@@ -746,7 +746,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </div>
             );
         }
-        if (fileSelected) {
+        if (fileSelected&&content.open===undefined) {
             body = (
                 <div>
                     <FilesPrefix files={fileSelected} />
@@ -814,7 +814,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         if (pdfResponse && roomId && rootId) {
             const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
             let question = rawQuestion
-            if (rawQuestion.length>58){
+            if (question&&rawQuestion.length>58){
                 const temp = rawQuestion.substring(0, 58)
                 question = temp.split(' ').slice(0, -1).join(' ') + '...'
             }
