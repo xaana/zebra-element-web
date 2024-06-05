@@ -47,6 +47,7 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
+import { toast } from "sonner";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -181,12 +182,22 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                         aria-label="Select all"
                         className="translate-y-[2px] mx-2"
+                        hidden={data.length>5&&!onDelete}
                     />
                 ),
                 cell: ({ row }) => (
                     <Checkbox
                         checked={row.getIsSelected()}
-                        onCheckedChange={(value) => row.toggleSelected(!!value)}
+                        onCheckedChange={(value) => {if(onDelete){row.toggleSelected(!!value)}
+                    else{
+                        const selectedCount = Object.keys(rowSelection).length;
+                        if (value && selectedCount < 5) {
+                            row.toggleSelected(true);
+                        } else {
+                            // toast.info('You can only select up to 5 files at a time');
+                            alert('You can only select up to 5 files at a time')
+                        }
+                    }}}
                         aria-label="Select row"
                         className="translate-y-[8px] mx-2"
                     />
