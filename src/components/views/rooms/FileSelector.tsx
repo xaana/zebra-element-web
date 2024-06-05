@@ -49,12 +49,12 @@ export const FileSelector = (props: IProps): JSX.Element => {
     }, [client]);
 
     useEffect(() => {
-        return ()=>{
+        return () => {
             allFiles.current.forEach(async (file) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
                 file.mediaHelper.destroy();
-            })
-        }
+            });
+        };
     }, []);
 
     useEffect(() => {
@@ -79,6 +79,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+        overflowMenuCloser?.();
         if (open) {
             await fetchFiles();
             dis.dispatch({
@@ -95,12 +96,12 @@ export const FileSelector = (props: IProps): JSX.Element => {
             });
         } else {
             setDialogOpen(false);
-            overflowMenuCloser?.();
         }
     };
 
     const handleImageSelect = (image: MediaItem): void => {
         setSelectedFiles(() => [image as File]);
+        overflowMenuCloser?.();
         setDialogOpen(false);
         dis.dispatch({
             action: "select_files",
@@ -123,6 +124,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const handleClickDone = (): void => {
+        overflowMenuCloser?.();
         setDialogOpen(false);
         if (selectedFiles.length > 0) {
             dis.dispatch({

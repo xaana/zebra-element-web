@@ -159,7 +159,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             <div className="w-full text-start">
                 <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
             </div>
-            <div className="w-5/6 text-start">
+            <div className="w-5/6 text-start overflow-hidden">
                 <p style={{ fontSize: 16, fontWeight: 100 }}>{query}</p>
             </div>
             <div className="w-1/6 mr-0">
