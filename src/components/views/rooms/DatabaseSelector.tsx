@@ -11,12 +11,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
 import "./style/button.css";
 import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
+import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = () => {
     const [dbList, setDbList] = useState<Array<string>>([]);
     const { roomId, timelineRenderingType } = useContext(RoomContext);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
+
+    const overflowMenuCloser = useContext(OverflowMenuContext);
 
     useEffect(() => {
         let apiUrl;
@@ -35,42 +38,25 @@ export const DatabaseSelector = () => {
 
     return (
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
-            <PopoverTrigger
-                style={{ padding: 0 }}
-                // asChild
-                // onClick={() => {
-                //     dis.dispatch({
-                //         action: "select_database",
-                //         database: "",
-                //         roomId: roomId,
-                //         context: timelineRenderingType,
-                //     });
-                //     dis.dispatch({
-                //         action: "select_files",
-                //         files: [],
-                //         roomId: roomId,
-                //         context: timelineRenderingType,
-                //     });
-                // }}
-            >
+            <PopoverTrigger style={{ padding: 0 }}>
                 <CollapsibleButton
                     style={{ borderRadius: 0, padding: "8px 16px 8px 11px" }}
                     title="Select Database"
                     className="mx_MessageComposer_button"
                     iconClassName="database_button"
                     onClick={() => {
-                        dis.dispatch({
-                            action: "select_database",
-                            database: "",
-                            roomId: roomId,
-                            context: timelineRenderingType,
-                        });
-                        dis.dispatch({
-                            action: "select_files",
-                            files: [],
-                            roomId: roomId,
-                            context: timelineRenderingType,
-                        });
+                        // dis.dispatch({
+                        //     action: "select_database",
+                        //     database: "",
+                        //     roomId: roomId,
+                        //     context: timelineRenderingType,
+                        // });
+                        // dis.dispatch({
+                        //     action: "select_files",
+                        //     files: [],
+                        //     roomId: roomId,
+                        //     context: timelineRenderingType,
+                        // });
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
@@ -104,6 +90,7 @@ export const DatabaseSelector = () => {
                                             action: Action.FocusAComposer,
                                             context: timelineRenderingType,
                                         });
+                                        overflowMenuCloser?.();
                                     }}
                                 >
                                     {db}

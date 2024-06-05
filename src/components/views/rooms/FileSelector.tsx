@@ -18,6 +18,7 @@ import FilesTabs from "@/components/files/FilesTabs";
 import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
 interface IProps {
     roomId: string;
@@ -39,6 +40,8 @@ export const FileSelector = (props: IProps): JSX.Element => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const client = useMatrixClientContext();
+
+    const overflowMenuCloser = useContext(OverflowMenuContext);
 
     useEffect(() => {
         initRouting();
@@ -81,6 +84,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
             });
         } else {
             setDialogOpen(false);
+            overflowMenuCloser?.();
         }
     };
 
