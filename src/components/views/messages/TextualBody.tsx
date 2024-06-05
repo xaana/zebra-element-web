@@ -738,7 +738,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </div>
             );
         }
-        if (database) {
+        if (database&&content.open===undefined) {
             body = (
                 <div>
                     <DatabasePrefix database={database} />
