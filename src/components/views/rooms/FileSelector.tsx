@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
@@ -39,10 +39,20 @@ export const FileSelector = (props: IProps): JSX.Element => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const client = useMatrixClientContext();
+    const allFiles = useRef<File[]>([]);
 
     useEffect(() => {
         initRouting();
     }, [client]);
+
+    useEffect(() => {
+        return ()=>{
+            allFiles.current.forEach(async (file) => {
+                // Asynchronous cleanup if necessary or synchronous access to URLs
+                file.mediaHelper.destroy();
+            })
+        }
+    }, []);
 
     useEffect(() => {
         setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
@@ -60,6 +70,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
 
     const fetchFiles = async (): Promise<void> => {
         const fetchedFiles = await getUserFiles(client);
+        allFiles.current = fetchedFiles;
         setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
         setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
     };
