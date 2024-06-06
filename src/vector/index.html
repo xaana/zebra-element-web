@@ -17,8 +17,6 @@
     <link rel="shortcut icon" href="<%= require('../../res/vector-icons/favicon.ico') %>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-    <!-- <meta name="apple-mobile-web-app-title" content="Element"> -->
-    <!-- <meta name="application-name" content="Element"> -->
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-TileImage" content="<%= require('../../res/vector-icons/mstile-150.png') %>">
     <meta name="msapplication-config" content="<%= require('../../res/vector-icons/browserconfig.xml') %>">
@@ -59,7 +57,7 @@
 
   </head>
   <body style="height: 100%; margin: 0;" class="zebra-container">
-    <noscript>Sorry, Element requires JavaScript to be enabled.</noscript> <!-- TODO: Translate this? -->
+    <noscript>Sorry, Zebra requires JavaScript to be enabled.</noscript
     <div id="matrixchat" style="height: 100%;" class="notranslate"></div>
 
 <%
@@ -110,7 +108,6 @@
     <!-- let CSS themes pass constants to the app -->
     <div id="mx_theme_accentColor"></div><div id="mx_theme_secondaryAccentColor"></div><div id="mx_theme_tertiaryAccentColor"></div>
 
-    <!-- We eagerly create these containers to ensure their CSS stacking context order is sensible -->
     <div id="mx_PersistedElement_container"></div>
     <div id="mx_Dialog_StaticContainer"></div>
     <div id="mx_Dialog_Container"></div>
