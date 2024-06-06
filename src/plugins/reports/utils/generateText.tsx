@@ -10,23 +10,20 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
     let from: number = editor.state.selection.from;
     let to: number = editor.state.selection.to;
 
+    // Empty text selection by default
     let textSelection: string = "";
 
-    // No explicit text selection
+    // If no explicit text selection, try getting to-from range from parent node
     if (to === from) {
         editor.commands.selectParentNode();
         from = editor.state.selection.from;
         to = editor.state.selection.to;
-        // textSelection = editor.state.doc.textBetween(from, to);
-        // const selection = editor.state.selection.content();
-        // editor.commands.deleteRange({
-        //     from: from,
-        //     to: to,
-        // });
-        // editor.commands.insertContentAt(from, selection.toJSON().content[0]);
     }
+
+    // Get selected text between to-from range
     textSelection = editor.state.doc.textBetween(from, to);
 
+    // If to-from range is still empty after selecting parent node
     if (textSelection.length === 0) {
         // toast.error("Please select some text and try again.");
         await editorChat.appendMessage(
@@ -41,6 +38,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
         return;
     }
 
+    // Text selection successfull, append task to chat
     await editorChat.appendMessage(
         `${task}: "${textSelection.slice(0, 20)}..."`,
         "user",
@@ -51,6 +49,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
         true,
     );
 
+    // Generate text from backend
     try {
         const res: Response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/text`, {
             method: "POST",
