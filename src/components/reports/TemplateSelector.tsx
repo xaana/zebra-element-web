@@ -57,30 +57,31 @@ export const TemplateSelector = ({ editor, nextStep, prevStep }: TemplateSelecto
                 );
                 const data = await response.json();
                 if (data?.document?.length === 0) return;
-                setTemplates((prev) => [
-                    ...prev,
-                    ...data.document.map(
-                        ({
-                            id,
-                            document_name: name,
-                            document_description: description,
-                            document_type: type,
-                            updated_at: updatedAt,
-                        }: {
-                            id: string;
-                            document_name: string;
-                            document_description: string;
-                            document_type: string;
-                            updated_at: Date;
-                        }) => ({
-                            id,
-                            name,
-                            description: description ?? "",
-                            type,
-                            timestamp: updatedAt,
-                        }),
-                    ),
-                ]);
+                data.document &&
+                    setTemplates((prev) => [
+                        ...prev,
+                        ...data.document.map(
+                            ({
+                                id,
+                                document_name: name,
+                                document_description: description,
+                                document_type: type,
+                                updated_at: updatedAt,
+                            }: {
+                                id: string;
+                                document_name: string;
+                                document_description: string;
+                                document_type: string;
+                                updated_at: Date;
+                            }) => ({
+                                id,
+                                name,
+                                description: description ?? "",
+                                type,
+                                timestamp: updatedAt,
+                            }),
+                        ),
+                    ]);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
