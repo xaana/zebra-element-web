@@ -79,7 +79,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
-        
         if (open) {
             await fetchFiles();
             dis.dispatch({

@@ -88,39 +88,39 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
         const fileUrl = `${SettingsStore.getValue("botApiUrl")}/db_download`;
 
         const options = {
-            method: 'POST',
+            method: "POST",
             headers: {
-            'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify({ eventId: eventId })
+            body: JSON.stringify({ eventId: eventId }),
         };
 
         fetch(fileUrl, options)
-            .then(async response => {
-            // Check if the response is ok and what type it is
-            if (!response.ok) {
-                toast.error('Network error. Please try again later.');
-            }
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const data = await response.json();
-                toast.error(data.msg);
-            }
-            return response.blob();
+            .then(async (response) => {
+                // Check if the response is ok and what type it is
+                if (!response.ok) {
+                    toast.error("Network error. Please try again later.");
+                }
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    toast.error(data.msg);
+                }
+                return response.blob();
             })
-            .then(blob => {
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'data.csv');
-            document.body.appendChild(link);
-            link.click();
+            .then((blob) => {
+                const url = window.URL.createObjectURL(new Blob([blob]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "data.csv");
+                document.body.appendChild(link);
+                link.click();
 
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
             })
-            .catch(error => {
-            console.error('Error:', error);
+            .catch((error) => {
+                console.error("Error:", error);
             });
     };
 
@@ -176,7 +176,10 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                     )}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
-                                            <Button variant="outline" className="p-2 rounded-full">
+                                            <Button
+                                                variant="outline"
+                                                className="p-2 rounded-full text-accent-foreground"
+                                            >
                                                 <Sparkles />
                                             </Button>
                                         </DropdownMenuTrigger>

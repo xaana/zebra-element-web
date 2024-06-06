@@ -29,12 +29,11 @@ import MatrixClientContext, { useMatrixClientContext } from "matrix-react-sdk/sr
 import MiniAvatarUploader, { AVATAR_SIZE } from "matrix-react-sdk/src/components/views/elements/MiniAvatarUploader";
 import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import EmbeddedPage from "matrix-react-sdk/src/components/structures/EmbeddedPage";
-import { Search, File, Database, Headphones, Divide } from "lucide-react";
+import { Search, File, Database, Image } from "lucide-react";
 import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
 import { MessageComposer } from "matrix-react-sdk/src/components/views/rooms/MessageComposer";
 import { findDMRoom } from "matrix-react-sdk/src/utils/dm/findDMRoom";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
-import classNames from "classnames";
 
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
@@ -119,8 +118,10 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         });
     };
 
-    const onClickAudioHandler = (): void => {
-        console.log("Audio module is currently disabled, please contact Administrator");
+    const onClickImageHandler = (): void => {
+        startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
+            console.log(roomId);
+        });
     };
 
     // const brandingConfig = SdkConfig.getObject("branding");
@@ -156,14 +157,16 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         Icon: JSX.Element;
     }) => (
         <Button className="h-18 default_button rounded-2xl" variant="outline" onClick={onClick}>
-            <div className="w-full text-start">
-                <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
+            <div className="w-full flex justify-between">
+                <div className="text-start">
+                    <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
+                </div>
+                <div className="w-1/6 mr-0">
+                    <Icon />
+                </div>
             </div>
             <div className="w-5/6 text-start overflow-hidden">
                 <p style={{ fontSize: 16, fontWeight: 100 }}>{query}</p>
-            </div>
-            <div className="w-1/6 mr-0">
-                <Icon />
             </div>
         </Button>
     );
@@ -178,28 +181,28 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             <BrandSection />
             <div className="default_buttons">
                 <DefaultButton
-                    title="Search"
+                    title="Browse"
                     query="What's the weather in Sydney?"
                     onClick={onClickWebSearchHandler}
-                    Icon={File}
-                />
-                <DefaultButton
-                    title="Document"
-                    query="Document prompt 1"
-                    onClick={onClickDocumentHandler}
                     Icon={Search}
                 />
                 <DefaultButton
-                    title="Datastore"
-                    query="List top 5 contracts by values"
+                    title="Data Insights"
+                    query=" List top 5 contracts by values"
                     onClick={onClickDatabaseHandler}
                     Icon={Database}
                 />
                 <DefaultButton
-                    title="Audio Model"
-                    query="Audio prompt 1"
-                    onClick={onClickAudioHandler}
-                    Icon={Headphones}
+                    title="Doc Insights"
+                    query="Upload a file to retrieve insights"
+                    onClick={onClickDocumentHandler}
+                    Icon={File}
+                />
+                <DefaultButton
+                    title="Image Insights"
+                    query="Attach your image to get AI-driven analysis"
+                    onClick={onClickImageHandler}
+                    Icon={Image}
                 />
             </div>
             <div className="absolute w-full bottom-0">
