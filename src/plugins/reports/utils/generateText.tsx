@@ -1,6 +1,6 @@
 import React from "react";
 import { Editor } from "@tiptap/react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Chat } from "@/plugins/reports/hooks/use-chat";
