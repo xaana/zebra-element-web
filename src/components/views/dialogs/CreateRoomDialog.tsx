@@ -436,7 +436,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
 
                         {publicPrivateLabel}
                         {visibilitySection}
-                        {/* {e2eeSection} */}
+                        {e2eeSection}
                         {aliasField}
                         <details onToggle={this.onDetailsToggled} className="mx_CreateRoomDialog_details">
                             <summary className="mx_CreateRoomDialog_details_summary">
