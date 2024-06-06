@@ -122,15 +122,15 @@ export default class UserSettingsDialog extends React.Component<IProps, IState> 
         //         "UserSettingsKeyboard",
         //     ),
         // );
-        tabs.push(
-            new Tab(
-                UserTab.Sidebar,
-                _td("settings|sidebar|title"),
-                "mx_UserSettingsDialog_sidebarIcon",
-                <SidebarUserSettingsTab />,
-                "UserSettingsSidebar",
-            ),
-        );
+        // tabs.push(
+        //     new Tab(
+        //         UserTab.Sidebar,
+        //         _td("settings|sidebar|title"),
+        //         "mx_UserSettingsDialog_sidebarIcon",
+        //         <SidebarUserSettingsTab />,
+        //         "UserSettingsSidebar",
+        //     ),
+        // );
 
         // if (SettingsStore.getValue(UIFeature.Voip)) {
         //     tabs.push(
