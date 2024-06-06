@@ -45,18 +45,18 @@ export const DatabaseSelector = () => {
                     className="mx_MessageComposer_button"
                     iconClassName="database_button"
                     onClick={() => {
-                        // dis.dispatch({
-                        //     action: "select_database",
-                        //     database: "",
-                        //     roomId: roomId,
-                        //     context: timelineRenderingType,
-                        // });
-                        // dis.dispatch({
-                        //     action: "select_files",
-                        //     files: [],
-                        //     roomId: roomId,
-                        //     context: timelineRenderingType,
-                        // });
+                        dis.dispatch({
+                            action: "select_database",
+                            database: "",
+                            roomId: roomId,
+                            context: timelineRenderingType,
+                        });
+                        dis.dispatch({
+                            action: "select_files",
+                            files: [],
+                            roomId: roomId,
+                            context: timelineRenderingType,
+                        });
                     }}
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}

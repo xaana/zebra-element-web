@@ -1818,13 +1818,15 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             return;
         }
 
-        if (screen === "register") {
-            dis.dispatch({
-                action: "start_registration",
-                params: params,
-            });
-            PerformanceMonitor.instance.start(PerformanceEntryNames.REGISTER);
-        } else if (screen === "login") {
+        // if (screen === "register") {
+        //     dis.dispatch({
+        //         action: "start_registration",
+        //         params: params,
+        //     });
+        //     PerformanceMonitor.instance.start(PerformanceEntryNames.REGISTER);
+        // } else
+
+        if (screen === "login") {
             dis.dispatch({
                 action: "start_login",
                 params: params,
