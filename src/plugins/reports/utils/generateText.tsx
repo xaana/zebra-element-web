@@ -10,12 +10,14 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
     let from: number = editor.state.selection.from;
     let to: number = editor.state.selection.to;
 
+    let textSelection: string = "";
+
     // No explicit text selection
     if (to === from) {
         editor.commands.selectParentNode();
         from = editor.state.selection.from;
         to = editor.state.selection.to;
-
+        // textSelection = editor.state.doc.textBetween(from, to);
         // const selection = editor.state.selection.content();
         // editor.commands.deleteRange({
         //     from: from,
@@ -23,8 +25,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
         // });
         // editor.commands.insertContentAt(from, selection.toJSON().content[0]);
     }
-
-    let textSelection: string = " " + editor.state.doc.textBetween(from, to) + " ";
+    textSelection = editor.state.doc.textBetween(from, to);
 
     if (textSelection.length === 0) {
         // toast.error("Please select some text and try again.");
