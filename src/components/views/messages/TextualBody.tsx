@@ -654,6 +654,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const mxEvent = this.props.mxEvent;
 
         const content = mxEvent.getContent();
+        if (content.body==='Init from homepage...'){
+            return null
+        }
         let isNotice = false;
         let isEmote = false;
         const databaseTable = content.database_table;

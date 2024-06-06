@@ -30,7 +30,7 @@ import MiniAvatarUploader, { AVATAR_SIZE } from "matrix-react-sdk/src/components
 import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
 import EmbeddedPage from "matrix-react-sdk/src/components/structures/EmbeddedPage";
 import { Search, File, Database, Image } from "lucide-react";
-import { DirectoryMember, startDmOnFirstMessage } from "matrix-react-sdk/src/utils/direct-messages";
+import { DirectoryMember } from "matrix-react-sdk/src/utils/direct-messages";
 import { MessageComposer } from "matrix-react-sdk/src/components/views/rooms/MessageComposer";
 import { findDMRoom } from "matrix-react-sdk/src/utils/dm/findDMRoom";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
@@ -38,6 +38,7 @@ import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
 import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
 import ZebraAlert from "../ui/ZebraAlert";
+import { startDmOnFirstMessage } from "@/utils/direct-messages";
 
 interface IProps {
     justRegistered?: boolean;
@@ -98,17 +99,23 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     const onClickWebSearchHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            cli.sendMessage(roomId, { msgtype: "m.text", body: "What's the weather in Sydney?" });
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response)=>{
+                cli.redactEvent(roomId, response.event_id,undefined,{reason: "Init message"})
+            });
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "What's the weather in Sydney?" })
         });
     };
 
     const onClickDatabaseHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            cli.sendMessage(roomId, {
-                msgtype: "m.text",
-                body: "List top 5 contracts by values",
-                database: "contract",
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response)=>{
+                cli.redactEvent(roomId, response.event_id,undefined,{reason: "Init message"})
             });
+                cli.sendMessage(roomId, {
+                    msgtype: "m.text",
+                    body: "List top 5 contracts by values",
+                    database: "contract",
+                });
         });
     };
 
