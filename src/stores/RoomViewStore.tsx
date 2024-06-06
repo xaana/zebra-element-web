@@ -428,11 +428,18 @@ export class RoomViewStore extends EventEmitter {
                         // console.log(this.stores.client?.mxcUrlToHttp(fileList[0].mediaId),'trying to get url')
                         // console.log(this.state.roomId&&this.stores.client?.getRoom(this.state.roomId)?.findEventById(fileList[0].eventId)?.getClearContent())
                         const filteredList = fileList.filter(item => item !== undefined);
-                        if(filteredList.length>5){
-                            filteredList.splice(5,filteredList.length-5)
+                        const hasDocument = filteredList.some(file => /\.(pdf|docx|doc)$/i.test(file.name));
+                        let filteredFiles = filteredList;
+
+                        // If there is a document, remove all images from the list
+                        if (hasDocument) {
+                            filteredFiles = filteredList.filter(file => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name));
+}
+                        if(filteredFiles.length>5){
+                            filteredFiles.splice(5,filteredList.length-5)
                         }
                         filteredList&&this.setState({
-                            files: filteredList,
+                            files: filteredFiles,
                         });}
                     else{
                         this.setState({
