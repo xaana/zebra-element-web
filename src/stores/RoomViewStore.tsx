@@ -430,7 +430,6 @@ export class RoomViewStore extends EventEmitter {
                         const filteredList = fileList.filter(item => item !== undefined);
                         if(filteredList.length>5){
                             filteredList.splice(5,filteredList.length-5)
-                            toast.info("You can only query 5 files at a time, some of the selected files removed")
                         }
                         filteredList&&this.setState({
                             files: filteredList,

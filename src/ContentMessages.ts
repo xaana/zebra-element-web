@@ -688,6 +688,9 @@ export default class ContentMessages {
                                 console.log("upload success, closing websocket",event);
                                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
                                 if (this.inprogress.length===0){
+                                    if(this.fileUploaded.length>5){
+                                        toast.info("You can only query 5 files at a time, some of the selected files removed",{closeButton: true});
+                                    }
                                     dis.dispatch({action:"uploading_files",uploading:false})
                                     this.currentProgress=null
                                     this.fileUploaded = []
@@ -794,6 +797,9 @@ export default class ContentMessages {
             if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))){
                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
                 if(this.inprogress.length===0){
+                    if(this.fileUploaded.length>5){
+                        toast.info("You can only query 5 files at a time, some of the selected files removed",{closeButton: true})
+                    }
                     this.fileUploaded = []
                     dis.dispatch({action:"uploading_files",uploading:false})
                 }
