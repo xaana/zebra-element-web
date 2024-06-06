@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import * as React from "react";
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import AutoHideScrollbar from "matrix-react-sdk/src/components/structures/AutoHideScrollbar";
 import { getHomePageUrl } from "matrix-react-sdk/src/utils/pages";
 import { _tDom } from "matrix-react-sdk/src/languageHandler";
@@ -39,6 +39,7 @@ import { Button } from "../ui/button";
 import { IconTurium } from "@/components/ui/icons";
 import ZebraAlert from "../ui/ZebraAlert";
 import { startDmOnFirstMessage } from "@/utils/direct-messages";
+import ContentMessages from "matrix-react-sdk/src/ContentMessages";
 
 interface IProps {
     justRegistered?: boolean;
@@ -119,15 +120,15 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         });
     };
 
-    const onClickDocumentHandler = (): void => {
+    const onClickDocumentHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            console.log(roomId);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
         });
     };
 
-    const onClickImageHandler = (): void => {
+    const onClickImageHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            console.log(roomId);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
         });
     };
 
@@ -178,6 +179,36 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         </Button>
     );
 
+    const UploadButton: React.FC<{
+        title: string;
+        query: string;
+        Icon: React.JSX.Element;
+        onFinish?: (file: File | null) => void;
+        accept: string;
+    }> = ({ title, query, Icon, onFinish, accept }) => {
+        const fileInputRef = useRef<HTMLInputElement>(null);
+
+        const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (file && onFinish) {
+                onFinish(file);
+            }
+            event.target.value = "";
+        };
+        return (
+            <>
+                <DefaultButton title={title} query={query} onClick={() => fileInputRef.current?.click()} Icon={Icon} />
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={handleFileInputChange}
+                    accept={accept === "image" ? ".jpg, .jpeg, .png" : ".pdf, .docx, .doc, .webp"}
+                />
+            </>
+        );
+    };
+
     if (pageUrl) {
         return <EmbeddedPage className="mx_HomePage" url={pageUrl} scrollbar={true} />;
     }
@@ -199,17 +230,19 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                     onClick={onClickDatabaseHandler}
                     Icon={Database}
                 />
-                <DefaultButton
+                <UploadButton
                     title="Doc Insights"
                     query="Upload a file to retrieve insights"
-                    onClick={onClickDocumentHandler}
+                    onFinish={onClickDocumentHandler}
                     Icon={File}
+                    accept="file"
                 />
-                <DefaultButton
+                <UploadButton
                     title="Image Insights"
                     query="Attach your image to get AI-driven analysis"
-                    onClick={onClickImageHandler}
+                    onFinish={onClickImageHandler}
                     Icon={Image}
+                    accept="image"
                 />
             </div>
             <div className="absolute w-full bottom-0">
