@@ -716,7 +716,7 @@ export default class ContentMessages {
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. something wrong when we handle your file");
+                            toast.error("File upload failed. something wrong when we handle your file",{closeButton: true});
                             matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                         }
 
@@ -736,7 +736,7 @@ export default class ContentMessages {
                         roomId: roomId,
                         context:context,
                     });
-                    toast.error("File upload failed. websocket error");
+                    toast.error("File upload failed. websocket error",{closeButton: true});
                 };
             }
             else{
