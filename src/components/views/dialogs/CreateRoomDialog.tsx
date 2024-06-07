@@ -16,9 +16,19 @@ limitations under the License.
 */
 
 import React, { ChangeEvent, createRef, KeyboardEvent, SyntheticEvent } from "react";
-import { Room, RoomType, JoinRule, Preset, Visibility, UNSTABLE_ELEMENT_FUNCTIONAL_USERS } from "matrix-js-sdk/src/matrix";
+import {
+    Room,
+    RoomType,
+    JoinRule,
+    Preset,
+    Visibility,
+    UNSTABLE_ELEMENT_FUNCTIONAL_USERS,
+} from "matrix-js-sdk/src/matrix";
 import SdkConfig from "matrix-react-sdk/src/SdkConfig";
-import withValidation, { IFieldState, IValidationResult } from "matrix-react-sdk/src/components/views/elements/Validation";
+import withValidation, {
+    IFieldState,
+    IValidationResult,
+} from "matrix-react-sdk/src/components/views/elements/Validation";
 import { _t } from "matrix-react-sdk/src/languageHandler";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { checkUserIsAllowedToChangeEncryption, IOpts } from "matrix-react-sdk/src/createRoom";
@@ -135,16 +145,14 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
         const createOpts: IOpts["createOpts"] = (opts.createOpts = {});
         opts.roomType = this.props.type;
         createOpts.name = this.state.name;
-        const content= {
-            "service_members": [
-                "@zebra:securezebra.com"
-              ]
-        }
+        const content = {
+            service_members: ["@zebra:securezebra.com"],
+        };
         const initialState = {
-            type:UNSTABLE_ELEMENT_FUNCTIONAL_USERS.name,
-            content:content
-        }
-        createOpts.initial_state=[initialState]
+            type: UNSTABLE_ELEMENT_FUNCTIONAL_USERS.name,
+            content: content,
+        };
+        createOpts.initial_state = [initialState];
         if (this.state.joinRule === JoinRule.Public) {
             createOpts.visibility = Visibility.Public;
             createOpts.preset = Preset.PublicChat;
@@ -300,7 +308,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                         },
                     )}
                     &nbsp;
-                    {_t("create_room|join_rule_change_notice")}
+                    {/* {_t("create_room|join_rule_change_notice")} */}
                 </p>
             );
         } else if (this.state.joinRule === JoinRule.Public && this.props.parentSpace) {
@@ -314,7 +322,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                         },
                     )}
                     &nbsp;
-                    {_t("create_room|join_rule_change_notice")}
+                    {/* {_t("create_room|join_rule_change_notice")} */}
                 </p>
             );
         } else if (this.state.joinRule === JoinRule.Public) {
@@ -322,7 +330,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                 <p>
                     {_t("create_room|join_rule_public_label")}
                     &nbsp;
-                    {_t("create_room|join_rule_change_notice")}
+                    {/* {_t("create_room|join_rule_change_notice")} */}
                 </p>
             );
         } else if (this.state.joinRule === JoinRule.Invite) {
@@ -330,7 +338,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                 <p>
                     {_t("create_room|join_rule_invite_label")}
                     &nbsp;
-                    {_t("create_room|join_rule_change_notice")}
+                    {/* {_t("create_room|join_rule_change_notice")} */}
                 </p>
             );
         } else if (this.state.joinRule === JoinRule.Knock) {
@@ -420,7 +428,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                             className="mx_CreateRoomDialog_topic"
                         />
 
-                        <JoinRuleDropdown
+                        {/* <JoinRuleDropdown
                             label={_t("create_room|room_visibility_label")}
                             labelInvite={_t("create_room|join_rule_invite")}
                             labelKnock={
@@ -432,13 +440,13 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                             }
                             value={this.state.joinRule}
                             onChange={this.onJoinRuleChange}
-                        />
+                        /> */}
 
                         {publicPrivateLabel}
-                        {visibilitySection}
+                        {/* {visibilitySection} */}
                         {/* {e2eeSection} */}
-                        {aliasField}
-                        <details onToggle={this.onDetailsToggled} className="mx_CreateRoomDialog_details">
+                        {/* {aliasField} */}
+                        {/* <details onToggle={this.onDetailsToggled} className="mx_CreateRoomDialog_details">
                             <summary className="mx_CreateRoomDialog_details_summary">
                                 {this.state.detailsOpen ? _t("action|hide_advanced") : _t("action|show_advanced")}
                             </summary>
@@ -450,7 +458,7 @@ export default class CreateRoomDialog extends React.Component<IProps, IState> {
                                 value={this.state.noFederate}
                             />
                             <p>{federateLabel}</p>
-                        </details>
+                        </details> */}
                     </div>
                 </form>
                 <DialogButtons
