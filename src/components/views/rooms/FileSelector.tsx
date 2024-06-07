@@ -79,7 +79,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
-        overflowMenuCloser?.();
         if (open) {
             await fetchFiles();
             dis.dispatch({
@@ -96,6 +95,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
             });
         } else {
             setDialogOpen(false);
+            overflowMenuCloser?.();
         }
     };
 

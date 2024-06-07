@@ -691,6 +691,11 @@ export default class ContentMessages {
                                     if(this.fileUploaded.length>5){
                                         toast.info("You can only query 5 files at a time, some of the selected files removed",{closeButton: true});
                                     }
+                                    const hasDocument = this.fileUploaded.some(file => /\.(pdf|docx|doc)$/i.test(file.name));
+                                    const hasMedia = this.fileUploaded.some(file => /\.(jpeg|jpg|png|gif|webp)$/i.test(file.name));
+                                    if(hasDocument&&hasMedia){
+                                        toast.info("Sorry, currently not supporting both document and media at the same time. Removed images from auto selection",{closeButton: true});
+                                    }
                                     dis.dispatch({action:"uploading_files",uploading:false})
                                     this.currentProgress=null
                                     this.fileUploaded = []
@@ -711,7 +716,7 @@ export default class ContentMessages {
                                 roomId: roomId,
                                 context:context,
                             });
-                            toast.error("File upload failed. something wrong when we handle your file");
+                            toast.error("File upload failed. something wrong when we handle your file",{closeButton: true});
                             matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                         }
 
@@ -731,7 +736,7 @@ export default class ContentMessages {
                         roomId: roomId,
                         context:context,
                     });
-                    toast.error("File upload failed. websocket error");
+                    toast.error("File upload failed. websocket error",{closeButton: true});
                 };
             }
             else{
@@ -799,6 +804,11 @@ export default class ContentMessages {
                 if(this.inprogress.length===0){
                     if(this.fileUploaded.length>5){
                         toast.info("You can only query 5 files at a time, some of the selected files removed",{closeButton: true})
+                    }
+                    const hasDocument = this.fileUploaded.some(file => /\.(pdf|docx|doc)$/i.test(file.name));
+                    const hasMedia = this.fileUploaded.some(file => /\.(jpeg|jpg|png|gif|webp)$/i.test(file.name));
+                    if(hasDocument&&hasMedia){
+                        toast.info("Sorry, currently not supporting both document and media at the same time. Removed images from auto selection",{closeButton: true});
                     }
                     this.fileUploaded = []
                     dis.dispatch({action:"uploading_files",uploading:false})
