@@ -429,7 +429,7 @@ const EditorFooter = (props: {
 
     const handleSend = (): void => {
         editorChat?.reset();
-        props.onSendCallback && props.editor && props.onSendCallback(props.editor.getHTML(), props.editor.getText());
+        props.onSendCallback?.(props.editor.getHTML(), props.editor.getText());
     };
 
     // const handelMail = (): void => {
