@@ -50,6 +50,7 @@ export function Citations({
         highlights: BoundingBox[];
     } | null>(null);
     const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
+        console.log('loaded',numPages)
         setNumPages(numPages);
         pageRefs.current = Array(numPages)
             .fill(null)
@@ -158,9 +159,10 @@ export function Citations({
             setHighlights(() => bboxes.map((box) => ({ ...box, page: parseInt(pageNumber) })));
         }
     };
+    console.log(pdfUrls)
     return (
         <>
-            {pdfUrls ? (
+            {pdfUrls.length>0 ? (
                 <div className="flex flex-col gap-y-3 h-full">
                     <div className="basis-3/5 min-h-[300px] overflow-hidden flex flex-col grow shrink-0">
                         <div className="flex items-center justify-between pt-4 pb-2">
