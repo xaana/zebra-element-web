@@ -804,3 +804,14 @@
         color: $primary-content;
     }
 }
+
+.mx_RoomSublist {
+    &.mx_RoomSublist_minimized {
+        &.mx_RoomSublist_hasMenuOpen,
+        & > .mx_RoomSublist_headerContainer:hover {
+            .mx_RoomSublist_menuButton {
+                bottom: auto;
+            }
+        }
+    }
+}
