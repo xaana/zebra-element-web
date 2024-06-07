@@ -52,7 +52,6 @@ export const PdfViewer = ({
         setAllMediaIds(files);
 
         return ()=>{
-            console.log('cleanup',allFiles.current);
             allFiles.current.forEach((url) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
                 URL.revokeObjectURL(url);
@@ -62,7 +61,6 @@ export const PdfViewer = ({
 
     useEffect(() => {
         if(!showCitations){
-            console.log('cleanup in useEffect',allFiles.current);
             allFiles.current.forEach((url) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
                 URL.revokeObjectURL(url);
