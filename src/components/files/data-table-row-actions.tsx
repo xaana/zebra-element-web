@@ -60,12 +60,12 @@ export function DataTableRowActions<TData>({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuItem>
+                    {/* <DropdownMenuItem>
                         AI Query
                         <DropdownMenuShortcut>
                             <IconZebra className="h-5 w-5" />
                         </DropdownMenuShortcut>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
                     {/* <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
