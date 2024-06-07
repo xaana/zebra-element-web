@@ -116,7 +116,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     public componentDidMount(): void {
         if (!this.props.editState) {
-            this.props.mxEvent.getSender() !== "@rob:securezebra.com" && this.applyFormatting();
+            this.applyFormatting();
         }
     }
 
@@ -815,7 +815,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if (pdfResponse && roomId && rootId) {
-            const webCitations: WebSearchSourceItem[] = this.getCitations(content.body);
+            const webCitations: WebSearchSourceItem[] = content.web_url&&content.web_url.map((item: string) => {
+                const url = new URL(item);
+                return {
+                    link: item,
+                    hostname: url.hostname,
+                };
+            });
             let question = rawQuestion
             if (question&&rawQuestion.length>58){
                 const temp = rawQuestion.substring(0, 58)

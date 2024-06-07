@@ -189,6 +189,7 @@ export const FileUpload = ({ editor, nextStep }: { editor: Editor; nextStep: () 
                                     </div>
                                     <Button
                                         variant="outline"
+                                        size="sm"
                                         className="mb-0.5"
                                         onClick={() => inputRef.current?.click()}
                                     >

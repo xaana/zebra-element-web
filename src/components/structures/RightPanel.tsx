@@ -167,17 +167,6 @@ export default class RightPanel extends React.Component<Props, IState> {
         const cardState = this.props.overwriteCard?.state ?? this.state.cardState;
         
         switch (phase) {
-            case RightPanelPhases.EchartsView:
-
-                    card = (
-                        <EChartPanel echartsOption={cardState.echartsOption} echartsQuery={cardState.echartsQuery} onClose={this.onClose} />
-                    );
-                break;
-            case RightPanelPhases.CitationsView:
-                card = (
-                    <Citations pdfUrls={cardState.pdfUrls} citations={cardState.citations} onClose={this.onClose} />
-                );
-            break;
             case RightPanelPhases.RoomMemberList:
                 if (!!roomId) {
                     card = (

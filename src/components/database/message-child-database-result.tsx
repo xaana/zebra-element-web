@@ -176,10 +176,7 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
                                     )}
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
-                                            <Button
-                                                variant="outline"
-                                                className="p-2 rounded-full text-accent-foreground"
-                                            >
+                                            <Button variant="outline" className="p-2 rounded-full sparkle-button">
                                                 <Sparkles />
                                             </Button>
                                         </DropdownMenuTrigger>

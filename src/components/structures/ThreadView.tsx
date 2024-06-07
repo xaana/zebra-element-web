@@ -322,10 +322,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
             this.setState({showStop: false});
         }
         if(this.threadLastReply?.getContent().open==="open"){
-            console.log(this.threadLastReply.getId());
             this.threadLastReply.getId()&&this.setState({botStreamId: this.threadLastReply.getId()});
             this.setState({showStop: true});
-            console.log("open in the content is null or open");
         }
     };
     public stopBotStream=():void=>{

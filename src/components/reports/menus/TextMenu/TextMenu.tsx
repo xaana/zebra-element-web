@@ -119,7 +119,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     <Popover.Content side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                color={states.currentHighlight}
+                                currentColor={states.currentHighlight}
                                 onChange={commands.onChangeHighlight}
                                 onClear={commands.onClearHighlight}
                             />
@@ -135,7 +135,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     <Popover.Content side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                color={states.currentColor}
+                                currentColor={states.currentColor}
                                 onChange={commands.onChangeColor}
                                 onClear={commands.onClearColor}
                             />

@@ -31,6 +31,7 @@ export const ResponseAction = ({
                 textSelection.current,
             );
         } else if (value === "suggested" && responseText.current.length > 0) {
+            console.log(from.current, to.current);
             editor.commands.insertContentAt({ from: from.current, to: to.current }, responseText.current);
 
             // const node = editor.state.doc.nodeAt(from.current)

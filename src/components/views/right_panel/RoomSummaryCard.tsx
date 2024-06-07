@@ -413,9 +413,9 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                 className="mx_RoomSummaryCard_header"
                 gap="var(--cpd-space-3x)"
                 align="center"
-                justify="space-between"
+                justify="flex-end"
             >
-                <Tooltip label={_t("action|search")} side="right">
+                {/* <Tooltip label={_t("action|search")} side="right">
                     <button
                         className="mx_RoomSummaryCard_searchBtn"
                         data-testid="summary-search"
@@ -426,7 +426,7 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                     >
                         <SearchIcon width="100%" height="100%" />
                     </button>
-                </Tooltip>
+                </Tooltip> */}
                 <AccessibleButton
                     data-testid="base-card-close-button"
                     className="mx_BaseCard_close"

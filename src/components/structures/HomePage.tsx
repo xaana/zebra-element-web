@@ -100,23 +100,23 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     const onClickWebSearchHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response)=>{
-                cli.redactEvent(roomId, response.event_id,undefined,{reason: "Init message"})
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response) => {
+                cli.redactEvent(roomId, response.event_id, undefined, { reason: "Init message" });
             });
-            cli.sendMessage(roomId, { msgtype: "m.text", body: "What's the weather in Sydney?" })
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "What's the weather in Sydney?" });
         });
     };
 
     const onClickDatabaseHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response)=>{
-                cli.redactEvent(roomId, response.event_id,undefined,{reason: "Init message"})
+            cli.sendMessage(roomId, { msgtype: "m.text", body: "Init from homepage..." }).then((response) => {
+                cli.redactEvent(roomId, response.event_id, undefined, { reason: "Init message" });
             });
-                cli.sendMessage(roomId, {
-                    msgtype: "m.text",
-                    body: "List top 5 contracts by values",
-                    database: "contract",
-                });
+            cli.sendMessage(roomId, {
+                msgtype: "m.text",
+                body: "List top 5 contracts by values",
+                database: "contract",
+            });
         });
     };
 
@@ -164,17 +164,17 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         onClick: () => void;
         Icon: JSX.Element;
     }) => (
-        <Button className="h-18 default_button rounded-2xl" variant="outline" onClick={onClick}>
+        <Button className="h-18 max-w-xs default_button rounded-2xl" variant="outline" onClick={onClick}>
             <div className="w-full flex justify-between">
-                <div className="text-start">
-                    <p style={{ fontSize: 20, fontWeight: 100 }}>{title}</p>
-                </div>
+                <p style={{ fontSize: 18, fontWeight: 100 }}>{title}</p>
                 <div className="w-1/6 mr-0">
                     <Icon />
                 </div>
             </div>
-            <div className="w-5/6 text-start overflow-hidden">
-                <p style={{ fontSize: 16, fontWeight: 100 }}>{query}</p>
+            <div className="w-full text-start">
+                <p className="truncate" style={{ fontSize: 14, fontWeight: 100 }}>
+                    {query}
+                </p>
             </div>
         </Button>
     );
@@ -217,7 +217,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default justify-center" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
             <BrandSection />
-            <div className="default_buttons">
+            <div className="default_buttons" style={{ maxWidth: 800 }}>
                 <DefaultButton
                     title="Browse"
                     query="What's the weather in Sydney?"
@@ -239,7 +239,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                 />
                 <UploadButton
                     title="Image Insights"
-                    query="Attach your image to get AI-driven analysis"
+                    query="Attach an image to get AI-driven analysis"
                     onFinish={onClickImageHandler}
                     Icon={Image}
                     accept="image"
