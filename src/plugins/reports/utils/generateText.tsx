@@ -75,13 +75,18 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
             // editor.commands.insertContentAt(from, response);
 
             // process text
-            const paragraphs = response
-                .split(/\n/)
-                .filter((line) => line.length > 1)
-                .map((line) => `<p>${line}</p>`)
+            const ps = response.split(/\n/).filter((line) => line.length > 0);
+            const newText = ps
+                .map((p, i) => {
+                    // Skip wrapping the first and last paragraphs
+                    if (i !== 0 && i !== ps.length - 1) {
+                        return `<p>${p}</p>`;
+                    }
+                    return p;
+                })
                 .join("");
 
-            editor.commands.insertContentAt({ from: from, to: to }, paragraphs);
+            editor.commands.insertContentAt({ from: from, to: to }, newText);
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
             editorChat.setMessages((prev) => {
@@ -93,7 +98,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                                 <ResponseAction
                                     fromPos={from}
                                     toPos={to}
-                                    response={response}
+                                    response={newText}
                                     original={textSelection}
                                     editor={editor}
                                 />
