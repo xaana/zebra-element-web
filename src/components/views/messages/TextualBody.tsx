@@ -336,7 +336,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     }
 
     public componentDidUpdate(prevProps: Readonly<IBodyProps>, prevState: Readonly<IState>): void {
-        console.log('TextualBody componentDidUpdate',this.props.mxEvent.getContent().body);
         if (!this.props.editState) {
             const stoppedEditing = prevProps.editState && !this.props.editState;
             const messageWasEdited = prevProps.replacingEventId !== this.props.replacingEventId;
