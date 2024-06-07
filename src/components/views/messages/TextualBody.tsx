@@ -855,7 +855,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <>
                             {this.getSectionTitle("Source", List)}
                             <FilesPill files={content.files_} />
-                            {webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
+                            {webCitations && webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
                         </>
                     )}
                     {!content.open&&this.getSectionTitle("Answer", Bell)}
