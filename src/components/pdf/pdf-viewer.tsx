@@ -216,7 +216,7 @@ export const PdfViewer = ({
             console.error("Error fetching the blob:", error);
         }
     }
-    if (!citations) {
+    if (citations===undefined) {
         return null;
     }
     if(allMediaIds.length === 0||apiUrl===undefined) {
