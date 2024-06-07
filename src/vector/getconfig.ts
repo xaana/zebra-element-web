@@ -26,25 +26,28 @@ export interface IExtendedConfigOptions extends IConfigOptions {
 export async function getVectorConfig(relativeLocation = ""): Promise<IExtendedConfigOptions | undefined> {
     if (relativeLocation !== "" && !relativeLocation.endsWith("/")) relativeLocation += "/";
 
-    // Handle trailing dot FQDNs
-    let domain = window.location.hostname.trimEnd();
-    if (domain[domain.length - 1] === ".") {
-        domain = domain.slice(0, -1);
-    }
-
-    const specificConfigPromise = getConfig(`${relativeLocation}config.${domain}.json`);
     const generalConfigPromise = getConfig(relativeLocation + "config.json");
+    return generalConfigPromise;
 
-    try {
-        const configJson = await specificConfigPromise;
-        // 404s succeed with an empty json config, so check that there are keys
-        if (!configJson || Object.keys(configJson).length === 0) {
-            throw new Error(); // throw to enter the catch
-        }
-        return configJson;
-    } catch (e) {
-        return generalConfigPromise;
-    }
+    // // Handle trailing dot FQDNs
+    // let domain = window.location.hostname.trimEnd();
+    // if (domain[domain.length - 1] === ".") {
+    //     domain = domain.slice(0, -1);
+    // }
+
+    // const specificConfigPromise = getConfig(`${relativeLocation}config.${domain}.json`);
+    // const generalConfigPromise = getConfig(relativeLocation + "config.json");
+
+    // try {
+    //     const configJson = await specificConfigPromise;
+    //     // 404s succeed with an empty json config, so check that there are keys
+    //     if (!configJson || Object.keys(configJson).length === 0) {
+    //         throw new Error(); // throw to enter the catch
+    //     }
+    //     return configJson;
+    // } catch (e) {
+    //     return generalConfigPromise;
+    // }
 }
 
 async function getConfig(configJsonFilename: string): Promise<IExtendedConfigOptions | undefined> {
