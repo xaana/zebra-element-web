@@ -26,11 +26,13 @@ export const ResponseAction = ({
         setActionValue(value);
 
         if (value === "original" && textSelection.current.length > 0) {
+            console.log(from.current, from.current + responseText.current.length + 1);
             editor.commands.insertContentAt(
-                { from: from.current, to: from.current + responseText.current.length },
+                { from: from.current, to: from.current + responseText.current.length + 1 },
                 textSelection.current,
             );
         } else if (value === "suggested" && responseText.current.length > 0) {
+            console.log(from.current, to.current);
             editor.commands.insertContentAt({ from: from.current, to: to.current }, responseText.current);
 
             // const node = editor.state.doc.nodeAt(from.current)

@@ -75,10 +75,13 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
             // editor.commands.insertContentAt(from, response);
 
             // process text
-            const paragraphs = response.split(/\r?\n/);
-            response = paragraphs.map((line) => `<p>${line}</p>`).join("");
+            const paragraphs = response
+                .split(/\n/)
+                .filter((line) => line.length > 1)
+                .map((line) => `<p>${line}</p>`)
+                .join("");
 
-            editor.commands.insertContentAt({ from: from, to: to }, response);
+            editor.commands.insertContentAt({ from: from, to: to }, paragraphs);
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
             editorChat.setMessages((prev) => {
