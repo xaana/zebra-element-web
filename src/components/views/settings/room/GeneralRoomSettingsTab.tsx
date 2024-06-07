@@ -93,14 +93,14 @@ export default class GeneralRoomSettingsTab extends React.Component<IProps, ISta
                     </SettingsSection>
                 )}
 
-                <SettingsSection heading={_t("room_settings|general|aliases_section")}>
+                {/* <SettingsSection heading={_t("room_settings|general|aliases_section")}>
                     <AliasSettings
                         roomId={room.roomId}
                         canSetCanonicalAlias={canSetCanonical}
                         canSetAliases={canSetAliases}
                         canonicalAliasEvent={canonicalAliasEv}
                     />
-                </SettingsSection>
+                </SettingsSection> */}
 
                 <SettingsSection heading={_t("room_settings|general|other_section")}>
                     {/* {urlPreviewSettings} */}
