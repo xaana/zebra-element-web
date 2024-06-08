@@ -117,7 +117,7 @@ export const ReportGenerator = ({
                     Create New
                 </Button>
             </DialogTrigger>
-            <DialogContent className="h-screen max-w-[100vw] bg-card p-0 overflow-hidden">
+            <DialogContent className="h-screen w-screen max-w-[100vw] bg-card p-0 overflow-hidden">
                 <DialogClose className="absolute top-2 right-2" />
                 <div className={cn("overflow-auto relative px-3", showOutline ? "pt-4 pb-16" : "py-10")}>
                     <div className="flex flex-col justify-center w-full max-w-screen-md mx-auto">
