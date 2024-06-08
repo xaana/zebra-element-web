@@ -1,4 +1,4 @@
-import type { Template, StepItem } from "@/plugins/reports/types";
+import type { Report, StepItem } from "@/plugins/reports/types";
 
 export const steps: StepItem[] = [
     {
@@ -24,13 +24,14 @@ export const steps: StepItem[] = [
     },
 ];
 
-export const sampleTemplate: Template = {
+export const sampleTemplate: Report = {
     name: "Zebra Reports Tips & Tricks",
     description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hicconsequatur ab animi sunt sed voluptas corporis et ad at saepe.",
     id: "-3",
     timestamp: new Date().toISOString(),
     type: "template",
+    owner: "me",
     content: {
         type: "doc",
         content: [
@@ -296,13 +297,14 @@ export const sampleTemplate: Template = {
     },
 };
 
-export const logTemplate: Template = {
+export const logTemplate: Report = {
     name: "Log Review Report",
     description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Hicconsequatur ab animi sunt sed voluptas corporis et ad at saepe.",
     id: "-1",
     timestamp: new Date().toISOString(),
     type: "template",
+    owner: "me",
     content: {
         type: "doc",
         content: [
@@ -1222,4 +1224,4 @@ export const logTemplate: Template = {
     },
 };
 
-export const templatesData: Template[] = [sampleTemplate, logTemplate];
+export const templatesData: Report[] = [sampleTemplate, logTemplate];

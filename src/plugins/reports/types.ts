@@ -22,12 +22,14 @@ export type StepItem = {
     nextStepTitle: string;
 };
 
-export type Template = {
+export type Report = {
     id: string;
     name: string;
-    description: string;
+    type: string;
     timestamp: string;
-    type: "report" | "template";
+    owner: string;
+    description?: string;
+    access_type?: string;
     content?: JSONContent;
     status?: string;
 };
