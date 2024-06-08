@@ -402,7 +402,7 @@
 .mx_HomePage_default {
     .brand {
         position: absolute;
-        top: 35%;
+        top: 40%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -802,5 +802,16 @@
     border: none;
     &:hover {
         color: $primary-content;
+    }
+}
+
+.mx_RoomSublist {
+    &.mx_RoomSublist_minimized {
+        &.mx_RoomSublist_hasMenuOpen,
+        & > .mx_RoomSublist_headerContainer:hover {
+            .mx_RoomSublist_menuButton {
+                bottom: auto;
+            }
+        }
     }
 }

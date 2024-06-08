@@ -322,10 +322,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
             this.setState({showStop: false});
         }
         if(this.threadLastReply?.getContent().open==="open"){
-            console.log(this.threadLastReply.getId());
             this.threadLastReply.getId()&&this.setState({botStreamId: this.threadLastReply.getId()});
             this.setState({showStop: true});
-            console.log("open in the content is null or open");
         }
     };
     public stopBotStream=():void=>{
@@ -363,6 +361,28 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 },
                 async () => this.postThreadUpdate(thread),
             );
+            for (let i = thread.timeline.length - 1; i >= 0; i--) {
+                if (thread.timeline[i]?.getContent().database) {
+                    this.setState({ database: thread.timeline[i].getContent().database, files: [] });
+                    break;
+                } else if (thread.timeline[i]?.getContent().fileSelected) {
+                    const fileList = thread.timeline[i].getContent().fileSelected.map((file: DocFile) => {
+                        if (
+                            this.props.room &&
+                            file.eventId &&
+                            !this.props.room.findEventById(file.eventId)?.isRedacted()
+                        ) {
+                            return file;
+                        }
+                    });
+                    const filteredList = fileList.filter((item) => item !== undefined);
+                    this.setState({ files: filteredList, database: "" });
+                    break;
+                } else if (thread.timeline[i]?.getContent().web) {
+                    this.setState({ database: "", files: [] });
+                    break;
+                }
+            }
         }
     };
 

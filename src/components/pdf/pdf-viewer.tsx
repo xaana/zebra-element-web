@@ -11,6 +11,7 @@ import { Citations } from "./citations";
 
 import { getUserFiles } from "@/lib/utils/getUserFiles";
 import type { File } from "@/plugins/files/types";
+import { Loader } from "../ui/loader";
 
 export const PdfViewer = ({
     citations,
@@ -27,161 +28,168 @@ export const PdfViewer = ({
     // const [urls,setUrls] = useState<string[]>([]);
     // const [docFiles,setDocFiles] = useState<File[]>([]);
     const [apiUrl, setApiUrl] = useState<string>("");
-    const allFiles = useRef<File[]>([]);
+    const [allMediaIds, setAllMediaIds] = useState<string[]>([]);
+    const allFiles = useRef<string[]>([]);
     // const client = useMatrixClientContext();
 
-    const client = useMatrixClientContext();
+    // const client = useMatrixClientContext();
 
     useEffect(() => {
         setApiUrl(SettingsStore.getValue("reportsApiUrl"));
+        let files: any = [];
+        const thread = mxEvent.getThread();
+        if (thread) {
+            for (const evt of thread.timeline) {
+                const content = evt.getContent();
+                if (content?.files_) {
+                    const temp = content.files_.map((file: any) => {
+                        return file.mediaId.substring(6).split("/").pop();
+                    });
+                    files = [...files, ...temp];
+                }
+            }
+        }
+        setAllMediaIds(files);
+
         return ()=>{
-            allFiles.current.forEach(async (file) => {
+            allFiles.current.forEach((url) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
-                file.mediaHelper.destroy();
+                URL.revokeObjectURL(url);
             })
         }
     }, []);
 
     useEffect(() => {
-        const fetchFiles = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles(client);
-            allFiles.current = fetchedFiles;
-            const thread = mxEvent.getThread();
-            let files: any = [];
-            if (thread) {
-                for (const evt of thread.timeline) {
-                    const content = evt.getContent();
-                    if (content?.files_) {
-                        const temp = content.files_.map((file: any) => {
-                            return file.mediaId;
-                        });
-                        files = [...files, ...temp];
-                    }
-                }
-            }
-            // const files = content.files_.map((file:any)=>{
-            //     return file.mediaId
-            // })
-            const temp = fetchedFiles.filter((file) => {
-                return files.includes(file.mediaId);
-            });
-            const tempFiles = temp.map(async (file) => {
-                if (file.name.endsWith(".pdf")) {
-                    if (file.mxEvent?.isEncrypted()) {
-                        // encrypted pdf
-                        // const blob = await file.mediaHelper.sourceBlob.value;
-                        const url = await file.mediaHelper.sourceUrl.value;
-                        // const Pdf = new Blob([blob], { type: "application/pdf" });
-                        // const pdfUrl = URL.createObjectURL(Pdf);
-                        return { name: file.name, url: url };
-                    } else {
-                        // const downloadUrl = file.downloadUrl;
-                        // if (downloadUrl) {
-                        //     const data = await fetchResourceAsBlob(downloadUrl);
-                        //     if (data) {
-                        //         const pdfUrl = URL.createObjectURL(data);
-                        //         return { name: file.name, url: pdfUrl };
-                        //     }
-                        // }
-                        // unencrypted pdf
-                        const url = await file.mediaHelper.sourceUrl.value;
-                        return { name: file.name, url: url };
-                    }
-                } else if (file.name.endsWith(".doc") || file.name.endsWith(".docx")) {
-                    const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop() || "");
-                    return pdfUrl;
-                }
-            });
-
-            if (tempFiles) {
-                Promise.all(tempFiles).then((res) => {
-                    setPdfUrls(res.filter((element) => element !== undefined));
-                });
-            }
-        };
-        if (apiUrl) {
-            fetchFiles();
+        if(!showCitations){
+            allFiles.current.forEach((url) => {
+                // Asynchronous cleanup if necessary or synchronous access to URLs
+                URL.revokeObjectURL(url);
+            })
+            allFiles.current = [];
+            setPdfUrls([]);
         }
-    }, [apiUrl]);
+    },[showCitations])
 
     // useEffect(() => {
-    //     if (events.length === 0) return;
-
-    //     const tempPdfs = events.map(async (event) => {
-    //         const mxcUrl = event.getContent().url ?? event.getContent().file?.url;
-    //         if (mxcUrl&&urls.includes(mxcUrl)){
-    //             const tempFile = findDocFileById(mxcUrl)
-    //             if (tempFile?.fileName.endsWith(".pdf")){
-    //                 if (event.isEncrypted()) {
-    //                     const mediaHelper = new MediaEventHelper(event);
-    //                     try {
-    //                         const temp = await mediaHelper.sourceBlob.value;
-    //                         // If the Blob type is not 'application/pdf', create a new Blob with the correct type
-    //                         const Pdf = new Blob([temp], { type: "application/pdf" });
-    //                         const pdfUrl = URL.createObjectURL(Pdf);
-
-    //                         return { name: event.getContent().body, url: pdfUrl };
-    //                     } catch (err) {
-    //                         console.error("decryption error", err);
-    //                     }
+    //     const fetchFiles = async (): Promise<void> => {
+    //         const fetchedFiles = await getUserFiles(client);
+    //         allFiles.current = fetchedFiles;
+    //         const thread = mxEvent.getThread();
+    //         let files: any = [];
+    //         if (thread) {
+    //             for (const evt of thread.timeline) {
+    //                 const content = evt.getContent();
+    //                 if (content?.files_) {
+    //                     const temp = content.files_.map((file: any) => {
+    //                         return file.mediaId;
+    //                     });
+    //                     files = [...files, ...temp];
     //                 }
-    //                 else{
-    //                     const downloadUrl = client.mxcUrlToHttp(mxcUrl)
-    //                     if (downloadUrl){
-    //                         const data = await fetchResourceAsBlob(downloadUrl)
-    //                         if(data){
-    //                             const pdfUrl = URL.createObjectURL(data)
-    //                             return { name: event.getContent().body, url: pdfUrl};
-    //                         }
-    //                     }
-    //                 }
-    //             }else if (tempFile&&(tempFile.fileName.endsWith(".doc")||tempFile.fileName.endsWith(".docx"))){
-    //                 const pdfUrl = await fetchPdfAndCreateObjectURL(mxcUrl.substring(6).split("/").pop())
-    //                 return pdfUrl
     //             }
-
     //         }
-    //     });
-    //     if (tempPdfs) {
-    //         Promise.all(tempPdfs).then((res) => {
-    //             setPdfUrls(res.filter(element => element !== undefined));
+    //         // const files = content.files_.map((file:any)=>{
+    //         //     return file.mediaId
+    //         // })
+    //         const temp = fetchedFiles.filter((file) => {
+    //             return files.includes(file.mediaId);
     //         });
+    //         const tempFiles = temp.map(async (file) => {
+    //             if (file.name.endsWith(".pdf")) {
+    //                 if (file.mxEvent?.isEncrypted()) {
+    //                     // encrypted pdf
+    //                     // const blob = await file.mediaHelper.sourceBlob.value;
+    //                     const url = await file.mediaHelper.sourceUrl.value;
+    //                     // const Pdf = new Blob([blob], { type: "application/pdf" });
+    //                     // const pdfUrl = URL.createObjectURL(Pdf);
+    //                     return { name: file.name, url: url };
+    //                 } else {
+    //                     // const downloadUrl = file.downloadUrl;
+    //                     // if (downloadUrl) {
+    //                     //     const data = await fetchResourceAsBlob(downloadUrl);
+    //                     //     if (data) {
+    //                     //         const pdfUrl = URL.createObjectURL(data);
+    //                     //         return { name: file.name, url: pdfUrl };
+    //                     //     }
+    //                     // }
+    //                     // unencrypted pdf
+    //                     const url = await file.mediaHelper.sourceUrl.value;
+    //                     return { name: file.name, url: url };
+    //                 }
+    //             } else if (file.name.endsWith(".doc") || file.name.endsWith(".docx")) {
+    //                 const pdfUrl = await fetchPdfAndCreateObjectURL(file.mediaId.substring(6).split("/").pop() || "");
+    //                 return pdfUrl;
+    //             }
+    //         });
+
+    //         if (tempFiles) {
+    //             Promise.all(tempFiles).then((res) => {
+    //                 setPdfUrls(res.filter((element) => element !== undefined));
+    //             });
+    //         }
+    //     };
+    //     if (apiUrl) {
+    //         fetchFiles();
     //     }
-    // }, [events]);
-
-    // function findDocFileById(mediaId: string): DocFile | undefined {
-    //     return docFiles.find(docFile => docFile.mediaId === mediaId);
-    // }
-
-    async function fetchPdfAndCreateObjectURL(mediaId: string): Promise<{ name: string; url: string }> {
+    // }, [apiUrl]);
+    
+    async function fetchPdfAndCreateObjectURL(mediaIds: string[]): Promise<{ name: string; url: string }[]> {
         try {
-            const payload = {
-                media_ids: mediaId,
-            };
+            const payload = { media_ids: mediaIds };
             const url = `${apiUrl}/api/get_docfile`;
             const request = new Request(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
             const response = await fetch(request);
-            const jsonResponse = await response.json(); // Assuming the server returns just a Base64 string
-            const base64String = await jsonResponse.pdf.content;
-            const fileName = jsonResponse.pdf.filename;
-
-            // Convert Base64 string to a Blob
-            const pdfBlob = base64ToBlob(base64String, "application/pdf");
-
-            // Create a Blob URL
-            const objectURL = URL.createObjectURL(pdfBlob);
-            return { name: fileName[0], url: objectURL };
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const jsonResponse = await response.json();
+            const pdfFiles = jsonResponse.pdf.filename.map((fileName: string, index: number) => {
+                const contentBase64 = jsonResponse.pdf.content[index];
+                const pdfBlob = base64ToBlob(contentBase64, 'application/pdf');
+                const objectURL = URL.createObjectURL(pdfBlob);
+                allFiles.current.push(objectURL);
+                return { name: fileName, url: objectURL };
+            });
+            return pdfFiles;
         } catch (error) {
-            console.error("Error fetching or converting PDF:", error);
+            console.error('Error fetching or converting PDF:', error);
             throw error;
         }
     }
+
+
+    // async function temp(mediaIds: string[]): Promise<{ name: string; url: string }> {
+    //     try {
+    //         const payload = {
+    //             media_ids: mediaIds,
+    //         };
+    //         const url = `${apiUrl}/api/get_docfile`;
+    //         const request = new Request(url, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(payload),
+    //         });
+    //         const response = await fetch(request);
+    //         const jsonResponse = await response.json(); // Assuming the server returns just a Base64 string
+    //         const base64String = await jsonResponse.pdf.content;
+    //         const fileName = jsonResponse.pdf.filename;
+
+    //         // Convert Base64 string to a Blob
+    //         const pdfBlob = base64ToBlob(base64String, "application/pdf");
+
+    //         // Create a Blob URL
+    //         const objectURL = URL.createObjectURL(pdfBlob);
+    //         return { name: fileName[0], url: objectURL };
+    //     } catch (error) {
+    //         console.error("Error fetching or converting PDF:", error);
+    //         throw error;
+    //     }
+    // }
 
     // Helper function to convert Base64 string to Blob
     function base64ToBlob(base64: string, contentType: string): Blob {
@@ -208,10 +216,10 @@ export const PdfViewer = ({
             console.error("Error fetching the blob:", error);
         }
     }
-    if (pdfUrls.length === 0) {
+    if (citations===undefined) {
         return null;
     }
-    if (!citations) {
+    if(allMediaIds.length === 0||apiUrl===undefined) {
         return null;
     }
     return (
@@ -221,6 +229,9 @@ export const PdfViewer = ({
                 className="font-normal text-xs cursor-pointer !border-black border border-solid h-7"
                 onClick={() => {
                     setShowCitations(!showCitations);
+                    fetchPdfAndCreateObjectURL(allMediaIds).then((res) => {
+                        setPdfUrls(res);
+                    })
                 }}
                 disabled={showCitations}
             >
@@ -231,7 +242,7 @@ export const PdfViewer = ({
             <Sheet open={showCitations} onOpenChange={(open: boolean) => setShowCitations(open)} modal={false}>
                 <SheetPortal>
                     <SheetContent className="min-w-[100vw] sm:min-w-[70vw] lg:min-w-[50vw] bg-secondary" side="left">
-                        <Citations citations={citations} pdfUrls={pdfUrls} />
+                        {pdfUrls.length>0?<Citations citations={citations} pdfUrls={pdfUrls} />:<Loader className="flex justify-center mt-[100px] w-full h-full" height="100" width="100" />}
                     </SheetContent>
                 </SheetPortal>
             </Sheet>

@@ -84,14 +84,14 @@ export const MediaGridItem = ({
                             >
                                 <Icon name="Fullscreen" className="w-5 h-5" strokeWidth={2} />
                             </Button>
-                            <Button
+                            {/* <Button
                                 className="h-auto w-auto rounded-full p-2"
                                 size="sm"
                                 variant="ghost"
                                 onClick={handleZebraChat}
                             >
                                 <IconZebra className="w-6 h-6" />
-                            </Button>
+                            </Button> */}
                             {onDelete && mediaItem.currentFile.sender === client.getUserId() && (
                                 <Button
                                     className="h-auto w-auto rounded-full p-2"

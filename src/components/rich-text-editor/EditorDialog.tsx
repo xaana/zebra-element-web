@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback, useMemo, useRef, useContext } from "react";
-import { EditorContent } from "@tiptap/react";
+import { Editor, EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
@@ -27,7 +27,7 @@ import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/I
 import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
 import { useAIState } from "@/plugins/reports/hooks/useAIState";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
-import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
+import { SidebarState, useSidebar } from "@/plugins/reports/hooks/useSidebar";
 import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
 import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
@@ -49,6 +49,11 @@ const MemoColorPicker = memo(ColorPicker);
 const MemoFontFamilyPicker = memo(FontFamilyPicker);
 const MemoFontSizePicker = memo(FontSizePicker);
 const MemoContentTypePicker = memo(ContentTypePicker);
+
+type CharacterCountProps = {
+    characters: () => number;
+    words: () => number;
+};
 
 const EditorDialog = (props: {
     trigger?: React.JSX.Element;
@@ -87,7 +92,7 @@ const EditorDialog = (props: {
         };
     }, [aiState, chat, editor]);
 
-    const characterCount = editor?.storage.characterCount || {
+    const characterCount: CharacterCountProps = editor?.storage.characterCount || {
         characters: () => 0,
         words: () => 0,
     };
@@ -97,257 +102,6 @@ const EditorDialog = (props: {
             leftSidebar.close();
         }
     }, [leftSidebar]);
-
-    const EditorHeader = ({ editor }: TextMenuProps): JSX.Element => {
-        const commands = useTextmenuCommands(editor);
-        const states = useTextmenuStates(editor);
-        const blockOptions = useTextmenuContentTypes(editor);
-
-        return (
-            <div className="flex-1 flex w-full relative justify-center overflow-y-auto">
-                <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30 border-t-0">
-                    {/* <Toolbar.Button
-                        tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
-                        onClick={leftSidebar.toggle}
-                        active={leftSidebar.isOpen}
-                        className={leftSidebar.isOpen ? "bg-transparent" : ""}
-                    >
-                        <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
-                    </Toolbar.Button> */}
-                    <div className="flex items-center mx-4">
-                        <div className="flex flex-col justify-center">
-                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                                {characterCount.words()} {characterCount.words() === 1 ? "word" : "words"}
-                            </div>
-                            <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-                                {characterCount.characters()}{" "}
-                                {characterCount.characters() === 1 ? "character" : "characters"}
-                            </div>
-                        </div>
-                    </div>
-                    <Toolbar.Divider />
-                    <AIDropdown
-                        onCompleteSentence={commands.onCompleteSentence}
-                        onFixSpelling={commands.onFixSpelling}
-                        onMakeLonger={commands.onMakeLonger}
-                        onMakeShorter={commands.onMakeShorter}
-                        onSimplify={commands.onSimplify}
-                        onTldr={commands.onTldr}
-                        onTone={commands.onTone}
-                    />
-                    <Toolbar.Divider />
-                    <MemoContentTypePicker options={blockOptions} />
-                    <MemoFontFamilyPicker onChange={commands.onSetFont} value={states.currentFont || ""} />
-                    <MemoFontSizePicker onChange={commands.onSetFontSize} value={states.currentSize || ""} />
-                    <Toolbar.Divider />
-                    <MemoButton
-                        tooltip="Bold"
-                        tooltipShortcut={["Mod", "B"]}
-                        onClick={commands.onBold}
-                        active={states.isBold}
-                    >
-                        <Icon name="Bold" />
-                    </MemoButton>
-                    <MemoButton
-                        tooltip="Italic"
-                        tooltipShortcut={["Mod", "I"]}
-                        onClick={commands.onItalic}
-                        active={states.isItalic}
-                    >
-                        <Icon name="Italic" />
-                    </MemoButton>
-                    <MemoButton
-                        tooltip="Underline"
-                        tooltipShortcut={["Mod", "U"]}
-                        onClick={commands.onUnderline}
-                        active={states.isUnderline}
-                    >
-                        <Icon name="Underline" />
-                    </MemoButton>
-                    <MemoButton
-                        tooltip="Strikehrough"
-                        tooltipShortcut={["Mod", "X"]}
-                        onClick={commands.onStrike}
-                        active={states.isStrike}
-                    >
-                        <Icon name="Strikethrough" />
-                    </MemoButton>
-                    <MemoButton
-                        tooltip="Code"
-                        tooltipShortcut={["Mod", "E"]}
-                        onClick={commands.onCode}
-                        active={states.isCode}
-                    >
-                        <Icon name="Code" />
-                    </MemoButton>
-                    <MemoButton tooltip="Code block" onClick={commands.onCodeBlock}>
-                        <Icon name="SquareCode" />
-                    </MemoButton>
-
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <MemoButton tooltip="Set Link">
-                                <Icon name="Link" />
-                            </MemoButton>
-                        </PopoverTrigger>
-                        <PopoverContent>
-                            <LinkEditorPanel onSetLink={commands.onLink} />
-                        </PopoverContent>
-                    </Popover>
-
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <MemoButton active={!!states.currentHighlight} tooltip="Highlight text">
-                                <Icon name="Highlighter" />
-                            </MemoButton>
-                        </PopoverTrigger>
-                        <PopoverContent side="top" sideOffset={8} asChild>
-                            <Surface className="p-1">
-                                <MemoColorPicker
-                                    color={states.currentHighlight}
-                                    onChange={commands.onChangeHighlight}
-                                    onClear={commands.onClearHighlight}
-                                />
-                            </Surface>
-                        </PopoverContent>
-                    </Popover>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <MemoButton active={!!states.currentColor} tooltip="Text color">
-                                <Icon name="Palette" />
-                            </MemoButton>
-                        </PopoverTrigger>
-                        <PopoverContent side="top" sideOffset={8} asChild>
-                            <Surface className="p-1">
-                                <MemoColorPicker
-                                    color={states.currentColor}
-                                    onChange={commands.onChangeColor}
-                                    onClear={commands.onClearColor}
-                                />
-                            </Surface>
-                        </PopoverContent>
-                    </Popover>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <MemoButton tooltip="More options">
-                                <Icon name="EllipsisVertical" />
-                            </MemoButton>
-                        </PopoverTrigger>
-                        <PopoverContent side="top" asChild>
-                            <Toolbar.Wrapper>
-                                <MemoButton
-                                    tooltip="Subscript"
-                                    tooltipShortcut={["Mod", "."]}
-                                    onClick={commands.onSubscript}
-                                    active={states.isSubscript}
-                                >
-                                    <Icon name="Subscript" />
-                                </MemoButton>
-                                <MemoButton
-                                    tooltip="Superscript"
-                                    tooltipShortcut={["Mod", ","]}
-                                    onClick={commands.onSuperscript}
-                                    active={states.isSuperscript}
-                                >
-                                    <Icon name="Superscript" />
-                                </MemoButton>
-                                <Toolbar.Divider />
-                                <MemoButton
-                                    tooltip="Align left"
-                                    tooltipShortcut={["Shift", "Mod", "L"]}
-                                    onClick={commands.onAlignLeft}
-                                    active={states.isAlignLeft}
-                                >
-                                    <Icon name="AlignLeft" />
-                                </MemoButton>
-                                <MemoButton
-                                    tooltip="Align center"
-                                    tooltipShortcut={["Shift", "Mod", "E"]}
-                                    onClick={commands.onAlignCenter}
-                                    active={states.isAlignCenter}
-                                >
-                                    <Icon name="AlignCenter" />
-                                </MemoButton>
-                                <MemoButton
-                                    tooltip="Align right"
-                                    tooltipShortcut={["Shift", "Mod", "R"]}
-                                    onClick={commands.onAlignRight}
-                                    active={states.isAlignRight}
-                                >
-                                    <Icon name="AlignRight" />
-                                </MemoButton>
-                                <MemoButton
-                                    tooltip="Justify"
-                                    tooltipShortcut={["Shift", "Mod", "J"]}
-                                    onClick={commands.onAlignJustify}
-                                    active={states.isAlignJustify}
-                                >
-                                    <Icon name="AlignJustify" />
-                                </MemoButton>
-                            </Toolbar.Wrapper>
-                        </PopoverContent>
-                    </Popover>
-                    <Toolbar.Divider />
-                    <MemoButton tooltip="Toggle Zebra" onClick={rightSidebar.toggle} active={rightSidebar.isOpen}>
-                        {rightSidebar.isOpen ? (
-                            <PanelRightClose size={16} strokeWidth={2.5} />
-                        ) : (
-                            <PanelRight size={16} strokeWidth={2.5} />
-                        )}
-                    </MemoButton>
-                    {/* <Toggle
-                        aria-label="Toggle bold"
-                        size="sm"
-                        // onClick={toggleRightSidebar}
-                        className="relative"
-                        pressed={rightSidebar.isOpen}
-                        onPressedChange={() => rightSidebar.toggle}
-                    >
-                        <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
-                    </Toggle> */}
-                </Toolbar.Wrapper>
-            </div>
-        );
-    };
-
-    const EditorFooter = (props: {
-        onSendCallback: (content: string, rawContent: string) => void;
-        onScheduleSendCallback: (content: string, rawContent: string) => void;
-    }): React.JSX.Element => {
-        const { editorChat } = useContext(EditorContext);
-
-        const handleSend = (): void => {
-            editorChat?.reset();
-            props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
-        };
-
-        const handelMail = (): void => {
-            window.open("mailto:?to=&body=AAA,&subject=BBB");
-        };
-
-        return (
-            <div className="flex flex-row justify-end pt-2 pr-4 border-t">
-                {/* <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handelMail}>
-                    <Mail size={20} />
-                </Button>
-                <DropdownMenu>
-                    <div>
-                        <DropdownMenuTrigger>
-                            <div className="mx-4 border rounded-full" style={{ padding: 7 }}>
-                                <ChevronDown size={20} />
-                            </div>
-                        </DropdownMenuTrigger>
-                    </div>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu> */}
-                <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handleSend}>
-                    <SendHorizontal size={20} />
-                </Button>
-            </div>
-        );
-    };
 
     const handleOpenClose = (open: boolean) => {
         if (open) {
@@ -385,7 +139,7 @@ const EditorDialog = (props: {
             <DialogContent className="p-0 overflow-hidden" style={{ gap: 0, width: 1100, height: "80%" }}>
                 <EditorContext.Provider value={providerValue}>
                     <div style={{ height: 45, marginTop: 15 }}>
-                        <EditorHeader editor={editor} />
+                        <EditorHeader editor={editor} characterCount={characterCount} rightSidebar={rightSidebar} />
                     </div>
                     {/* {props.editorReply && (
                         <div style={{ margin: "16px 64px 0px 64px" }}>
@@ -427,6 +181,7 @@ const EditorDialog = (props: {
                     </div>
                     <div style={{ height: 50 }}>
                         <EditorFooter
+                            editor={editor}
                             onScheduleSendCallback={(content: string, rawContent: string): void => {
                                 props.onScheduleSendCallback(content, rawContent);
                                 setContent("");
@@ -442,6 +197,266 @@ const EditorDialog = (props: {
                 </EditorContext.Provider>
             </DialogContent>
         </Dialog>
+    );
+};
+
+const EditorHeader = ({
+    editor,
+    characterCount,
+    rightSidebar,
+}: {
+    editor: Editor;
+    characterCount: CharacterCountProps;
+    rightSidebar: SidebarState;
+}): JSX.Element => {
+    const commands = useTextmenuCommands(editor);
+    const states = useTextmenuStates(editor);
+    const blockOptions = useTextmenuContentTypes(editor);
+
+    return (
+        <div className="flex-1 flex w-full relative justify-center overflow-y-auto">
+            <Toolbar.Wrapper className="border border-slate-300 shadow-xl z-30 border-t-0">
+                {/* <Toolbar.Button
+                        tooltip={leftSidebar.isOpen ? "Close sidebar" : "Open sidebar"}
+                        onClick={leftSidebar.toggle}
+                        active={leftSidebar.isOpen}
+                        className={leftSidebar.isOpen ? "bg-transparent" : ""}
+                    >
+                        <Icon name={leftSidebar.isOpen ? "PanelLeftClose" : "PanelLeft"} />
+                    </Toolbar.Button> */}
+                <div className="flex items-center mx-4">
+                    <div className="flex flex-col justify-center">
+                        <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                            {characterCount.words()} {characterCount.words() === 1 ? "word" : "words"}
+                        </div>
+                        <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+                            {characterCount.characters()}{" "}
+                            {characterCount.characters() === 1 ? "character" : "characters"}
+                        </div>
+                    </div>
+                </div>
+                <Toolbar.Divider />
+                <AIDropdown
+                    onCompleteSentence={commands.onCompleteSentence}
+                    onFixSpelling={commands.onFixSpelling}
+                    onMakeLonger={commands.onMakeLonger}
+                    onMakeShorter={commands.onMakeShorter}
+                    onSimplify={commands.onSimplify}
+                    // onTldr={commands.onTldr}
+                    onTone={commands.onTone}
+                />
+                <Toolbar.Divider />
+                <MemoContentTypePicker options={blockOptions} />
+                <MemoFontFamilyPicker onChange={commands.onSetFont} value={states.currentFont || ""} />
+                <MemoFontSizePicker onChange={commands.onSetFontSize} value={states.currentSize || ""} />
+                <Toolbar.Divider />
+                <MemoButton
+                    tooltip="Bold"
+                    tooltipShortcut={["Mod", "B"]}
+                    onClick={commands.onBold}
+                    active={states.isBold}
+                >
+                    <Icon name="Bold" />
+                </MemoButton>
+                <MemoButton
+                    tooltip="Italic"
+                    tooltipShortcut={["Mod", "I"]}
+                    onClick={commands.onItalic}
+                    active={states.isItalic}
+                >
+                    <Icon name="Italic" />
+                </MemoButton>
+                <MemoButton
+                    tooltip="Underline"
+                    tooltipShortcut={["Mod", "U"]}
+                    onClick={commands.onUnderline}
+                    active={states.isUnderline}
+                >
+                    <Icon name="Underline" />
+                </MemoButton>
+                <MemoButton
+                    tooltip="Strikehrough"
+                    tooltipShortcut={["Mod", "X"]}
+                    onClick={commands.onStrike}
+                    active={states.isStrike}
+                >
+                    <Icon name="Strikethrough" />
+                </MemoButton>
+                <MemoButton
+                    tooltip="Code"
+                    tooltipShortcut={["Mod", "E"]}
+                    onClick={commands.onCode}
+                    active={states.isCode}
+                >
+                    <Icon name="Code" />
+                </MemoButton>
+                <MemoButton tooltip="Code block" onClick={commands.onCodeBlock}>
+                    <Icon name="SquareCode" />
+                </MemoButton>
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <MemoButton tooltip="Set Link">
+                            <Icon name="Link" />
+                        </MemoButton>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        <LinkEditorPanel onSetLink={commands.onLink} />
+                    </PopoverContent>
+                </Popover>
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <MemoButton active={!!states.currentHighlight} tooltip="Highlight text">
+                            <Icon name="Highlighter" />
+                        </MemoButton>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" sideOffset={8} asChild>
+                        <Surface className="p-1">
+                            <MemoColorPicker
+                                currentColor={states.currentHighlight}
+                                onChange={commands.onChangeHighlight}
+                                onClear={commands.onClearHighlight}
+                            />
+                        </Surface>
+                    </PopoverContent>
+                </Popover>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <MemoButton active={!!states.currentColor} tooltip="Text color">
+                            <Icon name="Palette" />
+                        </MemoButton>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" sideOffset={8} asChild>
+                        <Surface className="p-1">
+                            <MemoColorPicker
+                                currentColor={states.currentColor}
+                                onChange={commands.onChangeColor}
+                                onClear={commands.onClearColor}
+                            />
+                        </Surface>
+                    </PopoverContent>
+                </Popover>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <MemoButton tooltip="More options">
+                            <Icon name="EllipsisVertical" />
+                        </MemoButton>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" asChild>
+                        <Toolbar.Wrapper>
+                            <MemoButton
+                                tooltip="Subscript"
+                                tooltipShortcut={["Mod", "."]}
+                                onClick={commands.onSubscript}
+                                active={states.isSubscript}
+                            >
+                                <Icon name="Subscript" />
+                            </MemoButton>
+                            <MemoButton
+                                tooltip="Superscript"
+                                tooltipShortcut={["Mod", ","]}
+                                onClick={commands.onSuperscript}
+                                active={states.isSuperscript}
+                            >
+                                <Icon name="Superscript" />
+                            </MemoButton>
+                            <Toolbar.Divider />
+                            <MemoButton
+                                tooltip="Align left"
+                                tooltipShortcut={["Shift", "Mod", "L"]}
+                                onClick={commands.onAlignLeft}
+                                active={states.isAlignLeft}
+                            >
+                                <Icon name="AlignLeft" />
+                            </MemoButton>
+                            <MemoButton
+                                tooltip="Align center"
+                                tooltipShortcut={["Shift", "Mod", "E"]}
+                                onClick={commands.onAlignCenter}
+                                active={states.isAlignCenter}
+                            >
+                                <Icon name="AlignCenter" />
+                            </MemoButton>
+                            <MemoButton
+                                tooltip="Align right"
+                                tooltipShortcut={["Shift", "Mod", "R"]}
+                                onClick={commands.onAlignRight}
+                                active={states.isAlignRight}
+                            >
+                                <Icon name="AlignRight" />
+                            </MemoButton>
+                            <MemoButton
+                                tooltip="Justify"
+                                tooltipShortcut={["Shift", "Mod", "J"]}
+                                onClick={commands.onAlignJustify}
+                                active={states.isAlignJustify}
+                            >
+                                <Icon name="AlignJustify" />
+                            </MemoButton>
+                        </Toolbar.Wrapper>
+                    </PopoverContent>
+                </Popover>
+                <Toolbar.Divider />
+                <MemoButton tooltip="Toggle Zebra" onClick={rightSidebar.toggle} active={rightSidebar.isOpen}>
+                    {rightSidebar.isOpen ? (
+                        <PanelRightClose size={16} strokeWidth={2.5} />
+                    ) : (
+                        <PanelRight size={16} strokeWidth={2.5} />
+                    )}
+                </MemoButton>
+                {/* <Toggle
+                        aria-label="Toggle bold"
+                        size="sm"
+                        // onClick={toggleRightSidebar}
+                        className="relative"
+                        pressed={rightSidebar.isOpen}
+                        onPressedChange={() => rightSidebar.toggle}
+                    >
+                        <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
+                    </Toggle> */}
+            </Toolbar.Wrapper>
+        </div>
+    );
+};
+
+const EditorFooter = (props: {
+    editor: Editor;
+    onSendCallback: (content: string, rawContent: string) => void;
+    onScheduleSendCallback: (content: string, rawContent: string) => void;
+}): React.JSX.Element => {
+    const { editorChat } = useContext(EditorContext);
+
+    const handleSend = (): void => {
+        editorChat?.reset();
+        props.onSendCallback?.(props.editor.getHTML(), props.editor.getText());
+    };
+
+    // const handelMail = (): void => {
+    //     window.open("mailto:?to=&body=AAA,&subject=BBB");
+    // };
+
+    return (
+        <div className="flex flex-row justify-end pt-2 pr-4 border-t">
+            {/* <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handelMail}>
+                    <Mail size={20} />
+                </Button>
+                <DropdownMenu>
+                    <div>
+                        <DropdownMenuTrigger>
+                            <div className="mx-4 border rounded-full" style={{ padding: 7 }}>
+                                <ChevronDown size={20} />
+                            </div>
+                        </DropdownMenuTrigger>
+                    </div>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={props.onScheduleSendCallback}>Schedule Send</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu> */}
+            <Button className="px-8 rounded-full border-0 shadow-none" variant="outline" onClick={handleSend}>
+                <SendHorizontal size={20} />
+            </Button>
+        </div>
     );
 };
 
