@@ -43,6 +43,8 @@ export const CollaborationProvider = ({
             userId={userId}
             onGoBack={() => setSelectedReport(undefined)}
             initialContent={selectedReport.content}
+            aiContent={selectedReport.aiContent}
+            selectedReport={selectedReport}
         />
     );
 };

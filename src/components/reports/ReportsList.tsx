@@ -18,13 +18,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 import { Badge } from "@/components/ui/badge";
+import { ReportActions } from "@/components/reports/ReportActions";
 
 export const ReportsList = ({
     reports,
     onSelectReport,
+    onDuplicate,
 }: {
     reports: Report[];
     onSelectReport: (report: Report) => void;
+    onDuplicate: (reportId: string) => Promise<void>;
 }): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -106,11 +109,11 @@ export const ReportsList = ({
             },
             cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
         },
-        // {
-        //     id: "actions",
-        //     cell: ({ row }) => <ReportActions row={row.original} />,
-        //     size: 20,
-        // },
+        {
+            id: "actions",
+            cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} />,
+            size: 20,
+        },
     ];
 
     const table = useReactTable({

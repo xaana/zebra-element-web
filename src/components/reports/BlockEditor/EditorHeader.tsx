@@ -1,15 +1,17 @@
 import React from "react";
 
 import { EditorInfo } from "./EditorInfo";
-import type { Editor } from "@tiptap/core";
+import type { Editor } from "@tiptap/react";
+import { ReportViewer } from "../ReportViewer";
+import { ShareReport } from "../ShareReport";
 
 import { Icon } from "@/components/ui/Icon";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Button } from "@/components/ui/ButtonAlt";
-import { Button as ButtonUI } from "@/components/ui/button";
 import Tooltip from "@/components/ui/TooltipAlt";
 import { Toggle } from "@/components/ui/toggle";
 import { IconZebra } from "@/components/ui/icons";
+import { Report } from "@/plugins/reports/types";
 
 export type EditorHeaderProps = {
     isLeftSidebarOpen?: boolean;
@@ -18,7 +20,7 @@ export type EditorHeaderProps = {
     toggleRightSidebar?: () => void;
     editor: Editor;
     onGoBack: () => void;
-    generateReport: () => void;
+    selectedReport: Report;
 };
 
 export const EditorHeader = ({
@@ -28,12 +30,13 @@ export const EditorHeader = ({
     toggleRightSidebar,
     editor,
     onGoBack,
-    generateReport,
+    selectedReport,
 }: EditorHeaderProps): JSX.Element => {
     const characterCount = editor?.storage.characterCount || {
         characters: () => 0,
         words: () => 0,
     };
+
     return (
         <div className="flex flex-row items-center justify-between flex-none">
             <div className="flex flex-row gap-x-0 items-center">
@@ -82,15 +85,9 @@ export const EditorHeader = ({
                     onPressedChange={(pressed: boolean) => toggleRightSidebar && toggleRightSidebar()}
                 >
                     <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
-                    {/* <Icon
-            name='Sparkles'
-            className='absolute top-1 right-1 h-[10px] w-[10px]'
-          /> */}
                 </Toggle>
-                <ButtonUI onClick={generateReport} size="sm">
-                    Generate Report
-                    <Icon name="ArrowRight" className="ml-2 h-4 w-4" />
-                </ButtonUI>
+                <ReportViewer editor={editor} />
+                <ShareReport report={selectedReport} />
             </div>
         </div>
     );

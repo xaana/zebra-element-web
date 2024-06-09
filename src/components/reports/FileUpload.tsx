@@ -84,6 +84,7 @@ export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Pro
             setErrors([]);
             fileUploadForm.clearErrors("files");
 
+            handleDialogToggle(false);
             await onFileUpload(fileInput[0]);
         }
     };
@@ -105,13 +106,13 @@ export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Pro
         }
         const fileBlob = await matrixFile.mediaHelper.sourceBlob.value;
         const file = new File([fileBlob], matrixFile.name, { type: "application/pdf" });
+        handleDialogToggle(false);
         await onFileUpload(file);
     };
 
     useEffect(() => {
         if (Object.keys(rowSelection).length == 1) {
             uploadFile(documents[parseInt(Object.keys(rowSelection)[0])]);
-            handleDialogToggle(false);
         }
     }, [rowSelection]); // eslint-disable-line react-hooks/exhaustive-deps
 

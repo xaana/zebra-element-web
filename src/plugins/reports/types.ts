@@ -20,6 +20,14 @@ export type StepItem = {
     nextStepTitle: string;
 };
 
+export type AiGenerationContent = {
+    documentPrompt: string;
+    allTitles: string[];
+    contentSize: string;
+    tone: string;
+    targetAudience: string;
+};
+
 export type Report = {
     id: string;
     name: string;
@@ -30,6 +38,7 @@ export type Report = {
     accessType?: string;
     content?: string;
     status?: string;
+    aiContent?: AiGenerationContent;
 };
 
 export type File = {

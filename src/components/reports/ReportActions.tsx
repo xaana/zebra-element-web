@@ -1,9 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useSetAtom } from "jotai";
+import React, { useEffect, useState } from "react";
 import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
-import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
-import { Alignment } from "matrix-react-sdk/src/components/views/elements/Tooltip";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
@@ -11,7 +8,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 
 import { Icon } from "@/components/ui/Icon";
-import { steps } from "@/plugins/reports/initialContent";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -21,22 +17,22 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { showHomeAtom, activeStepAtom } from "@/plugins/reports/stores/store";
 import { Report } from "@/plugins/reports/types";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
-// import { getTemplateContent } from "@/plugins/reports/utils/getTemplateContent";
-import { getVectorConfig } from "@/vector/getconfig";
+import { getReportContent } from "@/plugins/reports/utils/getReportContent";
 
-export function TemplateActions({ row }: { row: Template }): JSX.Element {
-    const setShowHome = useSetAtom(showHomeAtom);
-    const setActiveStep = useSetAtom(activeStepAtom);
-    const { editor } = useContext(EditorContext);
+export function ReportActions({
+    row,
+    onDuplicate,
+}: {
+    row: Report;
+    onDuplicate: (reportId: string) => Promise<void>;
+}): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
     const [userIds, setUserIds] = useState<string[]>([]);
     const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
     // prevent trigger the parent root on click to view the template
-    const handleClick = (event) => {
+    const handleClick = (event: any): void => {
         // Prevents the click event from bubbling up to parent elements
         event.stopPropagation();
 
@@ -55,26 +51,18 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
     }, []);
 
     const downloadFile = async (): Promise<void> => {
-        if (!editor) return;
-
-        let templateContent: string | null = null;
+        let htmlContent: string | undefined = undefined;
 
         if (!row.content) {
-            const templateContentString = await getTemplateContent(row.id);
-            if (templateContentString) {
-                templateContent = templateContentString;
-            }
-        } else {
-            editor.commands.setContent(row.content);
-            templateContent = editor.getHTML();
+            htmlContent = (await getReportContent(row.id)) ?? undefined;
         }
 
-        if (!templateContent) {
+        if (!htmlContent) {
+            toast.error("Failed to download the report");
             return;
         }
 
-        editor?.commands.setContent(templateContent);
-        const pdfBlob = await generatePdf(editor.getHTML());
+        const pdfBlob = await generatePdf(htmlContent);
 
         const fileDownloader = new FileDownloader();
         pdfBlob &&
@@ -85,22 +73,8 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
             });
     };
 
-    // TODO: not working after prevent trigger parent root div onclick, before it just trigger the onSelectTemplate in TemplateCard.txs
-    const handleEditReport = async (): Promise<void> => {
-        if (Number(row.id) < 0) {
-            row.content && editor?.commands.setContent(row.content);
-            return;
-        }
-        try {
-            const templateContentString = await getTemplateContent(row.id);
-            if (templateContentString) {
-                editor?.commands.setContent(JSON.parse(templateContentString));
-                setActiveStep(() => steps[1]);
-                setShowHome(false);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
+    const handleDuplicate = async (): Promise<void> => {
+        await onDuplicate(row.id);
     };
 
     const approveElement = (
@@ -194,7 +168,7 @@ export function TemplateActions({ row }: { row: Template }): JSX.Element {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                    <DropdownMenuItem className="cursor-pointer" onClick={handleEditReport}>
+                    <DropdownMenuItem className="cursor-pointer" onClick={handleDuplicate}>
                         Duplicate
                         <DropdownMenuShortcut>
                             <Icon name="Copy" className="w-4 h-4" />

@@ -8,18 +8,32 @@ import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
 import { EditorHeader } from "@/components/reports/BlockEditor/EditorHeader";
 import { BlockEditor } from "@/components/reports/BlockEditor";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { AiGenerationContent, Report } from "@/plugins/reports/types";
 
 interface ReportEditorProps {
     collabProvider: HocuspocusProvider;
     userId: string;
     onGoBack: () => void;
+    selectedReport: Report;
     initialContent?: string;
+    aiContent?: AiGenerationContent;
 }
-export const ReportEditor = ({ collabProvider, userId, onGoBack, initialContent }: ReportEditorProps): JSX.Element => {
+export const ReportEditor = ({
+    collabProvider,
+    userId,
+    onGoBack,
+    selectedReport,
+    initialContent,
+    aiContent,
+}: ReportEditorProps): JSX.Element => {
+    const aiState = useAIState();
+
     const { editor, users, collabState } = useBlockEditor({
         collabProvider,
         userId,
         initialContent,
+        aiContent,
+        setIsAiLoading: aiState.setIsAiLoading,
     });
 
     const leftSidebar = useSidebar();
@@ -31,8 +45,6 @@ export const ReportEditor = ({ collabProvider, userId, onGoBack, initialContent 
         close: rightSidebar.close,
         toggle: rightSidebar.toggle,
     });
-
-    const aiState = useAIState();
 
     const providerValue = useMemo(() => {
         return {
@@ -47,10 +59,6 @@ export const ReportEditor = ({ collabProvider, userId, onGoBack, initialContent 
         };
     }, [aiState, chat, editor, collabState, users]);
 
-    const proceedToGeneratePdf = (): void => {
-        // nextStep();
-    };
-
     return (
         <EditorContext.Provider value={providerValue}>
             {editor && (
@@ -63,7 +71,7 @@ export const ReportEditor = ({ collabProvider, userId, onGoBack, initialContent 
                             toggleRightSidebar={rightSidebar.toggle}
                             editor={editor}
                             onGoBack={onGoBack}
-                            generateReport={proceedToGeneratePdf}
+                            selectedReport={selectedReport}
                         />
                     </div>
                     <div style={{ height: "calc(100vh - 60px)" }} className="w-full">

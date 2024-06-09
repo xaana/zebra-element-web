@@ -1,8 +1,10 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
 
-import type { Report } from "@/plugins/reports/types";
 // import { TemplateActions } from "./TemplateActions";
+
+import { ReportThumbnail } from "./ReportThumbnail";
+import type { Report } from "@/plugins/reports/types";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -19,11 +21,7 @@ export const ReportCard = ({
             onClick={async () => await onSelectReport(report)}
         >
             <div className="w-full aspect-video relative">
-                <img
-                    src="https://designshack.net/wp-content/uploads/Modern-Minimal-Annual-Report-Report.jpg"
-                    alt="Report Preview"
-                    className="aspect-video object-cover"
-                />
+                <ReportThumbnail />
             </div>
             <div className="p-3">
                 <div className="flex w-full flex-col gap-2 relative">

@@ -1,7 +1,6 @@
-import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 
-import type { Report } from "@/plugins/reports/types";
+import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
 import { FileUpload } from "@/components/reports/FileUpload";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
@@ -10,7 +9,6 @@ import { ReportCard } from "@/components/reports/ReportCard";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ReportSelectorProps {
@@ -18,24 +16,18 @@ interface ReportSelectorProps {
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
     onFileUpload: (file: File) => Promise<void>;
+    onDuplicate: (reportId: string) => Promise<void>;
+    onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
 }
-
-export type GeneratedOutline = {
-    documentPrompt: string;
-    allTitles: string[];
-    contentSize: string;
-    tone: string;
-    targetAudience: string;
-};
 
 export const ReportSelector = ({
     reports,
     setSelectedReport,
     userId,
     onFileUpload,
+    onDuplicate,
+    onAiGenerate,
 }: ReportSelectorProps): JSX.Element => {
-    const setGeneratorOutline = useSetAtom(generatedOutlineAtom);
-
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
     const [displayType, setDisplayType] = useState("grid");
@@ -54,22 +46,14 @@ export const ReportSelector = ({
         setSelectedReport(report);
     };
 
-    const handleReportGenerateAI = async (
+    const handleAiGenerate = async (
         documentPrompt: string,
         allTitles: string[],
         contentSize: string,
         tone: string,
         targetAudience: string,
     ): Promise<void> => {
-        setGeneratorOutline({
-            documentPrompt,
-            allTitles,
-            contentSize,
-            tone,
-            targetAudience,
-        });
-        // Open blank editor
-        setSelectedReport(null);
+        onAiGenerate({ documentPrompt, allTitles, contentSize, tone, targetAudience } as AiGenerationContent);
     };
 
     return (
@@ -79,7 +63,7 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleReportGenerateAI} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} />
                 <FileUpload onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
@@ -141,7 +125,7 @@ export const ReportSelector = ({
                     ))}
                 </div>
             ) : (
-                <ReportsList reports={filteredReports} onSelectReport={handleSelectReport} />
+                <ReportsList reports={filteredReports} onSelectReport={handleSelectReport} onDuplicate={onDuplicate} />
             )}
         </>
     );
