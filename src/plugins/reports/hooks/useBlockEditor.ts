@@ -71,16 +71,18 @@ export const useBlockEditor = ({
             extensions: [
                 // eslint-disable-next-line new-cap
                 ...ExtensionKit({}),
-                Collaboration.configure({
-                    document: collabProvider.document,
-                }),
-                CollaborationCursor.configure({
-                    provider: collabProvider,
-                    user: {
-                        name: userId,
-                        color: randomElement(userColors),
-                    },
-                }),
+                collabProvider &&
+                    Collaboration.configure({
+                        document: collabProvider.document,
+                    }),
+                collabProvider &&
+                    CollaborationCursor.configure({
+                        provider: collabProvider,
+                        user: {
+                            name: userId,
+                            color: randomElement(userColors),
+                        },
+                    }),
             ],
             editorProps: {
                 attributes: {
@@ -109,7 +111,7 @@ export const useBlockEditor = ({
     }, [editor?.storage.collaborationCursor?.users]);
 
     useEffect(() => {
-        collabProvider.on("status", (event: { status: WebSocketStatus }) => {
+        collabProvider?.on("status", (event: { status: WebSocketStatus }) => {
             setCollabState(event.status);
         });
     }, [collabProvider]);
