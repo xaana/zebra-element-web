@@ -170,7 +170,7 @@ export const Home = (): JSX.Element => {
     };
 
     return (
-        <div className="h-full overflow-auto">
+        <div className="h-full w-full">
             {/* No report selected - Show report selector */}
             {selectedReport === undefined && (
                 <motion.div

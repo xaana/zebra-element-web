@@ -46,22 +46,22 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
     const aiLoaderPortal = createPortal(<Loader label="Zebra is generating content..." />, document.body);
 
     return (
-        <div className="w-full h-full overflow-y-auto relative flex">
+        <div className="w-full h-full relative flex justify-between">
             <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                 <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
             </Sidebar>
-            <div className="flex-1 flex h-max relative justify-center overflow-y-auto" ref={menuContainerRef}>
-                <div className="editor__container relative flex flex-col h-full shrink basis-[55em]">
+            <div className="h-full flex-1 flex relative justify-center" ref={menuContainerRef}>
+                <div className="editor__container h-full overflow-y-auto relative flex flex-col shrink basis-[55em]">
                     <Separator className="h-6 invisible" />
                     <EditorContent
                         editor={editor}
                         ref={editorRef}
                         className={cn(
-                            "flex-1 w-full h-full border-2 rounded-2xl transition-all outline-none",
+                            "flex-1 w-full h-auto border-2 rounded-2xl transition-all outline-none",
                             editor.isFocused &&
                                 "outline outline-[2.5px] -outline-offset-[3.5px] outline-primary/40  dark:outline-primary-500",
                         )}
-                        style={{ minHeight: "calc(100vh - 108px)" }}
+                        // style={{ minHeight: "calc(100vh - 108px)" }}
                     />
                     <ContentItemMenu editor={editor} />
                     <LinkMenu editor={editor} appendTo={menuContainerRef} />
