@@ -17,7 +17,7 @@ export type EditorHeaderProps = {
     toggleLeftSidebar?: () => void;
     toggleRightSidebar?: () => void;
     editor: Editor;
-    goBack: () => void;
+    onGoBack: () => void;
     generateReport: () => void;
 };
 
@@ -27,7 +27,7 @@ export const EditorHeader = ({
     toggleLeftSidebar,
     toggleRightSidebar,
     editor,
-    goBack,
+    onGoBack,
     generateReport,
 }: EditorHeaderProps): JSX.Element => {
     const characterCount = editor?.storage.characterCount || {
@@ -37,7 +37,7 @@ export const EditorHeader = ({
     return (
         <div className="flex flex-row items-center justify-between flex-none">
             <div className="flex flex-row gap-x-0 items-center">
-                <Toolbar.Button tooltip="Reports Home" onClick={goBack}>
+                <Toolbar.Button tooltip="Reports Home" onClick={onGoBack}>
                     <Icon name="ArrowLeftToLine" />
                 </Toolbar.Button>
                 <Toolbar.Button

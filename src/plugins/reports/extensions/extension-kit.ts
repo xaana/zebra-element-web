@@ -5,7 +5,7 @@
 // import { API } from '@/lib/api'
 
 import { CodeBlockLowlight } from "@tiptap/extension-code-block-lowlight";
-import History from "@tiptap/extension-history";
+// import History from "@tiptap/extension-history";
 import { common, createLowlight } from "lowlight";
 
 import {
@@ -172,7 +172,7 @@ export const ExtensionKit = ({ userId, userName = "Zebra" }: ExtensionKitProps):
         width: 2,
         class: "ProseMirror-dropcursor border-black",
     }),
-    History,
+    // History,
 ];
 
 export default ExtensionKit;

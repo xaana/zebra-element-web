@@ -1,5 +1,3 @@
-import { JSONContent } from "@tiptap/core";
-
 export type MatrixFile = {
     id: string;
     name: string;
@@ -25,12 +23,12 @@ export type StepItem = {
 export type Report = {
     id: string;
     name: string;
-    type: string;
     timestamp: string;
     owner: string;
+    type?: string;
     description?: string;
-    access_type?: string;
-    content?: JSONContent;
+    accessType?: string;
+    content?: string;
     status?: string;
 };
 

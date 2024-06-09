@@ -4,24 +4,18 @@ import { formatDistanceToNow } from "date-fns";
 import type { Report } from "@/plugins/reports/types";
 // import { TemplateActions } from "./TemplateActions";
 
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 export const ReportCard = ({
     report,
-    selected,
     onSelectReport,
 }: {
     report: Report;
-    selected: boolean | undefined;
-    onSelectReport: (report: Report) => Promise<void>;
+    onSelectReport: (report: Report) => void;
 }): JSX.Element => {
     return (
         <div
-            className={cn(
-                "rounded-lg border bg-background text-left text-sm transition-all hover:bg-card overflow-hidden cursor-pointer outline-none",
-                selected && "outline outline-4 outline-primary bg-primary/10",
-            )}
+            className="rounded-lg border bg-background text-left text-sm transition-all hover:bg-card overflow-hidden cursor-pointer outline-none"
             onClick={async () => await onSelectReport(report)}
         >
             <div className="w-full aspect-video relative">
@@ -33,8 +27,7 @@ export const ReportCard = ({
             </div>
             <div className="p-3">
                 <div className="flex w-full flex-col gap-2 relative">
-                    <div className={cn("font-semibold", selected && "text-primary-default")}>{report.name}</div>
-                    {/* <div className="line-clamp-2 text-xs text-muted-foreground">{report.description}</div> */}
+                    <div className="font-semibold">{report.name}</div>
                     <div>
                         <Badge
                             className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"

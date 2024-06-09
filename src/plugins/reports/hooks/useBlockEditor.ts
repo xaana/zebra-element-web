@@ -1,12 +1,9 @@
-import { JSONContent, useEditor } from "@tiptap/react";
-// import { EditorState } from "prosemirror-state";
+import { useEditor } from "@tiptap/react";
 import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import { useEffect, useMemo, useState } from "react";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
-import type { Doc as YDoc } from "yjs";
 import type { Editor } from "@tiptap/react";
 
 import { ExtensionKit } from "@/plugins/reports/extensions/extension-kit";
@@ -21,53 +18,44 @@ declare global {
 }
 
 export const useBlockEditor = ({
-    ydoc,
     collabProvider,
-    editorState,
+    userId,
+    initialContent,
 }: {
-    ydoc: YDoc | undefined;
-    collabProvider?: HocuspocusProvider | null | undefined;
-    editorState?: JSONContent;
+    collabProvider: HocuspocusProvider;
+    userId: string;
+    initialContent?: string;
 }): {
     editor: Editor | null;
-    collabState: WebSocketStatus;
     users: EditorUser[];
+    collabState: WebSocketStatus;
 } => {
-    const client = useMatrixClientContext();
     const [collabState, setCollabState] = useState<WebSocketStatus>(WebSocketStatus.Connecting);
+
     const editor = useEditor(
         {
             autofocus: true,
-            // onCreate: ({ editor }: { editor: Editor }) => {
-            //     if (editor.isEmpty) {
-            //         editor.commands.setContent(editorState || template?.content || null);
-            //         // The following code clears the history. Hopefully without side effects.
-            //         const newEditorState = EditorState.create({
-            //             doc: editor.state.doc,
-            //             plugins: editor.state.plugins,
-            //             schema: editor.state.schema,
-            //         });
-            //         editor.view.updateState(newEditorState);
-            //     }
-            // },
+            onCreate: () => {
+                collabProvider?.on("synced", () => {
+                    if (editor?.isEmpty && initialContent) {
+                        editor.commands.setContent(initialContent);
+                    }
+                });
+            },
             // eslint-disable-next-line new-cap
             extensions: [
                 // eslint-disable-next-line new-cap
                 ...ExtensionKit({}),
-                ...(ydoc
-                    ? [
-                          Collaboration.configure({
-                              document: ydoc,
-                          }),
-                          CollaborationCursor.configure({
-                              provider: collabProvider,
-                              user: {
-                                  name: client.getSafeUserId(),
-                                  color: randomElement(userColors),
-                              },
-                          }),
-                      ]
-                    : []),
+                Collaboration.configure({
+                    document: collabProvider.document,
+                }),
+                CollaborationCursor.configure({
+                    provider: collabProvider,
+                    user: {
+                        name: userId,
+                        color: randomElement(userColors),
+                    },
+                }),
             ],
             editorProps: {
                 attributes: {
@@ -78,7 +66,7 @@ export const useBlockEditor = ({
                 },
             },
         },
-        [ydoc, collabProvider],
+        [collabProvider],
     );
     const users = useMemo((): EditorUser[] => {
         if (!editor?.storage.collaborationCursor?.users) {
@@ -96,11 +84,12 @@ export const useBlockEditor = ({
     }, [editor?.storage.collaborationCursor?.users]);
 
     useEffect(() => {
-        collabProvider?.on("status", (event: { status: WebSocketStatus }) => {
+        collabProvider.on("status", (event: { status: WebSocketStatus }) => {
             setCollabState(event.status);
         });
     }, [collabProvider]);
+
     window.editor = editor;
 
-    return { editor, collabState, users };
+    return { editor, users, collabState };
 };

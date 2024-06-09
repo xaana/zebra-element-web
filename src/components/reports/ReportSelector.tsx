@@ -1,9 +1,7 @@
 import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import type { Report } from "@/plugins/reports/types";
-import type { Editor } from "@tiptap/react";
 
 import { FileUpload } from "@/components/reports/FileUpload";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
@@ -16,10 +14,10 @@ import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ReportSelectorProps {
-    editor: Editor | null;
     reports: Report[];
-    selectedReport: Report | null | undefined;
+    userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
+    onFileUpload: (file: File) => Promise<void>;
 }
 
 export type GeneratedOutline = {
@@ -31,19 +29,16 @@ export type GeneratedOutline = {
 };
 
 export const ReportSelector = ({
-    editor,
     reports,
-    selectedReport,
     setSelectedReport,
+    userId,
+    onFileUpload,
 }: ReportSelectorProps): JSX.Element => {
-    // const [selectedReport, setSelectedReport] = useState<Report | null | undefined>(undefined);
     const setGeneratorOutline = useSetAtom(generatedOutlineAtom);
 
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
     const [displayType, setDisplayType] = useState("grid");
-    const client = useMatrixClientContext();
-    const userId = client.getSafeUserId();
 
     useEffect(() => {
         if (filterValue === "owned") {
@@ -55,23 +50,17 @@ export const ReportSelector = ({
         }
     }, [filterValue, reports, userId]);
 
-    const handleSelectReport = async (report: Report | null): Promise<void> => {
-        // Editor initialization priorities: editorState > template > blank
-        if (report === null) {
-            // Blank template selected
-            setSelectedReport(() => null);
-        } else {
-            setSelectedReport(() => report);
-        }
+    const handleSelectReport = async (report: Report | null | undefined): Promise<void> => {
+        setSelectedReport(report);
     };
 
-    const handleReportGenerateAI = (
+    const handleReportGenerateAI = async (
         documentPrompt: string,
         allTitles: string[],
         contentSize: string,
         tone: string,
         targetAudience: string,
-    ): void => {
+    ): Promise<void> => {
         setGeneratorOutline({
             documentPrompt,
             allTitles,
@@ -79,7 +68,8 @@ export const ReportSelector = ({
             tone,
             targetAudience,
         });
-        handleSelectReport(null);
+        // Open blank editor
+        setSelectedReport(null);
     };
 
     return (
@@ -90,12 +80,11 @@ export const ReportSelector = ({
             </div>
             <div className="flex items-center gap-2 mb-6">
                 <ReportGenerator onReportGenerate={handleReportGenerateAI} />
-                {editor && <FileUpload nextStep={() => setSelectedReport(null)} editor={editor} />}
+                <FileUpload onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
-                    onClick={() => handleSelectReport(null)}
+                    onClick={() => setSelectedReport(null)} // open blank editor
                     size="sm"
-                    disabled={selectedReport === null}
                     variant="outline"
                 >
                     <Icon name="Plus" className="mr-2" />
@@ -147,8 +136,7 @@ export const ReportSelector = ({
                         <ReportCard
                             key={report.id}
                             report={report}
-                            selected={selectedReport !== undefined && selectedReport?.id === report.id}
-                            onSelectReport={handleSelectReport}
+                            onSelectReport={(report) => setSelectedReport(report)}
                         />
                     ))}
                 </div>

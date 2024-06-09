@@ -1,6 +1,6 @@
 import { Editor } from "@tiptap/react";
 import { createContext } from "react";
-import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
+import { WebSocketStatus } from "@hocuspocus/provider";
 
 import { EditorUser } from "@/components/reports/BlockEditor/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
@@ -12,7 +12,6 @@ interface IEditorContext {
     aiError?: string | null;
     setIsAiLoading: Function;
     setAiError: Function;
-    collabProvider: HocuspocusProvider | undefined;
     collabState: WebSocketStatus;
     users: EditorUser[];
 }
@@ -25,6 +24,5 @@ export const EditorContext = createContext<IEditorContext>({
     setIsAiLoading: () => {},
     setAiError: () => {},
     collabState: WebSocketStatus.Connecting,
-    collabProvider: undefined,
     users: [],
 });

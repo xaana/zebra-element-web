@@ -1,85 +1,31 @@
-import React, { useEffect, useRef, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Doc as YDoc } from "yjs";
-import { HocuspocusProvider } from "@hocuspocus/provider";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import type { Report } from "@/plugins/reports/types";
+import { CollaborationProvider } from "./CollaborationProvider";
 
 import { ReportSelector } from "@/components/reports/ReportSelector";
-import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
-import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
-import { ReportEditor } from "@/components/reports/ReportEditor";
-import { useAIState } from "@/plugins/reports/hooks/useAIState";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
-import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
+import { Loader } from "@/components/ui/LoaderAlt";
 
 export const Home = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
     const [selectedReport, setSelectedReport] = useState<Report | null | undefined>(undefined);
     const stepRef = useRef(null);
-
     const client = useMatrixClientContext();
-    const ydoc = useMemo(() => new YDoc(), []);
-
-    // Set up the Hocuspocus WebSocket provider
-    const collabProvider: HocuspocusProvider = useMemo(() => {
-        return new HocuspocusProvider({
-            url: `${SettingsStore.getValue("collabServerWebsocketUrl")}/collaboration`,
-            name: "0",
-            document: ydoc,
-            connect: false,
-            preserveConnection: true,
-            onOpen(data): void {
-                console.log("Connected to Hocuspocus server", data.event);
-            },
-            onMessage(data): void {
-                console.log("Received message from Hocuspocus server", data.message);
-            },
-        });
-    }, [ydoc]);
-
-    const { editor, collabState, users } = useBlockEditor({
-        collabProvider,
-        ydoc,
-    });
-
-    const leftSidebar = useSidebar();
-    const rightSidebar = useSidebar();
-
-    const chat: Chat = useChat({
-        isOpen: rightSidebar.isOpen,
-        open: rightSidebar.open,
-        close: rightSidebar.close,
-        toggle: rightSidebar.toggle,
-    });
-
-    const aiState = useAIState();
-
-    const providerValue = useMemo(() => {
-        return {
-            isAiLoading: aiState.isAiLoading,
-            aiError: aiState.aiError,
-            setIsAiLoading: aiState.setIsAiLoading,
-            setAiError: aiState.setAiError,
-            editor: editor,
-            editorChat: chat,
-            collabState: collabState,
-            collabProvider: collabProvider,
-            users: users,
-        };
-    }, [aiState, chat, editor, collabState, users, collabProvider]);
+    const userId = client.getSafeUserId();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchReports = async (): Promise<void> => {
             try {
-                const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/template/get_documents`, {
+                const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/get_documents`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ user_id: client.getSafeUserId() }),
+                    body: JSON.stringify({ user_id: userId }),
                 });
                 const data = await response.json();
                 if (data?.documents.length === 0) return;
@@ -95,7 +41,7 @@ export const Home = (): JSX.Element => {
                                 permission_type: accessType,
                                 status: status,
                             }: {
-                                id: string;
+                                id: number;
                                 document_name: string;
                                 document_type: string;
                                 owner: string;
@@ -103,11 +49,12 @@ export const Home = (): JSX.Element => {
                                 status: string;
                                 updated_at: Date;
                             }) => ({
-                                id,
+                                id: id.toString(),
                                 name,
                                 type,
                                 owner,
                                 status,
+                                accessType,
                                 timestamp: updatedAt,
                             }),
                         ),
@@ -120,88 +67,118 @@ export const Home = (): JSX.Element => {
         fetchReports();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    useEffect(() => {
-        const createNewReport = async (): Promise<void> => {
-            try {
-                const response = await fetch(`${SettingsStore.getValue("collabServerHttpUrl")}/create_document`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ userId: client.getSafeUserId(), documentName: "Untitled" }),
-                });
-                const data = await response.json();
-                if (data?.documentId) {
-                    collabProvider.setConfiguration({
-                        name: data.documentId.toString(),
-                        token: JSON.stringify({
-                            userId: client.getSafeUserId(),
-                            documentName: "Untitled",
-                        }),
-                    });
-                    await collabProvider.connect();
-                }
-            } catch (error) {
-                console.error("Error creating document", error);
-            }
-        };
+    const createNewReport = async (initialContent?: string): Promise<void> => {
+        try {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/create_document`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: "Untitled" }),
+            });
+            const data = await response.json();
 
+            isLoading && setIsLoading(false);
+
+            setSelectedReport({
+                id: data.document_id.toString(),
+                name: "Untitled",
+                owner: client.getSafeUserId(),
+                accessType: "admin",
+                timestamp: new Date().toISOString(),
+                ...(initialContent && {
+                    content: initialContent,
+                }),
+            });
+        } catch (error) {
+            console.error("Error creating document", error);
+            isLoading && setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         if (selectedReport === undefined) {
-            collabProvider.disconnect();
-            collabProvider.setConfiguration({ name: "0", parameters: undefined });
             return;
         } else if (selectedReport === null) {
             createNewReport();
-        } else {
-            collabProvider.setConfiguration({
-                name: selectedReport.id,
-                token: JSON.stringify({
-                    userId: client.getSafeUserId(),
-                    documentName: selectedReport.name,
-                }),
-            });
-            collabProvider.connect();
+            return;
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const handleFileUpload = async (file: File): Promise<void> => {
+        try {
+            const formData = new FormData();
+            formData.append("files", file);
+            setIsLoading(true);
+            // Make API request
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
+                method: "POST",
+                body: formData,
+            });
+            const responseData = await response.json();
+
+            if (responseData?.html_pages?.length > 0) {
+                const combinedString = responseData.html_pages.join("\n");
+                createNewReport(combinedString);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <EditorContext.Provider value={providerValue}>
-            <div className="h-full overflow-auto">
-                {selectedReport === undefined && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        key="none"
-                        ref={stepRef}
-                        className="max-w-screen-lg mx-auto px-3 my-8"
-                    >
-                        <ReportSelector
-                            editor={editor}
-                            reports={reports}
-                            selectedReport={selectedReport}
-                            setSelectedReport={setSelectedReport}
-                        />
-                    </motion.div>
-                )}
-                {selectedReport !== undefined && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        key={selectedReport ? selectedReport.id : "blank"}
-                        ref={stepRef}
-                    >
-                        <ReportEditor
-                            selectedReport={selectedReport}
-                            onGoBack={() => setSelectedReport(undefined)}
-                            editor={editor}
-                            leftSidebar={leftSidebar}
-                            rightSidebar={rightSidebar}
-                        />
-                    </motion.div>
-                )}
-            </div>
-        </EditorContext.Provider>
+        <div className="h-full overflow-auto">
+            {/* No report selected - Show report selector */}
+            {selectedReport === undefined && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    key="selector"
+                    ref={stepRef}
+                    className="max-w-screen-lg mx-auto px-3 my-8"
+                >
+                    <ReportSelector
+                        reports={reports}
+                        setSelectedReport={setSelectedReport}
+                        userId={userId}
+                        onFileUpload={handleFileUpload}
+                    />
+                </motion.div>
+            )}
+            {/* Null report selected - Show loader */}
+            {(selectedReport === null || isLoading) && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    key="loader"
+                    ref={stepRef}
+                >
+                    <div className="max-w-screen-lg mx-auto px-3 my-8">
+                        <div className="w-full h-full flex justify-center items-center">
+                            <Loader label="Creating your report..." />
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+            {/* Report selected - Show report editor */}
+            {selectedReport !== undefined && selectedReport !== null && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    exit={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    key={selectedReport.id}
+                    ref={stepRef}
+                >
+                    <CollaborationProvider
+                        userId={userId}
+                        selectedReport={selectedReport}
+                        setSelectedReport={setSelectedReport}
+                    />
+                </motion.div>
+            )}
+        </div>
     );
 };
