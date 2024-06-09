@@ -121,6 +121,8 @@ export const ReportSelector = ({
                             key={report.id}
                             report={report}
                             onSelectReport={(report) => setSelectedReport(report)}
+                            onDuplicate={onDuplicate}
+                            userId={userId}
                         />
                     ))}
                 </div>

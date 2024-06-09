@@ -4,9 +4,14 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
-
+import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,14 +35,9 @@ export function ReportActions({
 }): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
     const [userIds, setUserIds] = useState<string[]>([]);
-    const [spacePopoverOpen, setSpacePopoverOpen] = useState(false);
-    // prevent trigger the parent root on click to view the template
-    const handleClick = (event: any): void => {
-        // Prevents the click event from bubbling up to parent elements
-        event.stopPropagation();
+    const [dropdownOpen, setDropDownOpen] = useState(false);
+    const [approveDialogOpen, setApproveDialogOpen] = useState(false);
 
-        // Handle other actions specific to TemplateActions here
-    };
     useEffect(() => {
         const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
         const request = new Request(url, {
@@ -51,115 +51,88 @@ export function ReportActions({
     }, []);
 
     const downloadFile = async (): Promise<void> => {
-        let htmlContent: string | undefined = undefined;
+        const documentInfo = await getReportContent(row.id);
+        const { document_html: documentHtml, document_name: documentName } = documentInfo;
 
-        if (!row.content) {
-            htmlContent = (await getReportContent(row.id)) ?? undefined;
-        }
-
-        if (!htmlContent) {
+        if (!documentHtml) {
             toast.error("Failed to download the report");
             return;
         }
 
-        const pdfBlob = await generatePdf(htmlContent);
+        const pdfBlob = await generatePdf(documentHtml);
 
         const fileDownloader = new FileDownloader();
         pdfBlob &&
             fileDownloader.download({
                 blob: pdfBlob,
-                name: row.name + ".pdf",
+                name: documentName ? documentName + ".pdf" : row.name + ".pdf",
                 autoDownload: true,
             });
+    };
+
+    const deleteFile = async (): Promise<void> => {
+        const documentInfo = await getReportContent(row.id);
+        const { document_html: documentHtml, document_name: documentName } = documentInfo;
+
+        if (!documentHtml) {
+            toast.error("Failed to download the report");
+            return;
+        }
+
+        const pdfBlob = await generatePdf(documentHtml);
+
+        const fileDownloader = new FileDownloader();
+        pdfBlob &&
+            fileDownloader.download({
+                blob: pdfBlob,
+                name: documentName ? documentName + ".pdf" : row.name + ".pdf",
+                autoDownload: true,
+            });
+    };
+
+    const stopPropagation = (e: any): void => {
+        e.preventDefault();
+        e.stopPropagation();
     };
 
     const handleDuplicate = async (): Promise<void> => {
         await onDuplicate(row.id);
     };
 
-    const approveElement = (
-        <Popover open={spacePopoverOpen}>
-            <PopoverTrigger asChild={true}>
-                <DropdownMenuItem
-                    className="cursor-pointer"
-                    onSelect={(e) => {
-                        e.preventDefault();
-                        setSpacePopoverOpen(true);
-                    }}
-                >
-                    Approval
-                    <DropdownMenuShortcut>
-                        <Icon name="MessageSquareShare" className="w-4 h-4" />
-                    </DropdownMenuShortcut>
-                </DropdownMenuItem>
-                {/* <AccessibleTooltipButton 
-    // className="p-2" 
-    title="Submit for approval" 
-    alignment={Alignment.Top} 
-    onClick={() => {
-    }}>
-        
-    </AccessibleTooltipButton> */}
-            </PopoverTrigger>
-            <PopoverContent
-                className="!p-1"
-                side="left"
-                align="start"
-                sideOffset={6}
-                onPointerDownOutside={() => setSpacePopoverOpen(false)}
-            >
-                <Command>
-                    <CommandInput placeholder="Search by user ID..." className="text-xs" />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup>
-                            {userIds
-                                .filter((item) => item !== cli.getSafeUserId())
-                                .map((userId, index) => (
-                                    <CommandItem
-                                        className="text-xs"
-                                        key={index}
-                                        value={userId}
-                                        onSelect={() => {
-                                            // setSelectedDb(() => dbList[index])
-                                            setSpacePopoverOpen(false);
-                                            const payload = {
-                                                user_id: cli.getUserId(),
-                                                receiver_id: userId,
-                                                request_data: {
-                                                    filename: row.name,
-                                                    note: "This report is just one testing",
-                                                },
-                                                request_status: "Pending",
-                                            };
-                                            const headers = {
-                                                "Content-Type": "application/json",
-                                            };
-                                            const request = new Request(
-                                                `${SettingsStore.getValue("workflowUrl")}/webhook/approval`,
-                                                {
-                                                    method: "POST",
-                                                    body: JSON.stringify(payload),
-                                                    headers: headers,
-                                                },
-                                            );
-                                            fetch(request);
-                                            toast.success("Report sent successfully");
-                                        }}
-                                    >
-                                        {userId.split(":")[0].substring(1)}
-                                    </CommandItem>
-                                ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    );
+    const handleApproval = async (userId: string): Promise<void> => {
+        setApproveDialogOpen(false);
+        setDropDownOpen(false);
+        try {
+            const response = await fetch(`${SettingsStore.getValue("workflowUrl")}/webhook/approval`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: cli.getUserId(),
+                    receiver_id: userId,
+                    request_data: {
+                        filename: row.name,
+                        note: "Sent for approval",
+                    },
+                    request_status: "Pending",
+                }),
+            });
+
+            if (response.status === 200) {
+                toast.success("Report sent successfully");
+            } else if (response.status === 403) {
+                toast.error(`Unable to send for approval. Please try again later.`);
+            }
+        } catch (error) {
+            toast.error("Unable to send for approval. Please try again later.");
+            console.error("Error fetching data:", error);
+        }
+    };
 
     return (
-        <div className="flex items-center justify-end gap-4" onClick={handleClick}>
-            <DropdownMenu>
+        <div className="flex items-center justify-end gap-4" onClick={stopPropagation}>
+            <DropdownMenu open={dropdownOpen} onOpenChange={setDropDownOpen}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex h-auto w-auto p-1 data-[state=open]:bg-muted rounded-full">
                         {/* <IconEllipses className="w-6 h-6 text-muted-foreground" /> */}
@@ -168,7 +141,13 @@ export function ReportActions({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
-                    <DropdownMenuItem className="cursor-pointer" onClick={handleDuplicate}>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={async (e: any) => {
+                            stopPropagation(e);
+                            await handleDuplicate();
+                        }}
+                    >
                         Duplicate
                         <DropdownMenuShortcut>
                             <Icon name="Copy" className="w-4 h-4" />
@@ -176,9 +155,8 @@ export function ReportActions({
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         className="cursor-pointer"
-                        onClick={async (e: any) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+                        onSelect={async (e: any) => {
+                            stopPropagation(e);
                             await downloadFile();
                         }}
                     >
@@ -187,9 +165,50 @@ export function ReportActions({
                             <Icon name="ArrowDownToLine" className="w-4 h-4" />
                         </DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    {row.type === "report" && approveElement}
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onSelect={async (e: any) => {
+                            stopPropagation(e);
+                            setApproveDialogOpen(true);
+                        }}
+                    >
+                        Approval
+                        <DropdownMenuShortcut>
+                            <Icon name="MessageSquareShare" className="w-4 h-4" />
+                        </DropdownMenuShortcut>
+                        <CommandDialog
+                            className="w-[512px]"
+                            open={approveDialogOpen}
+                            onOpenChange={setApproveDialogOpen}
+                        >
+                            <CommandInput placeholder="Search for user..." />
+                            <CommandList>
+                                <CommandEmpty>No users found.</CommandEmpty>
+                                <CommandGroup heading="Users">
+                                    {userIds
+                                        .filter((item) => item !== cli.getSafeUserId())
+                                        .map((userId, index) => (
+                                            <CommandItem
+                                                className="cursor-pointer"
+                                                key={index}
+                                                onSelect={async () => await handleApproval(userId)}
+                                            >
+                                                <Icon name="CircleUser" className="mr-2 h-4 w-4" />
+                                                <span>{userId.split(":")[0].substring(1)}</span>
+                                            </CommandItem>
+                                        ))}
+                                </CommandGroup>
+                            </CommandList>
+                        </CommandDialog>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem
+                        className="text-red-600"
+                        onSelect={async (e: any) => {
+                            stopPropagation(e);
+                            await deleteFile();
+                        }}
+                    >
                         Delete
                         <DropdownMenuShortcut>
                             <Icon name="Trash2" className="w-4 h-4" />

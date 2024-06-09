@@ -11,13 +11,10 @@ import {
 } from "@tanstack/react-table";
 import { format, parseISO, isToday } from "date-fns";
 
-// import { TemplateActions } from "@/components/reports/TemplateActions";
 import { Button } from "@/components/ui/button";
-// import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
-import { Badge } from "@/components/ui/badge";
 import { ReportActions } from "@/components/reports/ReportActions";
 
 export const ReportsList = ({
@@ -53,31 +50,6 @@ export const ReportsList = ({
             ),
         },
         {
-            accessorKey: "type",
-            header: ({ column }): JSX.Element => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="w-auto"
-                    >
-                        Type
-                        <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-            cell: ({ row }) => (
-                <div className="ml-3">
-                    <Badge
-                        className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
-                        variant="secondary"
-                    >
-                        {row.getValue("type") === "report" ? "Report" : "Report"}
-                    </Badge>
-                </div>
-            ),
-        },
-        {
             accessorKey: "timestamp",
             // header: () => <div className="text-right">Last Modified</div>,
             header: ({ column }): JSX.Element => {
@@ -102,13 +74,13 @@ export const ReportsList = ({
                 return <div className="text-left ml-3">{Number(row.original.id) < 0 ? "–" : formatted}</div>;
             },
         },
-        {
-            accessorKey: "status",
-            header: ({ column }): JSX.Element => {
-                return <div>Status</div>;
-            },
-            cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
-        },
+        // {
+        //     accessorKey: "status",
+        //     header: ({ column }): JSX.Element => {
+        //         return <div>Status</div>;
+        //     },
+        //     cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
+        // },
         {
             id: "actions",
             cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} />,
@@ -131,16 +103,6 @@ export const ReportsList = ({
     });
     return (
         <div className="w-full">
-            {/* <div className='flex items-center py-4'>
-        <Input
-          placeholder='Filter reports...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm'
-        />
-      </div> */}
             <div className="">
                 <Table>
                     <TableHeader>

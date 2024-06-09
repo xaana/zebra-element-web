@@ -33,7 +33,6 @@ export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
     }, []);
 
     const handleShare = async (userId: string): Promise<void> => {
-        console.log(`Sharing document with ${userId}`);
         setOpen(false);
         try {
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/share_document`, {
@@ -47,7 +46,6 @@ export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
                     target_user_id: userId,
                 }),
             });
-            // const data = await response.json();
 
             if (response.status === 200) {
                 toast.success(`Document shared successfully.`);
