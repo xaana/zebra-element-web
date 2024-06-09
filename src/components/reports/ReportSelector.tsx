@@ -1,0 +1,160 @@
+import { useSetAtom } from "jotai";
+import React, { useEffect, useState } from "react";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+
+import type { Report } from "@/plugins/reports/types";
+import type { Editor } from "@tiptap/react";
+
+import { FileUpload } from "@/components/reports/FileUpload";
+import { ReportGenerator } from "@/components/reports/ReportGenerator";
+import { ReportsList } from "@/components/reports/ReportsList";
+import { ReportCard } from "@/components/reports/ReportCard";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/Icon";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generatedOutlineAtom } from "@/plugins/reports/stores/store";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+interface ReportSelectorProps {
+    editor: Editor | null;
+    reports: Report[];
+    selectedReport: Report | null | undefined;
+    setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
+}
+
+export type GeneratedOutline = {
+    documentPrompt: string;
+    allTitles: string[];
+    contentSize: string;
+    tone: string;
+    targetAudience: string;
+};
+
+export const ReportSelector = ({
+    editor,
+    reports,
+    selectedReport,
+    setSelectedReport,
+}: ReportSelectorProps): JSX.Element => {
+    // const [selectedReport, setSelectedReport] = useState<Report | null | undefined>(undefined);
+    const setGeneratorOutline = useSetAtom(generatedOutlineAtom);
+
+    const [filteredReports, setFilteredReports] = useState<Report[]>([]);
+    const [filterValue, setFilterValue] = useState("all");
+    const [displayType, setDisplayType] = useState("grid");
+    const client = useMatrixClientContext();
+    const userId = client.getSafeUserId();
+
+    useEffect(() => {
+        if (filterValue === "owned") {
+            setFilteredReports(reports.filter((report) => report.owner === userId));
+        } else if (filterValue === "shared") {
+            setFilteredReports(reports.filter((report) => report.owner !== userId));
+        } else {
+            setFilteredReports(reports);
+        }
+    }, [filterValue, reports, userId]);
+
+    const handleSelectReport = async (report: Report | null): Promise<void> => {
+        // Editor initialization priorities: editorState > template > blank
+        if (report === null) {
+            // Blank template selected
+            setSelectedReport(() => null);
+        } else {
+            setSelectedReport(() => report);
+        }
+    };
+
+    const handleReportGenerateAI = (
+        documentPrompt: string,
+        allTitles: string[],
+        contentSize: string,
+        tone: string,
+        targetAudience: string,
+    ): void => {
+        setGeneratorOutline({
+            documentPrompt,
+            allTitles,
+            contentSize,
+            tone,
+            targetAudience,
+        });
+        handleSelectReport(null);
+    };
+
+    return (
+        <>
+            <div className="w-full text-2xl font-semibold mb-2 flex items-center gap-2">
+                <Icon name="GalleryVerticalEnd" className="h-5 w-5" />
+                All Reports
+            </div>
+            <div className="flex items-center gap-2 mb-6">
+                <ReportGenerator onReportGenerate={handleReportGenerateAI} />
+                {editor && <FileUpload nextStep={() => setSelectedReport(null)} editor={editor} />}
+                <Button
+                    className="font-semibold text-sm"
+                    onClick={() => handleSelectReport(null)}
+                    size="sm"
+                    disabled={selectedReport === null}
+                    variant="outline"
+                >
+                    <Icon name="Plus" className="mr-2" />
+                    New From Blank
+                </Button>
+            </div>
+
+            <div className="flex justify-between items-center mb-6">
+                <ToggleGroup
+                    type="single"
+                    value={filterValue}
+                    onValueChange={(value) => {
+                        if (value) setFilterValue(value);
+                    }}
+                    className="justify-start gap-2"
+                    size="sm"
+                >
+                    <ToggleGroupItem value="all" aria-label="Toggle all">
+                        <Icon name="AlignJustify" className="mr-2" />
+                        All
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="owned" aria-label="Toggle templates">
+                        <Icon name="FileCheck2" className="mr-2" />
+                        My Reports
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="shared" aria-label="Toggle reports">
+                        <Icon name="Users" className="mr-2" />
+                        Shared with me
+                    </ToggleGroupItem>
+                </ToggleGroup>
+
+                <Tabs value={displayType} onValueChange={(value) => setDisplayType(value)} className="">
+                    <TabsList>
+                        <TabsTrigger value="grid">
+                            <Icon className="mr-2" name="LayoutGrid" />
+                            Grid
+                        </TabsTrigger>
+                        <TabsTrigger value="list">
+                            <Icon className="mr-2" name="List" />
+                            List
+                        </TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
+
+            {displayType === "grid" ? (
+                <div className="w-full grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {filteredReports.map((report) => (
+                        <ReportCard
+                            key={report.id}
+                            report={report}
+                            selected={selectedReport !== undefined && selectedReport?.id === report.id}
+                            onSelectReport={handleSelectReport}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <ReportsList reports={filteredReports} onSelectReport={handleSelectReport} />
+            )}
+        </>
+    );
+};

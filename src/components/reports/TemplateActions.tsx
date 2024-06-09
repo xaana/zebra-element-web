@@ -22,10 +22,10 @@ import {
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { showHomeAtom, activeStepAtom } from "@/plugins/reports/stores/store";
-import { Template } from "@/plugins/reports/types";
+import { Report } from "@/plugins/reports/types";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
-import { getTemplateContent } from "@/plugins/reports/utils/getTemplateContent";
+// import { getTemplateContent } from "@/plugins/reports/utils/getTemplateContent";
 import { getVectorConfig } from "@/vector/getconfig";
 
 export function TemplateActions({ row }: { row: Template }): JSX.Element {

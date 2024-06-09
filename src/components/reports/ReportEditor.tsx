@@ -1,31 +1,27 @@
 import React from "react";
 
 import type { Editor } from "@tiptap/react";
+import type { Report } from "@/plugins/reports/types";
 
 import { EditorHeader } from "@/components/reports/BlockEditor/EditorHeader";
 import { BlockEditor } from "@/components/reports/BlockEditor";
 import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
-
 interface ReportEditorProps {
     editor: Editor | null;
-    nextStep: (htmlContent?: string) => void;
-    prevStep: () => void;
+    selectedReport: Report | null;
+    onGoBack: () => void;
     leftSidebar: SidebarState;
     rightSidebar: SidebarState;
 }
 export const ReportEditor = ({
     editor,
-    nextStep,
-    prevStep,
+    selectedReport,
+    onGoBack,
     leftSidebar,
     rightSidebar,
 }: ReportEditorProps): JSX.Element => {
     const proceedToGeneratePdf = (): void => {
-        nextStep();
-    };
-
-    const backToTemplateSelect = (): void => {
-        prevStep();
+        // nextStep();
     };
 
     return (
@@ -38,7 +34,7 @@ export const ReportEditor = ({
                         toggleLeftSidebar={leftSidebar.toggle}
                         toggleRightSidebar={rightSidebar.toggle}
                         editor={editor}
-                        goBack={backToTemplateSelect}
+                        goBack={onGoBack}
                         generateReport={proceedToGeneratePdf}
                     />
                 )}

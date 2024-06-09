@@ -11,24 +11,24 @@ import {
 } from "@tanstack/react-table";
 import { format, parseISO, isToday } from "date-fns";
 
-import { TemplateActions } from "@/components/reports/TemplateActions";
+// import { TemplateActions } from "@/components/reports/TemplateActions";
 import { Button } from "@/components/ui/button";
 // import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
-import { Template } from "@/plugins/reports/types";
+import { Report } from "@/plugins/reports/types";
 import { Badge } from "@/components/ui/badge";
 
-export const TemplateList = ({
-    templates,
-    selectTemplate,
+export const ReportsList = ({
+    reports,
+    onSelectReport,
 }: {
-    templates: Template[];
-    selectTemplate: (template: Template) => void;
+    reports: Report[];
+    onSelectReport: (report: Report) => void;
 }): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const columns: ColumnDef<Template>[] = [
+    const columns: ColumnDef<Report>[] = [
         {
             accessorKey: "name",
             header: ({ column }): JSX.Element => {
@@ -44,7 +44,7 @@ export const TemplateList = ({
                 );
             },
             cell: ({ row }) => (
-                <Button onClick={selectTemplate.bind(null, row.original)} variant="link">
+                <Button onClick={onSelectReport.bind(null, row.original)} variant="link">
                     {row.getValue("name")}
                 </Button>
             ),
@@ -69,7 +69,7 @@ export const TemplateList = ({
                         className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
                         variant="secondary"
                     >
-                        {row.getValue("type") === "report" ? "Report" : "Template"}
+                        {row.getValue("type") === "report" ? "Report" : "Report"}
                     </Badge>
                 </div>
             ),
@@ -106,15 +106,15 @@ export const TemplateList = ({
             },
             cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
         },
-        {
-            id: "actions",
-            cell: ({ row }) => <TemplateActions row={row.original} />,
-            size: 20,
-        },
+        // {
+        //     id: "actions",
+        //     cell: ({ row }) => <ReportActions row={row.original} />,
+        //     size: 20,
+        // },
     ];
 
     const table = useReactTable({
-        data: templates,
+        data: reports,
         columns,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
