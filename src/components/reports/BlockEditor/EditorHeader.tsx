@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Separator } from "@radix-ui/react-separator";
 
 import { EditorInfo } from "./EditorInfo";
 import type { Editor } from "@tiptap/react";
@@ -12,6 +13,7 @@ import Tooltip from "@/components/ui/TooltipAlt";
 import { Toggle } from "@/components/ui/toggle";
 import { IconZebra } from "@/components/ui/icons";
 import { Report } from "@/plugins/reports/types";
+import RingLoader from "@/components/ui/ring-loader";
 
 export type EditorHeaderProps = {
     isLeftSidebarOpen?: boolean;
@@ -20,6 +22,7 @@ export type EditorHeaderProps = {
     toggleRightSidebar?: () => void;
     editor: Editor;
     onGoBack: () => void;
+    onUpdateName: (name: string) => Promise<boolean>;
     selectedReport: Report;
 };
 
@@ -31,10 +34,29 @@ export const EditorHeader = ({
     editor,
     onGoBack,
     selectedReport,
+    onUpdateName,
 }: EditorHeaderProps): JSX.Element => {
     const characterCount = editor?.storage.characterCount || {
         characters: () => 0,
         words: () => 0,
+    };
+
+    const originalName = useRef(selectedReport.name);
+    const [nameValue, setNameValue] = useState(selectedReport.name);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleNameUpdate = async (): Promise<void> => {
+        setIsLoading(true);
+        let result;
+        if (originalName.current !== nameValue) {
+            result = await onUpdateName(nameValue);
+        }
+        if (result) {
+            originalName.current = nameValue;
+        } else {
+            setNameValue(originalName.current);
+        }
+        setIsLoading(false);
     };
 
     return (
@@ -53,6 +75,19 @@ export const EditorHeader = ({
                 </Toolbar.Button>
                 <div className="ml-4">
                     <EditorInfo characters={characterCount.characters()} words={characterCount.words()} />
+                </div>
+                <div className="flex items-center">
+                    <Separator orientation="vertical" className="w-[1px] h-10 bg-muted mx-4 my-0" />
+                    <input
+                        className="!text-xl !text-foreground mr-2 !bg-transparent !p-1 !transition-all !border !border-transparent focus:!border-primary hover:!border-secondary focus:!outline-none"
+                        value={nameValue}
+                        onChange={(e) => setNameValue(e.target.value)}
+                        onBlur={async (e) => await handleNameUpdate()}
+                        // placeholder={selectedReport.name}
+                        type="text"
+                    />
+                    {isLoading && <RingLoader />}
+                    {/* <div className="text-lg">{selectedReport.name}</div> */}
                 </div>
             </div>
             <div className="flex items-center gap-4">

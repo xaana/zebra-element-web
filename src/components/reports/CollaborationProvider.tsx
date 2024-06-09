@@ -9,12 +9,14 @@ interface CollaborationProviderProps {
     userId: string;
     selectedReport: Report;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
+    onUpdateName: (name: string) => Promise<boolean>;
 }
 
 export const CollaborationProvider = ({
     userId,
     selectedReport,
     setSelectedReport,
+    onUpdateName,
 }: CollaborationProviderProps): JSX.Element => {
     const collabProvider = useMemo(
         () =>
@@ -45,6 +47,7 @@ export const CollaborationProvider = ({
             initialContent={selectedReport.content}
             aiContent={selectedReport.aiContent}
             selectedReport={selectedReport}
+            onUpdateName={onUpdateName}
         />
     );
 };

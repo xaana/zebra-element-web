@@ -14,6 +14,7 @@ interface ReportEditorProps {
     collabProvider: HocuspocusProvider;
     userId: string;
     onGoBack: () => void;
+    onUpdateName: (name: string) => Promise<boolean>;
     selectedReport: Report;
     initialContent?: string;
     aiContent?: AiGenerationContent;
@@ -25,6 +26,7 @@ export const ReportEditor = ({
     selectedReport,
     initialContent,
     aiContent,
+    onUpdateName,
 }: ReportEditorProps): JSX.Element => {
     const aiState = useAIState();
 
@@ -72,6 +74,7 @@ export const ReportEditor = ({
                             editor={editor}
                             onGoBack={onGoBack}
                             selectedReport={selectedReport}
+                            onUpdateName={onUpdateName}
                         />
                     </div>
                     <div style={{ height: "calc(100vh - 60px)" }} className="w-full">

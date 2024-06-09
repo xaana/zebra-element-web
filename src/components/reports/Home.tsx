@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
 import { CollaborationProvider } from "./CollaborationProvider";
@@ -169,6 +170,34 @@ export const Home = (): JSX.Element => {
         await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
     };
 
+    const handleUpdateName = async (name: string): Promise<boolean> => {
+        if (!selectedReport) return false;
+        try {
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
+                },
+            );
+            if (response.ok) {
+                setReports((prev) =>
+                    prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
+                );
+                return true;
+            } else {
+                toast.error("Error updating document name");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error updating document name", error);
+            return false;
+        }
+    };
+
     return (
         <div className="h-full w-full">
             {/* No report selected - Show report selector */}
@@ -222,6 +251,7 @@ export const Home = (): JSX.Element => {
                         userId={userId}
                         selectedReport={selectedReport}
                         setSelectedReport={setSelectedReport}
+                        onUpdateName={handleUpdateName}
                     />
                 </motion.div>
             )}
