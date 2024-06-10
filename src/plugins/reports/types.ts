@@ -1,5 +1,3 @@
-import { JSONContent } from "@tiptap/core";
-
 export type MatrixFile = {
     id: string;
     name: string;
@@ -22,14 +20,25 @@ export type StepItem = {
     nextStepTitle: string;
 };
 
-export type Template = {
+export type AiGenerationContent = {
+    documentPrompt: string;
+    allTitles: string[];
+    contentSize: string;
+    tone: string;
+    targetAudience: string;
+};
+
+export type Report = {
     id: string;
     name: string;
-    description: string;
     timestamp: string;
-    type: "report" | "template";
-    content?: JSONContent;
+    owner: string;
+    type?: string;
+    description?: string;
+    accessType?: string;
+    content?: string;
     status?: string;
+    aiContent?: AiGenerationContent;
 };
 
 export type File = {

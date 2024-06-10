@@ -86,7 +86,6 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                 })
                 .join("");
 
-            editor.commands.insertContentAt({ from: from, to: to }, newText);
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
             editorChat.setMessages((prev) => {
@@ -97,7 +96,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                             children: (
                                 <ResponseAction
                                     fromPos={from}
-                                    toPos={to}
+                                    originalToPos={to}
+                                    newToPos={from + response.length + ps.length - 1}
                                     response={newText}
                                     original={textSelection}
                                     editor={editor}
@@ -108,6 +108,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                     return message;
                 });
             });
+
+            editor.commands.insertContentAt({ from: from, to: to }, newText);
         };
 
         reader &&

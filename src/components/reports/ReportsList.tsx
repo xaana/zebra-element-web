@@ -11,24 +11,24 @@ import {
 } from "@tanstack/react-table";
 import { format, parseISO, isToday } from "date-fns";
 
-import { TemplateActions } from "@/components/reports/TemplateActions";
 import { Button } from "@/components/ui/button";
-// import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
-import { Template } from "@/plugins/reports/types";
-import { Badge } from "@/components/ui/badge";
+import { Report } from "@/plugins/reports/types";
+import { ReportActions } from "@/components/reports/ReportActions";
 
-export const TemplateList = ({
-    templates,
-    selectTemplate,
+export const ReportsList = ({
+    reports,
+    onSelectReport,
+    onDuplicate,
 }: {
-    templates: Template[];
-    selectTemplate: (template: Template) => void;
+    reports: Report[];
+    onSelectReport: (report: Report) => void;
+    onDuplicate: (reportId: string) => Promise<void>;
 }): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const columns: ColumnDef<Template>[] = [
+    const columns: ColumnDef<Report>[] = [
         {
             accessorKey: "name",
             header: ({ column }): JSX.Element => {
@@ -44,34 +44,9 @@ export const TemplateList = ({
                 );
             },
             cell: ({ row }) => (
-                <Button onClick={selectTemplate.bind(null, row.original)} variant="link">
+                <Button onClick={onSelectReport.bind(null, row.original)} variant="link">
                     {row.getValue("name")}
                 </Button>
-            ),
-        },
-        {
-            accessorKey: "type",
-            header: ({ column }): JSX.Element => {
-                return (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="w-auto"
-                    >
-                        Type
-                        <Icon name="ArrowUpDown" className="ml-2 h-4 w-4" />
-                    </Button>
-                );
-            },
-            cell: ({ row }) => (
-                <div className="ml-3">
-                    <Badge
-                        className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
-                        variant="secondary"
-                    >
-                        {row.getValue("type") === "report" ? "Report" : "Template"}
-                    </Badge>
-                </div>
             ),
         },
         {
@@ -99,22 +74,22 @@ export const TemplateList = ({
                 return <div className="text-left ml-3">{Number(row.original.id) < 0 ? "–" : formatted}</div>;
             },
         },
-        {
-            accessorKey: "status",
-            header: ({ column }): JSX.Element => {
-                return <div>Status</div>;
-            },
-            cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
-        },
+        // {
+        //     accessorKey: "status",
+        //     header: ({ column }): JSX.Element => {
+        //         return <div>Status</div>;
+        //     },
+        //     cell: ({ row }) => <div>{row.getValue("status") ?? `Draft`}</div>,
+        // },
         {
             id: "actions",
-            cell: ({ row }) => <TemplateActions row={row.original} />,
+            cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} />,
             size: 20,
         },
     ];
 
     const table = useReactTable({
-        data: templates,
+        data: reports,
         columns,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
@@ -128,16 +103,6 @@ export const TemplateList = ({
     });
     return (
         <div className="w-full">
-            {/* <div className='flex items-center py-4'>
-        <Input
-          placeholder='Filter reports...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm'
-        />
-      </div> */}
             <div className="">
                 <Table>
                     <TableHeader>

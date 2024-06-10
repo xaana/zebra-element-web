@@ -1,4 +1,5 @@
 import * as htmlparser2 from "htmlparser2";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import type { Editor as TiptapEditor } from "@tiptap/react";
 
@@ -63,7 +64,6 @@ export const streamContent = async (
 };
 
 export const generateContent = async (
-    apiUrl: string,
     documentPrompt: string,
     currentTitle: string,
     allTitles: string[],
@@ -72,7 +72,7 @@ export const generateContent = async (
     tone?: string,
 ): Promise<string | undefined> => {
     try {
-        const res = await fetch(`${apiUrl}/api/generate/content`, {
+        const res = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/content`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

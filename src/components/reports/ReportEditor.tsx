@@ -1,51 +1,87 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { HocuspocusProvider } from "@hocuspocus/provider";
 
-import type { Editor } from "@tiptap/react";
-
+import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
+import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
+import { useAIState } from "@/plugins/reports/hooks/useAIState";
+import { useSidebar } from "@/plugins/reports/hooks/useSidebar";
 import { EditorHeader } from "@/components/reports/BlockEditor/EditorHeader";
 import { BlockEditor } from "@/components/reports/BlockEditor";
-import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
+import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { AiGenerationContent, Report } from "@/plugins/reports/types";
 
 interface ReportEditorProps {
-    editor: Editor | null;
-    nextStep: (htmlContent?: string) => void;
-    prevStep: () => void;
-    leftSidebar: SidebarState;
-    rightSidebar: SidebarState;
+    collabProvider: HocuspocusProvider;
+    userId: string;
+    onGoBack: () => void;
+    onUpdateName: (name: string) => Promise<boolean>;
+    selectedReport: Report;
+    initialContent?: string;
+    aiContent?: AiGenerationContent;
 }
 export const ReportEditor = ({
-    editor,
-    nextStep,
-    prevStep,
-    leftSidebar,
-    rightSidebar,
+    collabProvider,
+    userId,
+    onGoBack,
+    selectedReport,
+    initialContent,
+    aiContent,
+    onUpdateName,
 }: ReportEditorProps): JSX.Element => {
-    const proceedToGeneratePdf = (): void => {
-        nextStep();
-    };
+    const aiState = useAIState();
 
-    const backToTemplateSelect = (): void => {
-        prevStep();
-    };
+    const { editor, users, collabState } = useBlockEditor({
+        collabProvider,
+        userId,
+        initialContent,
+        aiContent,
+        setIsAiLoading: aiState.setIsAiLoading,
+    });
+
+    const leftSidebar = useSidebar();
+    const rightSidebar = useSidebar();
+
+    const chat: Chat = useChat({
+        isOpen: rightSidebar.isOpen,
+        open: rightSidebar.open,
+        close: rightSidebar.close,
+        toggle: rightSidebar.toggle,
+    });
+
+    const providerValue = useMemo(() => {
+        return {
+            isAiLoading: aiState.isAiLoading,
+            aiError: aiState.aiError,
+            setIsAiLoading: aiState.setIsAiLoading,
+            setAiError: aiState.setAiError,
+            editor: editor,
+            editorChat: chat,
+            collabState: collabState,
+            users: users,
+        };
+    }, [aiState, chat, editor, collabState, users]);
 
     return (
-        <>
-            <div className="w-full p-3 border-b bg-background">
-                {editor && (
-                    <EditorHeader
-                        isLeftSidebarOpen={leftSidebar.isOpen}
-                        isRightSidebarOpen={rightSidebar.isOpen}
-                        toggleLeftSidebar={leftSidebar.toggle}
-                        toggleRightSidebar={rightSidebar.toggle}
-                        editor={editor}
-                        goBack={backToTemplateSelect}
-                        generateReport={proceedToGeneratePdf}
-                    />
-                )}
-            </div>
-            <div style={{ height: "calc(100vh - 60px)" }} className="w-full">
-                <BlockEditor editor={editor} leftSidebar={leftSidebar} rightSidebar={rightSidebar} />
-            </div>
-        </>
+        <EditorContext.Provider value={providerValue}>
+            {editor && (
+                <>
+                    <div className="w-full p-3 border-b bg-background">
+                        <EditorHeader
+                            isLeftSidebarOpen={leftSidebar.isOpen}
+                            isRightSidebarOpen={rightSidebar.isOpen}
+                            toggleLeftSidebar={leftSidebar.toggle}
+                            toggleRightSidebar={rightSidebar.toggle}
+                            editor={editor}
+                            onGoBack={onGoBack}
+                            selectedReport={selectedReport}
+                            onUpdateName={onUpdateName}
+                        />
+                    </div>
+                    <div style={{ height: "calc(100vh - 60px)" }} className="w-full">
+                        <BlockEditor editor={editor} leftSidebar={leftSidebar} rightSidebar={rightSidebar} />
+                    </div>
+                </>
+            )}
+        </EditorContext.Provider>
     );
 };

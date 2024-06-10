@@ -69,12 +69,6 @@ export const AiWriterView = ({
     const generateText = useCallback(async () => {
         const { text: dataText, tone, textLength, textUnit, addHeading, language } = data;
 
-        if (!data.text) {
-            toast.error("Please enter a description");
-
-            return;
-        }
-
         setIsFetching(true);
 
         const payload = {
@@ -86,7 +80,7 @@ export const AiWriterView = ({
             language,
         };
 
-        function processStream(reader: ReadableStreamDefaultReader<any>): Promise<void> | void {
+        const processStream = (reader: ReadableStreamDefaultReader<any>): Promise<void> | void => {
             // let responseBuffer: string = ''
             const decoder = new TextDecoder();
 
@@ -100,6 +94,18 @@ export const AiWriterView = ({
             }): Promise<void> => {
                 if (done) {
                     setIsFetching(false);
+                    if (previewText) {
+                        const ps = previewText.split(/\n/).filter((line) => line.length > 0);
+                        const newText = ps
+                            .map((p, i) => {
+                                if (i !== 0 && i !== ps.length - 1) {
+                                    return `<p>${p}</p>`;
+                                }
+                                return p;
+                            })
+                            .join("");
+                        setPreviewText(newText);
+                    }
                     return;
                 }
                 // responseBuffer += decoder.decode(value)
@@ -123,7 +129,7 @@ export const AiWriterView = ({
                         console.error("Error while starting the stream:", error);
                     });
             }
-        }
+        };
 
         try {
             const extractedFilenames = selectedFiles.map((file) => file?.downloadUrl?.match(/[^/]+$/)?.[0] ?? null);
@@ -261,7 +267,7 @@ export const AiWriterView = ({
                                         </Button>
                                     </Dropdown.Trigger>
                                     <Dropdown.Portal>
-                                        <Dropdown.Content side="bottom" align="start" asChild>
+                                        <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
                                             <Surface className="p-2 min-w-[12rem]">
                                                 {!!data.tone && (
                                                     <>

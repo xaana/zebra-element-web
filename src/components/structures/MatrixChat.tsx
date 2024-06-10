@@ -626,6 +626,22 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     configData.plugins.reports.api,
                 );
             }
+            if (configData?.plugins.reports.collabServerWebsocketUrl) {
+                await SettingsStore.setValue(
+                    "collabServerWebsocketUrl",
+                    null,
+                    SettingLevel.DEVICE,
+                    configData.plugins.reports.collabServerWebsocketUrl,
+                );
+            }
+            if (configData?.plugins.reports.collabServerHttpUrl) {
+                await SettingsStore.setValue(
+                    "collabServerHttpUrl",
+                    null,
+                    SettingLevel.DEVICE,
+                    configData.plugins.reports.collabServerHttpUrl,
+                );
+            }
             if (configData?.plugins.workflow.url) {
                 await SettingsStore.setValue("workflowUrl", null, SettingLevel.DEVICE, configData.plugins.workflow.url);
             }

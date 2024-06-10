@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { ChangeEvent, useState } from "react";
-import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { Editor } from "@tiptap/react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { MsgType } from "matrix-js-sdk/src/matrix";
@@ -17,13 +15,10 @@ import { Form } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
 
-export const FileUpload = ({ editor, nextStep }: { editor: Editor; nextStep: () => void }): JSX.Element => {
-    // const [files, setFiles] = useState<FileList | null>(null);
+export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Promise<void> }): JSX.Element => {
     const [errors, setErrors] = useState<z.ZodIssue[]>([]);
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
-    const { setIsAiLoading } = useContext(EditorContext);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const client = useMatrixClientContext();
@@ -88,33 +83,9 @@ export const FileUpload = ({ editor, nextStep }: { editor: Editor; nextStep: () 
         } else {
             setErrors([]);
             fileUploadForm.clearErrors("files");
-            await generateContentFromFile(fileInput[0]);
-        }
-    };
 
-    const generateContentFromFile = async (file: File): Promise<void> => {
-        const formData = new FormData();
-        formData.append("files", file);
-
-        setIsAiLoading(true);
-        nextStep();
-
-        try {
-            // Make API request
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
-                method: "POST",
-                body: formData,
-            });
-            const responseData = await response.json();
-
-            if (responseData?.html_pages?.length > 0) {
-                const combinedString = responseData.html_pages.join("\n");
-                editor.commands.setContent(combinedString);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setIsAiLoading(false);
+            handleDialogToggle(false);
+            await onFileUpload(fileInput[0]);
         }
     };
 
@@ -135,13 +106,13 @@ export const FileUpload = ({ editor, nextStep }: { editor: Editor; nextStep: () 
         }
         const fileBlob = await matrixFile.mediaHelper.sourceBlob.value;
         const file = new File([fileBlob], matrixFile.name, { type: "application/pdf" });
-        await generateContentFromFile(file);
+        handleDialogToggle(false);
+        await onFileUpload(file);
     };
 
     useEffect(() => {
         if (Object.keys(rowSelection).length == 1) {
             uploadFile(documents[parseInt(Object.keys(rowSelection)[0])]);
-            handleDialogToggle(false);
         }
     }, [rowSelection]); // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -39,6 +39,7 @@
     "src/components/views/rooms/MessageComposerButtons.tsx": "src/components/views/rooms/MessageComposerButtons.tsx",
     "src/components/views/rooms/MessageComposerFormatBar.tsx": "src/components/views/rooms/MessageComposerFormatBar.tsx",
     "src/components/views/rooms/NewRoomIntro.tsx": "src/components/views/rooms/NewRoomIntro.tsx",
+    "src/components/views/rooms/ReplyTile.tsx": "src/components/views/rooms/ReplyTile.tsx",
     "src/components/views/rooms/RoomList.tsx": "src/components/views/rooms/RoomList.tsx",
     "src/components/views/rooms/RoomListHeader.tsx": "src/components/views/rooms/RoomListHeader.tsx",
     "src/components/views/rooms/RoomSublist.tsx": "src/components/views/rooms/RoomSublist.tsx",
