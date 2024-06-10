@@ -96,7 +96,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                             children: (
                                 <ResponseAction
                                     fromPos={from}
-                                    toPos={to}
+                                    originalToPos={to}
+                                    newToPos={from + response.length + ps.length - 1}
                                     response={newText}
                                     original={textSelection}
                                     editor={editor}

@@ -861,7 +861,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 </div>
                 {this.props.showStop && (
                     <div
-                        className="w-5 h-5 bg-foreground rounded-full flex items-center justify-center cursor-pointer"
+                        className="w-5 h-5 mr-2 bg-foreground rounded-full flex items-center justify-center cursor-pointer"
                         onClick={this.props.stopBotStream}
                     >
                         <Square className="h-2 w-2 fill-background" stroke="background" />
