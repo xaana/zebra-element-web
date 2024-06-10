@@ -63,7 +63,7 @@
             "url": "ws://localhost:8000/ws"
         },
         "workflow": {
-            "url": "http://locahost:5678"
+            "url": "http://localhost:5678"
         }
     },
     "bot_api": "http://localhost:29316/_matrix/maubot/plugin/zebra"

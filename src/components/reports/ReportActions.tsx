@@ -113,9 +113,10 @@ export function ReportActions({
                     receiver_id: userId,
                     request_data: {
                         filename: row.name,
+                        fileId: row.id,
                         note: "Sent for approval",
                     },
-                    request_status: "Pending",
+                    request_status: "Submitted",
                 }),
             });
 
