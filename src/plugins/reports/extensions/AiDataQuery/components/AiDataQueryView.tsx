@@ -207,7 +207,7 @@ export const AiDataQueryView = ({
                                     </Button>
                                 </Dropdown.Trigger>
                                 <Dropdown.Portal>
-                                    <Dropdown.Content side="bottom" align="start" asChild>
+                                    <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
                                         <Surface className="p-2 min-w-[12rem]">
                                             {dbList.map((db, id) => (
                                                 <Dropdown.Item asChild key={id}>

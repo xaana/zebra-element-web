@@ -5,50 +5,34 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Icon } from "@/components/ui/Icon";
 export const ResponseAction = ({
     fromPos,
-    toPos,
+    originalToPos,
+    newToPos,
     response,
     original,
     editor,
 }: {
     fromPos: number;
-    toPos: number;
+    originalToPos: number;
+    newToPos: number;
     response: string;
     original: string;
     editor: Editor;
 }): JSX.Element => {
     const [actionValue, setActionValue] = useState("suggested");
-    const to = useRef<number>(toPos);
     const from = useRef<number>(fromPos);
+    const originalTo = useRef<number>(originalToPos);
+    const newTo = useRef<number>(newToPos);
     const responseText = useRef<string>(response);
     const textSelection = useRef<string>(original);
+
     const handleToggleChange = (value: string): void => {
         if (!value) return;
         setActionValue(value);
 
         if (value === "original" && textSelection.current.length > 0) {
-            editor.commands.insertContentAt(
-                { from: from.current, to: from.current + responseText.current.length },
-                textSelection.current,
-            );
+            editor.commands.insertContentAt({ from: from.current, to: newTo.current }, textSelection.current);
         } else if (value === "suggested" && responseText.current.length > 0) {
-            console.log(from.current, to.current);
-            editor.commands.insertContentAt({ from: from.current, to: to.current }, responseText.current);
-
-            // const node = editor.state.doc.nodeAt(from.current)
-            // const nodeSize = node?.nodeSize
-
-            // editor.commands.selectParentNode();
-            // from.current = editor.state.selection.from;
-            // to.current = editor.state.selection.to;
-
-            // editor.commands.deleteRange({ from: from.current, to: to.current });
-            // if (value === "original") {
-            //     editor.commands.insertContentAt(from.current, textSelection.current);
-            //     to.current = from.current + textSelection.current.length + 1;
-            // } else {
-            //     editor.commands.insertContentAt(from.current, responseText.current);
-            //     to.current = from.current + responseText.current.length + 1;
-            // }
+            editor.commands.insertContentAt({ from: from.current, to: originalTo.current }, responseText.current);
         }
     };
     return (
