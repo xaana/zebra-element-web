@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import Tooltip from "@/components/ui/TooltipAlt";
+// import Tooltip from "@/components/ui/TooltipAlt";
 
 interface ReportViewerProps {
     editor: Editor;
@@ -47,16 +47,16 @@ export const ReportViewer = ({ editor }: ReportViewerProps): JSX.Element => {
         <>
             <Dialog open={dialogOpen} onOpenChange={handleDialogToggle}>
                 <DialogTrigger asChild>
-                    <Tooltip title="Preview Report">
-                        <Button
-                            onClick={() => handleDialogToggle(true)}
-                            variant="secondary"
-                            className="font-semibold text-sm h-auto w-auto p-2"
-                            size="sm"
-                        >
-                            <Icon name="Eye" />
-                        </Button>
-                    </Tooltip>
+                    {/* <Tooltip title="Preview Report"> */}
+                    <Button
+                        onClick={() => handleDialogToggle(true)}
+                        variant="secondary"
+                        className="font-semibold text-sm h-auto w-auto p-2"
+                        size="sm"
+                    >
+                        <Icon name="Eye" />
+                    </Button>
+                    {/* </Tooltip> */}
                 </DialogTrigger>
                 <DialogContent className="h-screen w-screen max-w-[100vw] bg-card p-0 overflow-hidden">
                     {isPdfLoading && (
