@@ -58,11 +58,13 @@ export const DataTable = ({
             method: "POST",
             body: JSON.stringify(payload),
         });
+
         const response = await fetch(request);
+        
         const data = await response.json();
         if(data.status==="success"){
             console.log(data.msg)
-            setTableData(data.msg);
+            setTableData(typeof data.msg === "string" ? JSON.parse(data.msg) : data.msg);
         }
         else{
             console.log('error get database data');
