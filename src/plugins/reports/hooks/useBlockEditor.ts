@@ -63,7 +63,6 @@ export const useBlockEditor = ({
             autofocus: true,
             onCreate: () => {
                 collabProvider?.on("synced", () => {
-                    console.log(`==SYNCED==`);
                     setIsSynced(true);
                 });
             },
