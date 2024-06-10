@@ -40,9 +40,12 @@ export const ReportCard = ({
                     {Number(report.id) < 0
                         ? "Preset report"
                         : "Edited " +
-                          formatDistanceToNow(new Date(report.timestamp), {
-                              addSuffix: true,
-                          })}
+                          formatDistanceToNow(
+                              new Date(report.timestamp.endsWith("Z") ? report.timestamp : report.timestamp + "Z"),
+                              {
+                                  addSuffix: true,
+                              },
+                          )}
                 </div>
             </div>
             <div className="absolute bottom-0 right-0 p-1">
