@@ -17,6 +17,7 @@ interface ReportSelectorProps {
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
     onFileUpload: (file: File) => Promise<void>;
     onDuplicate: (reportId: string) => Promise<void>;
+    onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
 }
 
@@ -26,6 +27,7 @@ export const ReportSelector = ({
     userId,
     onFileUpload,
     onDuplicate,
+    onDelete,
     onAiGenerate,
 }: ReportSelectorProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
@@ -123,11 +125,17 @@ export const ReportSelector = ({
                             onSelectReport={(report) => setSelectedReport(report)}
                             onDuplicate={onDuplicate}
                             userId={userId}
+                            onDelete={onDelete}
                         />
                     ))}
                 </div>
             ) : (
-                <ReportsList reports={filteredReports} onSelectReport={handleSelectReport} onDuplicate={onDuplicate} />
+                <ReportsList
+                    reports={filteredReports}
+                    onSelectReport={handleSelectReport}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                />
             )}
         </>
     );

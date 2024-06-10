@@ -29,9 +29,11 @@ import { getReportContent } from "@/plugins/reports/utils/getReportContent";
 export function ReportActions({
     row,
     onDuplicate,
+    onDelete,
 }: {
     row: Report;
     onDuplicate: (reportId: string) => Promise<void>;
+    onDelete: (reportId: string) => Promise<void>;
 }): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
     const [userIds, setUserIds] = useState<string[]>([]);
@@ -71,23 +73,7 @@ export function ReportActions({
     };
 
     const deleteFile = async (): Promise<void> => {
-        const documentInfo = await getReportContent(row.id);
-        const { document_html: documentHtml, document_name: documentName } = documentInfo;
-
-        if (!documentHtml) {
-            toast.error("Failed to download the report");
-            return;
-        }
-
-        const pdfBlob = await generatePdf(documentHtml);
-
-        const fileDownloader = new FileDownloader();
-        pdfBlob &&
-            fileDownloader.download({
-                blob: pdfBlob,
-                name: documentName ? documentName + ".pdf" : row.name + ".pdf",
-                autoDownload: true,
-            });
+        await onDelete(row.id);
     };
 
     const stopPropagation = (e: any): void => {

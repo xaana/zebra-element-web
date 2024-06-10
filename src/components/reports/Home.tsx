@@ -198,6 +198,25 @@ export const Home = (): JSX.Element => {
         }
     };
 
+    const handleDeleteReport = async (reportId: string): Promise<void> => {
+        try {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/delete_document`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ document_id: reportId }),
+            });
+            if (response.ok) {
+                setReports((prev) => prev.filter((report) => report.id !== reportId));
+            } else {
+                toast.error("Error updating document name");
+            }
+        } catch (error) {
+            console.error("Error updating document name", error);
+        }
+    };
+
     return (
         <div className="h-full w-full">
             {/* No report selected - Show report selector */}
@@ -217,6 +236,7 @@ export const Home = (): JSX.Element => {
                         onFileUpload={handleFileUpload}
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
+                        onDelete={handleDeleteReport}
                     />
                 </motion.div>
             )}
