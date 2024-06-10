@@ -17,8 +17,8 @@ export const ResponseAction = ({
     editor: Editor;
 }): JSX.Element => {
     const [actionValue, setActionValue] = useState("suggested");
-    const to = useRef<number>(toPos);
     const from = useRef<number>(fromPos);
+    const to = useRef<number>(toPos);
     const responseText = useRef<string>(response);
     const textSelection = useRef<string>(original);
     const handleToggleChange = (value: string): void => {
