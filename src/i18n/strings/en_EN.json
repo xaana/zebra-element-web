@@ -111,5 +111,11 @@
     "unknown_device": "Unknown device",
     "use_brand_on_mobile": "Use %(brand)s on mobile",
     "web_default_device_name": "%(appName)s: %(browserName)s on %(osName)s",
-    "welcome_to_element": "Welcome to Zebra"
+    "welcome_to_element": "Welcome to Zebra",
+    "widget": {
+            "context_menu": {
+            "delete": "End call",
+            "delete_warning": "Are you sure you want to end the call for all users in this roomd?"
+        }
+    }
 }
