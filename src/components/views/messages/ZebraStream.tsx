@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import { IContent } from 'matrix-js-sdk/src/matrix';
 import SettingsStore from 'matrix-react-sdk/src/settings/SettingsStore';
+import parse from 'html-react-parser';
 
 interface IProps {
   fetching?: boolean;
@@ -12,8 +13,7 @@ interface IProps {
   questionId?: string;
 }
 
-const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQuestion,questionId }) => {
-    console.log(fetching, roomId, eventId, type,rawQuestion);  
+const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQuestion,questionId }) => { 
     const [markdown, setMarkdown] = useState("");
     useEffect(() => {
         const fetchData = async () => {
@@ -28,6 +28,9 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
                 const url = `${SettingsStore.getValue("botApiUrl")}/web_stream`;
                 const request = new Request(url, {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                     body: JSON.stringify(payload),
                 });
                 const response = await fetch(request);
@@ -45,6 +48,7 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
                         }
                         // Decode the stream chunk to text
                         const chunk = decoder.decode(value, { stream: true });
+                        console.log("Stream chunk:", chunk);
                         setMarkdown(chunk);
 
                         // Read the next chunk
@@ -72,9 +76,10 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
     //     format: "org.matrix.custom.html",
     //     formatted_body: markdown,
     // }
+    // const body = HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})
     return (
         <div>
-        {HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})}
+            {HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})}
         </div>
     );
 }

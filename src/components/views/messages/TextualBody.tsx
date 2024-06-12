@@ -1060,6 +1060,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
+                    {content.fetching&&rawQuestion&&<ZebraStream fetching={content.fetching} roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} type={content.type} questionId={content.questionId} />}
+
                 </div>
             );
         }
@@ -1067,7 +1069,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                 {body}
                 {widgets}
-                <ZebraStream fetching={content.fetching} roomId={roomId} eventId={mxEvent.getId()} rawQuestion={content.raw_question} type={content.type} questionId={content.questionId} />
             </div>
         );
     }
