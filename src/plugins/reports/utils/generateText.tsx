@@ -93,16 +93,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                     if (index === prev.length - 1) {
                         return {
                             ...message,
-                            children: (
-                                <ResponseAction
-                                    fromPos={from}
-                                    originalToPos={to}
-                                    newToPos={from + response.length + ps.length - 1}
-                                    response={newText}
-                                    original={textSelection}
-                                    editor={editor}
-                                />
-                            ),
+                            children: <ResponseAction editor={editor} />,
                         };
                     }
                     return message;

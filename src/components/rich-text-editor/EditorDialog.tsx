@@ -323,7 +323,7 @@ const EditorHeader = ({
                     <PopoverContent side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                currentColor={states.currentHighlight}
+                                color={states.currentHighlight}
                                 onChange={commands.onChangeHighlight}
                                 onClear={commands.onClearHighlight}
                             />
@@ -339,7 +339,7 @@ const EditorHeader = ({
                     <PopoverContent side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                currentColor={states.currentColor}
+                                color={states.currentColor}
                                 onChange={commands.onChangeColor}
                                 onClear={commands.onClearColor}
                             />
