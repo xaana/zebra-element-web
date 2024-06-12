@@ -236,7 +236,8 @@ const EditorHeader = ({
                     </div>
                 </div>
                 <Toolbar.Divider />
-                <AIDropdown
+
+                {/* <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
                     onFixSpelling={commands.onFixSpelling}
                     onMakeLonger={commands.onMakeLonger}
@@ -244,7 +245,14 @@ const EditorHeader = ({
                     onSimplify={commands.onSimplify}
                     // onTldr={commands.onTldr}
                     onTone={commands.onTone}
-                />
+                /> */}
+
+                <Toolbar.Button onClick={commands.onUndo} disabled={!editor.can().chain().focus().undo().run()}>
+                    <Icon name="Undo" />
+                </Toolbar.Button>
+                <Toolbar.Button onClick={commands.onRedo} disabled={!editor.can().chain().focus().redo().run()}>
+                    <Icon name="Redo" />
+                </Toolbar.Button>
                 <Toolbar.Divider />
                 <MemoContentTypePicker options={blockOptions} />
                 <MemoFontFamilyPicker onChange={commands.onSetFont} value={states.currentFont || ""} />
@@ -399,11 +407,7 @@ const EditorHeader = ({
                 </Popover>
                 <Toolbar.Divider />
                 <MemoButton tooltip="Toggle Zebra" onClick={rightSidebar.toggle} active={rightSidebar.isOpen}>
-                    {rightSidebar.isOpen ? (
-                        <PanelRightClose size={16} strokeWidth={2.5} />
-                    ) : (
-                        <PanelRight size={16} strokeWidth={2.5} />
-                    )}
+                    <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
                 </MemoButton>
                 {/* <Toggle
                         aria-label="Toggle bold"

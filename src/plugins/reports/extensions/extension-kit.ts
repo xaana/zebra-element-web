@@ -91,7 +91,7 @@ export const ExtensionKit = ({ userId, userName = "Zebra" }: ExtensionKitProps):
         heading: false,
         horizontalRule: false,
         blockquote: false,
-        history: false,
+        // history: false,
         codeBlock: false,
     }),
     CodeBlockLowlight.configure({
