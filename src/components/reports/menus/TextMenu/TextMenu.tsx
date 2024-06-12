@@ -35,16 +35,17 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
 
     return (
         <BubbleMenu
-            tippyOptions={{
-                popperOptions: {
-                    placement: "auto",
-                    strategy: "fixed",
-                },
-                // offset: [-2, 16],
-                // inlinePositioning: true,
-                placement: "auto",
-                // zIndex: 999,
-            }}
+            // tippyOptions={{
+            //     popperOptions: {
+            //         placement: "auto",
+            //         strategy: "fixed",
+            //     },
+            //     // offset: [-2, 16],
+            //     // inlinePositioning: true,
+            //     placement: "auto",
+            //     // zIndex: 999,
+            // }}
+            tippyOptions={{ popperOptions: { placement: "top-start" } }}
             editor={editor}
             pluginKey="textMenu"
             shouldShow={states.shouldShow}
@@ -53,7 +54,6 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
             <Toolbar.Wrapper>
                 <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
-                    // onEmojify={commands.onEmojify}
                     onFixSpelling={commands.onFixSpelling}
                     onMakeLonger={commands.onMakeLonger}
                     onMakeShorter={commands.onMakeShorter}
