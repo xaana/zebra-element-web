@@ -3,7 +3,7 @@ import { Editor, EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { ContentItemMenu, LinkMenu, TextMenuProps } from "../reports/menus";
+import { ContentItemMenu, LinkMenu, TextMenu, TextMenuProps } from "../reports/menus";
 import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
 import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
 import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
@@ -170,6 +170,7 @@ const EditorDialog = (props: {
                             />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
+                            <TextMenu editor={editor} />
                             <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
                             <TableRowMenu editor={editor} appendTo={menuContainerRef} />
                             <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
