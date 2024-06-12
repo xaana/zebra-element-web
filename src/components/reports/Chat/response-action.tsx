@@ -3,37 +3,20 @@ import { Editor } from "@tiptap/react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Icon } from "@/components/ui/Icon";
-export const ResponseAction = ({
-    fromPos,
-    originalToPos,
-    newToPos,
-    response,
-    original,
-    editor,
-}: {
-    fromPos: number;
-    originalToPos: number;
-    newToPos: number;
-    response: string;
-    original: string;
-    editor: Editor;
-}): JSX.Element => {
+import { useTextmenuCommands } from "../menus/TextMenu/hooks/useTextmenuCommands";
+export const ResponseAction = ({ editor }: { editor: Editor }): JSX.Element => {
     const [actionValue, setActionValue] = useState("suggested");
-    const from = useRef<number>(fromPos);
-    const originalTo = useRef<number>(originalToPos);
-    const newTo = useRef<number>(newToPos);
-    const responseText = useRef<string>(response);
-    const textSelection = useRef<string>(original);
+    const commands = useTextmenuCommands(editor);
 
     const handleToggleChange = (value: string): void => {
-        if (!value) return;
-        setActionValue(value);
-
-        if (value === "original" && textSelection.current.length > 0) {
-            editor.commands.insertContentAt({ from: from.current, to: newTo.current }, textSelection.current);
-        } else if (value === "suggested" && responseText.current.length > 0) {
-            editor.commands.insertContentAt({ from: from.current, to: originalTo.current }, responseText.current);
+        if (value === "original") {
+            commands.onUndo();
+        } else if (value === "suggested") {
+            commands.onRedo();
+        } else {
+            return;
         }
+        setActionValue(value);
     };
     return (
         <div className="flex justify-end items-center">

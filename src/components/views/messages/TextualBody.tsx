@@ -69,6 +69,7 @@ import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import { Bell, List } from "lucide-react";
+import ZebraStream from "./ZebraStream";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -1059,6 +1060,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
+                    {content.fetching&&rawQuestion&&<ZebraStream fetching={content.fetching} roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} type={content.type} questionId={content.questionId} />}
+
                 </div>
             );
         }

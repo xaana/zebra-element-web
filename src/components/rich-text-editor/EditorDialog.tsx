@@ -3,7 +3,7 @@ import { Editor, EditorContent } from "@tiptap/react";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { ContentItemMenu, LinkMenu, TextMenuProps } from "../reports/menus";
+import { ContentItemMenu, LinkMenu, TextMenu, TextMenuProps } from "../reports/menus";
 import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
 import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
 import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
@@ -170,6 +170,7 @@ const EditorDialog = (props: {
                             />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
+                            <TextMenu editor={editor} />
                             <ColumnsMenu editor={editor} appendTo={menuContainerRef} />
                             <TableRowMenu editor={editor} appendTo={menuContainerRef} />
                             <TableColumnMenu editor={editor} appendTo={menuContainerRef} />
@@ -236,7 +237,8 @@ const EditorHeader = ({
                     </div>
                 </div>
                 <Toolbar.Divider />
-                <AIDropdown
+
+                {/* <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
                     onFixSpelling={commands.onFixSpelling}
                     onMakeLonger={commands.onMakeLonger}
@@ -244,7 +246,14 @@ const EditorHeader = ({
                     onSimplify={commands.onSimplify}
                     // onTldr={commands.onTldr}
                     onTone={commands.onTone}
-                />
+                /> */}
+
+                <Toolbar.Button onClick={commands.onUndo} disabled={!editor.can().chain().focus().undo().run()}>
+                    <Icon name="Undo" />
+                </Toolbar.Button>
+                <Toolbar.Button onClick={commands.onRedo} disabled={!editor.can().chain().focus().redo().run()}>
+                    <Icon name="Redo" />
+                </Toolbar.Button>
                 <Toolbar.Divider />
                 <MemoContentTypePicker options={blockOptions} />
                 <MemoFontFamilyPicker onChange={commands.onSetFont} value={states.currentFont || ""} />
@@ -314,7 +323,7 @@ const EditorHeader = ({
                     <PopoverContent side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                currentColor={states.currentHighlight}
+                                color={states.currentHighlight}
                                 onChange={commands.onChangeHighlight}
                                 onClear={commands.onClearHighlight}
                             />
@@ -330,7 +339,7 @@ const EditorHeader = ({
                     <PopoverContent side="top" sideOffset={8} asChild>
                         <Surface className="p-1">
                             <MemoColorPicker
-                                currentColor={states.currentColor}
+                                color={states.currentColor}
                                 onChange={commands.onChangeColor}
                                 onClear={commands.onClearColor}
                             />
@@ -399,11 +408,7 @@ const EditorHeader = ({
                 </Popover>
                 <Toolbar.Divider />
                 <MemoButton tooltip="Toggle Zebra" onClick={rightSidebar.toggle} active={rightSidebar.isOpen}>
-                    {rightSidebar.isOpen ? (
-                        <PanelRightClose size={16} strokeWidth={2.5} />
-                    ) : (
-                        <PanelRight size={16} strokeWidth={2.5} />
-                    )}
+                    <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
                 </MemoButton>
                 {/* <Toggle
                         aria-label="Toggle bold"
