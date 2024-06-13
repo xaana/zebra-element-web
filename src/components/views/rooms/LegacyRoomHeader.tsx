@@ -589,7 +589,10 @@ export default class RoomHeader extends React.Component<IProps, IState> {
         const startButtons: JSX.Element[] = [];
 
         if (!this.props.viewingCall && this.props.inRoom && !this.context.tombstone) {
-            startButtons.push(<CallButtons key="calls" room={this.props.room} />);
+            const members = this.props.room.getMembers().map((member)=>member.userId);
+            if (!(members.length==2&&members.includes("@zebra:securezebra.com"))) {
+                startButtons.push(<CallButtons key="calls" room={this.props.room} />);
+            }
         }
 
         if (this.props.viewingCall && this.props.activeCall instanceof ElementCall) {

@@ -321,7 +321,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
         if(this.state.botStreamId&&this.threadLastReply?.getId()!==this.state.botStreamId){
             this.setState({showStop: false});
         }
-        if(this.threadLastReply?.getContent().open==="open"){
+        if(this.threadLastReply?.getContent().open==="open"&&!this.threadLastReply?.getContent().database){
             this.threadLastReply.getId()&&this.setState({botStreamId: this.threadLastReply.getId()});
             this.setState({showStop: true});
         }

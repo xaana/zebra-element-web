@@ -50,8 +50,11 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
             <Sidebar side="left" isOpen={leftSidebar.isOpen}>
                 <TableOfContents onItemClick={handlePotentialCloseLeft} editor={editor} />
             </Sidebar>
-            <div className="h-full flex-1 flex relative justify-center" ref={menuContainerRef}>
-                <div className="editor__container h-full overflow-y-auto relative flex flex-col shrink basis-[55em]">
+            <div className="h-full flex-1 flex relative justify-center">
+                <div
+                    className="editor__container h-full overflow-y-auto relative flex flex-col shrink basis-[55em]"
+                    ref={menuContainerRef}
+                >
                     <Separator className="h-6 invisible" />
                     <EditorContent
                         editor={editor}

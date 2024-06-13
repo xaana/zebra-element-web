@@ -69,6 +69,7 @@ import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import { Bell, List } from "lucide-react";
+import ZebraStream from "./ZebraStream";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -661,7 +662,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         let isEmote = false;
         const databaseTable = content.database_table;
         const fetchedDataLen = content.fetched_data_len;
-        const rawQuestion = content.raw_question;
+        let rawQuestion = content.raw_question;
         const query = content.query;
         const roomId = mxEvent.getRoomId();
         const rootId = mxEvent.threadRootId;
@@ -684,6 +685,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
+        if (rawQuestion&&rawQuestion.length>58){
+            const temp = rawQuestion.substring(0, 58)
+            rawQuestion = temp.split(' ').slice(0, -1).join(' ') + '...'
+        }
         if (content.weather) {
             console.log(content.weather);
             body = (
@@ -1059,6 +1064,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
+                    {content.fetching&&rawQuestion&&<ZebraStream fetching={content.fetching} roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} type={content.type} questionId={content.questionId} />}
                 </div>
             );
         }

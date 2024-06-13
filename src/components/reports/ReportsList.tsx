@@ -21,10 +21,12 @@ export const ReportsList = ({
     reports,
     onSelectReport,
     onDuplicate,
+    onDelete,
 }: {
     reports: Report[];
     onSelectReport: (report: Report) => void;
     onDuplicate: (reportId: string) => Promise<void>;
+    onDelete: (reportId: string) => Promise<void>;
 }): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -83,7 +85,7 @@ export const ReportsList = ({
         // },
         {
             id: "actions",
-            cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} />,
+            cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} onDelete={onDelete} />,
             size: 20,
         },
     ];

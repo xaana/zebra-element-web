@@ -61,7 +61,7 @@ export const EditorHeader = ({
 
     return (
         <div className="flex flex-row items-center justify-between flex-none">
-            <div className="flex flex-row gap-x-0 items-center">
+            <div className="flex-1 flex flex-row gap-x-0 items-center">
                 <Toolbar.Button tooltip="Reports Home" onClick={onGoBack}>
                     <Icon name="ArrowLeftToLine" />
                 </Toolbar.Button>
@@ -76,10 +76,10 @@ export const EditorHeader = ({
                 <div className="ml-4">
                     <EditorInfo characters={characterCount.characters()} words={characterCount.words()} />
                 </div>
-                <div className="flex items-center">
+                <div className="flex-1 flex items-center">
                     <Separator orientation="vertical" className="w-[1px] h-10 bg-muted mx-4 my-0" />
                     <input
-                        className="!text-xl !text-foreground mr-2 !bg-transparent !p-1 !transition-all !border !border-transparent focus:!border-primary hover:!border-secondary focus:!outline-none"
+                        className="flex-1 text-lg xl:!text-xl !m-0 !text-foreground mr-2 !bg-transparent !p-1 !leading-none !transition-all !border !border-transparent focus:!border-primary hover:!border-secondary focus:!outline-none"
                         value={nameValue}
                         onChange={(e) => setNameValue(e.target.value)}
                         onBlur={async (e) => await handleNameUpdate()}
