@@ -61,6 +61,7 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
                                     hostname: url.hostname,
                                 };
                             });
+                            if(JSON.parse(chunk).content) {setMarkdown(JSON.parse(chunk).content);}
                             setWebSource(webCitations);
                         }else{
                             setMarkdown(chunk);
