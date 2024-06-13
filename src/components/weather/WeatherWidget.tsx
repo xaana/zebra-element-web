@@ -45,7 +45,7 @@ const WeatherWidget = ({weatherData}:{weatherData:WeatherData}) => {
             <div className='mt-4 flex flex-row justify-center'>
                 {forecast.forecastday.map((day, index) => (
                     
-                    <div key={index} className={`text-center px-2 border-r-2 border-slate-300${index === forecast.forecastday.length - 1 ? ' border-none' : ''}`}>
+                    <div key={index} className={`text-center px-10 border-r-2 border-slate-300${index === forecast.forecastday.length - 1 ? ' border-none' : ''}`}>
                         {/* <i className={`wi wi-day-${day.day.condition.icon.split('/').pop().split('.')[0]}`} /> */}
                         <WeatherIcon src={day.day.condition.icon} />
                         <h4 className="text-xs">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' })}</h4>
