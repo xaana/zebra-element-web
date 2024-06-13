@@ -1,7 +1,7 @@
 {
     "default_server_config": {
         "m.homeserver": {
-            "base_url": "https://demo.securezebra.com",
+            "base_url": "https://dev-server.securezebra.com/",
             "server_name": "securezebra.com"
         },
         "m.identity_server": {
