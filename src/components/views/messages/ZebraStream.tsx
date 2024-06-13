@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
-import { IContent } from 'matrix-js-sdk/src/matrix';
 import SettingsStore from 'matrix-react-sdk/src/settings/SettingsStore';
-import parse from 'html-react-parser';
+import { WebSearchSourceItem, WebSearchSources } from '@/components/web/WebSearchSources';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Bell } from 'lucide-react';
 
 interface IProps {
   fetching?: boolean;
@@ -15,6 +17,7 @@ interface IProps {
 
 const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQuestion,questionId }) => { 
     const [markdown, setMarkdown] = useState("");
+    const [webSource, setWebSource] = useState<WebSearchSourceItem[]>([]);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -39,7 +42,7 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
                 if (response.body) {
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder('utf-8');
-
+                    let firstChunk = true;
                     const readStream = async () => {
                         const { done, value } = await reader.read();
                         if (done) {
@@ -48,8 +51,21 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
                         }
                         // Decode the stream chunk to text
                         const chunk = decoder.decode(value, { stream: true });
-                        console.log("Stream chunk:", chunk);
-                        setMarkdown(chunk);
+                        // console.log("Stream chunk:", JSON.parse(chunk));
+                        if (firstChunk) {
+                            firstChunk = false;
+                            const webCitations: WebSearchSourceItem[] = JSON.parse(chunk).source_links.map((item: string) => {
+                                const url = new URL(item);
+                                return {
+                                    link: item,
+                                    hostname: url.hostname,
+                                };
+                            });
+                            setWebSource(webCitations);
+                        }else{
+                            setMarkdown(chunk);
+                        }
+                        
 
                         // Read the next chunk
                         await readStream();
@@ -71,17 +87,37 @@ const ZebraStream: React.FC<IProps> = ({ fetching, roomId, eventId, type,rawQues
         };
 
     }, []);
+
+    const getSectionTitle = (title: string, Icon: React.FC | null): React.ReactNode => {
+        return (
+            <div className="flex flex-row items-center">
+                {Icon && <Icon />}
+                <div className="text-base font-bold m-2">{title}:</div>
+            </div>
+        );
+    }
+
     if(!fetching) return null
-    // const content:IContent = {
-    //     format: "org.matrix.custom.html",
-    //     formatted_body: markdown,
-    // }
-    // const body = HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})
+    if (webSource.length === 0) return (<div>Thinking...</div>)
+
     return (
         <div>
-            {HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})}
+            <div className="p-4">
+                    <h2>
+                        <strong>{rawQuestion}</strong>
+                    </h2>
+                    {webSource ? (
+                        <WebSearchSources data={webSource} />
+                    ) : (
+                        <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    <Separator />
+                    {getSectionTitle("Answer", Bell)}
+                    {HtmlUtils.bodyToHtml({format: "org.matrix.custom.html", formatted_body: markdown},[],{})}
+            </div>
+            
         </div>
-    );
+    )
 }
 
 // Export the component
