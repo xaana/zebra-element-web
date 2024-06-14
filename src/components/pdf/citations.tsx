@@ -45,12 +45,12 @@ export function Citations({
     const [selectedFileIndex, setSelectedFileIndex] = useState<string>("0");
     const [firstOpen,setFirstOpen] = useState<boolean>(true)
     const containerRef = useRef<HTMLDivElement>(null);
+    const [pdfLoaded, setPdfLoaded] = useState(false);
     const [pendingCitationView, setPendingCitationView] = useState<{
         page: number;
         highlights: BoundingBox[];
     } | null>(null);
     const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
-        console.log('loaded',numPages)
         setNumPages(numPages);
         pageRefs.current = Array(numPages)
             .fill(null)
@@ -64,22 +64,9 @@ export function Citations({
             }
         }, 500);
         if(citations.length > 0) { // Ensure there is at least one citation
-        const firstCitation = citations[0]; // Access the first citation
+         // Access the first citation
         // when open the citation jump to the last citation automatically
-        if(firstOpen){
-            handleViewCitation(
-                firstCitation.doc_name,
-                String(firstCitation.page_num),
-                parseBoundingBoxes(firstCitation.bboxes)
-            );
-            handleViewCitation(
-                firstCitation.doc_name,
-                String(firstCitation.page_num),
-                parseBoundingBoxes(firstCitation.bboxes)
-            );
-            setFirstOpen(false)
-        }
-        
+        setPdfLoaded(true)
     }
     };
     const parseBoundingBoxes = (bboxes: string): BoundingBox[] => {
@@ -88,6 +75,21 @@ export function Citations({
             return { x1, y1, x2, y2 };
         });
     };
+
+    useEffect(()=>{
+        const firstCitation = citations[0];
+        setTimeout(() => {
+            if(firstOpen){
+                handleViewCitation(
+                    firstCitation.doc_name,
+                    String(firstCitation.page_num),
+                    parseBoundingBoxes(firstCitation.bboxes)
+                );
+                setFirstOpen(false)
+            }
+        }, 400);
+        
+    },[pdfLoaded])
 
     useEffect(() => {
         const updateScale = () => {
