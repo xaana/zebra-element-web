@@ -82,7 +82,12 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                         if(JSON.parse(chunk).content) {setMarkdown(JSON.parse(chunk).content);}
                         setWebSource(webCitations);
                     }else{
-                        setMarkdown(chunk);
+                        const temp = chunk.split("$_$");
+                        if(temp[1]) setMarkdown(temp[1]);
+                        else{
+                            setMarkdown(temp[0]);
+                        }
+                        
                     }
                     
 
@@ -133,7 +138,11 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                     // Decode the stream chunk to text
                     const chunk = decoder.decode(value, { stream: true });
                     // console.log("Stream chunk:", JSON.parse(chunk));
-                    setMarkdown(chunk);
+                    const temp = chunk.split("$_$");
+                    if(temp[1]) setMarkdown(temp[1]);
+                    else{
+                        setMarkdown(temp[0]);
+                    }
                     // Read the next chunk
                     await readStream();
                 };
