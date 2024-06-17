@@ -16,7 +16,7 @@ const FilesPill = ({
     roomId,
 }: {
     file: DocFile | undefined;
-    files: DocFile[] | undefined;
+    files?: DocFile[] | undefined;
     timelineRenderingType?: TimelineRenderingType;
     roomId?: string;
 }): React.JSX.Element | null => {
@@ -34,27 +34,44 @@ const FilesPill = ({
     const downloadFile = async (e: React.SyntheticEvent, file: DocFile): Promise<void> => {
         e.preventDefault();
         e.stopPropagation();
-        if(!pdfUrl){
+        if(!file.name.endsWith(".pdf")){
             const room = client.getRoom(file.roomId);
             const event = room?.findEventById(file.eventId!);
-            console.log(room,event)
             if (!room||!event) return;
             const helper = new MediaEventHelper(event);
             try {
                 const decryptedBlob = await helper.sourceBlob.value;
-                const decryptedUrl = await helper.sourceUrl.value;
+                const fileDownloader = new FileDownloader();
+                fileDownloader.download({
+                    blob: decryptedBlob,
+                    name: file.name,
+                    autoDownload: true,
+                }).then(()=>{
+                    helper.destroy();
+                });
+            } catch (err) {
+                console.error('Unable to download file: ', err);
+            }
+        }else{
+        if(!pdfUrl){
+            const room = client.getRoom(file.roomId);
+            const event = room?.findEventById(file.eventId!);
+            if (!room||!event) return;
+            const helper = new MediaEventHelper(event);
+            try {
+                const decryptedBlob = await helper.sourceBlob.value;
                 const blob = new Blob([decryptedBlob], { type: 'application/pdf' });
                 const url = URL.createObjectURL(blob);
                 setPdfUrl(url)
                 window.open(url, '_blank');
-                decryptedUrl&&URL.revokeObjectURL(decryptedUrl);
+                helper.destroy();
             } catch (err) {
                 console.error('Unable to download file: ', err);
             }
         }
         else{
             window.open(pdfUrl, '_blank');
-        }
+        }}
         
     };
 
@@ -85,7 +102,7 @@ const FilesPill = ({
                     <X onClick={() => cancelQuoting()} className="cursor-pointer top-0 right-0 absolute text-xs" />
                 </div>
             )}
-            <div className="flex flex-row text-sm w-60 items-center cursor-pointer" key={file.mediaId} onClick={(e)=>downloadFile(e,file)}>
+            <div className="flex flex-row text-sm w-full items-center cursor-pointer" key={file.mediaId} onClick={(e)=>downloadFile(e,file)}>
                 <FileText size={30} />
                 <div className="text-xs">{truncateFilename(file.name)}</div>
             </div>
