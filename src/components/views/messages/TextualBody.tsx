@@ -863,12 +863,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     {content.files_ && !content.is_image && (
                         <>
                             {this.getSectionTitle("Source", List)}
-                            <div className="flex flex-row gap-x-1 overflow-auto">
+                            <div className="flex flex-row gap-x-1 overflow-auto my-4">
                             {content.files_.map((file: DocFile) => (
                                 <FilesPill key={file.mediaId} file={file} files={content.files_} roomId={roomId} />
                             ))}
                             </div>
                             {webCitations && webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
+                            <Separator />
                         </>
                     )}
                     {!content.open&&this.getSectionTitle("Answer", Bell)}
