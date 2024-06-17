@@ -41,7 +41,6 @@ import { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext
 import { addReplyToMessageContent } from "matrix-react-sdk/src/utils/Reply";
 import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import UploadFailureDialog from "matrix-react-sdk/src/components/views/dialogs/UploadFailureDialog";
-import UploadConfirmDialog from "matrix-react-sdk/src/components/views/dialogs/UploadConfirmDialog";
 import { createThumbnail } from "matrix-react-sdk/src/utils/image-media";
 import { attachMentions, attachRelation } from "matrix-react-sdk/src/components/views/rooms/SendMessageComposer";
 import { doMaybeLocalRoomAction } from "matrix-react-sdk/src/utils/local-room";
@@ -52,6 +51,7 @@ import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
 import { getVectorConfig } from "./vector/getconfig";
 import { imag } from "@tensorflow/tfjs";
+import UploadConfirmDialog from "./components/views/dialogs/UploadConfirmDialog";
 
 // scraped out of a macOS hidpi (5660ppm) screenshot png
 //                  5669 px (x-axis)      , 5669 px (y-axis)      , per metre
@@ -453,6 +453,7 @@ export default class ContentMessages {
         }
 
         let uploadAll = false;
+        let uploadZebra = false;
         // Promise to complete before sending next file into room, used for synchronisation of file-sending
         // to match the order the files were specified in
         let promBefore: Promise<any> = Promise.resolve();
@@ -466,10 +467,13 @@ export default class ContentMessages {
                     currentIndex: i,
                     totalFiles: okFiles.length,
                 });
-                const [shouldContinue, shouldUploadAll] = await finished;
+                const [shouldContinue, shouldUploadAll, shouldZebra] = await finished;
                 if (!shouldContinue) break;
                 if (shouldUploadAll) {
                     uploadAll = true;
+                }
+                if (shouldZebra) {
+                    uploadZebra = true;
                 }
             }
 
@@ -484,7 +488,7 @@ export default class ContentMessages {
                         replyToEvent ?? undefined,
                         context,
                         loopPromiseBefore,
-
+                        uploadZebra,
                     ),
                 matrixClient,
             );
@@ -532,6 +536,7 @@ export default class ContentMessages {
         replyToEvent: MatrixEvent | undefined,
         context: TimelineRenderingType,
         promBefore?: Promise<any>,
+        uploadZebra = false,
     ): Promise<void> {
         const fileName = file.name || _t("common|attachment");
         const content: Omit<IMediaEventContent, "info"> & { info: Partial<IMediaEventInfo> } = {
@@ -618,7 +623,7 @@ export default class ContentMessages {
                 total: file.size,
             };
             let slowest: RoomUpload | null
-            if(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt")) {
+            if(uploadZebra&&(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;
@@ -758,7 +763,7 @@ export default class ContentMessages {
                 if (autoSelectFile){
                     dis.dispatch({
                         action: "select_database",
-                        files: "",
+                        database: "",
                         roomId: roomId,
                         context:context,
                     });
@@ -799,7 +804,7 @@ export default class ContentMessages {
                 dis.dispatch<UploadErrorPayload>({ action: Action.UploadFailed, upload, error });
             }
         } finally {
-            if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))){
+            if (!(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))||!uploadZebra){
                 removeElement(this.inprogress, (e) => e.promise === upload.promise);
                 if(this.inprogress.length===0){
                     if(this.fileUploaded.length>5){

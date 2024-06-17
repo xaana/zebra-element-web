@@ -167,7 +167,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
     }
 
     public componentDidUpdate(prevProps: IProps): void {
-        
         if (prevProps.mxEvent !== this.props.mxEvent) {
             this.setEventId(this.props.mxEvent);
             this.setupThread(this.props.mxEvent);
@@ -184,6 +183,17 @@ export default class ThreadView extends React.Component<IProps, IState> {
         }
 
         this.eventId = event.getId()!;
+    }
+
+    private mergeUniqueByMediaId(first: DocFile[], second: DocFile[]): DocFile[] {
+        // Create a Set from mediaIds of the first list for quick lookup
+        const mediaIdSet = new Set(first.map(item => item.mediaId));
+    
+        // Filter out objects in the second list whose mediaId is not in the Set
+        const uniqueFromSecond = second.filter(item => !mediaIdSet.has(item.mediaId));
+    
+        // Concatenate the first list with the unique items from the second list
+        return first.concat(uniqueFromSecond);
     }
 
     private onAction = (payload: ActionPayload): void => {
@@ -241,14 +251,10 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 break;
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
+                    const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
                     if (payload.roomId === this.props.room.roomId) {
-                        if (payload.files.length > 0) {
-                            const newState = [...this.state.files, ...payload.files];
-                            const uniqueList = newState.filter(
-                                (item, index, self) =>
-                                    index === self.findIndex((t) => t.mediaId === item.mediaId && t.name === item.name),
-                            );
-                            const fileList = uniqueList.map((file: DocFile) => {
+                        if (payload.files.length > 0&&mergedFiles.length>this.state.files.length) {
+                            const fileList = mergedFiles.map((file: DocFile) => {
                                 if (
                                     this.props.room &&
                                     file.eventId &&
@@ -277,9 +283,13 @@ export default class ThreadView extends React.Component<IProps, IState> {
                             this.setState({
                                 files: filteredFiles,
                             });
-                        } else {
+                        } else if (payload.files.length > 0&&mergedFiles.length===this.state.files.length) {
                             this.setState({
                                 files: payload.files,
+                            });
+                        } else {
+                            this.setState({
+                                files: [],
                             });
                         }
                     }

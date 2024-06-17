@@ -267,7 +267,16 @@ export class RoomViewStore extends EventEmitter {
             this.doMaybeSetCurrentVoiceBroadcastPlayback(room);
         }
     }
-
+    private mergeUniqueByMediaId(first: DocFile[], second: DocFile[]): DocFile[] {
+        // Create a Set from mediaIds of the first list for quick lookup
+        const mediaIdSet = new Set(first.map(item => item.mediaId));
+    
+        // Filter out objects in the second list whose mediaId is not in the Set
+        const uniqueFromSecond = second.filter(item => !mediaIdSet.has(item.mediaId));
+    
+        // Concatenate the first list with the unique items from the second list
+        return first.concat(uniqueFromSecond);
+    }
     private onDispatch(payload: ActionPayload): void {
         // eslint-disable-line @typescript-eslint/naming-convention
         switch (payload.action) {
@@ -407,8 +416,9 @@ export class RoomViewStore extends EventEmitter {
                         metricsTrigger: undefined, // room doesn't change
                     });
                 } else {
+                    const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
                     if (payload.roomId===this.state.roomId){
-                        if(payload.files.length>0){
+                        if(payload.files.length>0&&mergedFiles.length>this.state.files.length){
                         const newState = [...this.state.files,...payload.files]
                         const uniqueList =newState.filter((item, index, self) =>
                             index === self.findIndex((t) => (
@@ -441,6 +451,11 @@ export class RoomViewStore extends EventEmitter {
                         filteredList&&this.setState({
                             files: filteredFiles,
                         });}
+                    else if(payload.files.length>0&&mergedFiles.length===this.state.files.length) {
+                        this.setState({
+                            files: payload.files,
+                        });
+                    }
                     else{
                         this.setState({
                             files: [],

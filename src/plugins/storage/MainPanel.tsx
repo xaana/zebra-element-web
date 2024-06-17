@@ -11,6 +11,7 @@ export const MainPanel = (): JSX.Element => {
     useEffect(() => {
         fetch("http://localhost:9001/api/v1/login", {
             method: "POST",
+            credentials: 'include',
             headers: {
                 "Content-Type": "application/json",
             },
@@ -19,7 +20,7 @@ export const MainPanel = (): JSX.Element => {
                 secretKey: "minioadmin",
             }),
         }).then(()=>{
-
+            setIframeUrl("http://localhost:9001/")
         });
         // let configData: IExtendedConfigOptions | undefined;
         // getVectorConfig().then((config)=>{
@@ -52,12 +53,12 @@ export const MainPanel = (): JSX.Element => {
             {iframeUrl && (
                 <iframe
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    id="algology-iframe"
-                    src={`http://localhost:9001/?sideless`}
+                    id="storage-iframe"
+                    src={iframeUrl}
                     height="100%"
                     width="100%"
                 />
-            )}
+             )}
         </>
     );
 };

@@ -157,7 +157,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                     onClick={handleDialogOpen}
                 />
             </DialogTrigger>
-            <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-y-auto">
+            <DialogContent className="w-[90vw] max-w-[90vw] h-[100vh] p-0 overflow-y-auto">
                 <div className="relative w-[90vw] max-w-[90vw] h-full p-4">
                     <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
                     <FilesTabs

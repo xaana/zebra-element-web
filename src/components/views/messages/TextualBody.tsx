@@ -41,7 +41,7 @@ import MessageEditHistoryDialog from "matrix-react-sdk/src/components/views/dial
 import EditMessageComposer from "matrix-react-sdk/src/components/views/rooms/EditMessageComposer";
 import LinkPreviewGroup from "matrix-react-sdk/src/components/views/rooms/LinkPreviewGroup";
 import { IBodyProps } from "matrix-react-sdk/src/components/views/messages/IBodyProps";
-import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
+import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
 import AccessibleButton from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
 import { options as linkifyOpts } from "matrix-react-sdk/src/linkify-matrix";
 import { getParentEventId } from "matrix-react-sdk/src/utils/Reply";
@@ -70,6 +70,7 @@ import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
 import { Bell, List } from "lucide-react";
 import ZebraStream from "./ZebraStream";
+import { DocFile } from "../rooms/FileSelector";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -755,9 +756,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         if (fileSelected&&content.open===undefined) {
+            const filePills = (<div className="flex flex-row gap-x-1 overflow-x-scroll">{fileSelected.map((file: DocFile | undefined) => {
+                return <FilesPill file={file}  files={fileSelected} />
+            })}</div>)
             body = (
                 <div>
-                    <FilesPrefix files={fileSelected} />
+                    {this.context.timelineRenderingType === TimelineRenderingType.Thread ? <FilesPrefix files={fileSelected} />: filePills}
                     {body}
                 </div>
             );
@@ -819,7 +823,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </div>
             );
         }
-        if (pdfResponse && roomId && rootId) {
+        if (pdfResponse && roomId && rootId&&!content.fetching) {
             const webCitations: WebSearchSourceItem[] = content.web_url&&content.web_url.map((item: string) => {
                 const url = new URL(item);
                 return {
@@ -859,8 +863,13 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     {content.files_ && !content.is_image && (
                         <>
                             {this.getSectionTitle("Source", List)}
-                            <FilesPill files={content.files_} />
+                            <div className="flex flex-row gap-x-1 overflow-auto my-4">
+                            {content.files_.map((file: DocFile) => (
+                                <FilesPill key={file.mediaId} file={file} files={content.files_} roomId={roomId} />
+                            ))}
+                            </div>
                             {webCitations && webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
+                            <Separator />
                         </>
                     )}
                     {!content.open&&this.getSectionTitle("Answer", Bell)}
@@ -1064,7 +1073,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
-                    {content.fetching&&rawQuestion&&<ZebraStream fetching={content.fetching} roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} type={content.type} questionId={content.questionId} />}
+                    {content.fetching&&rawQuestion&&<ZebraStream  roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} content={content} />}
                 </div>
             );
         }
