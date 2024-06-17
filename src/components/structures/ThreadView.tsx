@@ -281,13 +281,16 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 filteredFiles.splice(5,filteredList.length-5)
                             }
                             this.setState({
+                                database: "",
                                 files: filteredFiles,
                             });
                         } else if (payload.files.length > 0&&mergedFiles.length===this.state.files.length) {
                             this.setState({
+                                database:"",
                                 files: payload.files,
                             });
                         } else {
+                            console.log('...')
                             this.setState({
                                 files: [],
                             });
