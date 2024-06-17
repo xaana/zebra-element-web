@@ -78,6 +78,7 @@ import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
 import { isJoinedOrNearlyJoined } from "matrix-react-sdk/src/utils/membership";
+import { Files } from "lucide-react";
 
 let instanceCount = 0;
 
@@ -763,11 +764,17 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         timelineRenderingType={this.context.timelineRenderingType}
                         roomId={this.context.roomId}
                     />
-                    <FilesPill
-                        files={this.props.files}
-                        timelineRenderingType={this.context.timelineRenderingType}
-                        roomId={this.context.roomId}
-                    />
+                    <div className="flex flex-row gap-x-1">
+                        {this.props.files && this.props.files.map((file) => (
+                            <FilesPill
+                            file={file}
+                            files={this.props.files}
+                            timelineRenderingType={this.context.timelineRenderingType}
+                            roomId={this.context.roomId}
+                            />
+                        ))}
+                        </div>
+                   
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                         !this.props.database &&
                         this.props.files?.length === 0 &&
