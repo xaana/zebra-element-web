@@ -44,6 +44,7 @@ export const SuggestionPrompt = ({
                             const content = { msgtype: "m.text", body: suggestion } as IContent;
                             if (Array.isArray(type) && type.length > 0) {
                                 content.fileSelected = type;
+                                content.forceDoc = true;
                             } else if (typeof type === "string") {
                                 content.database = type;
                             } else if (typeof type === "boolean") {
