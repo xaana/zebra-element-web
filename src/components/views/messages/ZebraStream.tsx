@@ -4,9 +4,12 @@ import SettingsStore from 'matrix-react-sdk/src/settings/SettingsStore';
 import { WebSearchSourceItem, WebSearchSources } from '@/components/web/WebSearchSources';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bell } from 'lucide-react';
+import { Bell, List } from 'lucide-react';
 import { DocFile } from '../rooms/FileSelector';
 import { IContent } from 'matrix-js-sdk/src/matrix';
+import { useMatrixClientContext } from 'matrix-react-sdk/src/contexts/MatrixClientContext';
+import { ImageViewer } from '@/components/pdf/ImageViewer';
+import FilesPill from '@/components/ui/FilesPill';
 
 interface IProps {
   roomId?: string;
@@ -18,11 +21,17 @@ interface IProps {
 const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) => { 
     const [markdown, setMarkdown] = useState("");
     const [webSource, setWebSource] = useState<WebSearchSourceItem[]>([]);
+    const [isImage, setIsImage] = useState(false);
+    const client = useMatrixClientContext();
     useEffect(() => {
         
 
         if(content.type === "web")fetchWebStream();
-        if (content.type === "pdf")fetchPdfStream();
+        if (content.type === "pdf"){
+            fetchPdfStream();
+            const temp = content.fileSelected[0].name.split(".");
+            if(["png", "jpg", "jpeg", "webp", "gif"].includes(temp[temp.length-1])) setIsImage(true);
+        }
 
         return () => {
             // Cleanup logic if needed, e.g., aborting the fetch
@@ -161,6 +170,27 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                         <WebSearchSources data={webSource} />
                     ) : (
                         <Skeleton className="w-full h-[30px] rounded-full" />
+                    )}
+                    {isImage && content.type === "pdf"&&(
+                        <div className="flex flex-row items-center gap-x-2">
+                        {getSectionTitle("Source", List)}
+                        {content.fileSelected.map(
+                            (file: DocFile) =>
+                                roomId && (
+                                    <ImageViewer key={eventId} eventId={file.eventId!} room={client.getRoom(roomId)!} />
+                                ),
+                        )}
+                    </div>
+                    )}
+                    {content.type === "pdf"&&!isImage&&(
+                        <>
+                            {getSectionTitle("Source", List)}
+                            <div className="flex flex-row gap-x-1 overflow-auto my-4">
+                            {content.fileSelected.map((file: DocFile) => (
+                                <FilesPill key={file.mediaId} file={file} roomId={roomId} />
+                            ))}
+                            </div>
+                        </>
                     )}
                     <Separator />
                     {getSectionTitle("Answer", Bell)}
