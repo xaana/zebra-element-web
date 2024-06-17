@@ -762,12 +762,6 @@ export default class ContentMessages {
                 this.fileUploaded.push(autoSelectFile)
                 if (autoSelectFile){
                     dis.dispatch({
-                        action: "select_database",
-                        database: "",
-                        roomId: roomId,
-                        context:context,
-                    });
-                    dis.dispatch({
                         action: "select_files",
                         files: this.fileUploaded,
                         roomId: roomId,
