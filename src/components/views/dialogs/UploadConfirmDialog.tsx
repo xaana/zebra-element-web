@@ -121,7 +121,7 @@ export default class UploadConfirmDialog extends React.Component<IProps,IState> 
                         </div>
                     </div>
                 </div>
-                {!preview&&<div className="flex items-center space-x-2">
+                {!preview&&this.props.file.name.endsWith(".pdf")&&<div className="flex items-center space-x-2">
                     <StyledCheckbox
                         checked={this.state.toZebra}
                         onChange={(e) => this.setState({toZebra:e.target.checked})}
