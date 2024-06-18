@@ -83,7 +83,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                         setWebSource(webCitations);
                     }else{
                         const temp = chunk.split("$_$");
-                        if(temp[1]) setMarkdown(temp[1]);
+                        if(temp[1]&&temp[1]!=="") setMarkdown(temp[1]);
                         else{
                             setMarkdown(temp[0]);
                         }
