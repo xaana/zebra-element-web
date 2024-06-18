@@ -1,4 +1,5 @@
 import type { File } from "@/plugins/files/types"
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore"
 
 export type FileDTO = {
     mediaId: string,
@@ -17,7 +18,7 @@ export const listFiles = async (
     type?: string,
     url: string = "http://localhost:8000",
 ): Promise<FileDTO[]> => {
-    return fetch(url+"/api/files/get_info", {
+    return fetch(SettingsStore.getValue("reportsApiUrl")+"/api/files/get_info", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
