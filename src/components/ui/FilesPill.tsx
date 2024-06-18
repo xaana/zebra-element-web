@@ -85,7 +85,7 @@ const FilesPill = ({
         });
     };
 
-    const truncateFilename = (name: string, maxLength: number = 30) => {
+    const truncateFilename = (name: string, maxLength: number = 25) => {
         if (name.length > maxLength) {
             return `${name.substring(0, maxLength - 3)}...`;
         }

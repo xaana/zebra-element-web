@@ -10,6 +10,7 @@ import { MediaGrid } from "../../components/files/MediaGrid";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
+import { deleteFiles, dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 export const MainPanel = (): JSX.Element => {
     const client = useMatrixClientContext();
@@ -23,27 +24,33 @@ export const MainPanel = (): JSX.Element => {
         initRouting();
 
         const fetchFiles = async (): Promise<void> => {
-            const fetchedFiles = await getUserFiles(client);
+            // const fetchedFiles = await getUserFiles(client);
+            const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
             allFiles.current = fetchedFiles;
             setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
             setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
         };
 
-        fetchFiles(); 
+        fetchFiles();
     }, [client]);
 
-    useEffect(() => {
-        return () => {
-            allFiles.current.forEach(async (file) => {
-                // Asynchronous cleanup if necessary or synchronous access to URLs
-                file.mediaHelper.destroy();
-            });
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         allFiles.current.forEach(async (file) => {
+    //             // Asynchronous cleanup if necessary or synchronous access to URLs
+    //             file.mediaHelper.destroy();
+    //         });
+    //     };
+    // }, []);
     const onDelete = (currentFile:any):void=>{
         const roomId = currentFile.roomId;
-        const eventId = currentFile.mxEvent?.getId();
-        eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
+        const event = currentFile.event;
+        if (roomId && event) {
+            const eventId = typeof currentFile.event === "string" ? currentFile.event: currentFile.event?.getId();
+            eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
+        }
+        deleteFiles(currentFile.mediaId, currentFile.sender)
+
         if (currentFile.type === MsgType.File){
             setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
         }else if (currentFile.type === MsgType.Image){

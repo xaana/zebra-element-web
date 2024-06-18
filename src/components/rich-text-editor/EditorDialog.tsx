@@ -64,7 +64,6 @@ const EditorDialog = (props: {
     onDestroyCallback?: (data: string) => void;
 }): React.JSX.Element => {
     const [open, setOpen] = useState(false);
-    const [content, setContent] = useState("");
     // const ydoc = useMemo(() => new YDoc(), []);
     // const { editor } = useBlockEditor({ydoc:ydoc});
     const { editor } = useBlockEditor({});
@@ -107,24 +106,30 @@ const EditorDialog = (props: {
         if (open) {
             setOpen(true);
             // load content from state or message composer
-            let initialContent = content ? content : props.editorContent;
-            editor?.commands.setContent({
-                type: "doc",
-                content: [
-                    {
-                        type: "paragraph",
-                        content: [
-                            {
-                                type: "text",
-                                text: initialContent,
-                            },
-                        ],
-                    },
-                ],
-            });
+
+            if (editor?.getText().length === 0) {
+                editor?.commands.setContent({
+                    type: "doc",
+                    content: [
+                        {
+                            type: "paragraph",
+                            content: [
+                                {
+                                    type: "text",
+                                    text: props.editorContent,
+                                },
+                            ],
+                        },
+                    ],
+                });
+            }
+
+            // let initialContent = content ? content : props.editorContent;
+            
         } else {
             // save current editor content to state
-            setContent(editor?.getText() || "");
+            // setContent(editor?.getText() || "");
+            // editorChat?.reset();
             setOpen(false);
         }
     };
@@ -185,12 +190,12 @@ const EditorDialog = (props: {
                             editor={editor}
                             onScheduleSendCallback={(content: string, rawContent: string): void => {
                                 props.onScheduleSendCallback(content, rawContent);
-                                setContent("");
+                                editor.commands.clearContent();
                                 setOpen(false);
                             }}
                             onSendCallback={(content: string, rawContent: string): void => {
                                 props.onSendCallback(content, rawContent);
-                                setContent("");
+                                editor.commands.clearContent();
                                 setOpen(false);
                             }}
                         />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as HtmlUtils from "matrix-react-sdk/src/HtmlUtils";
 import SettingsStore from 'matrix-react-sdk/src/settings/SettingsStore';
 import { WebSearchSourceItem, WebSearchSources } from '@/components/web/WebSearchSources';
@@ -22,6 +22,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
     const [markdown, setMarkdown] = useState("");
     const [webSource, setWebSource] = useState<WebSearchSourceItem[]>([]);
     const [isImage, setIsImage] = useState(false);
+    const decoder = useMemo(() => new TextDecoder(), [])
     const client = useMatrixClientContext();
     useEffect(() => {
         
@@ -45,7 +46,6 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                 firstMessageEventId: eventId,
                 question: rawQuestion,
                 eventId:content.questionId,
-                
             };
             const url = `${SettingsStore.getValue("botApiUrl")}/web_stream`;
             const request = new Request(url, {
@@ -60,7 +60,6 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
             // Check if response.body is not null
             if (response.body) {
                 const reader = response.body.getReader();
-                const decoder = new TextDecoder('utf-8');
                 let firstChunk = true;
                 const readStream = async () => {
                     const { done, value } = await reader.read();
@@ -83,7 +82,12 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                         if(JSON.parse(chunk).content) {setMarkdown(JSON.parse(chunk).content);}
                         setWebSource(webCitations);
                     }else{
-                        setMarkdown(chunk);
+                        const temp = chunk.split("$_$");
+                        if(temp[1]&&temp[1]!=="") setMarkdown(temp[1]);
+                        else{
+                            setMarkdown(temp[0]);
+                        }
+                        
                     }
                     
 
@@ -134,7 +138,11 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                     // Decode the stream chunk to text
                     const chunk = decoder.decode(value, { stream: true });
                     // console.log("Stream chunk:", JSON.parse(chunk));
-                    setMarkdown(chunk);
+                    const temp = chunk.split("$_$");
+                    if(temp[1]&&temp[1]!=="") setMarkdown(temp[1]);
+                    else{
+                        setMarkdown(temp[0]);
+                    }
                     // Read the next chunk
                     await readStream();
                 };
