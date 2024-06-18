@@ -643,6 +643,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         );
     };
 
+    private renderFeedback = () => {
+        return (
+            <div className="flex">
+                <ThumbsDown size={18} onClick={() => {}} />
+                <ThumbsUp size={18} onClick={() => {}} />
+            </div>
+        );
+    };
+
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -744,10 +753,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             type={content.web}
                         />
                     )}
-                    <div className="flex">
-                        <ThumbsDown size={16} />
-                        <ThumbsUp size={16} />
-                    </div>
+                    {this.renderFeedback()}
                 </div>
             );
         }
@@ -897,6 +903,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         roomId={roomId}
                         type={content.files_}
                     />
+                    {this.renderFeedback()}
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -1014,6 +1021,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId={roomId}
                                     type={content.database_}
                                 />
+                                {this.renderFeedback()}
                             </>
                         )}
                     </div>
