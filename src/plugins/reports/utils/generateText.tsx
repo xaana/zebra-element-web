@@ -76,7 +76,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
 
             // process text
             const ps = response.split(/\n/).filter((line) => line.length > 0);
-            const newText = ps
+
+            let newText = ps
                 .map((p, i) => {
                     // Skip wrapping the first and last paragraphs
                     if (i !== 0 && i !== ps.length - 1) {
@@ -86,19 +87,16 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                 })
                 .join("");
 
+            newText = newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
-            editorChat.setMessages((prev) => {
-                return prev.map((message, index) => {
-                    if (index === prev.length - 1) {
-                        return {
-                            ...message,
-                            children: <ResponseAction editor={editor} />,
-                        };
-                    }
-                    return message;
-                });
-            });
+            editorChat.setMessages((prev) =>
+                prev.map((message, index) => ({
+                    ...message,
+                    children: index === prev.length - 1 ? <ResponseAction editor={editor} /> : null,
+                })),
+            );
 
             editor.commands.insertContentAt({ from: from, to: to }, newText);
         };

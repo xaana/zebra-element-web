@@ -96,7 +96,7 @@ export const AiWriterView = ({
                     setIsFetching(false);
                     if (previewText) {
                         const ps = previewText.split(/\n/).filter((line) => line.length > 0);
-                        const newText = ps
+                        let newText = ps
                             .map((p, i) => {
                                 if (i !== 0 && i !== ps.length - 1) {
                                     return `<p>${p}</p>`;
@@ -104,6 +104,7 @@ export const AiWriterView = ({
                                 return p;
                             })
                             .join("");
+                        newText = newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
                         setPreviewText(newText);
                     }
                     return;
@@ -148,7 +149,7 @@ export const AiWriterView = ({
                     },
                     body: JSON.stringify({
                         user_requirement: payload.text,
-                        // tone: payload.tone || "",
+                        tone: payload.tone || "",
                         media_ids: extractedFilenames,
                     }),
                 },

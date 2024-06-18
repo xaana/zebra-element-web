@@ -120,23 +120,21 @@ export const ExtensionKit = ({ userId, userName = "Zebra" }: ExtensionKitProps):
         allowedMimeTypes: ["image/png", "image/jpeg", "image/gif", "image/webp"],
         onDrop: (currentEditor, files, pos) => {
             files.forEach(async (file) => {
-                const url = await ReportsAPI.uploadImage(file);
-
-                currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run();
+                // const url = await ReportsAPI.uploadImage(file);
+                // currentEditor.chain().setImageBlockAt({ pos, src: url }).focus().run();
             });
         },
         onPaste: (currentEditor, files) => {
             files.forEach(async (file) => {
-                const url = await ReportsAPI.uploadImage(file);
-
-                return currentEditor
-                    .chain()
-                    .setImageBlockAt({
-                        pos: currentEditor.state.selection.anchor,
-                        src: url,
-                    })
-                    .focus()
-                    .run();
+                // const url = await ReportsAPI.uploadImage(file);
+                // return currentEditor
+                //     .chain()
+                //     .setImageBlockAt({
+                //         pos: currentEditor.state.selection.anchor,
+                //         src: url,
+                //     })
+                //     .focus()
+                //     .run();
             });
         },
     }),
