@@ -760,23 +760,23 @@ export default class ContentMessages {
             // Await previous message being sent into the room
             if (promBefore) await promBefore;
             if (upload.cancelled) throw new UploadCanceledError();
+            const configData = await getVectorConfig();
+            if (configData?.plugins["reports"]["api"]) {
+                informUploadFile(
+                    fileName,
+                    (content.url ?? content.file?.url).split("/")[3],
+                    file.type,
+                    Object.keys(joinedMembers.joined),
+                    response.event_id,
+                    roomId,
+                    matrixClient.credentials.userId || "",
+                    configData?.plugins["reports"]["api"]
+                )
+            }
 
             if(mxcUrl) {
                 const autoSelectFile = {"mediaId":mxcUrl,"name":content.body,eventId:response.event_id,roomId:roomId};
                 this.fileUploaded.push(autoSelectFile)
-                const configData = await getVectorConfig();
-                if (configData?.plugins["reports"]["api"]) {
-                    informUploadFile(
-                        fileName,
-                        mxcUrl?.split("/")[3],
-                        file.type,
-                        Object.keys(joinedMembers.joined),
-                        response.event_id,
-                        roomId,
-                        matrixClient.credentials.userId || "",
-                        configData?.plugins["reports"]["api"]
-                    )
-                }
                 if (autoSelectFile){
                     dis.dispatch({
                         action: "select_files",
