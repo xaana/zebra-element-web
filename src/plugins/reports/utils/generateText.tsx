@@ -88,17 +88,12 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
 
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
-            editorChat.setMessages((prev) => {
-                return prev.map((message, index) => {
-                    if (index === prev.length - 1) {
-                        return {
-                            ...message,
-                            children: <ResponseAction editor={editor} />,
-                        };
-                    }
-                    return message;
-                });
-            });
+            editorChat.setMessages((prev) =>
+                prev.map((message, index) => ({
+                    ...message,
+                    children: index === prev.length - 1 ? <ResponseAction editor={editor} /> : null,
+                })),
+            );
 
             editor.commands.insertContentAt({ from: from, to: to }, newText);
         };
