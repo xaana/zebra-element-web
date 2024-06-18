@@ -68,7 +68,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
-import { Bell, List, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Bell, List } from "lucide-react";
 import ZebraStream from "./ZebraStream";
 import { DocFile } from "../rooms/FileSelector";
 
@@ -643,15 +643,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         );
     };
 
-    private renderFeedback = () => {
-        return (
-            <div className="flex">
-                <ThumbsDown size={18} onClick={() => {}} />
-                <ThumbsUp size={18} onClick={() => {}} />
-            </div>
-        );
-    };
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -753,7 +744,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             type={content.web}
                         />
                     )}
-                    {this.renderFeedback()}
                 </div>
             );
         }
@@ -903,7 +893,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         roomId={roomId}
                         type={content.files_}
                     />
-                    {this.renderFeedback()}
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -1021,7 +1010,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId={roomId}
                                     type={content.database_}
                                 />
-                                {this.renderFeedback()}
                             </>
                         )}
                     </div>
