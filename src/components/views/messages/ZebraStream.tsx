@@ -111,7 +111,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                 question: rawQuestion,
                 eventId:content.questionId,
                 mediaIds: content.fileSelected,
-                webFlag: content.webFlag,
+                webFlag: content.web_flag,
                 pdfSummary: content.pdf_summary
                 
             };
