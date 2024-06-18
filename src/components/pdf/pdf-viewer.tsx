@@ -49,7 +49,11 @@ export const PdfViewer = ({
                 }
             }
         }
-        setAllMediaIds(files);
+        const uniqueSet = new Set<string>(files);
+
+        // Convert the Set back into an array
+        const uniqueList:string[] = Array.from(uniqueSet);
+        setAllMediaIds(uniqueList);
 
         return ()=>{
             allFiles.current.forEach((url) => {
