@@ -150,12 +150,12 @@ export const PdfViewer = ({
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const jsonResponse = await response.json();
-            const pdfFiles = jsonResponse.pdf.filename.map((fileName: string, index: number) => {
-                const contentBase64 = jsonResponse.pdf.content[index];
+            const pdfFiles = jsonResponse.pdf.map((file: any) => {
+                const contentBase64 = file.content;
                 const pdfBlob = base64ToBlob(contentBase64, 'application/pdf');
                 const objectURL = URL.createObjectURL(pdfBlob);
                 allFiles.current.push(objectURL);
-                return { name: fileName, url: objectURL };
+                return { name: file.filename, url: objectURL };
             });
             return pdfFiles;
         } catch (error) {
