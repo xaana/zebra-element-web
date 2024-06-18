@@ -16,9 +16,9 @@ export type FileDTO = {
 export const listFiles = async (
     userId: string,
     type?: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<FileDTO[]> => {
-    return fetch(SettingsStore.getValue("reportsApiUrl")+"/api/files/get_info", {
+    return fetch(url+"/api/files/get_info", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -50,7 +50,7 @@ export const listFiles = async (
 export const getFile = async (
     mediaIds: string | string[],
     userId: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<Blob> => {
     return fetch(url+"/api/files/download", {
         method: "POST",
