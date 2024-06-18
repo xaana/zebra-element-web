@@ -112,7 +112,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                 eventId:content.questionId,
                 mediaIds: content.fileSelected,
                 webFlag: content.webFlag,
-                pdfSummary: content.pdfSummary
+                pdfSummary: content.pdf_summary
                 
             };
             const url = `${SettingsStore.getValue("botApiUrl")}/pdf_query_stream`;
