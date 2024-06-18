@@ -68,7 +68,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WeatherWidget from "@/components/weather/WeatherWidget";
-import { Bell, List } from "lucide-react";
+import { Bell, List, ThumbsUp, ThumbsDown } from "lucide-react";
 import ZebraStream from "./ZebraStream";
 import { DocFile } from "../rooms/FileSelector";
 
@@ -643,6 +643,15 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         );
     };
 
+    private renderFeedback = () => {
+        return (
+            <div className="flex">
+                <ThumbsDown size={18} onClick={() => {}} />
+                <ThumbsUp size={18} onClick={() => {}} />
+            </div>
+        );
+    };
+
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     public render(): React.ReactNode {
         if (this.props.editState) {
@@ -656,8 +665,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const mxEvent = this.props.mxEvent;
 
         const content = mxEvent.getContent();
-        if (content.body==='Init from homepage...'){
-            return null
+        if (content.body === "Init from homepage...") {
+            return null;
         }
         let isNotice = false;
         let isEmote = false;
@@ -686,9 +695,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             ref: this.contentRef,
             returnString: false,
         });
-        if (rawQuestion&&rawQuestion.length>58){
-            const temp = rawQuestion.substring(0, 58)
-            rawQuestion = temp.split(' ').slice(0, -1).join(' ') + '...'
+        if (rawQuestion && rawQuestion.length > 58) {
+            const temp = rawQuestion.substring(0, 58);
+            rawQuestion = temp.split(" ").slice(0, -1).join(" ") + "...";
         }
         if (content.weather) {
             console.log(content.weather);
@@ -718,10 +727,10 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     hostname: url.hostname,
                 };
             });
-            let question = rawQuestion
-            if (rawQuestion.length>58){
-                const temp = rawQuestion.substring(0, 58)
-                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+            let question = rawQuestion;
+            if (rawQuestion.length > 58) {
+                const temp = rawQuestion.substring(0, 58);
+                question = temp.split(" ").slice(0, -1).join(" ") + "...";
             }
             body = (
                 <div className="p-4">
@@ -744,10 +753,11 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                             type={content.web}
                         />
                     )}
+                    {this.renderFeedback()}
                 </div>
             );
         }
-        if (database&&content.open===undefined) {
+        if (database && content.open === undefined) {
             body = (
                 <div>
                     <DatabasePrefix database={database} />
@@ -755,13 +765,21 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </div>
             );
         }
-        if (fileSelected&&content.open===undefined) {
-            const filePills = (<div className="flex flex-row gap-x-1 overflow-x-scroll">{fileSelected.map((file: DocFile | undefined) => {
-                return <FilesPill file={file}  files={fileSelected} />
-            })}</div>)
+        if (fileSelected && content.open === undefined) {
+            const filePills = (
+                <div className="flex flex-row gap-x-1 overflow-x-scroll">
+                    {fileSelected.map((file: DocFile | undefined) => {
+                        return <FilesPill file={file} files={fileSelected} />;
+                    })}
+                </div>
+            );
             body = (
                 <div>
-                    {this.context.timelineRenderingType === TimelineRenderingType.Thread ? <FilesPrefix files={fileSelected} />: filePills}
+                    {this.context.timelineRenderingType === TimelineRenderingType.Thread ? (
+                        <FilesPrefix files={fileSelected} />
+                    ) : (
+                        filePills
+                    )}
                     {body}
                 </div>
             );
@@ -823,25 +841,27 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </div>
             );
         }
-        if (pdfResponse && roomId && rootId&&!content.fetching) {
-            const webCitations: WebSearchSourceItem[] = content.web_url&&content.web_url.map((item: string) => {
-                const url = new URL(item);
-                return {
-                    link: item,
-                    hostname: url.hostname,
-                };
-            });
-            let question = rawQuestion
-            if (question&&rawQuestion.length>58){
-                const temp = rawQuestion.substring(0, 58)
-                question = temp.split(' ').slice(0, -1).join(' ') + '...'
+        if (pdfResponse && roomId && rootId && !content.fetching) {
+            const webCitations: WebSearchSourceItem[] =
+                content.web_url &&
+                content.web_url.map((item: string) => {
+                    const url = new URL(item);
+                    return {
+                        link: item,
+                        hostname: url.hostname,
+                    };
+                });
+            let question = rawQuestion;
+            if (question && rawQuestion.length > 58) {
+                const temp = rawQuestion.substring(0, 58);
+                question = temp.split(" ").slice(0, -1).join(" ") + "...";
             }
             body = (
                 <>
                     <h2>
                         <strong>{question}</strong>
                     </h2>
-                    {content.is_image&&!content.open && (
+                    {content.is_image && !content.open && (
                         <div className="flex flex-row items-center gap-x-2">
                             {this.getSectionTitle("Source", List)}
                             {content.file_ids.map(
@@ -864,15 +884,17 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <>
                             {this.getSectionTitle("Source", List)}
                             <div className="flex flex-row gap-x-1 overflow-auto my-4">
-                            {content.files_.map((file: DocFile) => (
-                                <FilesPill key={file.mediaId} file={file} files={content.files_} roomId={roomId} />
-                            ))}
+                                {content.files_.map((file: DocFile) => (
+                                    <FilesPill key={file.mediaId} file={file} files={content.files_} roomId={roomId} />
+                                ))}
                             </div>
-                            {webCitations && webCitations.length > 0 && <WebSearchSources data={webCitations} hiddenSources={true} />}
+                            {webCitations && webCitations.length > 0 && (
+                                <WebSearchSources data={webCitations} hiddenSources={true} />
+                            )}
                             <Separator />
                         </>
                     )}
-                    {!content.open&&this.getSectionTitle("Answer", Bell)}
+                    {!content.open && this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
                     <SuggestionPrompt
@@ -881,6 +903,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         roomId={roomId}
                         type={content.files_}
                     />
+                    {this.renderFeedback()}
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -998,6 +1021,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                     roomId={roomId}
                                     type={content.database_}
                                 />
+                                {this.renderFeedback()}
                             </>
                         )}
                     </div>
@@ -1073,7 +1097,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
-                    {content.fetching&&rawQuestion&&<ZebraStream  roomId={roomId} eventId={mxEvent.getId()} rawQuestion={rawQuestion} content={content} />}
+                    {content.fetching && rawQuestion && (
+                        <ZebraStream
+                            roomId={roomId}
+                            eventId={mxEvent.getId()}
+                            rawQuestion={rawQuestion}
+                            content={content}
+                        />
+                    )}
                 </div>
             );
         }
