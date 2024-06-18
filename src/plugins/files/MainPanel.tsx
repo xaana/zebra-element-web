@@ -19,7 +19,6 @@ export const MainPanel = (): JSX.Element => {
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const allFiles = useRef<File[]>([]);
-
     useEffect(() => {
         initRouting();
 
