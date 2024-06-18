@@ -76,7 +76,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
 
             // process text
             const ps = response.split(/\n/).filter((line) => line.length > 0);
-            const newText = ps
+
+            let newText = ps
                 .map((p, i) => {
                     // Skip wrapping the first and last paragraphs
                     if (i !== 0 && i !== ps.length - 1) {
@@ -85,6 +86,8 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                     return p;
                 })
                 .join("");
+
+            newText = newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
             // to = from + response.length + 1;
             // editor.commands.selectParentNode()
