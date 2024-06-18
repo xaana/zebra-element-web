@@ -28,6 +28,7 @@ import { DataTableRowActions } from "./data-table-row-actions";
 import type { File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
+import { getFile } from "./FileOpsHandler";
 import { PluginActions } from "@/plugins";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -47,7 +48,6 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
-import { toast } from "sonner";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -110,13 +110,22 @@ function getIconComponent(fileName: string): React.ComponentType<React.Component
     return iconMapping[extension.toLowerCase()];
 }
 
-const downloadFile = async (e: React.SyntheticEvent, file: File): Promise<void> => {
-    if (file.isEncrypted) {
-        e.preventDefault();
-        e.stopPropagation();
-
+const downloadFile = async (e: React.SyntheticEvent, file: File, currentUserId: string): Promise<void> => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (file.mimetype==="application/pdf"){
         try {
-            const decryptedBlob = await file.mediaHelper.sourceBlob.value;
+            const decryptedBlob = await getFile(file.mediaId, currentUserId);
+            const blob = new Blob([decryptedBlob], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
+        } catch (err) {
+            console.error('Unable to download file: ', err);
+        }
+    } else {
+        try {
+            const decryptedBlob = await getFile(file.mediaId, currentUserId);
             const fileDownloader = new FileDownloader();
             fileDownloader.download({
                 blob: decryptedBlob,
@@ -124,11 +133,7 @@ const downloadFile = async (e: React.SyntheticEvent, file: File): Promise<void> 
                 autoDownload: true,
             });
         } catch (err) {
-            logger.warn("Unable to decrypt attachment: ", err);
-            Modal.createDialog(ErrorDialog, {
-                title: _t("common|error"),
-                description: _t("timeline|m.file|error_decrypting"),
-            });
+            console.error('Unable to download file: ', err);
         }
     }
 };
@@ -193,7 +198,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         const selectedCount = Object.keys(rowSelection).length;
                         if (value && selectedCount < 5) {
                             row.toggleSelected(true);
-                        } 
+                        }
                         else if(!value){
                             row.toggleSelected(false);
                         }else if (value && selectedCount === 5) {
@@ -214,10 +219,12 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 cell: ({ row }): JSX.Element => {
                     const file = row.original;
                     const IconComponent = getIconComponent(file.name);
+                    console.log(row)
                     return (
                         <Button
                             onClick={(e) => {
-                                downloadFile(e, file);
+                                downloadFile(e, file, client.getUserId());
+
                             }}
                             variant="ghost"
                             size="sm"
@@ -258,7 +265,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Room" />,
                 cell: ({ row }): JSX.Element => {
                     const file = row.original;
-                    const room = file.room;
+                    const room = client.getRoom(file.roomId);
 
                     return (
                         <div className="flex items-center">
@@ -272,7 +279,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         window.location.hash = `#/room/${room.roomId}`;
                                     }}
                                 >
-                                    {file.room?.name}
+                                    {room.name}
                                     <Icon name="ExternalLink" className="h-3 w-3 ml-1" />
                                 </Button>
                             ) : (

@@ -68,26 +68,24 @@ export function DataTableRowActions<TData>({
                     </DropdownMenuItem> */}
 
                     {/* <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={task.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub> */}
-                    {userId === row.original.sender && (
-                        <div>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => setDialogOpen(true)}>
-                                Delete
-                                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-                            </DropdownMenuItem>
-                        </div>
-                    )}
+                        <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuRadioGroup value={task.label}>
+                            {labels.map((label) => (
+                                <DropdownMenuRadioItem key={label.value} value={label.value}>
+                                {label.label}
+                                </DropdownMenuRadioItem>
+                            ))}
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuSub> */}
+                    <div>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                            Delete
+                            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </div>
                 </DropdownMenuContent>
             </DropdownMenu>
             {userId === row.original.sender && (

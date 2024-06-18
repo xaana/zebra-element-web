@@ -11,7 +11,6 @@ import {
     THREAD_RELATION_TYPE,
     encodeBase64,
 } from "matrix-js-sdk/src/matrix";
-import encrypt from "matrix-encrypt-attachment";
 import extractPngChunks from "png-chunks-extract";
 import { logger } from "matrix-js-sdk/src/logger";
 import { removeElement } from "matrix-js-sdk/src/utils";
@@ -50,7 +49,7 @@ import { toast } from "sonner";
 import { _t } from "./languageHandler";
 import { DocFile } from "./components/views/rooms/FileSelector";
 import { getVectorConfig } from "./vector/getconfig";
-import { imag } from "@tensorflow/tfjs";
+import { uploadFile as informUploadFile } from "./components/files/FileOpsHandler";
 import UploadConfirmDialog from "./components/views/dialogs/UploadConfirmDialog";
 
 // scraped out of a macOS hidpi (5660ppm) screenshot png
@@ -623,12 +622,16 @@ export default class ContentMessages {
                 total: file.size,
             };
             let slowest: RoomUpload | null
+            const joinedMembers = await matrixClient.getJoinedRoomMembers(roomId)
+            let threadId: string | undefined; let response: ISendEventResponse;
             if(uploadZebra&&(content.body.endsWith(".pdf") || content.body.endsWith(".docx")||content.body.endsWith(".doc")||content.body.endsWith(".txt"))) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;
                 content.url = result.url;
                 mxcUrl = content.url ?? content.file?.url;
+                threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : undefined;
+                response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
                 let apiUrl;
                 const configData = await getVectorConfig();
                 if (configData?.plugins["websocket"]) {
@@ -647,8 +650,11 @@ export default class ContentMessages {
                     upload.onProgress(progress);
                     // Example data to be sent to the server
                     const textToSend = JSON.stringify({
-                      media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
-                      room_id: roomId,
+                        media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
+                        room_id: roomId,
+                        event_id: response.event_id,
+                        user_id: Object.keys(joinedMembers.joined),
+                        sender_id: matrixClient.getUserId()
                     });
                     // Sending a JSON string as message to the websocket server
                     websocket.send(textToSend);
@@ -743,23 +749,34 @@ export default class ContentMessages {
                     });
                     toast.error("File upload failed. websocket error",{closeButton: true});
                 };
-            }
-            else{
+            } else {
                 result = await uploadFile(matrixClient, roomId, file, onProgress, upload.abortController);
                 content.file = result.file;
                 content.url = result.url;
+                threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : undefined;
+                response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
             }
             if (upload.cancelled) throw new UploadCanceledError();
             // Await previous message being sent into the room
             if (promBefore) await promBefore;
-
             if (upload.cancelled) throw new UploadCanceledError();
-            const threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : null;
 
-            const response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
             if(mxcUrl) {
                 const autoSelectFile = {"mediaId":mxcUrl,"name":content.body,eventId:response.event_id,roomId:roomId};
                 this.fileUploaded.push(autoSelectFile)
+                const configData = await getVectorConfig();
+                if (configData?.plugins["reports"]["api"]) {
+                    informUploadFile(
+                        fileName,
+                        mxcUrl?.split("/")[3],
+                        file.type,
+                        Object.keys(joinedMembers.joined),
+                        response.event_id,
+                        roomId,
+                        matrixClient.credentials.userId || "",
+                        configData?.plugins["reports"]["api"]
+                    )
+                }
                 if (autoSelectFile){
                     dis.dispatch({
                         action: "select_files",
