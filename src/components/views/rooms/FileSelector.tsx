@@ -19,6 +19,7 @@ import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 interface IProps {
     roomId: string;
@@ -72,7 +73,8 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
+        // const fetchedFiles = await getUserFiles(client);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
         allFiles.current = fetchedFiles;
         setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
         setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
