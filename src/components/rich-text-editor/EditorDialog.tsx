@@ -125,7 +125,6 @@ const EditorDialog = (props: {
             }
 
             // let initialContent = content ? content : props.editorContent;
-            
         } else {
             // save current editor content to state
             // setContent(editor?.getText() || "");
@@ -171,7 +170,7 @@ const EditorDialog = (props: {
                                 editor={editor}
                                 ref={editorRef}
                                 className="flex-1 overflow-y-auto"
-                                style={{ padding: "66px 64px 0px 64px" }}
+                                style={{ padding: "16px 64px 64px 64px" }}
                             />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />

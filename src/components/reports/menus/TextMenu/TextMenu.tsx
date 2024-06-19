@@ -51,7 +51,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
             shouldShow={states.shouldShow}
             updateDelay={100}
         >
-            <Toolbar.Wrapper>
+            <Toolbar.Wrapper style={{ width: 345 }} className="flex flex-wrap">
                 <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
                     onFixSpelling={commands.onFixSpelling}
@@ -61,11 +61,11 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     // onTldr={commands.onTldr}
                     onTone={commands.onTone}
                 />
-                <Toolbar.Divider />
+                {/* <Toolbar.Divider /> */}
                 <MemoContentTypePicker options={blockOptions} />
                 <MemoFontFamilyPicker onChange={commands.onSetFont} value={states.currentFont || ""} />
                 <MemoFontSizePicker onChange={commands.onSetFontSize} value={states.currentSize || ""} />
-                <Toolbar.Divider />
+
                 <MemoButton
                     tooltip="Bold"
                     tooltipShortcut={["Mod", "B"]}
