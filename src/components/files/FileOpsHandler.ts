@@ -62,7 +62,16 @@ export const getFile = async (
             user_id: userId
         })
     })
-    .then(res=>res.blob())
+    // .then(res=>res.blob())
+    .then(res=>res.json())
+    .then(res=>{
+        const decodedData = atob(res.file);
+        const byteNumbers = new Array(decodedData.length);
+        for (let i = 0; i < decodedData.length; i++) {
+            byteNumbers[i] = decodedData.charCodeAt(i);
+        }
+        return new Uint8Array(byteNumbers);
+    })
 }
 
 export const uploadFile = async (
