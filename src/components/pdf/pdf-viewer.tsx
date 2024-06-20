@@ -43,7 +43,7 @@ export const PdfViewer = ({
                 const content = evt.getContent();
                 if (content?.files_) {
                     const temp = content.files_.map((file: any) => {
-                        return file.mediaId.substring(6).split("/").pop();
+                        return file.mediaId;
                     });
                     files = [...files, ...temp];
                 }
