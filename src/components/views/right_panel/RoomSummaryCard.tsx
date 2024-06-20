@@ -25,21 +25,21 @@ import {
     Badge,
     Heading,
 } from "matrix-react-sdk/node_modules/@vector-im/compound-web";
-import { Icon as SearchIcon } from "@vector-im/compound-design-tokens/icons/search.svg";
-import { Icon as FavouriteIcon } from "@vector-im/compound-design-tokens/icons/favourite-off.svg";
+// import { Icon as SearchIcon } from "@vector-im/compound-design-tokens/icons/search.svg";
+// import { Icon as FavouriteIcon } from "@vector-im/compound-design-tokens/icons/favourite-off.svg";
 import { Icon as UserAddIcon } from "@vector-im/compound-design-tokens/icons/user-add.svg";
 import { Icon as UserProfileSolidIcon } from "@vector-im/compound-design-tokens/icons/user-profile-solid.svg";
-import { Icon as LinkIcon } from "@vector-im/compound-design-tokens/icons/link.svg";
+// import { Icon as LinkIcon } from "@vector-im/compound-design-tokens/icons/link.svg";
 import { Icon as SettingsIcon } from "@vector-im/compound-design-tokens/icons/settings.svg";
 import { Icon as ExportArchiveIcon } from "@vector-im/compound-design-tokens/icons/export-archive.svg";
 import { Icon as LeaveIcon } from "@vector-im/compound-design-tokens/icons/leave.svg";
-import { Icon as FilesIcon } from "@vector-im/compound-design-tokens/icons/files.svg";
+// import { Icon as FilesIcon } from "@vector-im/compound-design-tokens/icons/files.svg";
 import { Icon as PollsIcon } from "@vector-im/compound-design-tokens/icons/polls.svg";
 import { Icon as PinIcon } from "@vector-im/compound-design-tokens/icons/pin-off.svg";
-import { Icon as LockIcon } from "@vector-im/compound-design-tokens/icons/lock.svg";
-import { Icon as LockOffIcon } from "@vector-im/compound-design-tokens/icons/lock-off.svg";
+// import { Icon as LockIcon } from "@vector-im/compound-design-tokens/icons/lock.svg";
+// import { Icon as LockOffIcon } from "@vector-im/compound-design-tokens/icons/lock-off.svg";
 import { Icon as PublicIcon } from "@vector-im/compound-design-tokens/icons/public.svg";
-import { Icon as ErrorIcon } from "@vector-im/compound-design-tokens/icons/error.svg";
+// import { Icon as ErrorIcon } from "@vector-im/compound-design-tokens/icons/error.svg";
 import { EventType, JoinRule, Room } from "matrix-js-sdk/src/matrix";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { useIsEncrypted } from "matrix-react-sdk/src/hooks/useIsEncrypted";
@@ -54,14 +54,14 @@ import ShareDialog from "matrix-react-sdk/src/components/views/dialogs/ShareDial
 import { useEventEmitter, useEventEmitterState } from "matrix-react-sdk/src/hooks/useEventEmitter";
 import WidgetUtils from "matrix-react-sdk/src/utils/WidgetUtils";
 import { IntegrationManagers } from "matrix-react-sdk/src/integrations/IntegrationManagers";
-import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+// import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import WidgetAvatar from "matrix-react-sdk/src/components/views/avatars/WidgetAvatar";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import WidgetStore, { IApp } from "matrix-react-sdk/src/stores/WidgetStore";
-import { E2EStatus } from "matrix-react-sdk/src/utils/ShieldUtils";
+// import { E2EStatus } from "matrix-react-sdk/src/utils/ShieldUtils";
 import { RoomPermalinkCreator } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
-import { UIComponent, UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
+// import { UIComponent, UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
 import {
     ChevronFace,
     ContextMenuTooltipButton,
@@ -76,7 +76,7 @@ import UIStore from "matrix-react-sdk/src/stores/UIStore";
 import ExportDialog from "matrix-react-sdk/src/components/views/dialogs/ExportDialog";
 import RightPanelStore from "matrix-react-sdk/src/stores/right-panel/RightPanelStore";
 import PosthogTrackers from "matrix-react-sdk/src/PosthogTrackers";
-import { shouldShowComponent } from "matrix-react-sdk/src/customisations/helpers/UIComponents";
+// import { shouldShowComponent } from "matrix-react-sdk/src/customisations/helpers/UIComponents";
 import { PollHistoryDialog } from "matrix-react-sdk/src/components/views/dialogs/PollHistoryDialog";
 import { Flex } from "matrix-react-sdk/src/components/utils/Flex";
 import RoomListStore, { LISTS_UPDATE_EVENT } from "matrix-react-sdk/src/stores/room-list/RoomListStore";
