@@ -78,7 +78,12 @@ export const ReportEditor = ({
                         />
                     </div>
                     <div style={{ height: "calc(100vh - 60px)" }} className="w-full">
-                        <BlockEditor editor={editor} leftSidebar={leftSidebar} rightSidebar={rightSidebar} />
+                        <BlockEditor
+                            chat={chat}
+                            editor={editor}
+                            leftSidebar={leftSidebar}
+                            rightSidebar={rightSidebar}
+                        />
                     </div>
                 </>
             )}

@@ -20,14 +20,16 @@ import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { Chat } from "@/plugins/reports/hooks/use-chat";
 
 export interface BlockEditorProps {
+    chat: Chat;
     editor: TiptapEditor | null;
     leftSidebar: SidebarState;
     rightSidebar: SidebarState;
 }
 
-export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorProps): JSX.Element => {
+export const BlockEditor = ({ chat, editor, leftSidebar, rightSidebar }: BlockEditorProps): JSX.Element => {
     const menuContainerRef = useRef(null);
     const editorRef = useRef<HTMLDivElement | null>(null);
 
@@ -76,7 +78,7 @@ export const BlockEditor = ({ editor, leftSidebar, rightSidebar }: BlockEditorPr
                     <Separator className="h-6 invisible" />
                 </div>
             </div>
-            <ChatSidebar sidebar={rightSidebar} />
+            <ChatSidebar chat={chat} sidebar={rightSidebar} />
             {isAiLoading && aiLoaderPortal}
         </div>
     );
