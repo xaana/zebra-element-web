@@ -143,7 +143,7 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     // );
 
     const BrandSection = () => (
-        <div className="brand">
+        <div className="flex flex-col align-center">
             <div className="w-24 rounded-full border-2 p-4 self-center">
                 <IconTurium className="w-15 h-15" />
             </div>
@@ -216,35 +216,38 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
     return (
         <AutoHideScrollbar className="mx_HomePage mx_HomePage_default justify-center" element="main">
             {/* <EditorDialog onDestroyCallback={onRTEDestroyCallback} /> */}
-            <BrandSection />
-            <div className="default_buttons" style={{ maxWidth: 800 }}>
-                <DefaultButton
-                    title="Browse"
-                    query="What's the weather in Sydney?"
-                    onClick={onClickWebSearchHandler}
-                    Icon={Search}
-                />
-                <DefaultButton
-                    title="Data Insights"
-                    query=" List top 5 contracts by values"
-                    onClick={onClickDatabaseHandler}
-                    Icon={Database}
-                />
-                <UploadButton
-                    title="Doc Insights"
-                    query="Upload a file to retrieve insights"
-                    onFinish={onClickDocumentHandler}
-                    Icon={File}
-                    accept="file"
-                />
-                <UploadButton
-                    title="Image Insights"
-                    query="Attach an image to get AI-driven analysis"
-                    onFinish={onClickImageHandler}
-                    Icon={Image}
-                    accept="image"
-                />
+            <div className="brand">
+                <BrandSection />
+                <div className="default_buttons">
+                    <DefaultButton
+                        title="Browse"
+                        query="What's the weather in Sydney?"
+                        onClick={onClickWebSearchHandler}
+                        Icon={Search}
+                    />
+                    <DefaultButton
+                        title="Data Insights"
+                        query=" List top 5 contracts by values"
+                        onClick={onClickDatabaseHandler}
+                        Icon={Database}
+                    />
+                    <UploadButton
+                        title="Doc Insights"
+                        query="Upload a file to retrieve insights"
+                        onFinish={onClickDocumentHandler}
+                        Icon={File}
+                        accept="file"
+                    />
+                    <UploadButton
+                        title="Image Insights"
+                        query="Attach an image to get AI-driven analysis"
+                        onFinish={onClickImageHandler}
+                        Icon={Image}
+                        accept="image"
+                    />
+                </div>
             </div>
+
             <div className="absolute w-full bottom-0">
                 {targetDMRoom && (
                     <>
