@@ -8,9 +8,9 @@ import "@/plugins/reports/styles/index.css";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { ContentItemMenu, LinkMenu, TextMenu, TextMenuProps } from "../reports/menus";
-import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
+// import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
 import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
-import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
+// import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
 import { FontFamilyPicker } from "../reports/menus/TextMenu/components/FontFamilyPicker";
 import { FontSizePicker } from "../reports/menus/TextMenu/components/FontSizePicker";
 import { useTextmenuCommands } from "../reports/menus/TextMenu/hooks/useTextmenuCommands";
@@ -20,11 +20,11 @@ import { ColorPicker } from "../reports/panels";
 import { Surface } from "../ui/Surface";
 import { Toolbar } from "../ui/Toolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
+// import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
 import { IconZebra } from "../ui/icons";
 
 import { Icon } from "@/components/ui/Icon";
-import { TableOfContents } from "@/components/reports/TableOfContents";
+// import { TableOfContents } from "@/components/reports/TableOfContents";
 import { TableRowMenu, TableColumnMenu } from "@/plugins/reports/extensions/Table/menus";
 import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
 import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
@@ -32,16 +32,16 @@ import { useAIState } from "@/plugins/reports/hooks/useAIState";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import { SidebarState, useSidebar } from "@/plugins/reports/hooks/useSidebar";
 import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
-import { Sidebar } from "@/components/reports/Sidebar";
+// import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 import { LinkEditorPanel } from "@/components/reports/panels";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//     DropdownMenu,
+//     DropdownMenuContent,
+//     DropdownMenuItem,
+//     DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 // import { MatrixEvent } from "matrix-js-sdk/src/matrix";
 // import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
 
