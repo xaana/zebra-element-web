@@ -132,16 +132,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         });
     };
 
-    // const brandingConfig = SdkConfig.getObject("branding");
-    // const logoUrl = brandingConfig?.get("auth_header_logo_url") ?? "themes/element/img/logos/element-logo.svg";
-    // const isDarkTheme =
-    //     JSON.parse(localStorage.getItem("mx_local_settings") ?? '{"theme":"light"}')["theme"] === "dark";
-    // const logoClass = classNames(
-    //     "mx-auto my-0 w-24 rounded-full border-2 p-4 mb-8",
-    //     // { "border-slate-700 invert": isDarkTheme },
-    //     // { "border-slate-300": !isDarkTheme },
-    // );
-
     const BrandSection = () => (
         <div className="flex flex-col align-center">
             <div className="w-24 rounded-full border-2 p-4 self-center">
