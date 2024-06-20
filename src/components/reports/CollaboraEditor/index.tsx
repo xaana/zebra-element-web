@@ -87,6 +87,7 @@ const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
                     />
                 ) : editor.zebraMode === "doc" ? (
                     <DocQuerySidebar
+                        editor={editor}
                         onClose={() => {
                             setShowSidebar(false);
                             editor.setZebraMode("chat");
