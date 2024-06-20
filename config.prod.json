@@ -1,7 +1,7 @@
 {
     "default_server_config": {
         "m.homeserver": {
-            "base_url": "https://dev-server.securezebra.com/",
+            "base_url": "https://demo-server.turium.ai/",
             "server_name": "securezebra.com"
         },
         "m.identity_server": {
@@ -52,19 +52,19 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
-            "api": "https://dev-api-2.securezebra.com",
-            "collabServerWebsocketUrl": "wss://dev-api-3.securezebra.com",
-            "collabServerHttpUrl": "https://dev-api-3.securezebra.com"
+            "api": "https://zebraap2-demo.turium.ai",
+            "collabServerWebsocketUrl": "wss://demo-reporting.turium.ai",
+            "collabServerHttpUrl": "https://demo-reporting.turium.ai"
         },
         "algology": {
-            "url": "https://algology-dev.securezebra.com"
+            "url": "https://zebraalgology-demo.turium.ai"
         },
         "websocket": {
-            "url": "wss://dev-api-2.securezebra.com/ws"
+            "url": "wss://zebraap2-demo.turium.ai/ws"
         },
         "workflow": {
-            "url": "https://heugo.securezebra.com"
+            "url": "https://zebraheugo-demo.turium.ai"
         }
     },
-    "bot_api": "https://dev-api-1.securezebra.com/_matrix/maubot/plugin/zebra"
+    "bot_api": "https://zebraap1-demo.turium.ai/_matrix/maubot/plugin/zebra"
 }
