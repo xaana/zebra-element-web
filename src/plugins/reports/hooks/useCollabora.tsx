@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Chat } from "@/plugins/reports/hooks/use-chat";
 
@@ -48,13 +49,14 @@ export function useCollabora({
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
-            const wopiSrc = `http://host.docker.internal:8000/wopi/files/${fileId}`;
-            fetch(`http://localhost:8000/wopi/get_editor_url`)
+            const wopiSrc = `http://fastapi:8000/wopi/files/${fileId}`;
+            // const wopiSrc = `http://host.docker.internal:8000/wopi/files/${fileId}`;
+            fetch(`${SettingsStore.getValue("reportsApiUrl")}/wopi/get_editor_url`)
                 .then((response) => response.json())
                 .then((data) => {
                     const wopiClientUrl = data.url;
                     const wopiUrl = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    setWopiUrl(`${wopiUrl}&access_token=lorem345`);
+                    setWopiUrl(`${wopiUrl}&access_token=${window.location.origin}`);
                     setStartLoading(true);
                 });
         };

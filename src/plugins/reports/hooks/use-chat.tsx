@@ -173,7 +173,7 @@ export function useChat({
     };
 
     const reset = (): void => {
-        setMessages([initialMessage]);
+        setMessages(initialMessages || [initialMessage]);
         lastSystemMessageId.current = null;
     };
 

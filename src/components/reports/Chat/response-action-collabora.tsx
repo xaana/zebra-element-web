@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -13,18 +14,30 @@ export const ResponseActionCollabora = ({
     responseText: string;
 }): JSX.Element => {
     const [actionValue, setActionValue] = useState("suggested");
+    const [showToggle, setShowToggle] = useState(true);
 
-    const handleToggleChange = (value: string): void => {
+    const handleToggleChange = async (value: string): Promise<void> => {
+        const selectedText = await editor.fetchSelectedText();
         if (value === "original") {
-            editor.insertTextandSelect(originalText);
+            if (!selectedText || selectedText.length === 0 || selectedText.length !== responseText.length) {
+                setShowToggle(false);
+                toast.error(`No text selection found.`);
+            } else {
+                editor.insertTextandSelect(originalText);
+            }
         } else if (value === "suggested") {
-            editor.insertTextandSelect(responseText);
+            if (!selectedText || selectedText.length === 0 || selectedText.length !== originalText.length) {
+                setShowToggle(false);
+                toast.error(`No text selection found.`);
+            } else {
+                editor.insertTextandSelect(responseText);
+            }
         } else {
             return;
         }
         setActionValue(value);
     };
-    return (
+    return showToggle ? (
         <div className="flex justify-end items-center">
             <ToggleGroup
                 type="single"
@@ -42,5 +55,7 @@ export const ResponseActionCollabora = ({
                 </ToggleGroupItem>
             </ToggleGroup>
         </div>
+    ) : (
+        <></>
     );
 };
