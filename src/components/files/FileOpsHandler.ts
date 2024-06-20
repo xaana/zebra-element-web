@@ -1,4 +1,5 @@
 import type { File } from "@/plugins/files/types"
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore"
 
 export type FileDTO = {
     mediaId: string,
@@ -15,7 +16,7 @@ export type FileDTO = {
 export const listFiles = async (
     userId: string,
     type?: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<FileDTO[]> => {
     return fetch(url+"/api/files/get_info", {
         method: "POST",
@@ -49,7 +50,7 @@ export const listFiles = async (
 export const getFile = async (
     mediaIds: string | string[],
     userId: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<Blob> => {
     return fetch(url+"/api/files/download", {
         method: "POST",
@@ -61,7 +62,16 @@ export const getFile = async (
             user_id: userId
         })
     })
-    .then(res=>res.blob())
+    // .then(res=>res.blob())
+    .then(res=>res.json())
+    .then(res=>{
+        const decodedData = atob(res.file);
+        const byteNumbers = new Array(decodedData.length);
+        for (let i = 0; i < decodedData.length; i++) {
+            byteNumbers[i] = decodedData.charCodeAt(i);
+        }
+        return new Uint8Array(byteNumbers);
+    })
 }
 
 export const uploadFile = async (

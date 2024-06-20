@@ -42,7 +42,7 @@ export const TableRowMenu = React.memo(({ editor, appendTo }: MenuProps): JSX.El
                     return appendTo?.current;
                 },
                 placement: "left",
-                offset: [0, 10],
+                offset: [0, -160],
                 popperOptions: {
                     modifiers: [{ name: "flip", enabled: false }],
                 },

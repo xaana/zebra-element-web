@@ -19,6 +19,7 @@ import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 interface IProps {
     roomId: string;
@@ -40,7 +41,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const client = useMatrixClientContext();
-    const allFiles = useRef<File[]>([]);
+    // const allFiles = useRef<File[]>([]);
 
     const overflowMenuCloser = useContext(OverflowMenuContext);
 
@@ -48,14 +49,14 @@ export const FileSelector = (props: IProps): JSX.Element => {
         initRouting();
     }, [client]);
 
-    useEffect(() => {
-        return () => {
-            allFiles.current.forEach(async (file) => {
-                // Asynchronous cleanup if necessary or synchronous access to URLs
-                file.mediaHelper.destroy();
-            });
-        };
-    }, []);
+    // useEffect(() => {
+    //     return () => {
+    //         allFiles.current.forEach(async (file) => {
+    //             // Asynchronous cleanup if necessary or synchronous access to URLs
+    //             file.mediaHelper.destroy();
+    //         });
+    //     };
+    // }, []);
 
     useEffect(() => {
         setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
@@ -72,10 +73,13 @@ export const FileSelector = (props: IProps): JSX.Element => {
     };
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
-        allFiles.current = fetchedFiles;
-        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
-        setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
+        // const fetchedFiles = await getUserFiles(client);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
+        // allFiles.current = fetchedFiles;
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
+        setMedia([...fetchedFiles.filter((f) => f.mimetype&&f.mimetype.startsWith('image/'))]);
+
+        
     };
 
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
@@ -110,7 +114,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                     mediaId: image.mediaId,
                     name: image.name,
                     roomId: props.roomId,
-                    eventId: image.mxEvent?.getId(),
+                    eventId: image.event,
                 },
             ],
             // files: selectedFiles.map((file)=>{return{mediaId: file.mediaId, name: file.name, roomId: file.roomId, eventId: file.mxEvent?.getId()}}),
@@ -134,7 +138,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                         mediaId: file.mediaId,
                         name: file.name,
                         roomId: file.roomId,
-                        eventId: file.mxEvent?.getId(),
+                        eventId: file.event,
                     };
                 }),
                 roomId: props.roomId,

@@ -1,6 +1,10 @@
 import * as React from "react";
 import {
     ColumnDef,
+    Column,
+    ColumnFiltersState,
+    RowData,
+    getFacetedMinMaxValues,
     RowSelectionState,
     SortingState,
     flexRender,
@@ -13,10 +17,6 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { FileDownloader } from "matrix-react-sdk/src/utils/FileDownloader";
-import { _t } from "matrix-react-sdk/src/languageHandler";
-import { logger } from "matrix-js-sdk/src/logger";
-import Modal from "matrix-react-sdk/src/Modal";
-import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 import { format, isToday } from "date-fns";
@@ -27,8 +27,9 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import type { File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-
 import { getFile } from "./FileOpsHandler";
+import { FilterWrapper as Filter } from "./FilesTableFilter";
+
 import { PluginActions } from "@/plugins";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,6 +49,7 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
+
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -115,11 +117,11 @@ const downloadFile = async (e: React.SyntheticEvent, file: File, currentUserId: 
     e.stopPropagation();
     if (file.mimetype==="application/pdf"){
         try {
-            const decryptedBlob = await getFile(file.mediaId, currentUserId);
-            const blob = new Blob([decryptedBlob], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
+            getFile(file.mediaId, currentUserId).then((blob)=>{
+                const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+                window.open(url, '_blank');
+                file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
+            });
         } catch (err) {
             console.error('Unable to download file: ', err);
         }
@@ -156,6 +158,8 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
         const [dialogOpen, setDialogOpen] = React.useState(false);
         const [showDelete, setShowDelete] = React.useState(true);
         const client = useMatrixClientContext();
+
+        const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
 
         React.useEffect(() => {
             let temp = true;
@@ -210,8 +214,12 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         className="translate-y-[8px] mx-2"
                     />
                 ),
+                meta: {
+                    filterVariant: null,
+                },
                 enableSorting: false,
                 enableHiding: false,
+                enableColumnFilter: false,
             },
             {
                 accessorKey: "name",
@@ -219,7 +227,6 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 cell: ({ row }): JSX.Element => {
                     const file = row.original;
                     const IconComponent = getIconComponent(file.name);
-                    console.log(row)
                     return (
                         <Button
                             onClick={(e) => {
@@ -239,6 +246,11 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         </Button>
                     );
                 },
+                meta: {
+                    filterVariant: 'select',
+                },
+                enableSorting: false,
+                enableHiding: false,
             },
             {
                 accessorKey: "sender",
@@ -259,13 +271,18 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 filterFn: (row, id, value): boolean => {
                     return value.includes(row.getValue(id));
                 },
+                meta: {
+                    filterVariant: 'select',
+                },
+                enableSorting: false,
+                enableHiding: false,
             },
             {
-                accessorKey: "room",
+                accessorKey: "roomId",
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Room" />,
                 cell: ({ row }): JSX.Element => {
                     const file = row.original;
-                    const room = client.getRoom(file.roomId);
+                    const room = file.roomId ? client.getRoom(file.roomId) : null;
 
                     return (
                         <div className="flex items-center">
@@ -288,9 +305,14 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         </div>
                     );
                 },
+                meta: {
+                    filterVariant: 'select',
+                },
                 filterFn: (row, id, value): boolean => {
                     return value.includes(row.getValue(id));
                 },
+                enableSorting: false,
+                enableHiding: false,
             },
             {
                 accessorKey: "timestamp",
@@ -301,6 +323,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
 
                     return <span>{formatted}</span>;
                 },
+                meta: {
+                    filterVariant: null,
+                },
+                enableColumnFilter: false,
             },
             {
                 accessorKey: "fileSize",
@@ -309,12 +335,20 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     const fileSize = row.getValue("fileSize") as number;
                     return <span>{fileSize ? prettyFileSize(fileSize) : "—"}</span>;
                 },
+                meta: {
+                    filterVariant: null,
+                },
+                enableColumnFilter: false,
             },
             {
                 id: "actions",
                 cell: ({ row }) => (
                     <DataTableRowActions row={row} onDelete={onDelete} mode={mode} userId={client.getUserId()!} setRowSelection={setRowSelection} />
                 ),
+                meta: {
+                    filterVariant: null,
+                },
+                enableColumnFilter: false,
             },
         ];
 
@@ -324,6 +358,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             state: {
                 sorting,
                 rowSelection,
+                columnFilters,
             },
             enableRowSelection: true,
             onRowSelectionChange: setRowSelection,
@@ -334,6 +369,8 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             getSortedRowModel: getSortedRowModel(),
             getFacetedRowModel: getFacetedRowModel(),
             getFacetedUniqueValues: getFacetedUniqueValues(),
+            getFacetedMinMaxValues: getFacetedMinMaxValues(),
+            onColumnFiltersChange: setColumnFilters,
         });
 
         React.useImperativeHandle(ref, () => ({
@@ -369,12 +406,19 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         {headerGroup.headers.map((header) => {
                                             return (
                                                 <TableHead key={header.id} colSpan={header.colSpan}>
-                                                    {header.isPlaceholder
-                                                        ? null
-                                                        : flexRender(
-                                                              header.column.columnDef.header,
-                                                              header.getContext(),
-                                                          )}
+                                                    <div className="flex">
+                                                        {header.isPlaceholder
+                                                            ? null
+                                                            : <div className="w-full text-xs">
+                                                                {flexRender(
+                                                                    header.column.columnDef.header,
+                                                                    header.getContext(),
+                                                                )}
+                                                            </div>                }
+                                                        {header.column.getCanFilter() ? (
+                                                            <Filter title={header.column.columnDef.accessorKey} column={header.column} />
+                                                        ) : null}
+                                                    </div>
                                                 </TableHead>
                                             );
                                         })}

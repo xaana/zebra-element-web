@@ -66,6 +66,19 @@ export const AiWriterView = ({
         setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
     };
 
+    const formatResponse = (rawText: string) => {
+        let ps = rawText.split(/\n/).filter((line) => line.length > 0);
+        let newText = ps
+            .map((p, i) => {
+                if (i !== 0 && i !== ps.length - 1) {
+                    return `<p>${p}</p>`;
+                }
+                return p;
+            })
+            .join("");
+        return newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    };
+
     const generateText = useCallback(async () => {
         const { text: dataText, tone, textLength, textUnit, addHeading, language } = data;
 
@@ -94,18 +107,6 @@ export const AiWriterView = ({
             }): Promise<void> => {
                 if (done) {
                     setIsFetching(false);
-                    if (previewText) {
-                        const ps = previewText.split(/\n/).filter((line) => line.length > 0);
-                        const newText = ps
-                            .map((p, i) => {
-                                if (i !== 0 && i !== ps.length - 1) {
-                                    return `<p>${p}</p>`;
-                                }
-                                return p;
-                            })
-                            .join("");
-                        setPreviewText(newText);
-                    }
                     return;
                 }
                 // responseBuffer += decoder.decode(value)
@@ -148,7 +149,7 @@ export const AiWriterView = ({
                     },
                     body: JSON.stringify({
                         user_requirement: payload.text,
-                        // tone: payload.tone || "",
+                        tone: payload.tone || "",
                         media_ids: extractedFilenames,
                     }),
                 },
@@ -175,7 +176,11 @@ export const AiWriterView = ({
         const from = getPos();
         const to = from + node.nodeSize;
 
-        editor.chain().focus().insertContentAt({ from, to }, previewText).run();
+        editor
+            .chain()
+            .focus()
+            .insertContentAt({ from, to }, previewText && formatResponse(previewText))
+            .run();
     }, [editor, previewText, getPos, node.nodeSize]);
 
     const discard = useCallback(() => {

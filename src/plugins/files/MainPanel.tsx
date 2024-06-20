@@ -18,17 +18,16 @@ export const MainPanel = (): JSX.Element => {
     const [documents, setDocuments] = useState<File[]>([]);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
-    const allFiles = useRef<File[]>([]);
-
+    // const allFiles = useRef<File[]>([]);
     useEffect(() => {
         initRouting();
 
         const fetchFiles = async (): Promise<void> => {
             // const fetchedFiles = await getUserFiles(client);
             const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
-            allFiles.current = fetchedFiles;
-            setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
-            setMedia([...fetchedFiles.filter((f) => f.type === MsgType.Image)]);
+            // allFiles.current = fetchedFiles;
+            setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
+            setMedia([...fetchedFiles.filter((f) => f.mimetype&&f.mimetype.startsWith('image/'))]);
         };
 
         fetchFiles();
@@ -50,10 +49,9 @@ export const MainPanel = (): JSX.Element => {
             eventId&&client.redactEvent(roomId, eventId,undefined,{reason: "Manually delete the file in file manager by user."});
         }
         deleteFiles(currentFile.mediaId, currentFile.sender)
-
-        if (currentFile.type === MsgType.File){
+        if (!currentFile.mimetype.startsWith('image/')){
             setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
-        }else if (currentFile.type === MsgType.Image){
+        }else if (currentFile.mimetype.startsWith('image/')){
             setMedia((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
         }
     }
