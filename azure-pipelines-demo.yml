@@ -45,10 +45,10 @@ stages:
         inline: |
           cd /opt/zebra-element-web
           git config --global --add safe.directory /opt/zebra-element-web
-          sudo git checkout master || echo "Master branch not found"
+          sudo git checkout master-demo || echo "Master branch not found"
           sudo git fetch --all || echo "Remote changes not fetched"
-          sudo git reset --hard origin/master || echo "Git reset failed"
-          sudo git pull origin master || echo "Origin pull failed"
+          sudo git reset --hard origin/master-demo || echo "Git reset failed"
+          sudo git pull origin master-demo || echo "Origin pull failed"
         failOnStdErr: false
       continueOnError: true
 
