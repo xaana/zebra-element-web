@@ -3,6 +3,8 @@ import { Editor, EditorContent } from "@tiptap/react";
 import { Mail, SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
 import classNames from "classnames";
 
+import "@/plugins/reports/styles/editor.css";
+import "@/plugins/reports/styles/index.css";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { ContentItemMenu, LinkMenu, TextMenu, TextMenuProps } from "../reports/menus";
