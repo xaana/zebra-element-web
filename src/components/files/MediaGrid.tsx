@@ -35,19 +35,25 @@ export const MediaGrid = ({
         async function processMedia(): Promise<void> {
             const mediaItemsPromises = media.map(async (m) => {
                 try {
-                    const room:Room = m.roomId&&client.getRoom(m.roomId);
-                    const event:MatrixEvent = room?.findEventById(m.event);
-                    m.mediaHelper = new MediaEventHelper(event);
-                    m.mxEvent = event;
+                    if (m.roomId&&m.event){
+                        const room:Room|null = client.getRoom(m.roomId);
+                        const event:MatrixEvent|undefined =room?.findEventById(m.event);
+                        if(event){
+                            m.mediaHelper = new MediaEventHelper(event);
+                            m.mxEvent = event;
+                        }
+                    }
+                    
+                    
                     // Fetch blobs concurrently if possible
                     const [blob, thumbnailBlob] = await Promise.all([
-                        m.mediaHelper.sourceBlob.value,
-                        m.mediaHelper.thumbnailBlob.value.catch((e) => {
+                        m.mediaHelper?.sourceBlob.value,
+                        m.mediaHelper?.thumbnailBlob.value.catch((e) => {
                             console.error("Error fetching thumbnail", e);
                             return null;
                         }), // Handle thumbnail error separately
                     ]);
-
+                    if (!blob) return null; // Return null if blob fetch fails
                     // Create media item object
                     const mediaItem = {
                         ...m,

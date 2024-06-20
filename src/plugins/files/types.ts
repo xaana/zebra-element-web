@@ -7,12 +7,12 @@ export type File = {
     timestamp: Date;
     sender: string;
     roomId: string | null;
-    room?: Room;
+    // room?: Room;
     isEncrypted: boolean;
     mediaHelper?: MediaEventHelper;
+    mxEvent?: MatrixEvent;
     mediaId: string;
-    type: MsgType | string;
-    event?: MatrixEvent | string;
+    event?: string;
     fileSize?: number;
     mimetype?: string;
 };
