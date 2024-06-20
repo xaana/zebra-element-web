@@ -27,6 +27,7 @@ import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 export interface DataProps {
     text: string;
@@ -62,8 +63,8 @@ export const AiWriterView = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
-        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
     };
 
     const formatResponse = (rawText: string) => {
