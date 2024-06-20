@@ -366,7 +366,6 @@ export default class ElectronPlatform extends VectorBasePlatform {
     }
 
     public supportsJitsiScreensharing(): boolean {
-        // See https://github.com/element-hq/element-web/issues/4880
         return false;
     }
 

@@ -76,7 +76,7 @@ import { PluginButton } from "./PluginButton";
 
 import { pluginList } from "@/plugins";
 import { IconTurium } from "@/components/ui/icons";
-import { HomeIcon } from "lucide-react";
+import { HomeIcon, MessagesSquare } from "lucide-react";
 
 const useSpaces = (): [Room[], MetaSpace[], Room[], SpaceKey] => {
     const invites = useEventEmitterState<Room[]>(SpaceStore.instance, UPDATE_INVITED_SPACES, () => {
@@ -168,7 +168,7 @@ const HomeButton: React.FC<MetaSpaceButtonProps> = ({ selected, isPanelCollapsed
         <MetaSpaceButton
             spaceKey={MetaSpace.Home}
             // className="mx_SpaceButton_home"
-            Icon={HomeIcon}
+            Icon={MessagesSquare}
             selected={selected}
             isPanelCollapsed={isPanelCollapsed}
             label={getMetaSpaceName(MetaSpace.Home, allRoomsInHome)}

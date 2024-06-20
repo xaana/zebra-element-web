@@ -402,10 +402,7 @@
 .mx_HomePage_default {
     .brand {
         position: absolute;
-        top: 40%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        bottom: 20%;
     }
 
     .default_buttons h2 {
@@ -413,12 +410,12 @@
     }
 
     .default_buttons {
-        position: absolute;
-        bottom: 15%;
+        margin-top: 40px;
         display: flex;
         flex-wrap: wrap;
         color: $primary-content;
         justify-content: center;
+        max-width: 800px;
     }
 
     .default_button {
@@ -547,6 +544,14 @@
     /* it taller and pop upwards when visible */
     height: 50px;
     text-align: center;
+}
+
+.mx_EventTile {
+    &.mx_EventTile_highlight,
+    &.mx_EventTile_highlight .markdown-body,
+    &.mx_EventTile_highlight .mx_EventTile_edited {
+        color: $primary-content;
+    }
 }
 
 .mx_EventTile[data-layout="bubble"] {
@@ -821,5 +826,32 @@
 }
 
 .mx_DecoratedRoomAvatar_icon_offline::before {
+    background-color: #818a95 !important;
     mask-image: url("$(res)/img/close.svg");
+}
+
+.mx_UserSettingsDialog,
+.mx_RoomSettingsDialog,
+.mx_SpaceSettingsDialog,
+.mx_SpacePreferencesDialog {
+    width: 90vw;
+    max-width: 1000px;
+    /* set the height too since tabbed view scrolls itself. */
+    height: 80vh;
+
+    .mx_TabbedView {
+        top: 65px;
+    }
+
+    .mx_TabbedView .mx_SettingsTab {
+        box-sizing: border-box;
+        min-width: 580px;
+        padding-right: 100px;
+        display: flex;
+        flex-direction: column;
+
+        /* Put some padding on the bottom to avoid the settings tab from */
+        /* colliding harshly with the dialog when scrolled down. */
+        padding-bottom: 100px;
+    }
 }

@@ -444,7 +444,6 @@ const RoomSummaryCard: React.FC<IProps> = ({ room, permalinkCreator, onClose, on
                 label={_t("context_menu|favourite")}
                 checked={isFavorite}
                 onChange={() => tagRoom(room, DefaultTagID.Favourite)}
-                // XXX: https://github.com/element-hq/compound/issues/288
                 onSelect={() => {}}
             />
             {!isDirectMessage && (

@@ -629,7 +629,12 @@ export default class ContentMessages {
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;
                 content.url = result.url;
-                mxcUrl = content.url ?? content.file?.url;
+                const mxcUrl_ = content.url ?? content.file?.url;
+                if (!mxcUrl_) {
+                    toast.error("File upload failed",{closeButton: true});
+                    return
+                }
+                mxcUrl = mxcUrl_.substring(6).split("/").pop();
                 threadId = relation?.rel_type === THREAD_RELATION_TYPE.name ? relation.event_id : undefined;
                 response = await matrixClient.sendMessage(roomId, threadId ?? null, content);
                 let apiUrl;
@@ -650,11 +655,12 @@ export default class ContentMessages {
                     upload.onProgress(progress);
                     // Example data to be sent to the server
                     const textToSend = JSON.stringify({
-                        media_id: mxcUrl&&mxcUrl.substring(6).split("/").pop(),
+                        media_id: mxcUrl,
                         room_id: roomId,
                         event_id: response.event_id,
                         user_id: Object.keys(joinedMembers.joined),
-                        sender_id: matrixClient.getUserId()
+                        sender_id: matrixClient.getUserId(),
+                        media_type: file.type,
                     });
                     // Sending a JSON string as message to the websocket server
                     websocket.send(textToSend);

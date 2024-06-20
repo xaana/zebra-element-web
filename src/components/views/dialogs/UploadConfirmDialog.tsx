@@ -121,7 +121,7 @@ export default class UploadConfirmDialog extends React.Component<IProps,IState> 
                         </div>
                     </div>
                 </div>
-                {!preview&&this.props.file.name.endsWith(".pdf")&&<div className="flex items-center space-x-2">
+                {/* {!preview&&this.props.file.name.endsWith(".pdf")&&<div className="flex items-center space-x-2">
                     <StyledCheckbox
                         checked={this.state.toZebra}
                         onChange={(e) => this.setState({toZebra:e.target.checked})}
@@ -133,8 +133,8 @@ export default class UploadConfirmDialog extends React.Component<IProps,IState> 
                         Upload for Zebra Insight?
                     </label>
                     </StyledCheckbox>
-                </div>}
-                {this.objectUrl&&!preview&&
+                </div>} */}
+                {this.objectUrl&&!preview&&this.props.file.name.endsWith(".pdf")&&
                 <div className="pdf-wrapper rounded-lg border overflow-hidden h-[450px]">
                 <div className="pdf-container bg-background p-2 overflow-auto h-full overflow-y-auto">
                     <Document
