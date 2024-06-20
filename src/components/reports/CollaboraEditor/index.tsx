@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 
 import { ChatSidebarCollabora } from "../Chat/ChatSidebarCollabora";
+import SuggestedPromptsCollabora from "../Chat/suggested-prompts-collabora";
 
 import { cn } from "@/lib/utils";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
@@ -9,12 +10,23 @@ import DocQuerySidebar from "@/components/reports/CollaboraEditor/DocQuerySideba
 import { useCollabora } from "@/plugins/reports/hooks/useCollabora";
 // import { toast } from "sonner";
 import { generateText } from "@/plugins/reports/utils/generateTextCollabora";
+import { Message } from "@/plugins/reports/types";
 
 const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
     const collaboraRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
     const [chatInput, setChatInput] = useState("");
+    const handlePromptClick = useRef<undefined | ((prompt: string) => Promise<void>)>();
+
+    const chatInitialMessage: Message = {
+        id: "0",
+        role: "system",
+        content: `👋 Hi, I'm your AI writing partner. Click on a section and then type below to have me change it.`,
+        children: <SuggestedPromptsCollabora onPromptClick={handlePromptClick} />,
+    };
+
     const chat: Chat = useChat({
+        initialMessages: [chatInitialMessage],
         isOpen: showSidebar,
         open: () => setShowSidebar(true),
         close: () => setShowSidebar(false),
@@ -28,6 +40,11 @@ const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
         showSidebar,
         setShowSidebar,
     });
+
+    handlePromptClick.current = async (prompt: string): Promise<void> => {
+        const selectedText = await editor.fetchSelectedText();
+        await generateText(prompt, selectedText, chat, editor);
+    };
 
     const handleQueryFormSubmit = async (): Promise<void> => {
         if (chatInput.length === 0 || !chat) return;
