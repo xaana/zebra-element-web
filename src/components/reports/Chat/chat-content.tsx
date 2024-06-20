@@ -1,22 +1,17 @@
 import React from "react";
-import { useContext } from "react";
 
 import { ChatList } from "@/components/reports/Chat/chat-list";
 import { ChatScrollAnchor } from "@/components/reports/Chat/chat-scroll-anchor";
 import { cn } from "@/lib/utils";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
-export const ChatContent = ({ isLoading }: { isLoading: boolean }): JSX.Element => {
-    const { editorChat } = useContext(EditorContext);
+import { Chat } from "@/plugins/reports/hooks/use-chat";
+export const ChatContent = ({ chat, isLoading }: { chat: Chat; isLoading: boolean }): JSX.Element => {
     return (
         <>
-            <div
-                id="chat__container"
-                className="w-full mx-auto h-full overflow-x-hidden overflow-y-auto scrollbar--custom"
-            >
+            <div id="chat__container" className="w-full mx-auto h-full overflow-y-auto">
                 <div className="w-full pt-8">
-                    {editorChat && editorChat.messages.length > 0 && <ChatList messages={editorChat.messages} />}
+                    {chat && chat.messages.length > 0 && <ChatList messages={chat.messages} />}
                 </div>
-                <div className={cn("transition-all mt-[190px]")}>
+                <div className={cn("transition-all mt-[80px]")}>
                     <ChatScrollAnchor trackVisibility={isLoading} />
                 </div>
             </div>
