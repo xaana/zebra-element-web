@@ -163,30 +163,7 @@ export function ReportActions({
                         <DropdownMenuShortcut>
                             <Icon name="MessageSquareShare" className="w-4 h-4" />
                         </DropdownMenuShortcut>
-                        <CommandDialog
-                            className="w-[512px]"
-                            open={approveDialogOpen}
-                            onOpenChange={setApproveDialogOpen}
-                        >
-                            <CommandInput placeholder="Search for user..." />
-                            <CommandList>
-                                <CommandEmpty>No users found.</CommandEmpty>
-                                <CommandGroup heading="Users">
-                                    {userIds
-                                        .filter((item) => item !== cli.getSafeUserId())
-                                        .map((userId, index) => (
-                                            <CommandItem
-                                                className="cursor-pointer"
-                                                key={index}
-                                                onSelect={async () => await handleApproval(userId)}
-                                            >
-                                                <Icon name="CircleUser" className="mr-2 h-4 w-4" />
-                                                <span>{userId.split(":")[0].substring(1)}</span>
-                                            </CommandItem>
-                                        ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </CommandDialog>
+                        
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -203,6 +180,30 @@ export function ReportActions({
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+            <CommandDialog
+                className="w-[512px]"
+                open={approveDialogOpen}
+                onOpenChange={setApproveDialogOpen}
+            >
+                <CommandInput placeholder="Search for user..." />
+                <CommandList>
+                    <CommandEmpty>No users found.</CommandEmpty>
+                    <CommandGroup heading="Users">
+                        {userIds
+                            .filter((item) => item !== cli.getSafeUserId())
+                            .map((userId, index) => (
+                                <CommandItem
+                                    className="cursor-pointer"
+                                    key={index}
+                                    onSelect={async () => await handleApproval(userId)}
+                                >
+                                    <Icon name="CircleUser" className="mr-2 h-4 w-4" />
+                                    <span>{userId.split(":")[0].substring(1)}</span>
+                                </CommandItem>
+                            ))}
+                    </CommandGroup>
+                </CommandList>
+            </CommandDialog>
         </div>
     );
 }
