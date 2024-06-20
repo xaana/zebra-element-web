@@ -53,8 +53,7 @@
         },
         "reports": {
             "api": "https://dev-api-2.securezebra.com",
-            "collabServerWebsocketUrl": "wss://dev-api-3.securezebra.com",
-            "collabServerHttpUrl": "https://dev-api-3.securezebra.com"
+            "collaboraServerUrl": "https://dev-api-3.securezebra.com"
         },
         "algology": {
             "url": "https://algology-dev.securezebra.com"
