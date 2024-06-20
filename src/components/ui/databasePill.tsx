@@ -29,8 +29,8 @@ const DatabasePill = ({
 
     if (!database) return null;
     return (
-        <div className="inline-block px-2 py-1 bg-muted rounded-full gap-2">
-            <div className="flex flex-row text-xs">
+        <div className="inline-block px-2 py-1 bg-muted rounded-full">
+            <div className="flex gap-2 text-xs">
                 <IconDatabase />
                 <span>{database}</span>
 
