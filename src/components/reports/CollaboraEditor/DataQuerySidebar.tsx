@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { toast } from "sonner";
 
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -9,6 +11,8 @@ import { Button } from "@/components/ui/ButtonAlt";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
+import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
+import { QueryResultTable } from "@/plugins/reports/extensions/AiDataQuery/components/QueryResultTable";
 
 export type DataItem = {
     [key: string]: string | number | null | undefined;
@@ -23,7 +27,7 @@ export interface DataProps {
     language?: string;
 }
 
-const DataQuerySidebar = ({ onClose }: { onClose: () => void }) => {
+const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: CollaboraExports }): JSX.Element => {
     const [isFetching, setIsFetching] = useState(false);
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
     const textareaId = useMemo(() => uuid(), []);
@@ -39,7 +43,16 @@ const DataQuerySidebar = ({ onClose }: { onClose: () => void }) => {
     });
 
     useEffect(() => {
-        setDbList(["contracts", "transactions"]);
+        const getDbList = async (): Promise<void> => {
+            const apiUrl = SettingsStore.getValue("botApiUrl");
+            if (apiUrl) {
+                const resp = await fetch(`${apiUrl}/database_list`);
+                const data = await resp.json();
+                if (data) setDbList(data);
+            }
+        };
+
+        getDbList();
     }, []);
 
     const onTextAreaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -47,29 +60,92 @@ const DataQuerySidebar = ({ onClose }: { onClose: () => void }) => {
     }, []);
 
     const createItemClickHandler = useCallback((db: string) => {
-        return () => {
+        return (): void => {
             setData((prevData) => ({ ...prevData, database: db }));
             setSelectedDb(db);
         };
     }, []);
 
-    const queryDatabase = async () => {
+    const queryDatabase = useCallback(async () => {
+        const { text: dataText, database } = data;
+
+        if (!data.text) {
+            toast.error("Please enter a description");
+            return;
+        }
+
         setIsFetching(true);
-        setTimeout(() => {
-            console.log(data);
-            setPreviewText(`Lorem ipsum dolor sit amet`);
-            setFetchedData([{ key: "value" }]);
-            setIsFetching(() => false);
-        }, 1000);
-    };
+
+        try {
+            const res: Response = await fetch(`${SettingsStore.getValue("botApiUrl")}/database-query`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: dataText,
+                    database: database,
+                    user_id: "user_id",
+                }),
+            });
+
+            const data = await res.json();
+            // console.log(data);
+
+            if (data) {
+                setPreviewText(data.body);
+                data.database_table && setFetchedData(data.database_table);
+                setIsFetching(false);
+            }
+        } catch (errPayload: any) {
+            const errorMessage = errPayload?.response?.data?.error;
+            const message =
+                errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
+
+            setIsFetching(false);
+            toast.error(message);
+        }
+    }, [data]);
 
     const insert = useCallback(() => {
-        console.log(`Insert`);
-    }, []);
+        if (!fetchedData && previewText) {
+            editor.insertTextandSelect(previewText);
+        }
+
+        const tableContent = arrayToHTMLTable(fetchedData);
+
+        editor.insertCustomHtml(tableContent);
+        onClose();
+    }, [editor, fetchedData, previewText, onClose]);
 
     const discard = useCallback(() => {
-        console.log(`Discard`);
-    }, []);
+        onClose();
+    }, [onClose]);
+
+    function arrayToHTMLTable(arr: DataItem[]): string {
+        // Check if the array is empty
+        if (arr.length === 0) {
+            return "<p>No data to display.</p>";
+        }
+
+        // Extract column names from the first object's keys
+        const columnNames = Object.keys(arr[0]);
+
+        // Start the table and add a header row
+        let tableHTML = `<table><tr style="font-weight: 600;">${columnNames
+            .map((columnName) => `<td>${columnName}</td>`)
+            .join("")}</tr>`;
+
+        // Add the data rows
+        arr.forEach((row) => {
+            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName]}</td>`).join("")}</tr>`;
+        });
+
+        // Close the table
+        tableHTML += "</table>";
+
+        return tableHTML;
+    }
 
     return (
         <div className="h-full w-full px-2 py-4 relative">
@@ -78,9 +154,9 @@ const DataQuerySidebar = ({ onClose }: { onClose: () => void }) => {
                     <Icon name="X" className="w-3.5 h-3.5" />
                 </Button>
             </div>
-            <div className="font-medium text-lg text-primary px-1 flex flex-col">
+            <div className="font-medium text-lg text-primary-default px-1 flex flex-col">
                 <span className="flex items-center gap-1">
-                    <Icon name="DatabaseZap" className="text-primary" />
+                    <Icon name="DatabaseZap" className="text-primary-default" />
                     AI Data Query
                 </span>
                 <Separator className="mt-1 mb-4" />
@@ -95,13 +171,7 @@ const DataQuerySidebar = ({ onClose }: { onClose: () => void }) => {
                             dangerouslySetInnerHTML={{ __html: previewText }}
                         />
                         <div className="p-4">
-                            {fetchedData && (
-                                <div>Fetched Data</div>
-                                //   <QueryResultTable
-                                //     data={fetchedData}
-                                //     handleViewCharts={() => {}}
-                                //   />
-                            )}
+                            {fetchedData && <QueryResultTable data={fetchedData} handleViewCharts={() => {}} />}
                         </div>
                     </>
                 )}

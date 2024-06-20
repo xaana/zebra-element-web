@@ -79,13 +79,28 @@ const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
                         chat={chat}
                         chatInput={chatInput}
                         setChatInput={setChatInput}
-                        onClose={() => setShowSidebar(false)}
+                        onClose={() => {
+                            setShowSidebar(false);
+                            chat.reset();
+                        }}
                         onQueryFormSubmit={handleQueryFormSubmit}
                     />
                 ) : editor.zebraMode === "doc" ? (
-                    <DocQuerySidebar onClose={() => setShowSidebar(false)} />
+                    <DocQuerySidebar
+                        editor={editor}
+                        onClose={() => {
+                            setShowSidebar(false);
+                            editor.setZebraMode("chat");
+                        }}
+                    />
                 ) : (
-                    <DataQuerySidebar onClose={() => setShowSidebar(false)} />
+                    <DataQuerySidebar
+                        editor={editor}
+                        onClose={() => {
+                            setShowSidebar(false);
+                            editor.setZebraMode("chat");
+                        }}
+                    />
                 )}
             </div>
         </div>
