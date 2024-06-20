@@ -82,7 +82,7 @@ export const uploadFile = async (
     eventId?: string,
     roomId?: string,
     senderId?: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<Object> => {
     return fetch(url+"/api/files/upload_info", {
         method: "POST",
@@ -105,7 +105,7 @@ export const uploadFile = async (
 export const deleteFiles = async (
     mediaId: string,
     userId: string,
-    url: string = "http://localhost:8000",
+    url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<Object> => {
     return fetch(url+"/api/files/delete", {
         method: "DELETE",

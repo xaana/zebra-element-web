@@ -7,6 +7,7 @@ import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
+import { FileUpload } from "../FileUpload";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 export const ReportGenerator = ({
     onReportGenerate,
 }: {
@@ -42,6 +44,7 @@ export const ReportGenerator = ({
     const [outlineItems, setOutlineItems] = React.useState<string[]>([]);
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
+    const [contentFile, setContentFile] = React.useState<File>();
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -104,6 +107,28 @@ export const ReportGenerator = ({
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
         );
+    };
+
+    const handleFileUpload = async (file: File): Promise<void> => {
+        setContentFile(file);
+        // try {
+        //     const formData = new FormData();
+        //     formData.append("files", file);
+        //     // Make API request
+        //     const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
+        //         method: "POST",
+        //         body: formData,
+        //     });
+        //     const responseData = await response.json();
+
+        //     if (responseData?.html_pages?.length > 0) {
+        //         const combinedString = responseData.html_pages.join("\n");
+        //         await createNewReport(combinedString);
+        //     }
+        // } catch (error) {
+        //     console.error("Error fetching data:", error);
+        //     setIsLoading(false);
+        // }
     };
 
     return (
@@ -214,6 +239,11 @@ export const ReportGenerator = ({
                                         {prompt.length === 0 && <SamplePrompts setPrompt={setPrompt} />}
                                     </div>
                                 </SwitchSlideTransition>
+
+                                <div>
+                                    <Separator className="my-2" />
+                                    <FileUpload onFileUpload={handleFileUpload} />
+                                </div>
                             </>
                         )}
                     </div>
