@@ -4,6 +4,9 @@ import { File } from "../../plugins/files/types";
 import { MediaGridItem } from "./MediaGridItem";
 
 import { RingLoader } from "@/components/ui/loaders/ring-loader";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { MatrixEvent, Room } from "matrix-js-sdk/src/matrix";
+import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
 
 export interface MediaItem extends File {
     srcBlob: Blob;
@@ -26,11 +29,16 @@ export const MediaGrid = ({
 }): JSX.Element => {
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
     const [showLoading, setShowLoading] = useState<boolean>(true);
+    const client = useMatrixClientContext();
 
     useEffect(() => {
         async function processMedia(): Promise<void> {
             const mediaItemsPromises = media.map(async (m) => {
                 try {
+                    const room:Room = m.roomId&&client.getRoom(m.roomId);
+                    const event:MatrixEvent = room?.findEventById(m.event);
+                    m.mediaHelper = new MediaEventHelper(event);
+                    m.mxEvent = event;
                     // Fetch blobs concurrently if possible
                     const [blob, thumbnailBlob] = await Promise.all([
                         m.mediaHelper.sourceBlob.value,

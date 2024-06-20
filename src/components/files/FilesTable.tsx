@@ -117,11 +117,11 @@ const downloadFile = async (e: React.SyntheticEvent, file: File, currentUserId: 
     e.stopPropagation();
     if (file.mimetype==="application/pdf"){
         try {
-            const decryptedBlob = await getFile(file.mediaId, currentUserId);
-            const blob = new Blob([decryptedBlob], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
+            getFile(file.mediaId, currentUserId).then((blob)=>{
+                const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+                window.open(url, '_blank');
+                file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
+            });
         } catch (err) {
             console.error('Unable to download file: ', err);
         }

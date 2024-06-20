@@ -77,10 +77,7 @@ try {
 
     process.on("exit", () => {
         console.log(""); // blank line
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.warn("!! Customisations have been deprecated and will be removed in a future release      !!");
-        console.warn("!! See https://github.com/element-hq/element-web/blob/develop/docs/customisations.md !!");
-        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.warn("!! Customisations will be removed in a future release      !!");
         console.log(""); // blank line
     });
 } catch (e) {
@@ -339,11 +336,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.scss$/,
-                    use: [
-                        'style-loader',
-                        'css-loader',
-                        'sass-loader'
-                    ]
+                    use: ["style-loader", "css-loader", "sass-loader"],
                 },
                 {
                     test: /\.css$/,
