@@ -8,9 +8,10 @@ import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
 import { generateText } from "@/plugins/reports/utils/generateText";
+import { Chat } from "@/plugins/reports/hooks/use-chat";
 
-export const ChatSidebar = ({ sidebar }: { sidebar: SidebarState }): JSX.Element => {
-    const { editorChat, editor } = useContext(EditorContext);
+export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarState; chat: Chat }): JSX.Element => {
+    const { editor } = useContext(EditorContext);
     const [chatInput, setChatInput] = useState("");
 
     const handleChatStop = (): void => {
@@ -38,7 +39,7 @@ export const ChatSidebar = ({ sidebar }: { sidebar: SidebarState }): JSX.Element
                         <Icon name="X" className="w-3.5 h-3.5" />
                     </Button>
                 </div>
-                <ChatContent isLoading={editorChat?.isLoading ?? false} />
+                <ChatContent chat={editorChat} isLoading={editorChat?.isLoading ?? false} />
                 <ChatQueryForm
                     input={chatInput}
                     isLoading={editorChat?.isLoading ?? false}

@@ -18,8 +18,8 @@ export type Chat = {
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     lastSystemMessageId: React.MutableRefObject<string | null>;
-    isOpen: boolean;
     open: () => void;
+    isOpen: boolean;
     close: () => void;
     toggle: () => void;
     processStream: (
@@ -54,8 +54,8 @@ export type Chat = {
  */
 export function useChat({
     initialMessages,
-    isOpen,
     open,
+    isOpen,
     close,
     toggle,
 }: {
@@ -314,12 +314,12 @@ export function useChat({
         isLoading,
         setIsLoading,
         lastSystemMessageId,
-        isOpen,
-        open,
-        close,
-        toggle,
         processStream,
         appendMessage,
         reset,
+        open,
+        isOpen,
+        close,
+        toggle,
     } as Chat;
 }
