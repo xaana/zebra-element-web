@@ -53,7 +53,8 @@
         },
         "reports": {
             "api": "https://dev-api-2.securezebra.com",
-            "collaboraServerUrl": "https://dev-api-3.securezebra.com"
+            "collaboraServerUrl": "https://dev-api-3.securezebra.com",
+            "wopiSrc": "http://fastapi:8000"
         },
         "algology": {
             "url": "https://algology-dev.securezebra.com"
