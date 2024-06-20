@@ -737,16 +737,16 @@ export default class AppTile extends React.Component<IProps, IState> {
                 </AccessibleButton>,
             );
 
-            layoutButtons.push(
-                <AccessibleButton
-                    key="minimise"
-                    className="mx_AppTileMenuBar_widgets_button"
-                    title={_t("action|minimise")}
-                    onClick={this.onMinimiseClicked}
-                >
-                    <MinimiseIcon className="mx_Icon mx_Icon_12" />
-                </AccessibleButton>,
-            );
+            // layoutButtons.push(
+            //     <AccessibleButton
+            //         key="minimise"
+            //         className="mx_AppTileMenuBar_widgets_button"
+            //         title={_t("action|minimise")}
+            //         onClick={this.onMinimiseClicked}
+            //     >
+            //         <MinimiseIcon className="mx_Icon mx_Icon_12" />
+            //     </AccessibleButton>,
+            // );
         }
 
         return (
