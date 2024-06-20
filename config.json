@@ -53,8 +53,7 @@
         },
         "reports": {
             "api": "http://localhost:8000",
-            "collabServerWebsocketUrl": "ws://localhost:63043",
-            "collabServerHttpUrl": "http://localhost:63043"
+            "collaboraServerUrl": "http://localhost:63043"
         },
         "algology": {
             "url": "http://localhost:3001"

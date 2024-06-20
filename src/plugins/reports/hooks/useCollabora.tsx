@@ -55,7 +55,7 @@ export function useCollabora({
                 .then((response) => response.json())
                 .then((data) => {
                     const wopiClientUrl = data.url;
-                    const wopiUrl = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
+                    const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     setWopiUrl(`${wopiUrl}&access_token=${window.location.origin}`);
                     setStartLoading(true);
                 });
