@@ -1,5 +1,7 @@
 import React, { useState, memo, useCallback, useMemo, useRef, useContext } from "react";
 import { Editor, EditorContent } from "@tiptap/react";
+import { Mail, SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
+import classNames from "classnames";
 
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
@@ -18,7 +20,6 @@ import { Toolbar } from "../ui/Toolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
 import { IconZebra } from "../ui/icons";
-import { Mail, SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
 
 import { Icon } from "@/components/ui/Icon";
 import { TableOfContents } from "@/components/reports/TableOfContents";
@@ -33,8 +34,6 @@ import { Sidebar } from "@/components/reports/Sidebar";
 import { EditorContext } from "@/plugins/reports/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 import { LinkEditorPanel } from "@/components/reports/panels";
-import classNames from "classnames";
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -182,7 +181,7 @@ const EditorDialog = (props: {
                         </div>
                     </div>
                     <div style={{ height: "calc(-130px + 80vh)", top: 65, right: 0, position: "absolute" }}>
-                        <ChatSidebar sidebar={rightSidebar} />
+                        <ChatSidebar chat={chat} sidebar={rightSidebar} />
                     </div>
                     <div style={{ height: 50 }}>
                         <EditorFooter
