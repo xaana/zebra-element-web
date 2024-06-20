@@ -5,10 +5,11 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
-import { CollaborationProvider } from "./CollaborationProvider";
+// import { CollaborationProvider } from "./CollaborationProvider";
 
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
+import CollaboraEditor from "@/components/reports/CollaboraEditor";
 
 export const Home = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
@@ -170,33 +171,33 @@ export const Home = (): JSX.Element => {
         await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
     };
 
-    const handleUpdateName = async (name: string): Promise<boolean> => {
-        if (!selectedReport) return false;
-        try {
-            const response = await fetch(
-                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
-                },
-            );
-            if (response.ok) {
-                setReports((prev) =>
-                    prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
-                );
-                return true;
-            } else {
-                toast.error("Error updating document name");
-                return false;
-            }
-        } catch (error) {
-            console.error("Error updating document name", error);
-            return false;
-        }
-    };
+    // const handleUpdateName = async (name: string): Promise<boolean> => {
+    //     if (!selectedReport) return false;
+    //     try {
+    //         const response = await fetch(
+    //             `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
+    //             {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                 },
+    //                 body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
+    //             },
+    //         );
+    //         if (response.ok) {
+    //             setReports((prev) =>
+    //                 prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
+    //             );
+    //             return true;
+    //         } else {
+    //             toast.error("Error updating document name");
+    //             return false;
+    //         }
+    //     } catch (error) {
+    //         console.error("Error updating document name", error);
+    //         return false;
+    //     }
+    // };
 
     const handleDeleteReport = async (reportId: string): Promise<void> => {
         try {
@@ -267,12 +268,15 @@ export const Home = (): JSX.Element => {
                     key={selectedReport.id}
                     ref={stepRef}
                 >
-                    <CollaborationProvider
+                    {/* <CollaborationProvider
                         userId={userId}
                         selectedReport={selectedReport}
                         setSelectedReport={setSelectedReport}
                         onUpdateName={handleUpdateName}
-                    />
+                    /> */}
+                    <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
+                        <CollaboraEditor fileId={selectedReport.id} />
+                    </div>
                 </motion.div>
             )}
         </div>

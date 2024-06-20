@@ -16,7 +16,13 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
 
-export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Promise<void> }): JSX.Element => {
+export const FileUpload = ({
+    onFileUpload,
+    triggerContent,
+}: {
+    onFileUpload: (file: File) => Promise<void>;
+    triggerContent?: string;
+}): JSX.Element => {
     const [errors, setErrors] = useState<z.ZodIssue[]>([]);
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
@@ -24,7 +30,7 @@ export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Pro
     const client = useMatrixClientContext();
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const MAX_FILE_SIZE = 500; // in MB
+    const MAX_FILE_SIZE = 5; // in MB
 
     const fileUploadFormSchema = z.object({
         files: z
@@ -127,7 +133,7 @@ export const FileUpload = ({ onFileUpload }: { onFileUpload: (file: File) => Pro
                         onClick={() => setFilesDialogOpen(true)}
                     >
                         <Icon name="Import" className="mr-2" />
-                        Import from file
+                        {triggerContent ? triggerContent : "Import from file"}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[70vw] max-w-[70vw] h-[70vh] p-0 overflow-hidden">
