@@ -12,7 +12,7 @@ import { useCollabora } from "@/plugins/reports/hooks/useCollabora";
 import { generateText } from "@/plugins/reports/utils/generateTextCollabora";
 import { Message } from "@/plugins/reports/types";
 
-const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
+const CollaboraEditor = ({ fileId, onCloseEditor }: { fileId: string; onCloseEditor: () => void }): JSX.Element => {
     const collaboraRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
     const [chatInput, setChatInput] = useState("");
@@ -21,7 +21,7 @@ const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
     const chatInitialMessage: Message = {
         id: "0",
         role: "system",
-        content: `👋 Hi, I'm your AI writing partner. Click on a section and then type below to have me change it.`,
+        content: `👋 Hi, I'm your AI writing partner. Select some text and then type below to have me change it.`,
         children: <SuggestedPromptsCollabora onPromptClick={handlePromptClick} />,
     };
 
@@ -39,6 +39,7 @@ const CollaboraEditor = ({ fileId }: { fileId: string }): JSX.Element => {
         chat,
         showSidebar,
         setShowSidebar,
+        onCloseEditor,
     });
 
     handlePromptClick.current = async (prompt: string): Promise<void> => {

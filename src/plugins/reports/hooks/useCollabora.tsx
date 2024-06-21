@@ -35,12 +35,14 @@ export function useCollabora({
     chat,
     showSidebar,
     setShowSidebar,
+    onCloseEditor,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     fileId: string;
     chat: Chat;
     showSidebar: boolean;
     setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+    onCloseEditor: () => void;
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -125,7 +127,11 @@ export function useCollabora({
             case "Clicked_Button":
                 {
                     const buttonId: string = (msg.Values.Id as string) ?? "";
-                    if (
+                    if (buttonId && buttonId === "custom_exit_editor") {
+                        sendMessage({ MessageId: "Action_Save", Values: { DontSaveIfUnmodified: true } });
+                        sendMessage({ MessageId: "Action_Close" });
+                        onCloseEditor();
+                    } else if (
                         buttonId &&
                         ["custom_toggle_zebra", "custom_toggle_doc_query", "custom_toggle_data_query"].includes(
                             buttonId,
@@ -226,11 +232,16 @@ export function useCollabora({
         //         Mode: "classic",
         //     },
         // });
-        // Hide 'Help' menu item
         sendMessage({
-            MessageId: "Hide_Menu_Item",
+            MessageId: "Insert_Button",
             Values: {
-                id: "help",
+                id: "custom_exit_editor",
+                imgurl: `${window.location.origin}/img/close-editor.svg`,
+                hint: "Close Document",
+                mobile: true,
+                tablet: true,
+                label: "Close Document",
+                insertBefore: "sidebar",
             },
         });
         sendMessage({
@@ -238,10 +249,10 @@ export function useCollabora({
             Values: {
                 id: "custom_toggle_zebra",
                 imgurl: `${window.location.origin}/img/zebra.svg`,
-                hint: "Zebra Writer",
-                mobile: false,
+                hint: "Zebra Chat",
+                mobile: true,
                 tablet: true,
-                label: "Zebra AI",
+                label: "Zebra Chat",
                 insertBefore: "sidebar",
             },
         });
@@ -249,11 +260,11 @@ export function useCollabora({
             MessageId: "Insert_Button",
             Values: {
                 id: "custom_toggle_doc_query",
-                imgurl: `${window.location.origin}/img/doc-query.svg`,
-                hint: "AI Doc Query",
-                mobile: false,
+                imgurl: `${window.location.origin}/img/ai-writer.svg`,
+                hint: "AI Writer",
+                mobile: true,
                 tablet: true,
-                label: "AI Doc Query",
+                label: "AI Writer",
                 insertBefore: "custom_toggle_zebra",
             },
         });
