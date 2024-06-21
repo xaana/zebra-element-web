@@ -53,7 +53,7 @@ export const AIDropdown = ({
                     <Dropdown.Item onClick={onFixSpelling}>
                         <DropdownButton>
                             <Icon name="Eraser" />
-                            Fix spelling & grammar
+                            Fix grammar
                         </DropdownButton>
                     </Dropdown.Item>
                     <Dropdown.Item onClick={onMakeShorter}>
