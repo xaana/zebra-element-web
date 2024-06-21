@@ -171,33 +171,33 @@ export const Home = (): JSX.Element => {
         await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
     };
 
-    // const handleUpdateName = async (name: string): Promise<boolean> => {
-    //     if (!selectedReport) return false;
-    //     try {
-    //         const response = await fetch(
-    //             `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
-    //             {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
-    //             },
-    //         );
-    //         if (response.ok) {
-    //             setReports((prev) =>
-    //                 prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
-    //             );
-    //             return true;
-    //         } else {
-    //             toast.error("Error updating document name");
-    //             return false;
-    //         }
-    //     } catch (error) {
-    //         console.error("Error updating document name", error);
-    //         return false;
-    //     }
-    // };
+    const handleUpdateName = async (name: string): Promise<boolean> => {
+        if (!selectedReport) return false;
+        try {
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
+                },
+            );
+            if (response.ok) {
+                setReports((prev) =>
+                    prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
+                );
+                return true;
+            } else {
+                toast.error("Error updating document name");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error updating document name", error);
+            return false;
+        }
+    };
 
     const handleDeleteReport = async (reportId: string): Promise<void> => {
         try {
@@ -216,6 +216,10 @@ export const Home = (): JSX.Element => {
         } catch (error) {
             console.error("Error updating document name", error);
         }
+    };
+
+    const handleCloseEditor = (): void => {
+        setSelectedReport(undefined);
     };
 
     return (
@@ -275,7 +279,7 @@ export const Home = (): JSX.Element => {
                         onUpdateName={handleUpdateName}
                     /> */}
                     <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
-                        <CollaboraEditor fileId={selectedReport.id} />
+                        <CollaboraEditor onCloseEditor={handleCloseEditor} fileId={selectedReport.id} />
                     </div>
                 </motion.div>
             )}

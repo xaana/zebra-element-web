@@ -8,6 +8,7 @@ import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
 import { FileUpload } from "../FileUpload";
+import type { File as MatrixFile } from "@/plugins/files/types";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,8 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 export const ReportGenerator = ({
     onReportGenerate,
 }: {
@@ -45,6 +47,7 @@ export const ReportGenerator = ({
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
     const [contentFile, setContentFile] = React.useState<File>();
+    const [contentMediaId, setContentMediaId] = React.useState<string>();
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -68,6 +71,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
+                    // ...{ contentMediaId && { content_media_id: contentMediaId } },
                 }),
             });
             const data = await res.json();
@@ -109,8 +113,9 @@ export const ReportGenerator = ({
         );
     };
 
-    const handleFileUpload = async (file: File): Promise<void> => {
+    const handleFileUpload = async (file: File, matrixFile?: MatrixFile): Promise<void> => {
         setContentFile(file);
+        setContentMediaId(matrixFile?.mediaId);
         // try {
         //     const formData = new FormData();
         //     formData.append("files", file);
@@ -149,10 +154,39 @@ export const ReportGenerator = ({
                         <HeaderText showOutline={showOutline} />
                         <div
                             className={cn(
-                                "flex items-end gap-2 w-full mt-10 mb-2",
-                                showOutline ? "justify-between" : "justify-end",
+                                "flex gap-4 w-full mt-10 mb-2 justify-between",
+                                // showOutline ? "justify-between" : "justify-end",
+                                // showOutline ? "justify-end" : "justify-between",
                             )}
                         >
+                            {!showOutline && (
+                                <div className="flex items-center gap-3">
+                                    <div className="text-muted-foreground font-semibold text-sm">
+                                        Supporting Document:
+                                    </div>
+                                    {contentFile ? (
+                                        <Badge variant="outline" className="flex items-center gap-2 h-8">
+                                            <div className="text-xs">{contentFile.name}</div>
+                                            <Button
+                                                onClick={() => setContentFile(undefined)}
+                                                variant="ghost"
+                                                size="sm"
+                                                className="w-auto h-auto p-0.5 rounded-full"
+                                            >
+                                                <Icon name="X" className="w-3 h-3" />
+                                            </Button>
+                                        </Badge>
+                                    ) : (
+                                        <FileUpload
+                                            onFileUpload={handleFileUpload}
+                                            buttonText="Select Document"
+                                            allowUpload={false}
+                                            iconName="FileInput"
+                                            buttonVariant="outline"
+                                        />
+                                    )}
+                                </div>
+                            )}
                             {showOutline && (
                                 <div className="text-muted-foreground font-semibold text-base translate-y-1">
                                     Prompt
@@ -239,11 +273,6 @@ export const ReportGenerator = ({
                                         {prompt.length === 0 && <SamplePrompts setPrompt={setPrompt} />}
                                     </div>
                                 </SwitchSlideTransition>
-
-                                <div>
-                                    <Separator className="my-2" />
-                                    <FileUpload onFileUpload={handleFileUpload} />
-                                </div>
                             </>
                         )}
                     </div>
