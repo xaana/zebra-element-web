@@ -13,6 +13,7 @@ import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { QueryResultTable } from "@/plugins/reports/extensions/AiDataQuery/components/QueryResultTable";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 export type DataItem = {
     [key: string]: string | number | null | undefined;
@@ -34,6 +35,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
     const [dbList, setDbList] = useState<string[]>([]);
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
+    const client = useMatrixClientContext();
     const [data, setData] = useState<DataProps>({
         text: "",
         database: undefined,
@@ -85,7 +87,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
-                    user_id: "user_id",
+                    user_id: client.getUserId(),
                 }),
             });
 

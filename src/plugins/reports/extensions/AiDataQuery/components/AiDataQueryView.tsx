@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 export interface DataProps {
     text: string;
     addHeading: boolean;
@@ -45,6 +46,7 @@ export const AiDataQueryView = ({
     const [dbList, setDbList] = useState<string[]>([]);
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
+    const client = useMatrixClientContext();
 
     useEffect(() => {
         const getDbList = async (): Promise<void> => {
@@ -79,7 +81,7 @@ export const AiDataQueryView = ({
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
-                    user_id: "user_id",
+                    user_id: client.getUserId(),
                 }),
             });
 
