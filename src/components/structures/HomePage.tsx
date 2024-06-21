@@ -122,13 +122,13 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     const onClickDocumentHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, undefined, cli, undefined);
         });
     };
 
     const onClickImageHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, undefined, cli, undefined);
         });
     };
 

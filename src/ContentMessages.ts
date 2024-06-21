@@ -535,7 +535,7 @@ export default class ContentMessages {
         replyToEvent: MatrixEvent | undefined,
         context: TimelineRenderingType,
         promBefore?: Promise<any>,
-        uploadZebra = false,
+        uploadZebra = true,
     ): Promise<void> {
         const fileName = file.name || _t("common|attachment");
         const content: Omit<IMediaEventContent, "info"> & { info: Partial<IMediaEventInfo> } = {
