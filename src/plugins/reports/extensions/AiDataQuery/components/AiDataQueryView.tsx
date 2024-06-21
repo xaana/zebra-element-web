@@ -45,6 +45,7 @@ export const AiDataQueryView = ({
     const [dbList, setDbList] = useState<string[]>([]);
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
+
     useEffect(() => {
         const getDbList = async (): Promise<void> => {
             const apiUrl = SettingsStore.getValue("botApiUrl");
@@ -157,7 +158,7 @@ export const AiDataQueryView = ({
 
         // Add the data rows
         arr.forEach((row) => {
-            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName]}</td>`).join("")}</tr>`;
+            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName] || "-"}</td>`).join("")}</tr>`;
         });
 
         // Close the table
