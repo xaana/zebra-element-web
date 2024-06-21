@@ -63,8 +63,14 @@ export const AiWriterView = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = (await listFiles(client.getUserId() ?? "",undefined,"zebra" )).map(item=>dtoToFileAdapters(item, client.getUserId()))
-        setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", undefined, "zebra")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
     };
 
     const formatResponse = (rawText: string) => {
@@ -274,7 +280,10 @@ export const AiWriterView = ({
                                     </Dropdown.Trigger>
                                     <Dropdown.Portal>
                                         <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
-                                            <Surface className="p-2 min-w-[12rem]">
+                                            <Surface
+                                                className="p-2 min-w-[12rem] overflow-y-scroll"
+                                                style={{ maxHeight: 200 }}
+                                            >
                                                 {!!data.tone && (
                                                     <>
                                                         <Dropdown.Item asChild>
