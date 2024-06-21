@@ -249,8 +249,8 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
             </div>
             <div className="font-medium text-lg text-primary-default px-1 flex flex-col">
                 <span className="flex items-center gap-1">
-                    <Icon name="FileInput" className="text-primary-default" />
-                    AI Doc Query
+                    <Icon name="NotebookPen" className="text-primary-default" />
+                    AI Writer
                 </span>
                 <Separator className="mt-1 mb-4" />
             </div>
@@ -413,8 +413,12 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                             className="w-full"
                             disabled={!data.text || data.text.length < 3}
                         >
-                            {previewText ? <Icon name="Repeat" /> : <Icon name="DatabaseZap" />}
-                            {previewText ? "Regenerate" : "Query"}
+                            {previewText ? (
+                                <Icon className="mr-2" name="Repeat" />
+                            ) : (
+                                <Icon className="mr-2" name="PencilLine" />
+                            )}
+                            {previewText ? "Regenerate" : "Write"}
                         </Button>
                     </div>
                 </div>
