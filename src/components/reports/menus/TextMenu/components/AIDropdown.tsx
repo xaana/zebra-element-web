@@ -77,7 +77,7 @@ export const AIDropdown = ({
                             </DropdownButton>
                         </Dropdown.SubTrigger>
                         <Dropdown.SubContent>
-                            <Surface className="flex flex-col min-w-[15rem] p-2 max-h-[20rem] overflow-auto">
+                            <Surface className="p-2 min-w-[12rem] overflow-y-scroll" style={{ maxHeight: 200 }}>
                                 {tones.map((tone) => (
                                     <Dropdown.Item onClick={handleTone(tone.value)} key={tone.value}>
                                         <DropdownButton>{tone.label}</DropdownButton>
