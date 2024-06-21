@@ -63,7 +63,7 @@ export const AiWriterView = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "",undefined,"zebra" )).map(item=>dtoToFileAdapters(item, client.getUserId()))
         setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
     };
 

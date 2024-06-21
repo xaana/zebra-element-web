@@ -16,6 +16,7 @@ export type FileDTO = {
 export const listFiles = async (
     userId: string,
     type?: string,
+    uploadService?: string,
     url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<FileDTO[]> => {
     return fetch(url+"/api/files/get_info", {
@@ -25,7 +26,8 @@ export const listFiles = async (
         },
         body: JSON.stringify({
             user_id: userId,
-            media_type: type
+            media_type: type,
+            upload_service: uploadService
         })
     })
     .then((res) => res.json())
