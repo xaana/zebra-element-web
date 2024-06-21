@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Textarea } from "@/components/ui/TextareaAlt";
-import { Button } from "@/components/ui/ButtonAlt";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
@@ -150,7 +150,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
     return (
         <div className="h-full w-full px-2 py-4 relative">
             <div className="absolute top-1.5 right-2 flex gap-1.5 items-center z-10">
-                <Button buttonSize="small" variant="tertiary" onClick={onClose} className="p-1 h-auto rounded-full">
+                <Button size="sm" variant="outline" onClick={onClose} className="p-1 h-auto rounded-full">
                     <Icon name="X" className="w-3.5 h-3.5" />
                 </Button>
             </div>
@@ -191,7 +191,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                 <div className="flex flex-col gap-2 w-full">
                     <Dropdown.Root>
                         <Dropdown.Trigger asChild>
-                            <Button className="w-full text-xs !bg-background" variant="tertiary" buttonSize="small">
+                            <Button className="w-full text-xs !bg-background" variant="outline" size="sm">
                                 <Icon name="Database" className="w-3 h-3" />
                                 {selectedDb || "Select Database"}
                                 <Icon name="ChevronDown" />
@@ -226,7 +226,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                                 variant="ghost"
                                 className="w-full text-red-500 hover:bg-red-500/10 hover:text-red-500"
                                 onClick={discard}
-                                buttonSize="small"
+                                size="sm"
                             >
                                 <Icon name="Trash" />
                                 Discard
@@ -236,7 +236,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                             <Button
                                 variant="ghost"
                                 className="w-full"
-                                buttonSize="small"
+                                size="sm"
                                 onClick={insert}
                                 disabled={!previewText}
                             >
@@ -245,17 +245,21 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                             </Button>
                         )}
                         <Button
-                            variant="primary"
+                            variant="default"
                             onClick={async () => {
                                 previewText && setPreviewText(undefined);
                                 await queryDatabase();
                             }}
                             style={{ whiteSpace: "nowrap" }}
                             className="w-full"
-                            buttonSize="small"
+                            size="sm"
                             disabled={!data.text || data.text.length < 3 || !selectedDb}
                         >
-                            {previewText ? <Icon name="Repeat" /> : <Icon name="DatabaseZap" />}
+                            {previewText ? (
+                                <Icon className="mr-2" name="Repeat" />
+                            ) : (
+                                <Icon className="mr-2" name="DatabaseZap" />
+                            )}
                             {previewText ? "Regenerate" : "Query"}
                         </Button>
                     </div>
