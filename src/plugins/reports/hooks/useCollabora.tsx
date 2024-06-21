@@ -20,6 +20,7 @@ export interface CollaboraExports {
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
     insertTextandSelect: (text: string) => void;
+    insertCustomHtml: (htmlContent: string) => void;
 }
 
 interface PendingRequest {
@@ -49,14 +50,15 @@ export function useCollabora({
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
-            const wopiSrc = `http://fastapi:8000/wopi/files/${fileId}`;
-            // const wopiSrc = `http://host.docker.internal:8000/wopi/files/${fileId}`;
+            const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${fileId}`;
             fetch(`${SettingsStore.getValue("reportsApiUrl")}/wopi/get_editor_url`)
                 .then((response) => response.json())
                 .then((data) => {
                     const wopiClientUrl = data.url;
-                    const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    setWopiUrl(`${wopiUrl}&access_token=${window.location.origin}`);
+                    // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
+                    const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
+                    console.log(wopi);
+                    setWopiUrl(`${wopi}&access_token=${window.location.origin}`);
                     setStartLoading(true);
                 });
         };
@@ -299,6 +301,14 @@ export function useCollabora({
         });
     };
 
+    const insertCustomHtml = (htmlContent: string): void => {
+        sendMessage({
+            MessageId: "Action_Paste",
+            SendTime: Date.now(),
+            Values: { Mimetype: "text/html", Data: htmlContent },
+        });
+    };
+
     return {
         wopiUrl,
         zebraMode,
@@ -308,5 +318,6 @@ export function useCollabora({
         startLoading,
         fetchSelectedText,
         insertTextandSelect,
+        insertCustomHtml,
     } as CollaboraExports;
 }

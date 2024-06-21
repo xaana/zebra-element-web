@@ -45,13 +45,13 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
             //     placement: "auto",
             //     // zIndex: 999,
             // }}
-            tippyOptions={{ popperOptions: { placement: "top-start" } }}
+            tippyOptions={{ offset: [30, 0], popperOptions: { placement: "top-start" } }}
             editor={editor}
             pluginKey="textMenu"
             shouldShow={states.shouldShow}
             updateDelay={100}
         >
-            <Toolbar.Wrapper style={{ width: 345 }} className="flex flex-wrap">
+            <Toolbar.Wrapper style={{ width: 310 }} className="flex flex-wrap">
                 <AIDropdown
                     onCompleteSentence={commands.onCompleteSentence}
                     onFixSpelling={commands.onFixSpelling}
@@ -110,7 +110,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                     <Icon name="SquareCode" />
                 </MemoButton>
                 <EditLinkPopover onSetLink={commands.onLink} />
-                <Popover.Root>
+                {/* <Popover.Root>
                     <Popover.Trigger asChild>
                         <MemoButton active={!!states.currentHighlight} tooltip="Highlight text">
                             <Icon name="Highlighter" />
@@ -125,8 +125,8 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                             />
                         </Surface>
                     </Popover.Content>
-                </Popover.Root>
-                <Popover.Root>
+                </Popover.Root> */}
+                {/* <Popover.Root>
                     <Popover.Trigger asChild>
                         <MemoButton active={!!states.currentColor} tooltip="Text color">
                             <Icon name="Palette" />
@@ -141,7 +141,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
                             />
                         </Surface>
                     </Popover.Content>
-                </Popover.Root>
+                </Popover.Root> */}
                 <Popover.Root>
                     <Popover.Trigger asChild>
                         <MemoButton tooltip="More options">
