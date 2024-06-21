@@ -535,7 +535,7 @@ export default class ContentMessages {
         replyToEvent: MatrixEvent | undefined,
         context: TimelineRenderingType,
         promBefore?: Promise<any>,
-        uploadZebra = false,
+        uploadZebra = true,
     ): Promise<void> {
         const fileName = file.name || _t("common|attachment");
         const content: Omit<IMediaEventContent, "info"> & { info: Partial<IMediaEventInfo> } = {
@@ -734,7 +734,7 @@ export default class ContentMessages {
                                 context:context,
                             });
                             toast.error("File upload failed. something wrong when we handle your file",{closeButton: true});
-                            matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
+                            // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                         }
 
                     };
@@ -746,7 +746,7 @@ export default class ContentMessages {
                     if (this.fileUploaded.length === 0) {
                         dis.dispatch({action:"uploading_files",uploading:false})
                     }
-                    matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
+                    // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                     dis.dispatch({
                         action: "select_files",
                         files: this.fileUploaded,

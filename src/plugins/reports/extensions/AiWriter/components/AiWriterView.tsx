@@ -27,6 +27,7 @@ import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 export interface DataProps {
     text: string;
@@ -62,8 +63,10 @@ export const AiWriterView = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
-        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", undefined, "zebra")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
     };
 
     const formatResponse = (rawText: string) => {
@@ -273,7 +276,10 @@ export const AiWriterView = ({
                                     </Dropdown.Trigger>
                                     <Dropdown.Portal>
                                         <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
-                                            <Surface className="p-2 min-w-[12rem]">
+                                            <Surface
+                                                className="p-2 min-w-[12rem] overflow-y-scroll"
+                                                style={{ maxHeight: 200 }}
+                                            >
                                                 {!!data.tone && (
                                                     <>
                                                         <Dropdown.Item asChild>

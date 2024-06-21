@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 export interface DataProps {
     text: string;
     addHeading: boolean;
@@ -45,6 +46,8 @@ export const AiDataQueryView = ({
     const [dbList, setDbList] = useState<string[]>([]);
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
+    const client = useMatrixClientContext();
+
     useEffect(() => {
         const getDbList = async (): Promise<void> => {
             const apiUrl = SettingsStore.getValue("botApiUrl");
@@ -78,7 +81,7 @@ export const AiDataQueryView = ({
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
-                    user_id: "user_id",
+                    user_id: client.getUserId(),
                 }),
             });
 
@@ -157,7 +160,7 @@ export const AiDataQueryView = ({
 
         // Add the data rows
         arr.forEach((row) => {
-            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName]}</td>`).join("")}</tr>`;
+            tableHTML += `<tr>${columnNames.map((columnName) => `<td>${row[columnName] || "-"}</td>`).join("")}</tr>`;
         });
 
         // Close the table
@@ -208,7 +211,10 @@ export const AiDataQueryView = ({
                                 </Dropdown.Trigger>
                                 <Dropdown.Portal>
                                     <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
-                                        <Surface className="p-2 min-w-[12rem] h-[200px] overflow-y-scroll">
+                                        <Surface
+                                            className="p-2 min-w-[12rem] overflow-y-scroll"
+                                            style={{ maxHeight: 200 }}
+                                        >
                                             {dbList.map((db, id) => (
                                                 <Dropdown.Item asChild key={id}>
                                                     <DropdownButton

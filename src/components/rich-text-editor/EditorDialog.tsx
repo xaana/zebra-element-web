@@ -171,7 +171,7 @@ const EditorDialog = (props: {
                                 editor={editor}
                                 ref={editorRef}
                                 className="flex-1 overflow-y-auto"
-                                style={{ padding: "16px 64px 64px 64px" }}
+                                style={{ padding: "16px 70px 60px 70px" }}
                             />
                             <ContentItemMenu editor={editor} />
                             <LinkMenu editor={editor} appendTo={menuContainerRef} />
