@@ -10,6 +10,7 @@ import type { Report, AiGenerationContent } from "@/plugins/reports/types";
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
+import { RenameDialog } from "./ReportActions";
 
 export const Home = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
@@ -18,6 +19,7 @@ export const Home = (): JSX.Element => {
     const client = useMatrixClientContext();
     const userId = client.getSafeUserId();
     const [isLoading, setIsLoading] = useState(false);
+    const [nameOpen, setNameOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
 
     const createNewReport = async (
@@ -31,7 +33,7 @@ export const Home = (): JSX.Element => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: "Untitled" }),
+                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: documentName ?? "Untitled" }),
             });
             const data = await response.json();
 
@@ -115,7 +117,8 @@ export const Home = (): JSX.Element => {
             fetchReports();
             return;
         } else if (selectedReport === null) {
-            createNewReport();
+            // New From Blank
+            setNameOpen(true);
             return;
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -244,7 +247,7 @@ export const Home = (): JSX.Element => {
                 </motion.div>
             )}
             {/* Various Scenarios - Show loader */}
-            {(selectedReport === null || isLoading) && (
+            {isLoading && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -281,6 +284,13 @@ export const Home = (): JSX.Element => {
                     </div>
                 </motion.div>
             )}
+            <RenameDialog
+                open={nameOpen}
+                setOpen={setNameOpen}
+                title="Create New Report"
+                onCancel={() => setSelectedReport(undefined)}
+                onRename={(newName: string) => createNewReport(undefined, newName)}
+            />
         </div>
     );
 };

@@ -229,13 +229,20 @@ export function ReportActions({
 interface RenameDialogProps {
     open: boolean;
     setOpen: (open: boolean) => void;
-    title: string;
-    oldName: string;
-    onRename: (newname: string) => Promise<boolean>;
+    title?: string;
+    oldName?: string;
+    onCancel?: () => void;
+    onRename: (newname: string) => Promise<any>;
 }
 
-export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title, oldName, onRename }) => {
-    const [newName, setNewName] = useState(oldName);
+// Used in report rename and create new report from blank
+export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title, oldName, onCancel, onRename }) => {
+    const [newName, setNewName] = useState(oldName || "");
+    const [message, setMessage] = useState("");
+
+    useEffect(() => {
+        !open && onCancel?.();
+    }, [open]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -244,12 +251,11 @@ export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
                 <fieldset className="mb-[15px] flex items-center gap-5">
-                    <label className="text-violet11 w-[90px] text-right text-[15px]" htmlFor="username">
-                        New Name:
-                    </label>
+                    <label className="text-violet11 w-[90px] text-right text-[15px]">New Name:</label>
                     <input
                         className="text-violet11 shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
                         id="username"
+                        placeholder={message}
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
                     />
@@ -258,8 +264,13 @@ export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title
                     <Button onClick={() => setOpen(false)}>cancel</Button>
                     <Button
                         onClick={() => {
-                            setOpen(false);
-                            onRename(newName);
+                            if (newName === "") {
+                                setMessage("Name can't be empty");
+                            } else {
+                                setMessage("");
+                                setOpen(false);
+                                onRename(newName);
+                            }
                         }}
                     >
                         confirm
