@@ -16,6 +16,7 @@ interface ReportSelectorProps {
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
     onFileUpload: (file: File) => Promise<void>;
+    onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
@@ -26,6 +27,7 @@ export const ReportSelector = ({
     setSelectedReport,
     userId,
     onFileUpload,
+    onRename,
     onDuplicate,
     onDelete,
     onAiGenerate,
@@ -123,6 +125,7 @@ export const ReportSelector = ({
                             key={report.id}
                             report={report}
                             onSelectReport={(report) => setSelectedReport(report)}
+                            onRename={onRename}
                             onDuplicate={onDuplicate}
                             userId={userId}
                             onDelete={onDelete}
@@ -133,6 +136,7 @@ export const ReportSelector = ({
                 <ReportsList
                     reports={filteredReports}
                     onSelectReport={handleSelectReport}
+                    onRename={onRename}
                     onDuplicate={onDuplicate}
                     onDelete={onDelete}
                 />

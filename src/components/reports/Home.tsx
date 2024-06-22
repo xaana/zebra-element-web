@@ -171,8 +171,7 @@ export const Home = (): JSX.Element => {
         await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
     };
 
-    const handleUpdateName = async (name: string): Promise<boolean> => {
-        if (!selectedReport) return false;
+    const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
         try {
             const response = await fetch(
                 `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
@@ -181,13 +180,11 @@ export const Home = (): JSX.Element => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
+                    body: JSON.stringify({ document_id: reportId, updated_name: name }),
                 },
             );
             if (response.ok) {
-                setReports((prev) =>
-                    prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
-                );
+                setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
                 return true;
             } else {
                 toast.error("Error updating document name");
@@ -239,6 +236,7 @@ export const Home = (): JSX.Element => {
                         setSelectedReport={setSelectedReport}
                         userId={userId}
                         onFileUpload={handleFileUpload}
+                        onRename={handleUpdateName}
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}

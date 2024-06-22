@@ -25,18 +25,22 @@ import {
 import { Report } from "@/plugins/reports/types";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
 import { getReportContent } from "@/plugins/reports/utils/getReportContent";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 
 export function ReportActions({
     row,
+    onRename,
     onDuplicate,
     onDelete,
 }: {
     row: Report;
+    onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
 }): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
     const [userIds, setUserIds] = useState<string[]>([]);
+    const [renameOpen, setRenameOpen] = useState(false);
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [approveDialogOpen, setApproveDialogOpen] = useState(false);
 
@@ -132,6 +136,18 @@ export function ReportActions({
                         className="cursor-pointer"
                         onClick={async (e: any) => {
                             stopPropagation(e);
+                            setRenameOpen(true);
+                        }}
+                    >
+                        Rename
+                        <DropdownMenuShortcut>
+                            <Icon name="PenLine" className="w-4 h-4" />
+                        </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={async (e: any) => {
+                            stopPropagation(e);
                             await handleDuplicate();
                         }}
                     >
@@ -163,7 +179,6 @@ export function ReportActions({
                         <DropdownMenuShortcut>
                             <Icon name="MessageSquareShare" className="w-4 h-4" />
                         </DropdownMenuShortcut>
-                        
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -180,11 +195,7 @@ export function ReportActions({
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-            <CommandDialog
-                className="w-[512px]"
-                open={approveDialogOpen}
-                onOpenChange={setApproveDialogOpen}
-            >
+            <CommandDialog className="w-[512px]" open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
                 <CommandInput placeholder="Search for user..." />
                 <CommandList>
                     <CommandEmpty>No users found.</CommandEmpty>
@@ -204,6 +215,57 @@ export function ReportActions({
                     </CommandGroup>
                 </CommandList>
             </CommandDialog>
+            <RenameDialog
+                open={renameOpen}
+                setOpen={setRenameOpen}
+                title="Rename"
+                oldName={row.name}
+                onRename={(newName: string) => onRename(row.id, newName)}
+            />
         </div>
     );
 }
+
+interface RenameDialogProps {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+    title: string;
+    oldName: string;
+    onRename: (newname: string) => Promise<boolean>;
+}
+
+export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title, oldName, onRename }) => {
+    const [newName, setNewName] = useState(oldName);
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{title}</DialogTitle>
+                </DialogHeader>
+                <fieldset className="mb-[15px] flex items-center gap-5">
+                    <label className="text-violet11 w-[90px] text-right text-[15px]" htmlFor="username">
+                        New Name:
+                    </label>
+                    <input
+                        className="text-violet11 shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
+                        id="username"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                    />
+                </fieldset>
+                <DialogFooter>
+                    <Button onClick={() => setOpen(false)}>cancel</Button>
+                    <Button
+                        onClick={() => {
+                            setOpen(false);
+                            onRename(newName);
+                        }}
+                    >
+                        confirm
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
