@@ -10,13 +10,20 @@ import DocQuerySidebar from "@/components/reports/CollaboraEditor/DocQuerySideba
 import { useCollabora } from "@/plugins/reports/hooks/useCollabora";
 // import { toast } from "sonner";
 import { generateText } from "@/plugins/reports/utils/generateTextCollabora";
-import { Message } from "@/plugins/reports/types";
+import { Message, Report } from "@/plugins/reports/types";
 
-const CollaboraEditor = ({ fileId, onCloseEditor }: { fileId: string; onCloseEditor: () => void }): JSX.Element => {
+const CollaboraEditor = ({
+    selectedReport,
+    onCloseEditor,
+}: {
+    selectedReport: Report;
+    onCloseEditor: () => void;
+}): JSX.Element => {
     const collaboraRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
     const [chatInput, setChatInput] = useState("");
     const handlePromptClick = useRef<undefined | ((prompt: string) => Promise<void>)>();
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     const chatInitialMessage: Message = {
         id: "0",
@@ -35,11 +42,13 @@ const CollaboraEditor = ({ fileId, onCloseEditor }: { fileId: string; onCloseEdi
 
     const editor = useCollabora({
         iframeRef: collaboraRef,
-        fileId,
+        selectedReport,
         chat,
         showSidebar,
         setShowSidebar,
         onCloseEditor,
+        isAiLoading,
+        setIsAiLoading,
     });
 
     handlePromptClick.current = async (prompt: string): Promise<void> => {

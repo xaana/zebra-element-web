@@ -56,8 +56,16 @@ export const ReportSelector = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
+        contentMediaId?: string,
     ): Promise<void> => {
-        onAiGenerate({ documentPrompt, allTitles, contentSize, tone, targetAudience } as AiGenerationContent);
+        onAiGenerate({
+            documentPrompt,
+            allTitles,
+            contentSize,
+            tone,
+            targetAudience,
+            contentMediaId,
+        } as AiGenerationContent);
     };
 
     return (

@@ -5,12 +5,11 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
-// import { CollaborationProvider } from "./CollaborationProvider";
+import { RenameDialog } from "./ReportActions";
 
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
-import { RenameDialog } from "./ReportActions";
 
 export const Home = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
@@ -280,7 +279,7 @@ export const Home = (): JSX.Element => {
                         onUpdateName={handleUpdateName}
                     /> */}
                     <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
-                        <CollaboraEditor onCloseEditor={handleCloseEditor} fileId={selectedReport.id} />
+                        <CollaboraEditor onCloseEditor={handleCloseEditor} selectedReport={selectedReport} />
                     </div>
                 </motion.div>
             )}
