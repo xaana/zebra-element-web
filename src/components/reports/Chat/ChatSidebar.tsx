@@ -16,9 +16,9 @@ export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarSta
 
     useEffect(() => {
         editorChat.setMessages((prev) =>
-            prev.map((message) => ({
+            prev.map((message, index) => ({
                 ...message,
-                children: null,
+                children: index !== 0 ? null : message.children,
             })),
         );
     }, []);
