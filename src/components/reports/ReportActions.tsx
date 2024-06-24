@@ -91,7 +91,6 @@ export function ReportActions({
 
     const handleApproval = async (userId: string): Promise<void> => {
         setApproveDialogOpen(false);
-        setDropDownOpen(false);
         try {
             const response = await fetch(`${SettingsStore.getValue("workflowUrl")}/webhook/approval`, {
                 method: "POST",
@@ -112,12 +111,15 @@ export function ReportActions({
 
             if (response.status === 200) {
                 toast.success("Report sent successfully");
+                setDropDownOpen(false);
             } else if (response.status === 403) {
                 toast.error(`Unable to send for approval. Please try again later.`);
+                setDropDownOpen(false);
             }
         } catch (error) {
             toast.error("Unable to send for approval. Please try again later.");
             console.error("Error fetching data:", error);
+            setDropDownOpen(false);
         }
     };
 
