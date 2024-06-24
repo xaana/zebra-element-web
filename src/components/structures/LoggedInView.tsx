@@ -319,11 +319,10 @@ class LoggedInView extends React.Component<IProps, IState> {
     }
 
     private loadResizerPreferences(): void {
-        const lhsSize = 200;
-        // let lhsSize = parseInt(window.localStorage.getItem("mx_lhs_size")!, 10);
-        // if (isNaN(lhsSize)) {
-        //     lhsSize = 350;
-        // }
+        let lhsSize = parseInt(window.localStorage.getItem("mx_lhs_size")!, 10);
+        if (isNaN(lhsSize)) {
+            lhsSize = 250;
+        }
         this.resizer?.forHandleWithId("lp-resizer")?.resize(lhsSize);
     }
 
