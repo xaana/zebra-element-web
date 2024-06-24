@@ -23,8 +23,6 @@ import {
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Report } from "@/plugins/reports/types";
-import { generatePdf } from "@/plugins/reports/utils/generatePdf";
-import { getReportContent } from "@/plugins/reports/utils/getReportContent";
 import {
     Dialog,
     DialogContent,
@@ -66,23 +64,29 @@ export function ReportActions({
     }, []);
 
     const downloadFile = async (): Promise<void> => {
-        const documentInfo = await getReportContent(row.id);
-        const { document_html: documentHtml, document_name: documentName } = documentInfo;
+        try {
+            const documentId = row.id;
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/download_document/${documentId}`,
+            );
 
-        if (!documentHtml) {
-            toast.error("Failed to download the report");
-            return;
+            if (!response.ok) {
+                throw new Error("Download failed");
+            }
+
+            const blob = await response.blob();
+            // fileDownload(blob, row.name + ".docx");
+            const fileDownloader = new FileDownloader();
+            blob &&
+                fileDownloader.download({
+                    blob,
+                    name: row.name ? row.name + ".pdf" : "Report.pdf",
+                    autoDownload: true,
+                });
+        } catch (error) {
+            console.error("Error downloading file:", error);
+            // Handle error (e.g., show an error message to the user)
         }
-
-        const pdfBlob = await generatePdf(documentHtml);
-
-        const fileDownloader = new FileDownloader();
-        pdfBlob &&
-            fileDownloader.download({
-                blob: pdfBlob,
-                name: documentName ? documentName + ".pdf" : row.name + ".pdf",
-                autoDownload: true,
-            });
     };
 
     const deleteFile = async (): Promise<void> => {

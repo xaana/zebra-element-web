@@ -152,10 +152,6 @@ export const Home = (): JSX.Element => {
                 `${SettingsStore.getValue("reportsApiUrl")}/api/reports/duplicate_document/${reportId}`,
                 {
                     method: "POST",
-                    // headers: {
-                    //     "Content-Type": "application/json",
-                    // },
-                    // body: JSON.stringify({ document_id: Number(reportId) }),
                 },
             );
             const data = await response.json();
