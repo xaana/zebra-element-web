@@ -44,6 +44,7 @@ export function useCollabora({
     showSidebar,
     setShowSidebar,
     onCloseEditor,
+    onDocumentLoadFailed,
     isAiLoading,
     setIsAiLoading,
 }: {
@@ -53,6 +54,7 @@ export function useCollabora({
     showSidebar: boolean;
     setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
     onCloseEditor: () => void;
+    onDocumentLoadFailed: () => void;
     isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }): CollaboraExports {
@@ -144,7 +146,7 @@ export function useCollabora({
             case "Action_Load_Resp":
                 {
                     if (!msg.Values.success) {
-                        setDocumentLoaded(false);
+                        onDocumentLoadFailed();
                     }
                 }
                 break;

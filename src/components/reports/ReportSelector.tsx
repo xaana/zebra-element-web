@@ -15,6 +15,7 @@ interface ReportSelectorProps {
     reports: Report[];
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
+    onCreateNewFromBlank: () => void;
     onFileUpload: (file: File) => Promise<void>;
     onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
@@ -27,6 +28,7 @@ export const ReportSelector = ({
     setSelectedReport,
     userId,
     onFileUpload,
+    onCreateNewFromBlank,
     onRename,
     onDuplicate,
     onDelete,
@@ -79,7 +81,7 @@ export const ReportSelector = ({
                 <FileUpload onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
-                    onClick={() => setSelectedReport(null)} // open blank editor
+                    onClick={() => onCreateNewFromBlank()} // open blank editor
                     size="sm"
                     variant="outline"
                 >

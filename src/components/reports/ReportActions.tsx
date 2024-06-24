@@ -25,7 +25,16 @@ import {
 import { Report } from "@/plugins/reports/types";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
 import { getReportContent } from "@/plugins/reports/utils/getReportContent";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export function ReportActions({
     row,
@@ -215,65 +224,83 @@ export function ReportActions({
                     </CommandGroup>
                 </CommandList>
             </CommandDialog>
-            <RenameDialog
+            <CreateOrRenameDialog
+                mode="rename"
                 open={renameOpen}
                 setOpen={setRenameOpen}
-                title="Rename"
                 oldName={row.name}
-                onRename={(newName: string) => onRename(row.id, newName)}
+                onSubmit={(newName: string) => onRename(row.id, newName)}
             />
         </div>
     );
 }
 
-interface RenameDialogProps {
+interface CreateOrRenameDialogProps {
+    mode: "create" | "rename";
     open: boolean;
     setOpen: (open: boolean) => void;
-    title?: string;
     oldName?: string;
     onCancel?: () => void;
-    onRename: (newname: string) => Promise<any>;
+    onSubmit: (newname: string) => Promise<any>;
 }
 
 // Used in report rename and create new report from blank
-export const RenameDialog: React.FC<RenameDialogProps> = ({ open, setOpen, title, oldName, onCancel, onRename }) => {
+export const CreateOrRenameDialog: React.FC<CreateOrRenameDialogProps> = ({
+    mode,
+    open,
+    setOpen,
+    oldName,
+    onCancel,
+    onSubmit,
+}) => {
     const [newName, setNewName] = useState(oldName || "");
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        !open && onCancel?.();
-    }, [open]);
+        if (!open) {
+            setNewName(oldName || "");
+            setMessage("");
+            onCancel && onCancel();
+        }
+    }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const handleSubmit = async (): Promise<void> => {
+        if (newName === "") {
+            setMessage("Name field cannot be be empty");
+        } else {
+            setMessage("");
+            setOpen(false);
+            await onSubmit(newName);
+        }
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[425px] min-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
+                    <DialogTitle>{mode === "create" ? "Create New" : "Rename"} Report</DialogTitle>
+                    <DialogDescription>
+                        {mode === "create" ? "Enter a name for your new report" : `Enter a new name for ${oldName}`}
+                    </DialogDescription>
                 </DialogHeader>
-                <fieldset className="mb-[15px] flex items-center gap-5">
-                    <label className="text-violet11 w-[90px] text-right text-[15px]">New Name:</label>
-                    <input
-                        className="text-violet11 shadow-violet7 focus:shadow-violet8 inline-flex h-[35px] w-full flex-1 items-center justify-center rounded-[4px] px-[10px] text-[15px] leading-none shadow-[0_0_0_1px] outline-none focus:shadow-[0_0_0_2px]"
-                        id="username"
-                        placeholder={message}
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                    />
-                </fieldset>
-                <DialogFooter>
-                    <Button onClick={() => setOpen(false)}>cancel</Button>
-                    <Button
-                        onClick={() => {
-                            if (newName === "") {
-                                setMessage("Name can't be empty");
-                            } else {
-                                setMessage("");
-                                setOpen(false);
-                                onRename(newName);
-                            }
-                        }}
-                    >
-                        confirm
+                <div className="grid">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                            {mode === "create" ? "Name:" : "Updated Name:"}
+                        </Label>
+                        <Input
+                            // id="name"
+                            autoComplete="off"
+                            value={newName}
+                            className="col-span-3"
+                            onChange={(e) => setNewName(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <DialogFooter className="flex items-center gap-2">
+                    {message.length > 0 && <p className="text-red-500 text-xs leading-none">{message}</p>}
+                    <Button type="submit" onClick={handleSubmit} disabled={newName === ""}>
+                        {mode === "create" ? "Create" : "Save"}
                     </Button>
                 </DialogFooter>
             </DialogContent>

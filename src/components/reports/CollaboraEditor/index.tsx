@@ -4,6 +4,7 @@ import { ChatSidebarCollabora } from "../Chat/ChatSidebarCollabora";
 import SuggestedPromptsCollabora from "../Chat/suggested-prompts-collabora";
 
 import { cn } from "@/lib/utils";
+import { Loader } from "@/components/ui/LoaderAlt";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import DataQuerySidebar from "@/components/reports/CollaboraEditor/DataQuerySidebar";
 import DocQuerySidebar from "@/components/reports/CollaboraEditor/DocQuerySidebar";
@@ -15,9 +16,11 @@ import { Message, Report } from "@/plugins/reports/types";
 const CollaboraEditor = ({
     selectedReport,
     onCloseEditor,
+    onDocumentLoadFailed,
 }: {
     selectedReport: Report;
     onCloseEditor: () => void;
+    onDocumentLoadFailed: () => void;
 }): JSX.Element => {
     const collaboraRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
@@ -47,6 +50,7 @@ const CollaboraEditor = ({
         showSidebar,
         setShowSidebar,
         onCloseEditor,
+        onDocumentLoadFailed,
         isAiLoading,
         setIsAiLoading,
     });
@@ -65,55 +69,58 @@ const CollaboraEditor = ({
     };
 
     return (
-        <div className={cn("w-full h-full", editor.documentLoaded ? "flex" : "invisible")}>
-            <div className="h-full flex-1">
-                <iframe
-                    style={{ height: "100vh", width: "100%" }}
-                    // className="flex-1"
-                    ref={collaboraRef}
-                    title="Collabora Online Viewer"
-                    id="collabora-online-viewer"
-                    name="collabora-online-viewer"
-                    allow="clipboard-read *; clipboard-write *"
-                    src={editor.startLoading ? editor.wopiUrl : ""}
-                />
+        <>
+            {(isAiLoading || !editor.documentLoaded) && <Loader label="Zebra is loading..." />}
+            <div className={cn("w-full h-full", editor.documentLoaded ? "flex" : "invisible")}>
+                <div className="h-full flex-1">
+                    <iframe
+                        style={{ height: "100vh", width: "100%" }}
+                        // className="flex-1"
+                        ref={collaboraRef}
+                        title="Collabora Online Viewer"
+                        id="collabora-online-viewer"
+                        name="collabora-online-viewer"
+                        allow="clipboard-read *; clipboard-write *"
+                        src={editor.startLoading ? editor.wopiUrl : ""}
+                    />
+                </div>
+                <div
+                    className={cn(
+                        "h-full transition-[width] overflow-y-hidden border-l w-0 shrink-0 bg-card",
+                        showSidebar ? "w-[350px] visible" : "w-0 invisible",
+                    )}
+                >
+                    {editor.zebraMode === "chat" ? (
+                        <ChatSidebarCollabora
+                            chat={chat}
+                            chatInput={chatInput}
+                            setChatInput={setChatInput}
+                            onClose={() => {
+                                setShowSidebar(false);
+                                chat.reset();
+                            }}
+                            onQueryFormSubmit={handleQueryFormSubmit}
+                        />
+                    ) : editor.zebraMode === "doc" ? (
+                        <DocQuerySidebar
+                            editor={editor}
+                            onClose={() => {
+                                setShowSidebar(false);
+                                editor.setZebraMode("chat");
+                            }}
+                        />
+                    ) : (
+                        <DataQuerySidebar
+                            editor={editor}
+                            onClose={() => {
+                                setShowSidebar(false);
+                                editor.setZebraMode("chat");
+                            }}
+                        />
+                    )}
+                </div>
             </div>
-            <div
-                className={cn(
-                    "h-full transition-[width] overflow-y-hidden border-l w-0 shrink-0 bg-card",
-                    showSidebar ? "w-[350px] visible" : "w-0 invisible",
-                )}
-            >
-                {editor.zebraMode === "chat" ? (
-                    <ChatSidebarCollabora
-                        chat={chat}
-                        chatInput={chatInput}
-                        setChatInput={setChatInput}
-                        onClose={() => {
-                            setShowSidebar(false);
-                            chat.reset();
-                        }}
-                        onQueryFormSubmit={handleQueryFormSubmit}
-                    />
-                ) : editor.zebraMode === "doc" ? (
-                    <DocQuerySidebar
-                        editor={editor}
-                        onClose={() => {
-                            setShowSidebar(false);
-                            editor.setZebraMode("chat");
-                        }}
-                    />
-                ) : (
-                    <DataQuerySidebar
-                        editor={editor}
-                        onClose={() => {
-                            setShowSidebar(false);
-                            editor.setZebraMode("chat");
-                        }}
-                    />
-                )}
-            </div>
-        </div>
+        </>
     );
 };
 
