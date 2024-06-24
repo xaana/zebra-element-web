@@ -1,14 +1,12 @@
 import * as htmlparser2 from "htmlparser2";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import type { Editor as TiptapEditor } from "@tiptap/react";
-
 export const streamContent = async (
     htmlContent: string,
-    editor: TiptapEditor,
     contentBuffer: React.MutableRefObject<string>,
+    insertTextandSelect: (text: string) => void,
 ): Promise<void> => {
-    if (!editor) return Promise.resolve();
+    // if (!editor) return Promise.resolve();
 
     const openTagsStack: string[] = [];
     let position = contentBuffer.current.length;
@@ -49,13 +47,15 @@ export const streamContent = async (
                 const tempCloseTags = openTagsStack.slice().reverse().join("");
                 const tempOpenTags = openTagsStack.map((tag) => tag.replace("/", "")).join("");
 
-                editor.commands.setContent(contentChunk + tempCloseTags + tempOpenTags);
+                // editor.commands.setContent(contentChunk + tempCloseTags + tempOpenTags);
+                insertTextandSelect(contentChunk + tempCloseTags + tempOpenTags);
                 position = nextPosition;
                 setTimeout(updateContentInChunks, delay);
             } else {
-                editor.commands.setContent(contentBuffer.current);
-                editor.commands.selectTextblockEnd();
-                editor.commands.scrollIntoView();
+                // editor.commands.setContent(contentBuffer.current);
+                insertTextandSelect(contentBuffer.current);
+                // editor.commands.selectTextblockEnd();
+                // editor.commands.scrollIntoView();
                 resolve();
             }
         };

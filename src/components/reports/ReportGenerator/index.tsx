@@ -35,6 +35,7 @@ export const ReportGenerator = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
+        contentMediaId?: string,
     ) => void;
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
@@ -71,7 +72,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
-                    // ...{ contentMediaId && { content_media_id: contentMediaId } },
+                    ...(contentMediaId && { content_media_id: contentMediaId }),
                 }),
             });
             const data = await res.json();
@@ -115,25 +116,15 @@ export const ReportGenerator = ({
 
     const handleFileUpload = async (file: File, matrixFile?: MatrixFile): Promise<void> => {
         setContentFile(file);
-        setContentMediaId(matrixFile?.mediaId);
-        // try {
-        //     const formData = new FormData();
-        //     formData.append("files", file);
-        //     // Make API request
-        //     const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
-        //         method: "POST",
-        //         body: formData,
-        //     });
-        //     const responseData = await response.json();
-
-        //     if (responseData?.html_pages?.length > 0) {
-        //         const combinedString = responseData.html_pages.join("\n");
-        //         await createNewReport(combinedString);
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching data:", error);
-        //     setIsLoading(false);
-        // }
+        let mediaId: string | null = null;
+        if (matrixFile) {
+            const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
+            const match = mediaIdRegexPattern.exec(matrixFile.mediaId);
+            if (match) {
+                mediaId = match[1];
+            }
+        }
+        mediaId && setContentMediaId(mediaId);
     };
 
     return (
@@ -149,6 +140,24 @@ export const ReportGenerator = ({
             </DialogTrigger>
             <DialogContent className="h-screen w-screen max-w-[100vw] bg-card p-0 overflow-hidden">
                 <DialogClose className="absolute top-2 right-2" />
+                {showOutline && (
+                    <div className="absolute top-2 left-2 z-20">
+                        <Button
+                            className="w-auto h-auto p-2 text-muted-foreground"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                                setOutlineItems([]);
+                                setShowOutline(false);
+                            }}
+                        >
+                            <Icon name="ArrowLeftToLine" />
+                        </Button>
+                    </div>
+                )}
+                <div className="absolute top-2 right-2">
+                    <DialogClose />
+                </div>
                 <div className={cn("overflow-auto relative px-3", showOutline ? "pt-4 pb-16" : "py-10")}>
                     <div className="flex flex-col justify-center w-full max-w-screen-md mx-auto">
                         <HeaderText showOutline={showOutline} />

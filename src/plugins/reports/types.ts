@@ -26,6 +26,7 @@ export type AiGenerationContent = {
     contentSize: string;
     tone: string;
     targetAudience: string;
+    contentMediaId?: string;
 };
 
 export type Report = {

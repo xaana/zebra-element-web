@@ -5,12 +5,11 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
-// import { CollaborationProvider } from "./CollaborationProvider";
 
+import { CreateOrRenameDialog } from "@/components/reports/ReportActions";
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
-import { RenameDialog } from "./ReportActions";
 
 export const Home = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
@@ -19,7 +18,7 @@ export const Home = (): JSX.Element => {
     const client = useMatrixClientContext();
     const userId = client.getSafeUserId();
     const [isLoading, setIsLoading] = useState(false);
-    const [nameOpen, setNameOpen] = useState(false);
+    const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
 
     const createNewReport = async (
@@ -118,7 +117,7 @@ export const Home = (): JSX.Element => {
             return;
         } else if (selectedReport === null) {
             // New From Blank
-            setNameOpen(true);
+            setNameDialogOpen(true);
             return;
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -222,6 +221,15 @@ export const Home = (): JSX.Element => {
         setSelectedReport(undefined);
     };
 
+    const handleCreateNewFromBlank = (): void => {
+        setNameDialogOpen(true);
+    };
+
+    const handleDocumentLoadFailed = (): void => {
+        setSelectedReport(undefined);
+        toast.error("Failed to load document. Please try again later.");
+    };
+
     return (
         <div className="h-full w-full">
             {/* No report selected - Show report selector */}
@@ -238,6 +246,7 @@ export const Home = (): JSX.Element => {
                         reports={reports}
                         setSelectedReport={setSelectedReport}
                         userId={userId}
+                        onCreateNewFromBlank={handleCreateNewFromBlank}
                         onFileUpload={handleFileUpload}
                         onRename={handleUpdateName}
                         onDuplicate={handleDuplicate}
@@ -273,23 +282,20 @@ export const Home = (): JSX.Element => {
                     key={selectedReport.id}
                     ref={stepRef}
                 >
-                    {/* <CollaborationProvider
-                        userId={userId}
-                        selectedReport={selectedReport}
-                        setSelectedReport={setSelectedReport}
-                        onUpdateName={handleUpdateName}
-                    /> */}
                     <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
-                        <CollaboraEditor onCloseEditor={handleCloseEditor} fileId={selectedReport.id} />
+                        <CollaboraEditor
+                            onCloseEditor={handleCloseEditor}
+                            selectedReport={selectedReport}
+                            onDocumentLoadFailed={handleDocumentLoadFailed}
+                        />
                     </div>
                 </motion.div>
             )}
-            <RenameDialog
-                open={nameOpen}
-                setOpen={setNameOpen}
-                title="Create New Report"
-                onCancel={() => setSelectedReport(undefined)}
-                onRename={(newName: string) => createNewReport(undefined, newName)}
+            <CreateOrRenameDialog
+                mode="create"
+                open={nameDialogOpen}
+                setOpen={setNameDialogOpen}
+                onSubmit={(newName: string) => createNewReport(undefined, newName)}
             />
         </div>
     );
