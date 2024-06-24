@@ -5,8 +5,8 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
-// import { CollaborationProvider } from "./CollaborationProvider";
 
+import { CreateOrRenameDialog } from "@/components/reports/ReportActions";
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
@@ -18,6 +18,7 @@ export const Home = (): JSX.Element => {
     const client = useMatrixClientContext();
     const userId = client.getSafeUserId();
     const [isLoading, setIsLoading] = useState(false);
+    const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
 
     const createNewReport = async (
@@ -31,7 +32,7 @@ export const Home = (): JSX.Element => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: "Untitled" }),
+                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: documentName ?? "Untitled" }),
             });
             const data = await response.json();
 
@@ -115,7 +116,8 @@ export const Home = (): JSX.Element => {
             fetchReports();
             return;
         } else if (selectedReport === null) {
-            createNewReport();
+            // New From Blank
+            setNameDialogOpen(true);
             return;
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -171,33 +173,30 @@ export const Home = (): JSX.Element => {
         await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
     };
 
-    // const handleUpdateName = async (name: string): Promise<boolean> => {
-    //     if (!selectedReport) return false;
-    //     try {
-    //         const response = await fetch(
-    //             `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
-    //             {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
-    //             },
-    //         );
-    //         if (response.ok) {
-    //             setReports((prev) =>
-    //                 prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
-    //             );
-    //             return true;
-    //         } else {
-    //             toast.error("Error updating document name");
-    //             return false;
-    //         }
-    //     } catch (error) {
-    //         console.error("Error updating document name", error);
-    //         return false;
-    //     }
-    // };
+    const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
+        try {
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ document_id: reportId, updated_name: name }),
+                },
+            );
+            if (response.ok) {
+                setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
+                return true;
+            } else {
+                toast.error("Error updating document name");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error updating document name", error);
+            return false;
+        }
+    };
 
     const handleDeleteReport = async (reportId: string): Promise<void> => {
         try {
@@ -218,6 +217,19 @@ export const Home = (): JSX.Element => {
         }
     };
 
+    const handleCloseEditor = (): void => {
+        setSelectedReport(undefined);
+    };
+
+    const handleCreateNewFromBlank = (): void => {
+        setNameDialogOpen(true);
+    };
+
+    const handleDocumentLoadFailed = (): void => {
+        setSelectedReport(undefined);
+        toast.error("Failed to load document. Please try again later.");
+    };
+
     return (
         <div className="h-full w-full">
             {/* No report selected - Show report selector */}
@@ -234,7 +246,9 @@ export const Home = (): JSX.Element => {
                         reports={reports}
                         setSelectedReport={setSelectedReport}
                         userId={userId}
+                        onCreateNewFromBlank={handleCreateNewFromBlank}
                         onFileUpload={handleFileUpload}
+                        onRename={handleUpdateName}
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
@@ -242,7 +256,7 @@ export const Home = (): JSX.Element => {
                 </motion.div>
             )}
             {/* Various Scenarios - Show loader */}
-            {(selectedReport === null || isLoading) && (
+            {isLoading && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -268,17 +282,21 @@ export const Home = (): JSX.Element => {
                     key={selectedReport.id}
                     ref={stepRef}
                 >
-                    {/* <CollaborationProvider
-                        userId={userId}
-                        selectedReport={selectedReport}
-                        setSelectedReport={setSelectedReport}
-                        onUpdateName={handleUpdateName}
-                    /> */}
                     <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
-                        <CollaboraEditor fileId={selectedReport.id} />
+                        <CollaboraEditor
+                            onCloseEditor={handleCloseEditor}
+                            selectedReport={selectedReport}
+                            onDocumentLoadFailed={handleDocumentLoadFailed}
+                        />
                     </div>
                 </motion.div>
             )}
+            <CreateOrRenameDialog
+                mode="create"
+                open={nameDialogOpen}
+                setOpen={setNameDialogOpen}
+                onSubmit={(newName: string) => createNewReport(undefined, newName)}
+            />
         </div>
     );
 };

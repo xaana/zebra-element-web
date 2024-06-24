@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 
 import { Icon } from "@/components/ui/Icon";
 import { ChatContent } from "@/components/reports/Chat/chat-content";
@@ -13,6 +13,15 @@ import { Chat } from "@/plugins/reports/hooks/use-chat";
 export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarState; chat: Chat }): JSX.Element => {
     const { editor } = useContext(EditorContext);
     const [chatInput, setChatInput] = useState("");
+
+    useEffect(() => {
+        editorChat.setMessages((prev) =>
+            prev.map((message) => ({
+                ...message,
+                children: null,
+            })),
+        );
+    }, []);
 
     const handleChatStop = (): void => {
         console.log("Stop");

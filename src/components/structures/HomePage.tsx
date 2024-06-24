@@ -143,62 +143,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         </div>
     );
 
-    const DefaultButton = ({
-        title,
-        query,
-        onClick,
-        Icon,
-    }: {
-        title: string;
-        query: string;
-        onClick: () => void;
-        Icon: JSX.Element;
-    }) => (
-        <Button className="h-18 max-w-xs default_button rounded-2xl" variant="outline" onClick={onClick}>
-            <div className="w-full flex justify-between">
-                <p style={{ fontSize: 18, fontWeight: 100 }}>{title}</p>
-                <div className="w-1/6 mr-0">
-                    <Icon />
-                </div>
-            </div>
-            <div className="w-full text-start">
-                <p className="truncate" style={{ fontSize: 14, fontWeight: 100 }}>
-                    {query}
-                </p>
-            </div>
-        </Button>
-    );
-
-    const UploadButton: React.FC<{
-        title: string;
-        query: string;
-        Icon: React.JSX.Element;
-        onFinish?: (file: File | null) => void;
-        accept: string;
-    }> = ({ title, query, Icon, onFinish, accept }) => {
-        const fileInputRef = useRef<HTMLInputElement>(null);
-
-        const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            const file = event.target.files?.[0];
-            if (file && onFinish) {
-                onFinish(file);
-            }
-            event.target.value = "";
-        };
-        return (
-            <>
-                <DefaultButton title={title} query={query} onClick={() => fileInputRef.current?.click()} Icon={Icon} />
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    style={{ display: "none" }}
-                    onChange={handleFileInputChange}
-                    accept={accept === "image" ? ".jpg, .jpeg, .png" : ".pdf, .docx, .doc, .webp"}
-                />
-            </>
-        );
-    };
-
     if (pageUrl) {
         return <EmbeddedPage className="mx_HomePage" url={pageUrl} scrollbar={true} />;
     }
@@ -258,6 +202,68 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
                 )}
             </div>
         </AutoHideScrollbar>
+    );
+};
+
+const DefaultButton = ({
+    title,
+    query,
+    onClick,
+    Icon,
+}: {
+    title: string;
+    query: string;
+    onClick: () => void;
+    Icon: JSX.Element;
+}) => (
+    <Button className="h-18 max-w-xs default_button rounded-2xl" variant="outline" onClick={onClick}>
+        <div className="w-full flex justify-between">
+            <p style={{ fontSize: 18, fontWeight: 100 }}>{title}</p>
+            <div className="w-1/6 mr-0">
+                <Icon />
+            </div>
+        </div>
+        <div className="w-full text-start">
+            <p className="truncate" style={{ fontSize: 14, fontWeight: 100 }}>
+                {query}
+            </p>
+        </div>
+    </Button>
+);
+
+const UploadButton: React.FC<{
+    title: string;
+    query: string;
+    Icon: React.JSX.Element;
+    onFinish?: (file: File | null) => void;
+    accept: string;
+}> = ({ title, query, Icon, onFinish, accept }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+        fileInputRef.current?.click();
+    };
+
+    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file && onFinish) {
+            onFinish(file);
+        }
+    };
+    return (
+        <>
+            <DefaultButton title={title} query={query} onClick={handleClick} Icon={Icon} />
+            <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleFileInputChange}
+                accept={accept === "image" ? ".jpg, .jpeg, .png" : ".pdf, .docx, .doc, .webp"}
+            />
+        </>
     );
 };
 

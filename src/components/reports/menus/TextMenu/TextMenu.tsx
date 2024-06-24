@@ -45,7 +45,7 @@ export const TextMenu = ({ editor }: TextMenuProps): JSX.Element => {
             //     placement: "auto",
             //     // zIndex: 999,
             // }}
-            tippyOptions={{ offset: [30, 0], popperOptions: { placement: "top-start" } }}
+            tippyOptions={{ offset: [60, 0], popperOptions: { placement: "top-start" } }}
             editor={editor}
             pluginKey="textMenu"
             shouldShow={states.shouldShow}

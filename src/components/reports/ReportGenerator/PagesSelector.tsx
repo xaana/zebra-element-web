@@ -18,7 +18,7 @@ const PagesSelector = ({
         <DropdownMenu>
             <DropdownMenuTrigger className="rounded-md py-1 px-2 border w-[120px] text-left bg-popover flex justify-between items-center">
                 <span className="text-sm font-medium">
-                    {pages} {pages === 1 ? "page" : "pages"}
+                    {pages} {pages === 1 ? "section" : "sections"}
                 </span>
                 <Icon name="ChevronDown" className="w-4 h-4 text-muted-foreground" />
             </DropdownMenuTrigger>
@@ -29,7 +29,7 @@ const PagesSelector = ({
                         onClick={() => setPages(pagesOption)}
                         className="flex justify-between items-center"
                     >
-                        {pagesOption} {pagesOption === 1 ? "page" : "pages"}
+                        {pagesOption} {pagesOption === 1 ? "section" : "sections"}
                         {pagesOption === pages && <Icon name="Check" />}
                     </DropdownMenuItem>
                 ))}

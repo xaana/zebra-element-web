@@ -26,7 +26,7 @@ export const ResponseActionCollabora = ({
                 editor.insertTextandSelect(originalText);
             }
         } else if (value === "suggested") {
-            if (!selectedText || selectedText.length === 0 || selectedText.length !== originalText.length) {
+            if (!selectedText || selectedText.length === 0 || Math.abs(selectedText.length - originalText.length) > 5) {
                 setShowToggle(false);
                 toast.error(`No text selection found.`);
             } else {

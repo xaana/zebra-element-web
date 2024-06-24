@@ -8,6 +8,7 @@ import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
 import { FileUpload } from "../FileUpload";
+import type { File as MatrixFile } from "@/plugins/files/types";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,8 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 export const ReportGenerator = ({
     onReportGenerate,
 }: {
@@ -33,6 +35,7 @@ export const ReportGenerator = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
+        contentMediaId?: string,
     ) => void;
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
@@ -45,6 +48,7 @@ export const ReportGenerator = ({
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
     const [contentFile, setContentFile] = React.useState<File>();
+    const [contentMediaId, setContentMediaId] = React.useState<string>();
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -68,6 +72,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
+                    ...(contentMediaId && { content_media_id: contentMediaId }),
                 }),
             });
             const data = await res.json();
@@ -109,26 +114,17 @@ export const ReportGenerator = ({
         );
     };
 
-    const handleFileUpload = async (file: File): Promise<void> => {
+    const handleFileUpload = async (file: File, matrixFile?: MatrixFile): Promise<void> => {
         setContentFile(file);
-        // try {
-        //     const formData = new FormData();
-        //     formData.append("files", file);
-        //     // Make API request
-        //     const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
-        //         method: "POST",
-        //         body: formData,
-        //     });
-        //     const responseData = await response.json();
-
-        //     if (responseData?.html_pages?.length > 0) {
-        //         const combinedString = responseData.html_pages.join("\n");
-        //         await createNewReport(combinedString);
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching data:", error);
-        //     setIsLoading(false);
-        // }
+        let mediaId: string | null = null;
+        if (matrixFile) {
+            const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
+            const match = mediaIdRegexPattern.exec(matrixFile.mediaId);
+            if (match) {
+                mediaId = match[1];
+            }
+        }
+        mediaId && setContentMediaId(mediaId);
     };
 
     return (
@@ -144,15 +140,62 @@ export const ReportGenerator = ({
             </DialogTrigger>
             <DialogContent className="h-screen w-screen max-w-[100vw] bg-card p-0 overflow-hidden">
                 <DialogClose className="absolute top-2 right-2" />
+                {showOutline && (
+                    <div className="absolute top-2 left-2 z-20">
+                        <Button
+                            className="w-auto h-auto p-2 text-muted-foreground"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                                setOutlineItems([]);
+                                setShowOutline(false);
+                            }}
+                        >
+                            <Icon name="ArrowLeftToLine" />
+                        </Button>
+                    </div>
+                )}
+                <div className="absolute top-2 right-2">
+                    <DialogClose />
+                </div>
                 <div className={cn("overflow-auto relative px-3", showOutline ? "pt-4 pb-16" : "py-10")}>
                     <div className="flex flex-col justify-center w-full max-w-screen-md mx-auto">
                         <HeaderText showOutline={showOutline} />
                         <div
                             className={cn(
-                                "flex items-end gap-2 w-full mt-10 mb-2",
-                                showOutline ? "justify-between" : "justify-end",
+                                "flex gap-4 w-full mt-10 mb-2 justify-between",
+                                // showOutline ? "justify-between" : "justify-end",
+                                // showOutline ? "justify-end" : "justify-between",
                             )}
                         >
+                            {!showOutline && (
+                                <div className="flex items-center gap-3">
+                                    <div className="text-muted-foreground font-semibold text-sm">
+                                        Supporting Document:
+                                    </div>
+                                    {contentFile ? (
+                                        <Badge variant="outline" className="flex items-center gap-2 h-8">
+                                            <div className="text-xs">{contentFile.name}</div>
+                                            <Button
+                                                onClick={() => setContentFile(undefined)}
+                                                variant="ghost"
+                                                size="sm"
+                                                className="w-auto h-auto p-0.5 rounded-full"
+                                            >
+                                                <Icon name="X" className="w-3 h-3" />
+                                            </Button>
+                                        </Badge>
+                                    ) : (
+                                        <FileUpload
+                                            onFileUpload={handleFileUpload}
+                                            buttonText="Select Document"
+                                            allowUpload={false}
+                                            iconName="FileInput"
+                                            buttonVariant="outline"
+                                        />
+                                    )}
+                                </div>
+                            )}
                             {showOutline && (
                                 <div className="text-muted-foreground font-semibold text-base translate-y-1">
                                     Prompt
@@ -239,11 +282,6 @@ export const ReportGenerator = ({
                                         {prompt.length === 0 && <SamplePrompts setPrompt={setPrompt} />}
                                     </div>
                                 </SwitchSlideTransition>
-
-                                <div>
-                                    <Separator className="my-2" />
-                                    <FileUpload onFileUpload={handleFileUpload} />
-                                </div>
                             </>
                         )}
                     </div>

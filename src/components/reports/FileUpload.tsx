@@ -6,6 +6,7 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { toast } from "sonner";
+import { icons } from "lucide-react";
 
 import type { File as MatrixFile } from "@/plugins/files/types";
 
@@ -18,10 +19,16 @@ import { getUserFiles } from "@/lib/utils/getUserFiles";
 
 export const FileUpload = ({
     onFileUpload,
-    triggerContent,
+    allowUpload = true,
+    iconName = "Import",
+    buttonText = "Import from file",
+    buttonVariant = "secondary",
 }: {
-    onFileUpload: (file: File) => Promise<void>;
-    triggerContent?: string;
+    onFileUpload: (file: File, matrixFile?: MatrixFile) => Promise<void>;
+    allowUpload?: boolean;
+    iconName?: keyof typeof icons;
+    buttonText?: string;
+    buttonVariant?: "default" | "outline" | "secondary";
 }): JSX.Element => {
     const [errors, setErrors] = useState<z.ZodIssue[]>([]);
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
@@ -110,10 +117,10 @@ export const FileUpload = ({
             toast.error("Only PDF files supported.");
             return;
         }
-        const fileBlob = await matrixFile.mediaHelper.sourceBlob.value;
+        const fileBlob = await matrixFile.mediaHelper!.sourceBlob.value;
         const file = new File([fileBlob], matrixFile.name, { type: "application/pdf" });
         handleDialogToggle(false);
-        await onFileUpload(file);
+        await onFileUpload(file, matrixFile);
     };
 
     useEffect(() => {
@@ -127,13 +134,13 @@ export const FileUpload = ({
             <Dialog open={filesDialogOpen} onOpenChange={handleDialogToggle}>
                 <DialogTrigger asChild>
                     <Button
-                        variant="secondary"
+                        variant={buttonVariant}
                         size="sm"
                         className="font-semibold text-sm"
                         onClick={() => setFilesDialogOpen(true)}
                     >
-                        <Icon name="Import" className="mr-2" />
-                        {triggerContent ? triggerContent : "Import from file"}
+                        <Icon name={iconName} className="mr-2" />
+                        {buttonText}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[70vw] max-w-[70vw] h-[70vh] p-0 overflow-hidden">
@@ -145,37 +152,38 @@ export const FileUpload = ({
                             setRowSelection={setRowSelection}
                             mode="dialog"
                         />
-
-                        <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
-                            <Form {...fileUploadForm}>
-                                <form className="flex items-center gap-2">
-                                    <input
-                                        ref={inputRef}
-                                        type="file"
-                                        // multiple
-                                        onChange={onFileChange}
-                                        accept="application/pdf" // Restrict file type to PDF
-                                        className="hidden"
-                                    />
-                                    <div className="flex items-center gap-2">
-                                        {errors.map((error: z.ZodIssue, index) => (
-                                            <p key={index} className="text-center text-xs font-normal text-red-500">
-                                                {error.message}
-                                            </p>
-                                        ))}
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="mb-0.5"
-                                        onClick={() => inputRef.current?.click()}
-                                    >
-                                        <Icon name="Upload" className="mr-2" />
-                                        Upload File
-                                    </Button>
-                                </form>
-                            </Form>
-                        </div>
+                        {allowUpload && (
+                            <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
+                                <Form {...fileUploadForm}>
+                                    <form className="flex items-center gap-2">
+                                        <input
+                                            ref={inputRef}
+                                            type="file"
+                                            // multiple
+                                            onChange={onFileChange}
+                                            accept="application/pdf" // Restrict file type to PDF
+                                            className="hidden"
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            {errors.map((error: z.ZodIssue, index) => (
+                                                <p key={index} className="text-center text-xs font-normal text-red-500">
+                                                    {error.message}
+                                                </p>
+                                            ))}
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="mb-0.5"
+                                            onClick={() => inputRef.current?.click()}
+                                        >
+                                            <Icon name="Upload" className="mr-2" />
+                                            Upload File
+                                        </Button>
+                                    </form>
+                                </Form>
+                            </div>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>

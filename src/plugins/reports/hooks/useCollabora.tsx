@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
+import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
+import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -9,6 +11,12 @@ export type CollaboraPostMessage = {
     Values?: { [key: string]: string | number | boolean | null | undefined | object }; // any key-value pair
     ScriptFile?: string;
     Function?: string;
+};
+
+export type AiContentResponse = {
+    content: string | null;
+    isRendered: boolean;
+    error: boolean;
 };
 
 export interface CollaboraExports {
@@ -31,16 +39,24 @@ interface PendingRequest {
 
 export function useCollabora({
     iframeRef,
-    fileId,
+    selectedReport,
     chat,
     showSidebar,
     setShowSidebar,
+    onCloseEditor,
+    onDocumentLoadFailed,
+    isAiLoading,
+    setIsAiLoading,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
-    fileId: string;
+    selectedReport: Report;
     chat: Chat;
     showSidebar: boolean;
     setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+    onCloseEditor: () => void;
+    onDocumentLoadFailed: () => void;
+    isAiLoading: boolean;
+    setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -48,9 +64,18 @@ export function useCollabora({
     const [startLoading, setStartLoading] = useState(false);
     const pendingRequests = useRef<PendingRequest[]>([]);
 
+    // State to ensure content generation is not triggered multiple times
+    const fetchCount = useRef(0);
+    // State for storing content generation responses
+    const contentQueue = useRef<AiContentResponse[]>([]);
+    // State for tracking currently rendered content
+    const renderIndex = useRef(0);
+    // State to store generated content buffer while streaming
+    const contentBuffer = useRef("");
+
     useEffect(() => {
         const initializeEditorIframe = (): void => {
-            const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${fileId}`;
+            const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${selectedReport.id}`;
             fetch(`${SettingsStore.getValue("reportsApiUrl")}/wopi/get_editor_url`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -71,7 +96,7 @@ export function useCollabora({
         return () => {
             window.removeEventListener("message", receiveMessage, false);
         };
-    }, [fileId, iframeRef]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [iframeRef]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const receiveMessage = (event: MessageEvent): void => {
         if (event.source !== iframeRef.current?.contentWindow || typeof event.data !== "string") return;
@@ -103,7 +128,7 @@ export function useCollabora({
         }
     };
 
-    const handleUnpromptedMessages = (msg: CollaboraPostMessage): void => {
+    const handleUnpromptedMessages = async (msg: CollaboraPostMessage): Promise<void> => {
         if (!msg.Values) return;
         switch (msg.MessageId) {
             case "App_LoadingStatus":
@@ -112,20 +137,27 @@ export function useCollabora({
                         sendMessage({ MessageId: "Host_PostmessageReady" });
                         setDocumentLoaded(true);
                         defaultUiUpdates();
+                        if (selectedReport.aiContent) {
+                            await aiGenerateContent();
+                        }
                     }
                 }
                 break;
             case "Action_Load_Resp":
                 {
                     if (!msg.Values.success) {
-                        setDocumentLoaded(false);
+                        onDocumentLoadFailed();
                     }
                 }
                 break;
             case "Clicked_Button":
                 {
                     const buttonId: string = (msg.Values.Id as string) ?? "";
-                    if (
+                    if (buttonId && buttonId === "custom_exit_editor") {
+                        sendMessage({ MessageId: "Action_Save", Values: { DontSaveIfUnmodified: true } });
+                        sendMessage({ MessageId: "Action_Close" });
+                        onCloseEditor();
+                    } else if (
                         buttonId &&
                         ["custom_toggle_zebra", "custom_toggle_doc_query", "custom_toggle_data_query"].includes(
                             buttonId,
@@ -226,11 +258,16 @@ export function useCollabora({
         //         Mode: "classic",
         //     },
         // });
-        // Hide 'Help' menu item
         sendMessage({
-            MessageId: "Hide_Menu_Item",
+            MessageId: "Insert_Button",
             Values: {
-                id: "help",
+                id: "custom_exit_editor",
+                imgurl: `${window.location.origin}/img/close-editor.svg`,
+                hint: "Close Document",
+                mobile: true,
+                tablet: true,
+                label: "Close Document",
+                insertBefore: "sidebar",
             },
         });
         sendMessage({
@@ -238,10 +275,10 @@ export function useCollabora({
             Values: {
                 id: "custom_toggle_zebra",
                 imgurl: `${window.location.origin}/img/zebra.svg`,
-                hint: "Zebra Writer",
-                mobile: false,
+                hint: "Zebra Chat",
+                mobile: true,
                 tablet: true,
-                label: "Zebra AI",
+                label: "Zebra Chat",
                 insertBefore: "sidebar",
             },
         });
@@ -249,11 +286,11 @@ export function useCollabora({
             MessageId: "Insert_Button",
             Values: {
                 id: "custom_toggle_doc_query",
-                imgurl: `${window.location.origin}/img/doc-query.svg`,
-                hint: "AI Doc Query",
-                mobile: false,
+                imgurl: `${window.location.origin}/img/ai-writer.svg`,
+                hint: "AI Writer",
+                mobile: true,
                 tablet: true,
-                label: "AI Doc Query",
+                label: "AI Writer",
                 insertBefore: "custom_toggle_zebra",
             },
         });
@@ -307,6 +344,79 @@ export function useCollabora({
             SendTime: Date.now(),
             Values: { Mimetype: "text/html", Data: htmlContent },
         });
+    };
+
+    const aiGenerateContent = async (): Promise<void> => {
+        if (!selectedReport.aiContent) return;
+        let interval: ReturnType<typeof setInterval>;
+
+        const processContentSequentially = async (): Promise<void> => {
+            if (selectedReport.aiContent && renderIndex.current >= selectedReport.aiContent.allTitles.length) {
+                clearTimeout(interval); // Clear when all content is processed
+                setIsAiLoading(false);
+                return;
+            }
+
+            const currentContent = contentQueue.current[renderIndex.current];
+
+            if (currentContent && !currentContent.isRendered) {
+                if (currentContent.error) {
+                    console.error(`Skipping index ${renderIndex.current} due to fetch error.`);
+                    renderIndex.current += 1; // Optionally, you could retry instead of skipping
+                } else if (currentContent.content) {
+                    // Await here ensures we don't move to the next content until this one is fully processed
+                    await streamContent(currentContent.content, contentBuffer, insertTextandSelect);
+                    contentQueue.current[renderIndex.current].isRendered = true;
+                    renderIndex.current += 1; // Move to the next response
+                }
+            }
+
+            // Schedule the next check. Adjust the delay as needed.
+            interval = setTimeout(processContentSequentially, 1000);
+        };
+
+        // if (selectedReport.aiContent && editor && fetchCount.current < 1 && editor.isEmpty) {
+        if (selectedReport.aiContent && fetchCount.current < 1) {
+            fetchCount.current += 1;
+            setIsAiLoading(true);
+            selectedReport.aiContent.allTitles.forEach((title, index) => {
+                selectedReport.aiContent &&
+                    generateContent(
+                        selectedReport.aiContent.documentPrompt,
+                        title,
+                        selectedReport.aiContent.allTitles,
+                        selectedReport.aiContent.contentSize,
+                        selectedReport.aiContent.targetAudience,
+                        selectedReport.aiContent.tone,
+                    )
+                        .then(async (data) => {
+                            if (!data) {
+                                console.error("No data received");
+                                setIsAiLoading(false);
+                                return;
+                            }
+                            contentQueue.current[index] = {
+                                content: data,
+                                isRendered: false,
+                                error: false,
+                            };
+                            if (index === 0) {
+                                setIsAiLoading(false);
+                                // Start the sequential processing with the first received response
+                                processContentSequentially();
+                            }
+                        })
+                        .catch((err) => {
+                            contentQueue.current[index] = {
+                                content: null,
+                                isRendered: false,
+                                error: true,
+                            };
+                            console.error(err);
+                            setIsAiLoading(false);
+                        });
+            });
+        }
     };
 
     return {
