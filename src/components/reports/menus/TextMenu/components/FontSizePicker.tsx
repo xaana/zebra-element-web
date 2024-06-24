@@ -34,7 +34,7 @@ export const FontSizePicker = ({ onChange, value }: FontSizePickerProps): JSX.El
                 </Toolbar.Button>
             </Dropdown.Trigger>
             <Dropdown.Content asChild>
-                <Surface className="flex flex-col gap-1 px-2 py-4">
+                <Surface className="flex flex-col gap-1 px-2 py-4 overflow-y-scroll" style={{ maxHeight: 200 }}>
                     {FONT_SIZES.map((size) => (
                         <DropdownButton
                             isActive={value === size.value}
