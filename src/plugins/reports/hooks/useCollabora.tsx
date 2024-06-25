@@ -80,6 +80,11 @@ export function useCollabora({
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
+            const accessToken = {
+                origin: window.location.origin,
+                userId: currentUser,
+            };
+            const accessTokenJsonString = JSON.stringify(accessToken);
             const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${selectedReport.id}`;
             fetch(`${SettingsStore.getValue("reportsApiUrl")}/wopi/get_editor_url`)
                 .then((response) => response.json())
@@ -88,7 +93,7 @@ export function useCollabora({
                     // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     // console.log(wopi);
-                    setWopiUrl(`${wopi}&access_token=${window.location.origin}`);
+                    setWopiUrl(`${wopi}&access_token=${encodeURIComponent(accessTokenJsonString)}`);
                     setStartLoading(true);
                 });
         };
