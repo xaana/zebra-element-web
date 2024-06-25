@@ -21,6 +21,7 @@ interface ReportSelectorProps {
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
+    allUsers: string[];
 }
 
 export const ReportSelector = ({
@@ -33,6 +34,7 @@ export const ReportSelector = ({
     onDuplicate,
     onDelete,
     onAiGenerate,
+    allUsers,
 }: ReportSelectorProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
@@ -59,6 +61,7 @@ export const ReportSelector = ({
         tone: string,
         targetAudience: string,
         contentMediaId?: string,
+        selectedTemplateId?: string,
     ): Promise<void> => {
         onAiGenerate({
             documentPrompt,
@@ -67,6 +70,7 @@ export const ReportSelector = ({
             tone,
             targetAudience,
             contentMediaId,
+            templateId: selectedTemplateId,
         } as AiGenerationContent);
     };
 
@@ -77,7 +81,7 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleAiGenerate} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
                 <FileUpload onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
@@ -139,6 +143,7 @@ export const ReportSelector = ({
                             onDuplicate={onDuplicate}
                             userId={userId}
                             onDelete={onDelete}
+                            allUsers={allUsers}
                         />
                     ))}
                 </div>
@@ -149,6 +154,7 @@ export const ReportSelector = ({
                     onRename={onRename}
                     onDuplicate={onDuplicate}
                     onDelete={onDelete}
+                    allUsers={allUsers}
                 />
             )}
         </>

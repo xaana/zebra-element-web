@@ -19,6 +19,7 @@
     "src/components/views/context_menus/ThreadListContextMenu.tsx": "src/components/views/context_menus/ThreadListContextMenu.tsx",
     "src/components/views/dialogs/CreateRoomDialog.tsx": "src/components/views/dialogs/CreateRoomDialog.tsx",
     "src/components/views/dialogs/InviteDialog.tsx": "src/components/views/dialogs/InviteDialog.tsx",
+    "src/components/views/dialogs/RoomSettingsDialog.tsx": "src/components/views/dialogs/RoomSettingsDialog.tsx",
     "src/components/views/dialogs/spotlight/SpotlightDialog.tsx": "src/components/views/dialogs/spotlight/SpotlightDialog.tsx",
     "src/components/views/dialogs/UserSettingsDialog.tsx": "src/components/views/dialogs/UserSettingsDialog.tsx",
     "src/components/views/elements/GenericEventListSummary": "src/components/views/elements/GenericEventListSummary.tsx",
@@ -72,7 +73,8 @@
     "src/utils/DecryptFile.ts": "src/utils/DecryptFile.ts",
     "src/utils/direct-messages.ts": "src/utils/direct-messages.ts",
     "src/components/views/dialogs/UploadConfirmDialog.tsx": "src/components/views/dialogs/UploadConfirmDialog.tsx",
-    "src/toasts/UpdateToast.tsx":"src/toasts/UpdateToast.tsx",
+    "src/toasts/UpdateToast.tsx": "src/toasts/UpdateToast.tsx",
     "src/components/views/elements/AppTile.tsx": "src/components/views/elements/AppTile.tsx",
-    "src/LegacyCallHandler.tsx": "src/LegacyCallHandler.tsx"
+    "src/LegacyCallHandler.tsx": "src/LegacyCallHandler.tsx",
+    "src/components/views/dialogs/ReportEventDialog.tsx": "src/components/views/dialogs/ReportEventDialog.tsx"
 }

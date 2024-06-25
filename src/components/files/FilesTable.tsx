@@ -49,6 +49,8 @@ import {
     IconDocumentWord,
     IconDocumentZip,
 } from "@/components/ui/icons";
+import { getVectorConfig } from "@/vector/getconfig";
+import UploadLoader from "./uploadLoader";
 
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
@@ -150,17 +152,94 @@ export interface FilesTableProps {
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
     onDelete?: (currentFile: any) => void;
+    onUpdate?: () => void;
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
-    ({ data, rowSelection, setRowSelection, mode, onDelete }, ref): JSX.Element => {
+    ({ data, rowSelection, setRowSelection, mode, onDelete,onUpdate }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
         const [dialogOpen, setDialogOpen] = React.useState(false);
         const [showDelete, setShowDelete] = React.useState(true);
+        const [busy, setBusy] = React.useState(false);
+        const [progress, setProgress] = React.useState(0);
         const client = useMatrixClientContext();
+        const inputRef = React.useRef<HTMLInputElement>(null);
 
         const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-
+        const generatePrimaryKey = (length:number):string => {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }    
+        const onFileInput = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const configData = await getVectorConfig();
+                if (configData?.plugins["websocket"]) {
+                    const apiUrl = configData?.plugins["websocket"].url;
+                    const wsUrl = `${apiUrl}/pdf_upload`;
+                    const websocket = new WebSocket(wsUrl);
+                    const mxcUrl = generatePrimaryKey(18)
+                    let count = 0;
+                    setBusy(true)
+                    websocket.onopen = () => {
+                        console.log("WebSocket connection established");
+                        // Example data to be sent to the server
+                        const textToSend = JSON.stringify({
+                            media_id: mxcUrl,
+                            room_id: null,
+                            event_id: null,
+                            user_id: [client.getUserId()],
+                            sender_id: client.getUserId(),
+                            media_type: files[0].type,
+                        });
+                        // Sending a JSON string as message to the websocket server
+                        websocket.send(textToSend);
+                        const reader = new FileReader();
+                        reader.readAsDataURL(files[0]);
+                        reader.onloadend =  () => {
+                            const base64data = reader.result as string;
+                            const encodedPdf = base64data?.split(',')[1]; // Remove the data URL part
+                            const fileObjects = {
+                                filename: [files[0].name],
+                                content: [encodedPdf],
+                            };
+    
+                            // Send encoded PDF data as string
+                            websocket.send(JSON.stringify(fileObjects));
+                        };
+                        websocket.onmessage = (event) => {
+                            if(event.data.startsWith("success")){
+                                count+=1/4
+                                setProgress((prev)=>prev+1)
+                                if(count===1){
+                                    // all file completed reinitialize record state
+                                        console.log("upload success, closing websocket",event);
+                                        onUpdate&&onUpdate();
+                                        setBusy(false);
+                                        setProgress(0);
+                                    }
+                                }
+   
+                            else if(event.data.startsWith("fail")){
+                                console.log('');
+                                setBusy(false);
+                                // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
+                            }
+    
+                        };
+                        websocket.onerror = (event) => {
+                            console.error("WebSocket error observed:", event);
+                            setBusy(false);
+                        };
+                      };
+                }
+            }
+        }
         React.useEffect(() => {
             let temp = true;
             for (const key in rowSelection) {
@@ -228,22 +307,25 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     const file = row.original;
                     const IconComponent = getIconComponent(file.name);
                     return (
-                        <Button
-                            onClick={(e) => {
-                                downloadFile(e, file, client.getUserId());
+                        <div className="flex flex-row gap-x-2">
+                            <Button
+                                onClick={(e) => {
+                                    downloadFile(e, file, client.getUserId());
 
-                            }}
-                            variant="ghost"
-                            size="sm"
-                            className="py-1 px-0 h-full w-auto"
-                        >
-                            {IconComponent ? (
-                                <IconComponent className="h-4 w-4 mr-2" />
-                            ) : (
-                                <IconDocument className="h-4 w-4 mr-2" />
-                            )}
-                            <span className="max-w-[250px] truncate font-medium">{row.getValue("name")}</span>
-                        </Button>
+                                }}
+                                variant="ghost"
+                                size="sm"
+                                className="py-1 px-0 h-full w-auto"
+                            >
+                                {IconComponent ? (
+                                    <IconComponent className="h-4 w-4 mr-2" />
+                                ) : (
+                                    <IconDocument className="h-4 w-4 mr-2" />
+                                )}
+                                <span className="max-w-[250px] truncate font-medium">{row.getValue("name")}</span>
+                            </Button>
+                            {file.sender!==client.getUserId()&&file.roomId&&<span className="flex text-xs rounded-lg bg-slate-300 px-1 items-center text-slate-700">shared</span>}
+                        </div>
                     );
                 },
                 meta: {
@@ -283,6 +365,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                 cell: ({ row }): JSX.Element => {
                     const file = row.original;
                     const room = file.roomId ? client.getRoom(file.roomId) : null;
+                    let message = "Room Deleted";
+                    if(!file.roomId){
+                        message = "-"
+                    }
 
                     return (
                         <div className="flex items-center">
@@ -300,7 +386,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                     <Icon name="ExternalLink" className="h-3 w-3 ml-1" />
                                 </Button>
                             ) : (
-                                <span>Unknown</span>
+                                <span>{message}</span>
                             )}
                         </div>
                     );
@@ -386,16 +472,29 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             }
             onDelete && setRowSelection({});
         };
+        const handleClick = () => {
+            if (inputRef.current) {
+                inputRef.current.value = "";
+            }
+            inputRef.current?.click();
+        };
         return (
             <>
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <DataTableToolbar table={table} />
-                        {onDelete && showDelete && Object.keys(rowSelection).length !== 0 && (
-                            <Button variant="destructive" onClick={() => setDialogOpen(true)}>
-                                <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
-                            </Button>
-                        )}
+                        <div className="flex flex-row gap-x-1">
+                            {busy?<UploadLoader progress={progress+1} />:<Button onClick={handleClick}>
+                                <Icon name="Upload" className="w-5 h-5" strokeWidth={2} />
+                            </Button>}
+                            
+                            {onDelete && showDelete && Object.keys(rowSelection).length !== 0 && (
+                                <Button variant="destructive" onClick={() => setDialogOpen(true)}>
+                                    <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
+                                </Button>
+                            )}
+                        <input type="file" ref={inputRef} onChange={onFileInput} style={{ display: 'none' }} accept=".pdf, .docx, .doc" />
+                        </div>
                     </div>
 
                     <div className="rounded-md border">

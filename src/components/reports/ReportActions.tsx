@@ -4,6 +4,8 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
+import { ShareReport } from "./ShareReport";
+
 import { IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
 import {
     CommandDialog,
@@ -44,29 +46,19 @@ export function ReportActions({
     onRename,
     onDuplicate,
     onDelete,
+    allUsers,
 }: {
     row: Report;
     onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
+    allUsers: string[];
 }): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
-    const [userIds, setUserIds] = useState<string[]>([]);
     const [renameOpen, setRenameOpen] = useState(false);
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [approveDialogOpen, setApproveDialogOpen] = useState(false);
-
-    useEffect(() => {
-        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
-        const request = new Request(url, {
-            method: "GET",
-        });
-        fetch(request)
-            .then((response) => response.json())
-            .then((data) => {
-                data.user && setUserIds(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
-            });
-    }, []);
+    const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
     const downloadFile = async (asType: "docx" | "doc" | "pdf"): Promise<void> => {
         try {
@@ -229,6 +221,19 @@ export function ReportActions({
                         onSelect={async (e: any) => {
                             stopPropagation(e);
                             setDropDownOpen(false);
+                            setShareDialogOpen(true);
+                        }}
+                    >
+                        Share
+                        <DropdownMenuShortcut>
+                            <Icon name="LockKeyholeOpen" className="w-4 h-4" />
+                        </DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="cursor-pointer"
+                        onSelect={async (e: any) => {
+                            stopPropagation(e);
+                            setDropDownOpen(false);
                             setApproveDialogOpen(true);
                         }}
                     >
@@ -258,7 +263,7 @@ export function ReportActions({
                 <CommandList>
                     <CommandEmpty>No users found.</CommandEmpty>
                     <CommandGroup heading="Users">
-                        {userIds
+                        {allUsers
                             .filter((item) => item !== cli.getSafeUserId())
                             .map((userId, index) => (
                                 <CommandItem
@@ -280,6 +285,7 @@ export function ReportActions({
                 oldName={row.name}
                 onSubmit={(newName: string) => onRename(row.id, newName)}
             />
+            <ShareReport report={row} open={shareDialogOpen} setOpen={setShareDialogOpen} allUsers={allUsers} />
         </div>
     );
 }

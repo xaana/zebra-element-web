@@ -3,7 +3,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -27,8 +27,11 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
-    insertTextandSelect: (text: string) => void;
+    insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
+    undo: () => void;
+    redo: () => void;
+    goToDocumentEnd: () => void;
 }
 
 interface PendingRequest {
@@ -47,6 +50,8 @@ export function useCollabora({
     onDocumentLoadFailed,
     isAiLoading,
     setIsAiLoading,
+    currentUser,
+    allUsers,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     selectedReport: Report;
@@ -57,6 +62,8 @@ export function useCollabora({
     onDocumentLoadFailed: () => void;
     isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    currentUser: string;
+    allUsers: string[];
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -70,8 +77,6 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // State to store generated content buffer while streaming
-    const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
@@ -92,6 +97,8 @@ export function useCollabora({
 
         // Install the message listener.
         window.addEventListener("message", receiveMessage, false);
+
+        // console.log(`\n\nALL USERS`, allUsers);
 
         return () => {
             window.removeEventListener("message", receiveMessage, false);
@@ -191,19 +198,10 @@ export function useCollabora({
                 }
                 break;
             case "UI_Mention": {
-                const dummyUserDatabase = [
-                    {
-                        username: "Abigail",
-                        profile: "Abigail profile link",
-                    },
-                    {
-                        username: "Alexandra",
-                        profile: "Alexandra profile link",
-                    },
-                ];
+                const usersList = allUsers.map((user) => ({ text: user.split(":")[0].substring(1), value: user }));
                 const type = msg.Values.type;
                 const text = msg.Values.text as string;
-                const users = dummyUserDatabase.filter((user) => user.username.includes(text));
+                const users = usersList.filter((user) => user.text.includes(text));
                 if (type === "autocomplete") {
                     setTimeout(sendMessage, 0, {
                         MessageId: "Action_Mention",
@@ -328,13 +326,16 @@ export function useCollabora({
         }
     };
 
-    const insertTextandSelect = (text: string): void => {
+    const insertText = (text: string, selectInsertedText: boolean = false): void => {
         sendMessage({
             MessageId: "CallPythonScript",
             SendTime: Date.now(),
             ScriptFile: "InsertText.py", // Ensure this Python script is deployed on the server
             Function: "InsertText",
-            Values: { text: { type: "string", value: text } },
+            Values: {
+                text: { type: "string", value: text },
+                selectInsertedText: { type: "boolean", value: selectInsertedText },
+            },
         });
     };
 
@@ -343,6 +344,31 @@ export function useCollabora({
             MessageId: "Action_Paste",
             SendTime: Date.now(),
             Values: { Mimetype: "text/html", Data: htmlContent },
+        });
+    };
+
+    const goToDocumentEnd = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:GoToEndOfDoc" },
+        });
+    };
+    const undo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Undo" },
+        });
+    };
+    const redo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Redo" },
         });
     };
 
@@ -365,7 +391,8 @@ export function useCollabora({
                     renderIndex.current += 1; // Optionally, you could retry instead of skipping
                 } else if (currentContent.content) {
                     // Await here ensures we don't move to the next content until this one is fully processed
-                    await streamContent(currentContent.content, contentBuffer, insertTextandSelect);
+                    // await streamContent(currentContent.content, contentBuffer, insertText);
+                    insertCustomHtml(currentContent.content);
                     contentQueue.current[renderIndex.current].isRendered = true;
                     renderIndex.current += 1; // Move to the next response
                 }
@@ -402,8 +429,9 @@ export function useCollabora({
                                 error: false,
                             };
                             if (index === 0) {
-                                setIsAiLoading(false);
+                                // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
+                                goToDocumentEnd();
                                 processContentSequentially();
                             }
                         })
@@ -428,7 +456,10 @@ export function useCollabora({
         sendMessage,
         startLoading,
         fetchSelectedText,
-        insertTextandSelect,
+        insertText,
         insertCustomHtml,
+        undo,
+        redo,
+        goToDocumentEnd,
     } as CollaboraExports;
 }

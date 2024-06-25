@@ -14,6 +14,7 @@ import type { File } from "@/plugins/files/types";
 // import { Button } from "@/components/ui/ButtonAlt";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/LoaderAlt";
+import { Loader as LoaderAlt } from "@/components/ui/loader";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
 import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
@@ -54,7 +55,7 @@ export const AiWriterView = ({
     });
     const currentTone = tones.find((t) => t.value === data.tone);
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
-    const [documents, setDocuments] = useState<File[]>([]);
+    const [documents, setDocuments] = useState<File[]|undefined>();
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
@@ -219,10 +220,14 @@ export const AiWriterView = ({
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
         if (open) {
             await fetchFiles();
+            console.log();
         } else {
             setFilesDialogOpen(false);
         }
     };
+    const onUpdate = ():void=>{
+        fetchFiles()
+    }
 
     const handleRemoveFile = (file: File): void => {
         setSelectedFiles(selectedFiles.filter((f) => f.id !== file.id));
@@ -230,6 +235,7 @@ export const AiWriterView = ({
     };
 
     useEffect(() => {
+        if(!documents)return
         if (Object.keys(rowSelection).length === 1) {
             setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
             setFilesDialogOpen(false);
@@ -342,7 +348,11 @@ export const AiWriterView = ({
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                                            <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                                        {!documents&&<div className="relative w-[90vw] max-w-[90vw] h-full p-4">
+                                                        <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                                                        <LoaderAlt className="w-full h-full flex justify-center" height="50" width="50" />
+                                                    </div>}
+                                            {documents&&<div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
                                                 <h2 className="text-2xl font-semibold tracking-tight my-1">
                                                     Select Files
                                                 </h2>
@@ -351,6 +361,7 @@ export const AiWriterView = ({
                                                     rowSelection={rowSelection}
                                                     setRowSelection={setRowSelection}
                                                     mode="dialog"
+                                                    onUpdate={onUpdate}
                                                 />
 
                                                 <div
@@ -373,7 +384,7 @@ export const AiWriterView = ({
                                                         Done
                                                     </Button>
                                                 </div>
-                                            </div>
+                                            </div>}
                                         </DialogContent>
                                     </Dialog>
                                 )}

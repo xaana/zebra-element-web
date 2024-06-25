@@ -20,6 +20,7 @@ export const Home = (): JSX.Element => {
     const [isLoading, setIsLoading] = useState(false);
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
+    const [allUsers, setAllUsers] = useState<string[]>([]);
 
     const createNewReport = async (
         documentName?: string,
@@ -59,6 +60,21 @@ export const Home = (): JSX.Element => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchUsers = async (): Promise<void> => {
+            const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
+            const request = new Request(url, {
+                method: "GET",
+            });
+            fetch(request)
+                .then((response) => response.json())
+                .then((data) => {
+                    data.user && setAllUsers(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
+                });
+        };
+        fetchUsers();
+    }, []);
 
     useEffect(() => {
         const fetchReports = async (): Promise<void> => {
@@ -125,18 +141,32 @@ export const Home = (): JSX.Element => {
     const handleFileUpload = async (file: File): Promise<void> => {
         try {
             const formData = new FormData();
-            formData.append("files", file);
+            formData.append("file", file);
+            formData.append("user_id", userId);
             setIsLoading(true);
             // Make API request
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
+                // headers: {
+                //     "Content-Type": "multipart/form-data",
+                // },
             });
             const responseData = await response.json();
 
-            if (responseData?.html_pages?.length > 0) {
-                const combinedString = responseData.html_pages.join("\n");
-                await createNewReport(undefined, combinedString);
+            if (responseData?.status && responseData?.document_id) {
+                setIsLoading(false);
+
+                const newReport: Report = {
+                    id: responseData.document_id.toString(),
+                    name: responseData.document_name,
+                    owner: client.getSafeUserId(),
+                    accessType: "admin",
+                    timestamp: new Date().toISOString(),
+                };
+
+                setReports((prev) => [...prev, newReport]);
+                setSelectedReport(newReport);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -144,7 +174,7 @@ export const Home = (): JSX.Element => {
         }
     };
 
-    const handleDuplicate = async (reportId: string): Promise<void> => {
+    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent): Promise<void> => {
         try {
             setIsLoading(true);
 
@@ -165,6 +195,9 @@ export const Home = (): JSX.Element => {
                     owner: client.getSafeUserId(),
                     accessType: "admin",
                     timestamp: new Date().toISOString(),
+                    ...(aiContent && {
+                        aiContent,
+                    }),
                 };
 
                 setReports((prev) => [...prev, newReport]);
@@ -180,7 +213,11 @@ export const Home = (): JSX.Element => {
     };
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
-        await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        if (aiContent.templateId !== undefined) {
+            await handleDuplicate(aiContent.templateId, aiContent);
+        } else {
+            await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        }
     };
 
     const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
@@ -262,6 +299,7 @@ export const Home = (): JSX.Element => {
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
+                        allUsers={allUsers}
                     />
                 </motion.div>
             )}
@@ -297,6 +335,8 @@ export const Home = (): JSX.Element => {
                             onCloseEditor={handleCloseEditor}
                             selectedReport={selectedReport}
                             onDocumentLoadFailed={handleDocumentLoadFailed}
+                            currentUser={userId}
+                            allUsers={allUsers}
                         />
                     </div>
                 </motion.div>

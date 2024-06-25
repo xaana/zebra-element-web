@@ -125,6 +125,9 @@ export default class ThreadView extends React.Component<IProps, IState> {
                         ) {
                             return file;
                         }
+                        else if(!file.eventId){
+                            return file
+                        }
                     });
                     const filteredList = fileList.filter((item) => item !== undefined);
                     this.setState({ files: filteredList, database: "" });
@@ -252,7 +255,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
                     const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
-                    if (payload.roomId === this.props.room.roomId) {
+                    if (payload.roomId === this.props.room.roomId || !payload.roomId) {
                         if (payload.files.length > 0&&mergedFiles.length>this.state.files.length) {
                             const fileList = mergedFiles.map((file: DocFile) => {
                                 if (
@@ -266,6 +269,12 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                         name: file.name,
                                         eventId: file.eventId,
                                         roomId: file.roomId,
+                                    };
+                                }
+                                else if (!file.eventId) {
+                                    return {
+                                        mediaId: file.mediaId,
+                                        name: file.name,
                                     };
                                 }
                             });
@@ -290,7 +299,6 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 files: payload.files,
                             });
                         } else {
-                            console.log('...')
                             this.setState({
                                 files: [],
                             });
@@ -385,6 +393,9 @@ export default class ThreadView extends React.Component<IProps, IState> {
                             file.eventId &&
                             !this.props.room.findEventById(file.eventId)?.isRedacted()
                         ) {
+                            return file;
+                        }
+                        else if (!file.eventId) {
                             return file;
                         }
                     });

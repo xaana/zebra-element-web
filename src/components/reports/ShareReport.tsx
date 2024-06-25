@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
@@ -11,26 +11,22 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 
-export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
-    const [open, setOpen] = useState(false);
-    const [userIds, setUserIds] = useState<string[]>([]);
+export const ShareReport = ({
+    report,
+    open,
+    setOpen,
+    allUsers,
+}: {
+    report: Report;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    allUsers: string[];
+}): JSX.Element => {
     const cli = MatrixClientPeg.safeGet();
-
-    useEffect(() => {
-        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
-        const request = new Request(url, {
-            method: "GET",
-        });
-        fetch(request)
-            .then((response) => response.json())
-            .then((data) => {
-                data.user && setUserIds(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
-            });
-    }, []);
 
     const handleShare = async (userId: string): Promise<void> => {
         setOpen(false);
@@ -60,16 +56,16 @@ export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
 
     return (
         <>
-            <Button className="font-semibold text-sm" size="sm" onClick={() => setOpen(true)}>
+            {/* <Button className="font-semibold text-sm" size="sm" onClick={() => setOpen(true)}>
                 <Icon name="LockKeyhole" className="mr-2 h-4 w-4" />
                 Share
-            </Button>
+            </Button> */}
             <CommandDialog className="w-[512px]" open={open} onOpenChange={setOpen}>
                 <CommandInput placeholder="Search for user..." />
                 <CommandList>
                     <CommandEmpty>No users found.</CommandEmpty>
                     <CommandGroup heading="Users">
-                        {userIds
+                        {allUsers
                             .filter((item) => item !== cli.getSafeUserId())
                             .map((userId, index) => (
                                 <CommandItem

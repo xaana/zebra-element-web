@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -13,7 +14,6 @@ import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { QueryResultTable } from "@/plugins/reports/extensions/AiDataQuery/components/QueryResultTable";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 export type DataItem = {
     [key: string]: string | number | null | undefined;
@@ -36,6 +36,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
     const [selectedDb, setSelectedDb] = useState<string | undefined>(undefined);
     const [fetchedData, setFetchedData] = useState<DataItem[]>([]);
     const client = useMatrixClientContext();
+    const userId = client.getSafeUserId();
     const [data, setData] = useState<DataProps>({
         text: "",
         database: undefined,
@@ -87,7 +88,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                 body: JSON.stringify({
                     query: dataText,
                     database: database,
-                    user_id: client.getUserId(),
+                    user_id: userId,
                 }),
             });
 
@@ -107,11 +108,11 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
             setIsFetching(false);
             toast.error(message);
         }
-    }, [data]);
+    }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const insert = useCallback(() => {
         if (!fetchedData && previewText) {
-            editor.insertTextandSelect(previewText);
+            editor.insertText(previewText, false);
         }
 
         const tableContent = arrayToHTMLTable(fetchedData);
