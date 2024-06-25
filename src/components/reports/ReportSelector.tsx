@@ -59,6 +59,7 @@ export const ReportSelector = ({
         tone: string,
         targetAudience: string,
         contentMediaId?: string,
+        selectedTemplateId?: string,
     ): Promise<void> => {
         onAiGenerate({
             documentPrompt,
@@ -67,6 +68,7 @@ export const ReportSelector = ({
             tone,
             targetAudience,
             contentMediaId,
+            templateId: selectedTemplateId,
         } as AiGenerationContent);
     };
 
@@ -77,7 +79,7 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleAiGenerate} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
                 <FileUpload onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"

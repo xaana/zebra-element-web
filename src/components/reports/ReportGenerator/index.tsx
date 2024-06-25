@@ -7,8 +7,8 @@ import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
-import { FileUpload } from "../FileUpload";
 import type { File as MatrixFile } from "@/plugins/files/types";
+import { AdvancedOptions } from "./AdvancedOptions";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,10 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-// import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { Report } from "@/plugins/reports/types";
 export const ReportGenerator = ({
     onReportGenerate,
+    allReports,
 }: {
     onReportGenerate: (
         documentPrompt: string,
@@ -36,7 +36,9 @@ export const ReportGenerator = ({
         tone: string,
         targetAudience: string,
         contentMediaId?: string,
+        selectedTemplateId?: string,
     ) => void;
+    allReports: Report[];
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
     const [prompt, setPrompt] = React.useState("");
@@ -58,6 +60,8 @@ export const ReportGenerator = ({
             inputRef.current.focus();
         }
     }, []);
+
+    const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>();
 
     const handleGenerateOutline = async (): Promise<void> => {
         setOutlineItems([]);
@@ -100,6 +104,9 @@ export const ReportGenerator = ({
             setTargetAudience("");
             setTone("");
             setPrompt("");
+            setSelectedTemplateId(undefined);
+            setContentFile(undefined);
+            setContentMediaId(undefined);
         }
     };
 
@@ -112,6 +119,7 @@ export const ReportGenerator = ({
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
             contentMediaId ?? undefined,
+            selectedTemplateId ?? undefined,
         );
     };
 
@@ -164,45 +172,29 @@ export const ReportGenerator = ({
                         <HeaderText showOutline={showOutline} />
                         <div
                             className={cn(
-                                "flex gap-4 w-full mt-10 mb-2 justify-between",
+                                "flex gap-4 w-full mt-10 mb-2 justify-between items-end",
                                 // showOutline ? "justify-between" : "justify-end",
                                 // showOutline ? "justify-end" : "justify-between",
                             )}
                         >
                             {!showOutline && (
-                                <div className="flex items-center gap-3">
-                                    <div className="text-muted-foreground font-semibold text-sm">
-                                        Supporting Document:
-                                    </div>
-                                    {contentFile ? (
-                                        <Badge variant="outline" className="flex items-center gap-2 h-8">
-                                            <div className="text-xs">{contentFile.name}</div>
-                                            <Button
-                                                onClick={() => setContentFile(undefined)}
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-auto h-auto p-0.5 rounded-full"
-                                            >
-                                                <Icon name="X" className="w-3 h-3" />
-                                            </Button>
-                                        </Badge>
-                                    ) : (
-                                        <FileUpload
-                                            onFileUpload={handleFileUpload}
-                                            buttonText="Select Document"
-                                            allowUpload={false}
-                                            iconName="FileInput"
-                                            buttonVariant="outline"
-                                        />
-                                    )}
-                                </div>
+                                <AdvancedOptions
+                                    allReports={allReports}
+                                    selectedTemplateId={selectedTemplateId}
+                                    setSelectedTemplateId={setSelectedTemplateId}
+                                    onFileUpload={handleFileUpload}
+                                    contentFile={contentFile}
+                                    setContentFile={setContentFile}
+                                />
                             )}
                             {showOutline && (
                                 <div className="text-muted-foreground font-semibold text-base translate-y-1">
                                     Prompt
                                 </div>
                             )}
-                            <PagesSelector pages={pages} setPages={setPages} />
+                            <div className="flex items-end">
+                                <PagesSelector pages={pages} setPages={setPages} />
+                            </div>
                         </div>
                         <div className="relative w-full">
                             <Textarea

@@ -158,7 +158,7 @@ export const Home = (): JSX.Element => {
         }
     };
 
-    const handleDuplicate = async (reportId: string): Promise<void> => {
+    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent): Promise<void> => {
         try {
             setIsLoading(true);
 
@@ -179,6 +179,9 @@ export const Home = (): JSX.Element => {
                     owner: client.getSafeUserId(),
                     accessType: "admin",
                     timestamp: new Date().toISOString(),
+                    ...(aiContent && {
+                        aiContent,
+                    }),
                 };
 
                 setReports((prev) => [...prev, newReport]);
@@ -194,7 +197,11 @@ export const Home = (): JSX.Element => {
     };
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
-        await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        if (aiContent.templateId !== undefined) {
+            await handleDuplicate(aiContent.templateId, aiContent);
+        } else {
+            await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        }
     };
 
     const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
