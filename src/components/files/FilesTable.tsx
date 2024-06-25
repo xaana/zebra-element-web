@@ -29,6 +29,7 @@ import type { File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { getFile } from "./FileOpsHandler";
 import { FilterWrapper as Filter } from "./FilesTableFilter";
+import UploadLoader from "./UploadLoader";
 
 import { PluginActions } from "@/plugins";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -50,7 +51,7 @@ import {
     IconDocumentZip,
 } from "@/components/ui/icons";
 import { getVectorConfig } from "@/vector/getconfig";
-import UploadLoader from "./uploadLoader";
+
 
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
