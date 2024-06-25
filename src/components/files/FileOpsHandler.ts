@@ -45,7 +45,7 @@ export const listFiles = async (
                 timestamp: new Date(item.metadata.timestamp)
             }
         })
-        return result;
+        return result.reverse();;
     })
 }
 

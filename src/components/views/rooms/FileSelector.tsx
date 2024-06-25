@@ -29,7 +29,7 @@ export interface DocFile {
     mediaId: string;
     name: string;
     eventId?: string;
-    roomId: string;
+    roomId?: string;
 }
 
 export const FileSelector = (props: IProps): JSX.Element => {

@@ -18,18 +18,17 @@ export const MainPanel = (): JSX.Element => {
     const [documents, setDocuments] = useState<File[]>([]);
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    const fetchFiles = async (): Promise<void> => {
+        // const fetchedFiles = await getUserFiles(client);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
+        // allFiles.current = fetchedFiles;
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
+        setMedia([...fetchedFiles.filter((f) => f.mimetype&&f.mimetype.startsWith('image/'))]);
+    };
+
     // const allFiles = useRef<File[]>([]);
     useEffect(() => {
         initRouting();
-
-        const fetchFiles = async (): Promise<void> => {
-            // const fetchedFiles = await getUserFiles(client);
-            const fetchedFiles = (await listFiles(client.getUserId() ?? "", )).map(item=>dtoToFileAdapters(item, client.getUserId()))
-            // allFiles.current = fetchedFiles;
-            setDocuments([...fetchedFiles.filter((f) => f.mimetype&&!f.mimetype.startsWith('image/'))]);
-            setMedia([...fetchedFiles.filter((f) => f.mimetype&&f.mimetype.startsWith('image/'))]);
-        };
-
         fetchFiles();
     }, [client]);
 
@@ -55,6 +54,9 @@ export const MainPanel = (): JSX.Element => {
             setMedia((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
         }
     }
+    const onUpdate = ():void=>{
+        fetchFiles()
+    }
 
     return (
         <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
@@ -62,7 +64,7 @@ export const MainPanel = (): JSX.Element => {
                 <div className="mb-8">
                     <h2 className="text-2xl font-semibold tracking-tight mb-1">File Manager</h2>
                     <p className="text-muted-foreground">
-                        View and manage your files – Select files to be analyzed by Zebra.
+                        View and manage your files
                     </p>
                 </div>
                 <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
@@ -73,6 +75,7 @@ export const MainPanel = (): JSX.Element => {
                         setRowSelection={setRowSelection}
                         mode="standalone"
                         onDelete={onDelete}
+                        onUpdate={onUpdate}
                     />
                 )}
                 <div style={{ display: displayType === "media" ? "block" : "none" }}>
