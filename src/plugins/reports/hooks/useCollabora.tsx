@@ -3,7 +3,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -72,8 +72,8 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // State to store generated content buffer while streaming
-    const contentBuffer = useRef("");
+    // // State to store generated content buffer while streaming
+    // const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
@@ -387,7 +387,8 @@ export function useCollabora({
                     renderIndex.current += 1; // Optionally, you could retry instead of skipping
                 } else if (currentContent.content) {
                     // Await here ensures we don't move to the next content until this one is fully processed
-                    await streamContent(currentContent.content, contentBuffer, insertText);
+                    // await streamContent(currentContent.content, contentBuffer, insertText);
+                    insertCustomHtml(currentContent.content);
                     contentQueue.current[renderIndex.current].isRendered = true;
                     renderIndex.current += 1; // Move to the next response
                 }
@@ -424,7 +425,7 @@ export function useCollabora({
                                 error: false,
                             };
                             if (index === 0) {
-                                setIsAiLoading(false);
+                                // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
                                 processContentSequentially();
                             }

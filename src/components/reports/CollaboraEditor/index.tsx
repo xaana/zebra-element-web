@@ -69,7 +69,9 @@ const CollaboraEditor = ({
 
     return (
         <>
-            {(isAiLoading || !editor.documentLoaded) && <Loader label="Zebra is loading..." />}
+            {(isAiLoading || !editor.documentLoaded) && (
+                <Loader label={isAiLoading ? "Zebra is generating content..." : "Loading document..."} />
+            )}
             <div className={cn("w-full h-full", editor.documentLoaded ? "flex" : "invisible")}>
                 <div className="h-full flex-1">
                     <iframe
