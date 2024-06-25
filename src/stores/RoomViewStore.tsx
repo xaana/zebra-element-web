@@ -432,6 +432,11 @@ export class RoomViewStore extends EventEmitter {
                                     eventId: file.eventId,
                                     roomId: file.roomId,
                                 };
+                            }else if (!file.eventId){
+                                return {
+                                    mediaId: file.mediaId,
+                                    name: file.name,
+                                };
                             }
                             
                         })
