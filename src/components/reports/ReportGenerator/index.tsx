@@ -111,6 +111,7 @@ export const ReportGenerator = ({
             contentSize,
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
+            contentMediaId ?? undefined,
         );
     };
 

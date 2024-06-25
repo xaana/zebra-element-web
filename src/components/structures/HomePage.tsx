@@ -40,6 +40,7 @@ import { IconTurium } from "@/components/ui/icons";
 import ZebraAlert from "../ui/ZebraAlert";
 import { startDmOnFirstMessage } from "@/utils/direct-messages";
 import ContentMessages from "matrix-react-sdk/src/ContentMessages";
+import HomePageInput from "./HomePageInput";
 
 interface IProps {
     justRegistered?: boolean;
@@ -96,7 +97,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         user_id: "@zebra:securezebra.com",
         display_name: "zebra",
     });
-    const targetDMRoom = findDMRoom(cli, [botDM]);
 
     const onClickWebSearchHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
@@ -183,23 +183,12 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             </div>
 
             <div className="absolute w-full bottom-0">
-                {targetDMRoom && (
-                    <>
-                        <MessageComposer
-                            room={targetDMRoom}
-                            resizeNotifier={new ResizeNotifier()}
+                    <div className="flex items-center flex-col">
+                        <HomePageInput
                             mxClient={cli}
-                            fromHomepage={true}
-                            onSendCallback={() => {
-                                dis.dispatch({
-                                    action: "view_room",
-                                    room_id: targetDMRoom.roomId,
-                                });
-                            }}
                         />
                         <ZebraAlert />
-                    </>
-                )}
+                    </div>
             </div>
         </AutoHideScrollbar>
     );

@@ -70,6 +70,7 @@ export const generateContent = async (
     contentSize: string,
     targetAudience?: string,
     tone?: string,
+    mediaId?: string,
 ): Promise<string | undefined> => {
     try {
         const res = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/content`, {
@@ -82,6 +83,7 @@ export const generateContent = async (
                 content_size: contentSize,
                 ...(targetAudience && { target_audience: targetAudience }),
                 ...(tone && { tone: tone }),
+                ...(mediaId && { content_media_id: mediaId }),
             }),
         });
         const data = await res.json();

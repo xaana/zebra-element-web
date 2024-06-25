@@ -22,8 +22,8 @@ export const Home = (): JSX.Element => {
     const [reportsFetched, setReportsFetched] = useState(false);
 
     const createNewReport = async (
-        initialContent?: string,
         documentName?: string,
+        initialContent?: string,
         aiContent?: AiGenerationContent,
     ): Promise<void> => {
         try {
@@ -136,7 +136,7 @@ export const Home = (): JSX.Element => {
 
             if (responseData?.html_pages?.length > 0) {
                 const combinedString = responseData.html_pages.join("\n");
-                await createNewReport(combinedString);
+                await createNewReport(undefined, combinedString);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -148,17 +148,27 @@ export const Home = (): JSX.Element => {
         try {
             setIsLoading(true);
 
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/get_document_html`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/duplicate_document/${reportId}`,
+                {
+                    method: "POST",
                 },
-                body: JSON.stringify({ document_id: Number(reportId) }),
-            });
+            );
             const data = await response.json();
 
-            if (data && data.document_html && data.document_name) {
-                await createNewReport(data.document_html, data.document_name);
+            if (data && data.status && data.document_id && data.document_name) {
+                setIsLoading(false);
+
+                const newReport: Report = {
+                    id: data.document_id.toString(),
+                    name: data.document_name,
+                    owner: client.getSafeUserId(),
+                    accessType: "admin",
+                    timestamp: new Date().toISOString(),
+                };
+
+                setReports((prev) => [...prev, newReport]);
+                setSelectedReport(newReport);
             } else {
                 console.error("Error fetching data:", data);
                 setIsLoading(false);
@@ -170,7 +180,7 @@ export const Home = (): JSX.Element => {
     };
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
-        await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
+        await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
     };
 
     const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
@@ -295,7 +305,7 @@ export const Home = (): JSX.Element => {
                 mode="create"
                 open={nameDialogOpen}
                 setOpen={setNameDialogOpen}
-                onSubmit={(newName: string) => createNewReport(undefined, newName)}
+                onSubmit={(newName: string) => createNewReport(newName)}
             />
         </div>
     );
