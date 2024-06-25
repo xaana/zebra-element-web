@@ -59,18 +59,6 @@ export const generateText = async (
         const reader: ReadableStreamDefaultReader = res.body.getReader();
 
         const onResponseComplete = (response: string): void => {
-            // // process text
-            // const ps = response.split(/\n/).filter((line) => line.length > 0);
-            // const newText = ps
-            //     .map((p, i) => {
-            //         // Skip wrapping the first and last paragraphs
-            //         if (i !== 0 && i !== ps.length - 1) {
-            //             return `<p>${p}</p>`;
-            //         }
-            //         return p;
-            //     })
-            //     .join("");
-
             editorChat.setMessages((prev) =>
                 prev.map((message, index) => ({
                     ...message,
