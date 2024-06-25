@@ -9,7 +9,6 @@ import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import DataQuerySidebar from "@/components/reports/CollaboraEditor/DataQuerySidebar";
 import DocQuerySidebar from "@/components/reports/CollaboraEditor/DocQuerySidebar";
 import { useCollabora } from "@/plugins/reports/hooks/useCollabora";
-// import { toast } from "sonner";
 import { generateText } from "@/plugins/reports/utils/generateTextCollabora";
 import { Message, Report } from "@/plugins/reports/types";
 
@@ -22,7 +21,7 @@ const CollaboraEditor = ({
     onCloseEditor: () => void;
     onDocumentLoadFailed: () => void;
 }): JSX.Element => {
-    const collaboraRef = useRef<HTMLIFrameElement>(null);
+    const editorRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
     const [chatInput, setChatInput] = useState("");
     const handlePromptClick = useRef<undefined | ((prompt: string) => Promise<void>)>();
@@ -44,7 +43,7 @@ const CollaboraEditor = ({
     });
 
     const editor = useCollabora({
-        iframeRef: collaboraRef,
+        iframeRef: editorRef,
         selectedReport,
         chat,
         showSidebar,
@@ -70,13 +69,15 @@ const CollaboraEditor = ({
 
     return (
         <>
-            {(isAiLoading || !editor.documentLoaded) && <Loader label="Zebra is loading..." />}
+            {(isAiLoading || !editor.documentLoaded) && (
+                <Loader label={isAiLoading ? "Zebra is generating content..." : "Loading document..."} />
+            )}
             <div className={cn("w-full h-full", editor.documentLoaded ? "flex" : "invisible")}>
                 <div className="h-full flex-1">
                     <iframe
                         style={{ height: "100vh", width: "100%" }}
                         // className="flex-1"
-                        ref={collaboraRef}
+                        ref={editorRef}
                         title="Collabora Online Viewer"
                         id="collabora-online-viewer"
                         name="collabora-online-viewer"

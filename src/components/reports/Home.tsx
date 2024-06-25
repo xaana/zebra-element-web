@@ -125,18 +125,32 @@ export const Home = (): JSX.Element => {
     const handleFileUpload = async (file: File): Promise<void> => {
         try {
             const formData = new FormData();
-            formData.append("files", file);
+            formData.append("file", file);
+            formData.append("user_id", userId);
             setIsLoading(true);
             // Make API request
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
+                // headers: {
+                //     "Content-Type": "multipart/form-data",
+                // },
             });
             const responseData = await response.json();
 
-            if (responseData?.html_pages?.length > 0) {
-                const combinedString = responseData.html_pages.join("\n");
-                await createNewReport(undefined, combinedString);
+            if (responseData?.status && responseData?.document_id) {
+                setIsLoading(false);
+
+                const newReport: Report = {
+                    id: responseData.document_id.toString(),
+                    name: responseData.document_name,
+                    owner: client.getSafeUserId(),
+                    accessType: "admin",
+                    timestamp: new Date().toISOString(),
+                };
+
+                setReports((prev) => [...prev, newReport]);
+                setSelectedReport(newReport);
             }
         } catch (error) {
             console.error("Error fetching data:", error);

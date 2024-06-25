@@ -3,7 +3,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -27,8 +27,10 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
-    insertTextandSelect: (text: string) => void;
+    insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
+    undo: () => void;
+    redo: () => void;
 }
 
 interface PendingRequest {
@@ -70,8 +72,8 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // State to store generated content buffer while streaming
-    const contentBuffer = useRef("");
+    // // State to store generated content buffer while streaming
+    // const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
@@ -328,13 +330,16 @@ export function useCollabora({
         }
     };
 
-    const insertTextandSelect = (text: string): void => {
+    const insertText = (text: string, selectInsertedText: boolean = false): void => {
         sendMessage({
             MessageId: "CallPythonScript",
             SendTime: Date.now(),
             ScriptFile: "InsertText.py", // Ensure this Python script is deployed on the server
             Function: "InsertText",
-            Values: { text: { type: "string", value: text } },
+            Values: {
+                text: { type: "string", value: text },
+                selectInsertedText: { type: "boolean", value: selectInsertedText },
+            },
         });
     };
 
@@ -343,6 +348,23 @@ export function useCollabora({
             MessageId: "Action_Paste",
             SendTime: Date.now(),
             Values: { Mimetype: "text/html", Data: htmlContent },
+        });
+    };
+
+    const undo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Undo" },
+        });
+    };
+    const redo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Redo" },
         });
     };
 
@@ -365,7 +387,8 @@ export function useCollabora({
                     renderIndex.current += 1; // Optionally, you could retry instead of skipping
                 } else if (currentContent.content) {
                     // Await here ensures we don't move to the next content until this one is fully processed
-                    await streamContent(currentContent.content, contentBuffer, insertTextandSelect);
+                    // await streamContent(currentContent.content, contentBuffer, insertText);
+                    insertCustomHtml(currentContent.content);
                     contentQueue.current[renderIndex.current].isRendered = true;
                     renderIndex.current += 1; // Move to the next response
                 }
@@ -388,6 +411,7 @@ export function useCollabora({
                         selectedReport.aiContent.contentSize,
                         selectedReport.aiContent.targetAudience,
                         selectedReport.aiContent.tone,
+                        selectedReport.aiContent.contentMediaId ?? undefined,
                     )
                         .then(async (data) => {
                             if (!data) {
@@ -401,7 +425,7 @@ export function useCollabora({
                                 error: false,
                             };
                             if (index === 0) {
-                                setIsAiLoading(false);
+                                // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
                                 processContentSequentially();
                             }
@@ -427,7 +451,9 @@ export function useCollabora({
         sendMessage,
         startLoading,
         fetchSelectedText,
-        insertTextandSelect,
+        insertText,
         insertCustomHtml,
+        undo,
+        redo,
     } as CollaboraExports;
 }

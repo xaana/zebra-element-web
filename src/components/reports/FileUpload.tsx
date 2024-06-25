@@ -50,7 +50,7 @@ export const FileUpload = ({
                 (data: FileList) => {
                     for (let i = 0; i < data.length; i++) {
                         const fileExtension = data.item(i)?.name.split(".").pop();
-                        if (fileExtension?.toLowerCase() !== "pdf") {
+                        if (["pdf", "docx", "doc"].indexOf(fileExtension?.toLowerCase() ?? "") === -1) {
                             return false;
                         }
                     }
@@ -112,7 +112,7 @@ export const FileUpload = ({
         }
     };
 
-    const uploadFile = async (matrixFile: MatrixFile): Promise<void> => {
+    const handleUploadedFileSelection = async (matrixFile: MatrixFile): Promise<void> => {
         if (matrixFile.mimetype !== "application/pdf") {
             toast.error("Only PDF files supported.");
             return;
@@ -125,7 +125,7 @@ export const FileUpload = ({
 
     useEffect(() => {
         if (Object.keys(rowSelection).length == 1) {
-            uploadFile(documents[parseInt(Object.keys(rowSelection)[0])]);
+            handleUploadedFileSelection(documents[parseInt(Object.keys(rowSelection)[0])]);
         }
     }, [rowSelection]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -155,13 +155,18 @@ export const FileUpload = ({
                         {allowUpload && (
                             <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
                                 <Form {...fileUploadForm}>
-                                    <form className="flex items-center gap-2">
+                                    <form
+                                        className="flex items-center gap-2"
+                                        onSubmit={(e) => {
+                                            e.preventDefault(); // Prevent form submission
+                                        }}
+                                    >
                                         <input
                                             ref={inputRef}
                                             type="file"
                                             // multiple
                                             onChange={onFileChange}
-                                            accept="application/pdf" // Restrict file type to PDF
+                                            accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                             className="hidden"
                                         />
                                         <div className="flex items-center gap-2">
@@ -172,10 +177,14 @@ export const FileUpload = ({
                                             ))}
                                         </div>
                                         <Button
+                                            type="button"
                                             variant="outline"
                                             size="sm"
                                             className="mb-0.5"
-                                            onClick={() => inputRef.current?.click()}
+                                            onClick={(e) => {
+                                                e.preventDefault(); // Prevent any default action
+                                                inputRef.current?.click();
+                                            }}
                                         >
                                             <Icon name="Upload" className="mr-2" />
                                             Upload File
