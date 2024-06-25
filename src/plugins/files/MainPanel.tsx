@@ -11,11 +11,12 @@ import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 import { deleteFiles, dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
+import { Loader } from "@/components/ui/loader";
 
 export const MainPanel = (): JSX.Element => {
     const client = useMatrixClientContext();
-    const [media, setMedia] = useState<File[]>([]);
-    const [documents, setDocuments] = useState<File[]>([]);
+    const [media, setMedia] = useState<File[]|undefined>();
+    const [documents, setDocuments] = useState<File[]|undefined>();
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const fetchFiles = async (): Promise<void> => {
@@ -49,14 +50,31 @@ export const MainPanel = (): JSX.Element => {
         }
         deleteFiles(currentFile.mediaId, currentFile.sender)
         if (!currentFile.mimetype.startsWith('image/')){
-            setDocuments((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+            setDocuments((prev)=>prev?.filter(item => item.mediaId !== currentFile.mediaId))
         }else if (currentFile.mimetype.startsWith('image/')){
-            setMedia((prev)=>prev.filter(item => item.mediaId !== currentFile.mediaId))
+            setMedia((prev)=>prev?.filter(item => item.mediaId !== currentFile.mediaId))
         }
     }
     const onUpdate = ():void=>{
         fetchFiles()
     }
+    if(!documents){
+        return (
+            <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
+            <div className="flex-1 max-w-screen-lg">
+                <div className="mb-8">
+                    <h2 className="text-2xl font-semibold tracking-tight mb-1">File Manager</h2>
+                    <p className="text-muted-foreground">
+                        View and manage your files
+                    </p>
+                </div>
+                <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
+                <Loader className="w-full h-full flex justify-center" height="70" width="70" />
+            </div>
+        </div>
+        )
+    }
+
 
     return (
         <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
