@@ -11,12 +11,20 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 
-export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
-    const [open, setOpen] = useState(false);
+export const ShareReport = ({
+    report,
+    open,
+    setOpen,
+}: {
+    report: Report;
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}): JSX.Element => {
+    // const [open, setOpen] = useState(false);
     const [userIds, setUserIds] = useState<string[]>([]);
     const cli = MatrixClientPeg.safeGet();
 
@@ -60,10 +68,10 @@ export const ShareReport = ({ report }: { report: Report }): JSX.Element => {
 
     return (
         <>
-            <Button className="font-semibold text-sm" size="sm" onClick={() => setOpen(true)}>
+            {/* <Button className="font-semibold text-sm" size="sm" onClick={() => setOpen(true)}>
                 <Icon name="LockKeyhole" className="mr-2 h-4 w-4" />
                 Share
-            </Button>
+            </Button> */}
             <CommandDialog className="w-[512px]" open={open} onOpenChange={setOpen}>
                 <CommandInput placeholder="Search for user..." />
                 <CommandList>
