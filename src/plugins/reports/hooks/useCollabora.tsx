@@ -31,6 +31,7 @@ export interface CollaboraExports {
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
     redo: () => void;
+    goToDocumentEnd: () => void;
 }
 
 interface PendingRequest {
@@ -195,12 +196,12 @@ export function useCollabora({
             case "UI_Mention": {
                 const dummyUserDatabase = [
                     {
-                        username: "Abigail",
-                        profile: "Abigail profile link",
+                        username: "User 1",
+                        profile: "profile link",
                     },
                     {
-                        username: "Alexandra",
-                        profile: "Alexandra profile link",
+                        username: "User 2",
+                        profile: "profile link",
                     },
                 ];
                 const type = msg.Values.type;
@@ -351,6 +352,14 @@ export function useCollabora({
         });
     };
 
+    const goToDocumentEnd = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:GoToEndOfDoc" },
+        });
+    };
     const undo = (): void => {
         // .uno:ClearUndoStack
         sendMessage({
@@ -427,6 +436,7 @@ export function useCollabora({
                             if (index === 0) {
                                 // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
+                                goToDocumentEnd();
                                 processContentSequentially();
                             }
                         })
@@ -455,5 +465,6 @@ export function useCollabora({
         insertCustomHtml,
         undo,
         redo,
+        goToDocumentEnd,
     } as CollaboraExports;
 }
