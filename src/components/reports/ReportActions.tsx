@@ -4,6 +4,7 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
+import { IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
 import {
     CommandDialog,
     CommandEmpty,
@@ -21,6 +22,10 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
     DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubTrigger,
+    DropdownMenuPortal,
+    DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Report } from "@/plugins/reports/types";
 import {
@@ -63,11 +68,11 @@ export function ReportActions({
             });
     }, []);
 
-    const downloadFile = async (): Promise<void> => {
+    const downloadFile = async (asType: "docx" | "doc" | "pdf"): Promise<void> => {
         try {
             const documentId = row.id;
             const response = await fetch(
-                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/download_document/${documentId}`,
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/download_document/${documentId}/${asType}`,
             );
 
             if (!response.ok) {
@@ -80,7 +85,7 @@ export function ReportActions({
             blob &&
                 fileDownloader.download({
                     blob,
-                    name: row.name ? row.name + ".pdf" : "Report.pdf",
+                    name: row.name ? row.name + `.${asType}` : `Report.${asType}`,
                     autoDownload: true,
                 });
         } catch (error) {
@@ -138,7 +143,10 @@ export function ReportActions({
         <div className="flex items-center justify-end gap-4" onClick={stopPropagation}>
             <DropdownMenu open={dropdownOpen} onOpenChange={setDropDownOpen}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex h-auto w-auto p-1 data-[state=open]:bg-muted rounded-full">
+                    <Button
+                        variant="ghost"
+                        className="flex h-auto w-auto p-1 data-[state=open]:bg-muted rounded-full focus-visible:ring-0"
+                    >
                         {/* <IconEllipses className="w-6 h-6 text-muted-foreground" /> */}
                         <Icon name="Ellipsis" className="w-4 h-4 text-muted-foreground" strokeWidth={1} />
                         <span className="sr-only">Open menu</span>
@@ -149,6 +157,7 @@ export function ReportActions({
                         className="cursor-pointer"
                         onClick={async (e: any) => {
                             stopPropagation(e);
+                            setDropDownOpen(false);
                             setRenameOpen(true);
                         }}
                     >
@@ -161,6 +170,7 @@ export function ReportActions({
                         className="cursor-pointer"
                         onClick={async (e: any) => {
                             stopPropagation(e);
+                            setDropDownOpen(false);
                             await handleDuplicate();
                         }}
                     >
@@ -169,22 +179,54 @@ export function ReportActions({
                             <Icon name="Copy" className="w-4 h-4" />
                         </DropdownMenuShortcut>
                     </DropdownMenuItem>
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>Download</DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem
+                                    onSelect={async (e: any) => {
+                                        stopPropagation(e);
+                                        setDropDownOpen(false);
+                                        await downloadFile("docx");
+                                    }}
+                                >
+                                    Word Document (.docx)
+                                    <DropdownMenuShortcut>
+                                        <IconDocumentWord className="w-4 h-4 ml-1" />
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onSelect={async (e: any) => {
+                                        stopPropagation(e);
+                                        setDropDownOpen(false);
+                                        await downloadFile("doc");
+                                    }}
+                                >
+                                    Word 2003 Document (.doc)
+                                    <DropdownMenuShortcut>
+                                        <IconDocumentText className="w-4 h-4 ml-1" />
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onSelect={async (e: any) => {
+                                        stopPropagation(e);
+                                        setDropDownOpen(false);
+                                        await downloadFile("pdf");
+                                    }}
+                                >
+                                    PDF Document (.pdf)
+                                    <DropdownMenuShortcut>
+                                        <IconDocumentPDF className="w-4 h-4 ml-1" />
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
                     <DropdownMenuItem
                         className="cursor-pointer"
                         onSelect={async (e: any) => {
                             stopPropagation(e);
-                            await downloadFile();
-                        }}
-                    >
-                        Download
-                        <DropdownMenuShortcut>
-                            <Icon name="ArrowDownToLine" className="w-4 h-4" />
-                        </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        className="cursor-pointer"
-                        onSelect={async (e: any) => {
-                            stopPropagation(e);
+                            setDropDownOpen(false);
                             setApproveDialogOpen(true);
                         }}
                     >
@@ -198,6 +240,7 @@ export function ReportActions({
                         className="text-red-600"
                         onSelect={async (e: any) => {
                             stopPropagation(e);
+                            setDropDownOpen(false);
                             await deleteFile();
                         }}
                     >
