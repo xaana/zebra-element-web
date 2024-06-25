@@ -21,7 +21,7 @@ export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarSta
                 children: index !== 0 ? null : message.children,
             })),
         );
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleChatStop = (): void => {
         console.log("Stop");
@@ -43,6 +43,16 @@ export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarSta
                         className="p-1 h-auto rounded-full"
                     >
                         <Icon name="Trash2" strokeWidth={1.75} className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => editorChat?.reset()}
+                        disabled={editorChat?.messages.length < 2}
+                        className="py-1 px-2 w-auto h-auto rounded-full text-[10px]"
+                    >
+                        <Icon name="Trash2" strokeWidth={1.75} className="w-3.5 h-3.5 mr-1" />
+                        Clear Chat
                     </Button>
                     <Button size="sm" variant="outline" onClick={sidebar.close} className="p-1 h-auto rounded-full">
                         <Icon name="X" className="w-3.5 h-3.5" />

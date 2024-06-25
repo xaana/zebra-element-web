@@ -197,7 +197,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
     }, [data, selectedFiles]);
 
     const insert = useCallback(() => {
-        previewText && editor.insertTextandSelect(formatResponse(previewText));
+        previewText && editor.insertText(formatResponse(previewText), false);
 
         onClose();
     }, [editor, previewText, onClose]);

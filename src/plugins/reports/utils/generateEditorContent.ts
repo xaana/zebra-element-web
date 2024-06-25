@@ -4,7 +4,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 export const streamContent = async (
     htmlContent: string,
     contentBuffer: React.MutableRefObject<string>,
-    insertTextandSelect: (text: string) => void,
+    insertText: (text: string, selectInsertedText?: boolean) => void,
 ): Promise<void> => {
     // if (!editor) return Promise.resolve();
 
@@ -48,12 +48,12 @@ export const streamContent = async (
                 const tempOpenTags = openTagsStack.map((tag) => tag.replace("/", "")).join("");
 
                 // editor.commands.setContent(contentChunk + tempCloseTags + tempOpenTags);
-                insertTextandSelect(contentChunk + tempCloseTags + tempOpenTags);
+                insertText(contentChunk + tempCloseTags + tempOpenTags, false);
                 position = nextPosition;
                 setTimeout(updateContentInChunks, delay);
             } else {
                 // editor.commands.setContent(contentBuffer.current);
-                insertTextandSelect(contentBuffer.current);
+                insertText(contentBuffer.current, false);
                 // editor.commands.selectTextblockEnd();
                 // editor.commands.scrollIntoView();
                 resolve();

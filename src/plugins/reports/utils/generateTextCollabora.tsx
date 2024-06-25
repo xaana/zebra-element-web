@@ -84,7 +84,7 @@ export const generateText = async (
                         ) : null,
                 })),
             );
-            editor.insertTextandSelect(response);
+            editor.insertText(response, true);
         };
 
         reader &&

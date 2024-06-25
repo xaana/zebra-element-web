@@ -23,14 +23,14 @@ export const ResponseActionCollabora = ({
                 setShowToggle(false);
                 toast.error(`No text selection found.`);
             } else {
-                editor.insertTextandSelect(originalText);
+                editor.insertText(originalText, true);
             }
         } else if (value === "suggested") {
             if (!selectedText || selectedText.length === 0 || Math.abs(selectedText.length - originalText.length) > 5) {
                 setShowToggle(false);
                 toast.error(`No text selection found.`);
             } else {
-                editor.insertTextandSelect(responseText);
+                editor.insertText(responseText, true);
             }
         } else {
             return;

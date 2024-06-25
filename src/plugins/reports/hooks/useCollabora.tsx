@@ -27,7 +27,7 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
-    insertTextandSelect: (text: string) => void;
+    insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
 }
 
@@ -328,13 +328,16 @@ export function useCollabora({
         }
     };
 
-    const insertTextandSelect = (text: string): void => {
+    const insertText = (text: string, selectInsertedText: boolean = false): void => {
         sendMessage({
             MessageId: "CallPythonScript",
             SendTime: Date.now(),
             ScriptFile: "InsertText.py", // Ensure this Python script is deployed on the server
             Function: "InsertText",
-            Values: { text: { type: "string", value: text } },
+            Values: {
+                text: { type: "string", value: text },
+                selectInsertedText: { type: "boolean", value: selectInsertedText },
+            },
         });
     };
 
@@ -365,7 +368,7 @@ export function useCollabora({
                     renderIndex.current += 1; // Optionally, you could retry instead of skipping
                 } else if (currentContent.content) {
                     // Await here ensures we don't move to the next content until this one is fully processed
-                    await streamContent(currentContent.content, contentBuffer, insertTextandSelect);
+                    await streamContent(currentContent.content, contentBuffer, insertText);
                     contentQueue.current[renderIndex.current].isRendered = true;
                     renderIndex.current += 1; // Move to the next response
                 }
@@ -428,7 +431,7 @@ export function useCollabora({
         sendMessage,
         startLoading,
         fetchSelectedText,
-        insertTextandSelect,
+        insertText,
         insertCustomHtml,
     } as CollaboraExports;
 }
