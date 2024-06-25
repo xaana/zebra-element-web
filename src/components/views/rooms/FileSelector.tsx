@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
+import { Loader } from "@/components/ui/loader";
 
 interface IProps {
     roomId: string;
@@ -34,8 +35,8 @@ export interface DocFile {
 
 export const FileSelector = (props: IProps): JSX.Element => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [media, setMedia] = useState<File[]>([]);
-    const [documents, setDocuments] = useState<File[]>([]);
+    const [media, setMedia] = useState<File[]|undefined>();
+    const [documents, setDocuments] = useState<File[]|undefined>();
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const { timelineRenderingType } = useContext(RoomContext);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -59,13 +60,17 @@ export const FileSelector = (props: IProps): JSX.Element => {
     // }, []);
 
     useEffect(() => {
+        if (!documents)return
         setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
     }, [rowSelection, documents]);
 
     const handleDialogOpen = (): void => {
         if (!dialogOpen) {
-            setMedia([]);
-            setDocuments([]);
+            if(documents){
+                setMedia([]);
+                setDocuments([]);
+            }
+            
             // setSelectedFiles([]);
             setRowSelection({});
             setDialogOpen(true);
@@ -81,6 +86,10 @@ export const FileSelector = (props: IProps): JSX.Element => {
 
         
     };
+
+    const onUpdate = ():void=>{
+        fetchFiles()
+    }
 
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
         if (open) {
@@ -162,7 +171,17 @@ export const FileSelector = (props: IProps): JSX.Element => {
                 />
             </DialogTrigger>
             <DialogContent className="w-[90vw] max-w-[90vw] h-[100vh] p-0 overflow-y-auto">
-                <div className="relative w-[90vw] max-w-[90vw] h-full p-4">
+                {!documents&&<div className="relative w-[90vw] max-w-[90vw] h-full p-4">
+                    <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                    <FilesTabs
+                        className="mb-4"
+                        displayType={displayType}
+                        setDisplayType={setDisplayType}
+                        setRowSelection={setRowSelection}
+                    />
+                    <Loader className="w-full h-full flex justify-center" height="50" width="50" />
+                </div>}
+                {documents&&<div className="relative w-[90vw] max-w-[90vw] h-full p-4">
                     <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
                     <FilesTabs
                         className="mb-4"
@@ -177,6 +196,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                                 rowSelection={rowSelection}
                                 setRowSelection={setRowSelection}
                                 mode="dialog"
+                                onUpdate={onUpdate}
                             />
                         )}
                         <div style={{ display: displayType === "media" ? "block" : "none" }}>
@@ -199,7 +219,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
                             Done
                         </Button>
                     </div>
-                </div>
+                </div>}
             </DialogContent>
         </Dialog>
     );
