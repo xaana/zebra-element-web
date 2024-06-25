@@ -50,6 +50,8 @@ export function useCollabora({
     onDocumentLoadFailed,
     isAiLoading,
     setIsAiLoading,
+    currentUser,
+    allUsers,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     selectedReport: Report;
@@ -60,6 +62,8 @@ export function useCollabora({
     onDocumentLoadFailed: () => void;
     isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    currentUser: string;
+    allUsers: string[];
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -73,8 +77,6 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // // State to store generated content buffer while streaming
-    // const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
@@ -85,7 +87,7 @@ export function useCollabora({
                     const wopiClientUrl = data.url;
                     // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    console.log(wopi);
+                    // console.log(wopi);
                     setWopiUrl(`${wopi}&access_token=${window.location.origin}`);
                     setStartLoading(true);
                 });
@@ -177,36 +179,30 @@ export function useCollabora({
                     }
                 }
                 break;
-            case "CallPythonScript-Result":
-                {
-                    if (
-                        msg.Values.commandName &&
-                        typeof msg.Values.commandName === "string" &&
-                        msg.Values.commandName.indexOf("GetSelection") >= 0 &&
-                        msg.Values.success &&
-                        msg.Values.result &&
-                        typeof msg.Values.result === "object" &&
-                        "value" in msg.Values.result &&
-                        typeof msg.Values.result.value === "string"
-                    ) {
-                        console.log(`Selected text:`, msg.Values.result.value);
-                    }
-                }
-                break;
+            // case "CallPythonScript-Result":
+            //     {
+            //         if (
+            //             msg.Values.commandName &&
+            //             typeof msg.Values.commandName === "string" &&
+            //             msg.Values.commandName.indexOf("GetSelection") >= 0 &&
+            //             msg.Values.success &&
+            //             msg.Values.result &&
+            //             typeof msg.Values.result === "object" &&
+            //             "value" in msg.Values.result &&
+            //             typeof msg.Values.result.value === "string"
+            //         ) {
+            //             console.log(`Selected text:`, msg.Values.result.value);
+            //         }
+            //     }
+            //     break;
             case "UI_Mention": {
-                const dummyUserDatabase = [
-                    {
-                        username: "User 1",
-                        profile: "profile link",
-                    },
-                    {
-                        username: "User 2",
-                        profile: "profile link",
-                    },
-                ];
+                const usersList = allUsers.map((user) => ({
+                    username: user.split(":")[0].substring(1),
+                    profile: user,
+                }));
                 const type = msg.Values.type;
                 const text = msg.Values.text as string;
-                const users = dummyUserDatabase.filter((user) => user.username.includes(text));
+                const users = usersList.filter((user) => user.username.includes(text));
                 if (type === "autocomplete") {
                     setTimeout(sendMessage, 0, {
                         MessageId: "Action_Mention",
@@ -215,6 +211,8 @@ export function useCollabora({
                             list: users,
                         },
                     });
+                } else if (type === "selected") {
+                    console.log(`Mentioned:`, msg.Values.username);
                 }
                 break;
             }

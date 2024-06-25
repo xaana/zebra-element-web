@@ -21,6 +21,7 @@ interface ReportSelectorProps {
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
+    allUsers: string[];
 }
 
 export const ReportSelector = ({
@@ -33,6 +34,7 @@ export const ReportSelector = ({
     onDuplicate,
     onDelete,
     onAiGenerate,
+    allUsers,
 }: ReportSelectorProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
@@ -141,6 +143,7 @@ export const ReportSelector = ({
                             onDuplicate={onDuplicate}
                             userId={userId}
                             onDelete={onDelete}
+                            allUsers={allUsers}
                         />
                     ))}
                 </div>
@@ -151,6 +154,7 @@ export const ReportSelector = ({
                     onRename={onRename}
                     onDuplicate={onDuplicate}
                     onDelete={onDelete}
+                    allUsers={allUsers}
                 />
             )}
         </>

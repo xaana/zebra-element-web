@@ -20,6 +20,7 @@ export const Home = (): JSX.Element => {
     const [isLoading, setIsLoading] = useState(false);
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
+    const [allUsers, setAllUsers] = useState<string[]>([]);
 
     const createNewReport = async (
         documentName?: string,
@@ -59,6 +60,21 @@ export const Home = (): JSX.Element => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchUsers = async (): Promise<void> => {
+            const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
+            const request = new Request(url, {
+                method: "GET",
+            });
+            fetch(request)
+                .then((response) => response.json())
+                .then((data) => {
+                    data.user && setAllUsers(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
+                });
+        };
+        fetchUsers();
+    }, []);
 
     useEffect(() => {
         const fetchReports = async (): Promise<void> => {
@@ -283,6 +299,7 @@ export const Home = (): JSX.Element => {
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
+                        allUsers={allUsers}
                     />
                 </motion.div>
             )}
@@ -318,6 +335,8 @@ export const Home = (): JSX.Element => {
                             onCloseEditor={handleCloseEditor}
                             selectedReport={selectedReport}
                             onDocumentLoadFailed={handleDocumentLoadFailed}
+                            currentUser={userId}
+                            allUsers={allUsers}
                         />
                     </div>
                 </motion.div>

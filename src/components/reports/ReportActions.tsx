@@ -46,30 +46,19 @@ export function ReportActions({
     onRename,
     onDuplicate,
     onDelete,
+    allUsers,
 }: {
     row: Report;
     onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
+    allUsers: string[];
 }): JSX.Element {
     const cli = MatrixClientPeg.safeGet();
-    const [userIds, setUserIds] = useState<string[]>([]);
     const [renameOpen, setRenameOpen] = useState(false);
     const [dropdownOpen, setDropDownOpen] = useState(false);
     const [approveDialogOpen, setApproveDialogOpen] = useState(false);
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
-
-    useEffect(() => {
-        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
-        const request = new Request(url, {
-            method: "GET",
-        });
-        fetch(request)
-            .then((response) => response.json())
-            .then((data) => {
-                data.user && setUserIds(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
-            });
-    }, []);
 
     const downloadFile = async (asType: "docx" | "doc" | "pdf"): Promise<void> => {
         try {
@@ -274,7 +263,7 @@ export function ReportActions({
                 <CommandList>
                     <CommandEmpty>No users found.</CommandEmpty>
                     <CommandGroup heading="Users">
-                        {userIds
+                        {allUsers
                             .filter((item) => item !== cli.getSafeUserId())
                             .map((userId, index) => (
                                 <CommandItem
@@ -296,7 +285,7 @@ export function ReportActions({
                 oldName={row.name}
                 onSubmit={(newName: string) => onRename(row.id, newName)}
             />
-            <ShareReport report={row} open={shareDialogOpen} setOpen={setShareDialogOpen} />
+            <ShareReport report={row} open={shareDialogOpen} setOpen={setShareDialogOpen} allUsers={allUsers} />
         </div>
     );
 }

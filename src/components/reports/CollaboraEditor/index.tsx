@@ -16,10 +16,14 @@ const CollaboraEditor = ({
     selectedReport,
     onCloseEditor,
     onDocumentLoadFailed,
+    currentUser,
+    allUsers,
 }: {
     selectedReport: Report;
     onCloseEditor: () => void;
     onDocumentLoadFailed: () => void;
+    currentUser: string;
+    allUsers: string[];
 }): JSX.Element => {
     const editorRef = useRef<HTMLIFrameElement>(null);
     const [showSidebar, setShowSidebar] = useState(false);
@@ -52,6 +56,8 @@ const CollaboraEditor = ({
         onDocumentLoadFailed,
         isAiLoading,
         setIsAiLoading,
+        currentUser,
+        allUsers,
     });
 
     handlePromptClick.current = async (prompt: string): Promise<void> => {
