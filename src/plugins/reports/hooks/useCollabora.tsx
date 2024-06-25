@@ -87,7 +87,7 @@ export function useCollabora({
                     const wopiClientUrl = data.url;
                     // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    console.log(wopi);
+                    // console.log(wopi);
                     setWopiUrl(`${wopi}&access_token=${window.location.origin}`);
                     setStartLoading(true);
                 });
@@ -97,8 +97,6 @@ export function useCollabora({
 
         // Install the message listener.
         window.addEventListener("message", receiveMessage, false);
-
-        // console.log(`\n\nALL USERS`, allUsers);
 
         return () => {
             window.removeEventListener("message", receiveMessage, false);
@@ -181,27 +179,30 @@ export function useCollabora({
                     }
                 }
                 break;
-            case "CallPythonScript-Result":
-                {
-                    if (
-                        msg.Values.commandName &&
-                        typeof msg.Values.commandName === "string" &&
-                        msg.Values.commandName.indexOf("GetSelection") >= 0 &&
-                        msg.Values.success &&
-                        msg.Values.result &&
-                        typeof msg.Values.result === "object" &&
-                        "value" in msg.Values.result &&
-                        typeof msg.Values.result.value === "string"
-                    ) {
-                        console.log(`Selected text:`, msg.Values.result.value);
-                    }
-                }
-                break;
+            // case "CallPythonScript-Result":
+            //     {
+            //         if (
+            //             msg.Values.commandName &&
+            //             typeof msg.Values.commandName === "string" &&
+            //             msg.Values.commandName.indexOf("GetSelection") >= 0 &&
+            //             msg.Values.success &&
+            //             msg.Values.result &&
+            //             typeof msg.Values.result === "object" &&
+            //             "value" in msg.Values.result &&
+            //             typeof msg.Values.result.value === "string"
+            //         ) {
+            //             console.log(`Selected text:`, msg.Values.result.value);
+            //         }
+            //     }
+            //     break;
             case "UI_Mention": {
-                const usersList = allUsers.map((user) => ({ text: user.split(":")[0].substring(1), value: user }));
+                const usersList = allUsers.map((user) => ({
+                    username: user.split(":")[0].substring(1),
+                    profile: user,
+                }));
                 const type = msg.Values.type;
                 const text = msg.Values.text as string;
-                const users = usersList.filter((user) => user.text.includes(text));
+                const users = usersList.filter((user) => user.username.includes(text));
                 if (type === "autocomplete") {
                     setTimeout(sendMessage, 0, {
                         MessageId: "Action_Mention",
@@ -210,6 +211,8 @@ export function useCollabora({
                             list: users,
                         },
                     });
+                } else if (type === "selected") {
+                    console.log(`Mentioned:`, msg.Values.username);
                 }
                 break;
             }
