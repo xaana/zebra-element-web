@@ -72,7 +72,7 @@ export const generateText = async (
                         ) : null,
                 })),
             );
-            editor.insertText(response, true);
+            editor.insertText(response, false);
         };
 
         reader &&

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -17,26 +17,31 @@ export const ResponseActionCollabora = ({
     const [showToggle, setShowToggle] = useState(true);
 
     const handleToggleChange = async (value: string): Promise<void> => {
-        const selectedText = await editor.fetchSelectedText();
+        // const selectedText = await editor.fetchSelectedText();
         if (value === "original") {
-            if (!selectedText || selectedText.length === 0 || selectedText.length !== responseText.length) {
-                setShowToggle(false);
-                toast.error(`No text selection found.`);
-            } else {
-                editor.insertText(originalText, true);
-            }
+            // if (!selectedText || selectedText.length === 0 || selectedText.length !== responseText.length) {
+            //     setShowToggle(false);
+            //     toast.error(`No text selection found.`);
+            // } else {
+            //     editor.insertText(originalText, true);
+            // }
+            editor.undo();
+            // editor.insertText(originalText, false);
         } else if (value === "suggested") {
-            if (!selectedText || selectedText.length === 0 || Math.abs(selectedText.length - originalText.length) > 5) {
-                setShowToggle(false);
-                toast.error(`No text selection found.`);
-            } else {
-                editor.insertText(responseText, true);
-            }
+            // if (!selectedText || selectedText.length === 0 || Math.abs(selectedText.length - originalText.length) > 5) {
+            //     setShowToggle(false);
+            //     toast.error(`No text selection found.`);
+            // } else {
+            //     editor.insertText(responseText, true);
+            // }
+            editor.redo();
+            // editor.insertText(responseText, false);
         } else {
             return;
         }
         setActionValue(value);
     };
+
     return showToggle ? (
         <div className="flex justify-end items-center">
             <ToggleGroup

@@ -29,6 +29,8 @@ export interface CollaboraExports {
     fetchSelectedText: () => Promise<string | undefined>;
     insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
+    undo: () => void;
+    redo: () => void;
 }
 
 interface PendingRequest {
@@ -349,6 +351,23 @@ export function useCollabora({
         });
     };
 
+    const undo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Undo" },
+        });
+    };
+    const redo = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:Redo" },
+        });
+    };
+
     const aiGenerateContent = async (): Promise<void> => {
         if (!selectedReport.aiContent) return;
         let interval: ReturnType<typeof setInterval>;
@@ -433,5 +452,7 @@ export function useCollabora({
         fetchSelectedText,
         insertText,
         insertCustomHtml,
+        undo,
+        redo,
     } as CollaboraExports;
 }
