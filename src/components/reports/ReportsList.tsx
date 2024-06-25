@@ -23,6 +23,7 @@ interface ReportsListProps {
     onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
+    allUsers: string[];
 }
 
 export const ReportsList = ({
@@ -31,6 +32,7 @@ export const ReportsList = ({
     onRename,
     onDuplicate,
     onDelete,
+    allUsers,
 }: ReportsListProps): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -90,7 +92,13 @@ export const ReportsList = ({
         {
             id: "actions",
             cell: ({ row }) => (
-                <ReportActions row={row.original} onRename={onRename} onDuplicate={onDuplicate} onDelete={onDelete} />
+                <ReportActions
+                    row={row.original}
+                    onRename={onRename}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                    allUsers={allUsers}
+                />
             ),
             size: 20,
         },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
@@ -19,26 +19,14 @@ export const ShareReport = ({
     report,
     open,
     setOpen,
+    allUsers,
 }: {
     report: Report;
     open: boolean;
     setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    allUsers: string[];
 }): JSX.Element => {
-    // const [open, setOpen] = useState(false);
-    const [userIds, setUserIds] = useState<string[]>([]);
     const cli = MatrixClientPeg.safeGet();
-
-    useEffect(() => {
-        const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
-        const request = new Request(url, {
-            method: "GET",
-        });
-        fetch(request)
-            .then((response) => response.json())
-            .then((data) => {
-                data.user && setUserIds(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
-            });
-    }, []);
 
     const handleShare = async (userId: string): Promise<void> => {
         setOpen(false);
@@ -77,7 +65,7 @@ export const ShareReport = ({
                 <CommandList>
                     <CommandEmpty>No users found.</CommandEmpty>
                     <CommandGroup heading="Users">
-                        {userIds
+                        {allUsers
                             .filter((item) => item !== cli.getSafeUserId())
                             .map((userId, index) => (
                                 <CommandItem

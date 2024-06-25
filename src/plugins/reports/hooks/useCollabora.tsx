@@ -50,6 +50,8 @@ export function useCollabora({
     onDocumentLoadFailed,
     isAiLoading,
     setIsAiLoading,
+    currentUser,
+    allUsers,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     selectedReport: Report;
@@ -60,6 +62,8 @@ export function useCollabora({
     onDocumentLoadFailed: () => void;
     isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    currentUser: string;
+    allUsers: string[];
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -73,8 +77,6 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // // State to store generated content buffer while streaming
-    // const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
@@ -95,6 +97,8 @@ export function useCollabora({
 
         // Install the message listener.
         window.addEventListener("message", receiveMessage, false);
+
+        // console.log(`\n\nALL USERS`, allUsers);
 
         return () => {
             window.removeEventListener("message", receiveMessage, false);
@@ -194,19 +198,10 @@ export function useCollabora({
                 }
                 break;
             case "UI_Mention": {
-                const dummyUserDatabase = [
-                    {
-                        username: "User 1",
-                        profile: "profile link",
-                    },
-                    {
-                        username: "User 2",
-                        profile: "profile link",
-                    },
-                ];
+                const usersList = allUsers.map((user) => ({ text: user.split(":")[0].substring(1), value: user }));
                 const type = msg.Values.type;
                 const text = msg.Values.text as string;
-                const users = dummyUserDatabase.filter((user) => user.username.includes(text));
+                const users = usersList.filter((user) => user.text.includes(text));
                 if (type === "autocomplete") {
                     setTimeout(sendMessage, 0, {
                         MessageId: "Action_Mention",
