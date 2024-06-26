@@ -1048,6 +1048,9 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
     };
 
     private renderSection(kind: "recents" | "suggestions"): ReactNode {
+        if (this.props.kind === InviteKind.Dm&&this.state.targets.length > 0) {
+            return null;
+        }
         let sourceMembers = kind === "recents" ? this.state.recents : this.state.suggestions;
         let showNum = kind === "recents" ? this.state.numRecentsShown : this.state.numSuggestionsShown;
         const showMoreFn = kind === "recents" ? this.showMoreRecents.bind(this) : this.showMoreSuggestions.bind(this);
@@ -1165,7 +1168,7 @@ export default class InviteDialog extends React.PureComponent<Props, IInviteDial
                 onPaste={this.onPaste}
                 autoFocus={true}
                 disabled={
-                    this.state.busy || (this.props.kind == InviteKind.CallTransfer && this.state.targets.length > 0)
+                    this.state.busy || (this.props.kind == InviteKind.CallTransfer && this.state.targets.length > 0) || (this.props.kind === InviteKind.Dm && this.state.targets.length > 0)
                 }
                 autoComplete="off"
                 placeholder={hasPlaceholder ? _t("action|search") : undefined}
