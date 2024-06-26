@@ -90,9 +90,7 @@ export function useCollabora({
                 .then((response) => response.json())
                 .then((data) => {
                     const wopiClientUrl = data.url;
-                    // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    // console.log(wopi);
                     setWopiUrl(`${wopi}&access_token=${encodeURIComponent(accessTokenJsonString)}`);
                     setStartLoading(true);
                 });
@@ -121,7 +119,7 @@ export function useCollabora({
             return;
         }
 
-        console.log(`R: ${msg.MessageId}`, msg);
+        // console.log(`R: ${msg.MessageId}`, msg);
 
         // Check if message is a script execution response
         if (msg.MessageId === "CallPythonScript-Result") {
@@ -184,22 +182,7 @@ export function useCollabora({
                     }
                 }
                 break;
-            // case "CallPythonScript-Result":
-            //     {
-            //         if (
-            //             msg.Values.commandName &&
-            //             typeof msg.Values.commandName === "string" &&
-            //             msg.Values.commandName.indexOf("GetSelection") >= 0 &&
-            //             msg.Values.success &&
-            //             msg.Values.result &&
-            //             typeof msg.Values.result === "object" &&
-            //             "value" in msg.Values.result &&
-            //             typeof msg.Values.result.value === "string"
-            //         ) {
-            //             console.log(`Selected text:`, msg.Values.result.value);
-            //         }
-            //     }
-            //     break;
+
             case "UI_Mention": {
                 const usersList = allUsers.map((user) => ({
                     username: user.split(":")[0].substring(1),
@@ -217,7 +200,8 @@ export function useCollabora({
                         },
                     });
                 } else if (type === "selected") {
-                    console.log(`Mentioned:`, msg.Values.username);
+                    // TODO: Implement user tagging
+                    // console.log(`Mentioned:`, msg.Values.username);
                 }
                 break;
             }
@@ -229,7 +213,7 @@ export function useCollabora({
     const sendMessage = (message: CollaboraPostMessage, expectResponse = false): Promise<any> | undefined => {
         if (!iframeRef.current) return;
         const timestamp = Date.now();
-        console.log(`S: ${message.MessageId}`, message);
+        // console.log(`S: ${message.MessageId}`, message);
         const sendMessage = {
             ...message,
             ...(!message.SendTime && { SendTime: timestamp }),
