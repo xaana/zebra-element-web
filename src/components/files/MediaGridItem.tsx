@@ -3,17 +3,16 @@ import Modal from "matrix-react-sdk/src/Modal";
 import ImageView from "matrix-react-sdk/src/components/views/elements/ImageView";
 import { ComponentProps } from "matrix-react-sdk/src/Modal";
 import { ImageContent } from "matrix-react-sdk/src/customisations/models/IMediaEventContent";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import type { MediaItem } from "./MediaGrid";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 
 import { _t } from "@/languageHandler";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import { IconZebra } from "@/components/ui/icons";
-
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 export const MediaGridItem = ({
     mediaItem,
@@ -116,8 +115,11 @@ export const MediaGridItem = ({
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                cancel
+                            </Button>
                             <Button
+                                variant="destructive"
                                 onClick={() => {
                                     onDelete?.(mediaItem.currentFile);
                                     setDialogOpen(false);

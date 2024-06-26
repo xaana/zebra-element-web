@@ -98,15 +98,18 @@ export function DataTableRowActions<TData>({
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button onClick={() => setDialogOpen(false)}>cancel</Button>
+                            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                                Cancel
+                            </Button>
                             <Button
+                                variant="destructive"
                                 onClick={() => {
                                     onDelete?.(row.original);
                                     setRowSelection({});
                                     setDialogOpen(false);
                                 }}
                             >
-                                confirm
+                                Confirm
                             </Button>
                         </DialogFooter>
                     </DialogContent>
