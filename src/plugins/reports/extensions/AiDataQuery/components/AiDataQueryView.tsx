@@ -1,12 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
-import { useCallback, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { QueryResultTable, DataItem } from "./QueryResultTable";
+import { DataItem, QueryResultTable } from "./QueryResultTable";
 
 import { Button } from "@/components/ui/ButtonAlt";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -16,6 +15,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+
 export interface DataProps {
     text: string;
     addHeading: boolean;
@@ -107,7 +107,7 @@ export const AiDataQueryView = ({
         const from = getPos();
         const to = from + node.nodeSize;
 
-        if (!fetchedData) {
+        if (!fetchedData || fetchedData.length === 0) {
             editor.chain().focus().insertContentAt({ from, to }, previewText).run();
             return;
         }
