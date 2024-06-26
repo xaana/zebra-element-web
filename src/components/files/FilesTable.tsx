@@ -367,8 +367,8 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     const file = row.original;
                     const room = file.roomId ? client.getRoom(file.roomId) : null;
                     let message = "Room Deleted";
-                    if(!file.roomId){
-                        message = "-"
+                    if(file.roomId==="None"){
+                        message = "None"
                     }
 
                     return (
@@ -506,10 +506,10 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         {headerGroup.headers.map((header) => {
                                             return (
                                                 <TableHead key={header.id} colSpan={header.colSpan}>
-                                                    <div className="flex">
+                                                    <div className="flex flex-row gap-x-2">
                                                         {header.isPlaceholder
                                                             ? null
-                                                            : <div className="w-full text-xs">
+                                                            : <div className="w-fit text-xs">
                                                                 {flexRender(
                                                                     header.column.columnDef.header,
                                                                     header.getContext(),
