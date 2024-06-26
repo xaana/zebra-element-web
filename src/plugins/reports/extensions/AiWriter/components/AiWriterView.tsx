@@ -14,7 +14,6 @@ import type { File } from "@/plugins/files/types";
 // import { Button } from "@/components/ui/ButtonAlt";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/LoaderAlt";
-import { Loader as LoaderAlt } from "@/components/ui/loader";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
 import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
@@ -350,7 +349,7 @@ export const AiWriterView = ({
                                         <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
                                         {!documents&&<div className="relative w-[90vw] max-w-[90vw] h-full p-4">
                                                         <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
-                                                        <LoaderAlt className="w-full h-full flex justify-center" height="50" width="50" />
+                                                        <Loader />
                                                     </div>}
                                             {documents&&<div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
                                                 <h2 className="text-2xl font-semibold tracking-tight my-1">

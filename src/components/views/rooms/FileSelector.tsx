@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
-import { Loader } from "@/components/ui/loader";
+import { Loader } from "@/components/ui/LoaderAlt";
 
 interface IProps {
     roomId: string;
