@@ -13,8 +13,8 @@ import { Loader } from "@/components/ui/LoaderAlt";
 
 export const MainPanel = (): JSX.Element => {
     const client = useMatrixClientContext();
-    const [media, setMedia] = useState<MatrixFile[]>([]);
-    const [documents, setDocuments] = useState<MatrixFile[]>([]);
+    const [media, setMedia] = useState<MatrixFile[]|undefined>();
+    const [documents, setDocuments] = useState<MatrixFile[]|undefined>();
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const fetchFiles = async (): Promise<void> => {
@@ -50,6 +50,9 @@ export const MainPanel = (): JSX.Element => {
     const onUpdate = (): void => {
         fetchFiles();
     };
+    if(!documents||!media){
+        return <Loader />
+    }
 
     return (
         <div className="h-full w-full flex justify-center py-6 px-3 overflow-y-auto">
@@ -59,9 +62,7 @@ export const MainPanel = (): JSX.Element => {
                     <p className="text-muted-foreground">View and manage your files</p>
                 </div>
                 <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
-                {!documents ? (
-                    <Loader />
-                ) : (
+            
                     <>
                         {displayType === "documents" && (
                             <FilesTable
@@ -77,7 +78,6 @@ export const MainPanel = (): JSX.Element => {
                             <MediaGrid media={media} mode="standalone" onDelete={onDelete} />
                         </div>
                     </>
-                )}
             </div>
         </div>
     );
