@@ -16,6 +16,7 @@ import { Form } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
+import { dtoToFileAdapters, listFiles } from "../files/FileOpsHandler";
 
 export const FileUpload = ({
     onFileUpload,
@@ -101,11 +102,19 @@ export const FileUpload = ({
             await onFileUpload(fileInput[0]);
         }
     };
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", undefined, "zebra")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
+    };
+    const onUpdate = (): void => {
+        fetchFiles();
+    };
 
     const handleDialogToggle = async (open: boolean): Promise<void> => {
         if (open) {
-            const fetchedFiles = await getUserFiles(client);
-            setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+            await fetchFiles()
         } else {
             setFilesDialogOpen(false);
             setRowSelection({});
@@ -151,6 +160,7 @@ export const FileUpload = ({
                             rowSelection={rowSelection}
                             setRowSelection={setRowSelection}
                             mode="dialog"
+                            onUpdate={onUpdate}
                         />
                         {allowUpload && (
                             <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
