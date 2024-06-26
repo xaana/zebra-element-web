@@ -223,6 +223,15 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         onUpdate&&onUpdate();
                                         setBusy(false);
                                         setProgress(0);
+                                        const updatedRowSelection: { [key: string]: boolean } = {};
+                                        for (const key in rowSelection) {
+                                            if (rowSelection.hasOwnProperty(key)) {
+                                              const incrementedKey = (parseInt(key, 10) + 1).toString();
+                                              updatedRowSelection[incrementedKey] = rowSelection[key];
+                                            }
+                                          }
+                                        setRowSelection(updatedRowSelection)
+
                                     }
                                 }
    
@@ -479,21 +488,54 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             }
             inputRef.current?.click();
         };
+
+        const downloadFiles = (): void => {
+            try {
+                const rows = Object.keys(rowSelection);
+                const files = rows.map((key) => data[parseInt(key)]);
+                const userId = client.getUserId()!;
+                files.forEach((file) => {
+                    getFile(file.mediaId, userId).then((blob)=>{
+                        const newBlob = new Blob([blob], { type: file.mimetype });
+                        const blobUrl = URL.createObjectURL(newBlob);
+                        const anchor = document.createElement('a');
+                        anchor.href = blobUrl;
+                        anchor.download = file.name; // Set the default filename for the download
+    
+                        // Append the anchor to the body, click it, and then remove it
+                        document.body.appendChild(anchor);
+                        anchor.click();
+                        document.body.removeChild(anchor);
+                      
+                        // Clean up the blob URL
+                        URL.revokeObjectURL(url);
+                    });
+                })
+                setRowSelection({});
+            } catch (err) {
+                console.error('Unable to download file: ', err);
+            }
+        }
+
         return (
             <>
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <DataTableToolbar table={table} />
                         <div className="flex flex-row gap-x-1">
-                            {busy?<UploadLoader progress={progress+1} />:<Button onClick={handleClick}>
-                                <Icon name="Upload" className="w-5 h-5" strokeWidth={2} />
-                            </Button>}
-                            
                             {onDelete && showDelete && Object.keys(rowSelection).length !== 0 && (
                                 <Button variant="destructive" onClick={() => setDialogOpen(true)}>
                                     <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
                                 </Button>
                             )}
+                            {showDelete && Object.keys(rowSelection).length !== 0 && (
+                                <Button onClick={() => downloadFiles()}>
+                                    <Icon name="Download" className="w-5 h-5" strokeWidth={2} />
+                                </Button>
+                            )}
+                            {busy?<UploadLoader progress={progress+1} />:<Button onClick={handleClick}>
+                                <Icon name="Upload" className="w-5 h-5" strokeWidth={2} />
+                            </Button>}
                         <input type="file" ref={inputRef} onChange={onFileInput} style={{ display: 'none' }} accept=".pdf, .docx, .doc" />
                         </div>
                     </div>
