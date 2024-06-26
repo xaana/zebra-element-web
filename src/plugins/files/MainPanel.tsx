@@ -13,8 +13,8 @@ import { Loader } from "@/components/ui/LoaderAlt";
 
 export const MainPanel = (): JSX.Element => {
     const client = useMatrixClientContext();
-    const [media, setMedia] = useState<MatrixFile[]>([]);
-    const [documents, setDocuments] = useState<MatrixFile[]>([]);
+    const [media, setMedia] = useState<MatrixFile[] | undefined>();
+    const [documents, setDocuments] = useState<MatrixFile[] | undefined>();
     const [displayType, setDisplayType] = useState<"documents" | "media">("documents");
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const fetchFiles = async (): Promise<void> => {
@@ -70,7 +70,7 @@ export const MainPanel = (): JSX.Element => {
                         <p className="text-muted-foreground">View and manage your files</p>
                     </div>
                     <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
-                    <Loader className="w-full h-full flex justify-center" height="70" width="70" />
+                    <Loader />
                 </div>
                 <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
                 <Loader />
