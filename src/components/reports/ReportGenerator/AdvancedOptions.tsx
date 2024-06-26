@@ -1,7 +1,7 @@
 import React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
-import { FileUpload } from "@/components/reports/FileUpload";
+import { MatrixFileSelector } from "@/components/reports/ReportGenerator/MatrixFileSelector";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
     Command,
@@ -18,21 +18,19 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 import { cn } from "@/lib/utils";
-import { File as MatrixFile } from "@/plugins/files/types";
+import { MatrixFile } from "@/plugins/files/types";
 export const AdvancedOptions = ({
     allReports,
-    contentFile,
-    setContentFile,
+    contentFiles,
+    setContentFiles,
     selectedTemplateId,
     setSelectedTemplateId,
-    onFileUpload,
 }: {
     allReports: Report[];
-    contentFile: File | undefined;
-    setContentFile: React.Dispatch<React.SetStateAction<File | undefined>>;
+    contentFiles: MatrixFile[];
+    setContentFiles: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
     selectedTemplateId: string | undefined;
     setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | undefined>>;
-    onFileUpload: (file: File, matrixFile?: MatrixFile) => Promise<void>;
 }): JSX.Element => {
     const [templateSelectorOpen, setTemplateSelectorOpen] = React.useState(false);
 
@@ -47,27 +45,29 @@ export const AdvancedOptions = ({
                 </AccordionTrigger>
                 <AccordionContent className="w-auto m-0 pt-2 pb-1 flex flex-col gap-2">
                     <div className="flex items-center gap-1">
-                        <div className="text-muted-foreground font-semibold text-xs">Supporting Document:</div>
-                        {contentFile ? (
-                            <Badge variant="outline" className="flex items-center gap-2 h-8">
-                                <div className="text-sm">{contentFile.name}</div>
-                                <Button
-                                    onClick={() => setContentFile(undefined)}
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-auto h-auto p-0.5 rounded-full"
-                                >
-                                    <Icon name="X" className="w-3 h-3" />
-                                </Button>
-                            </Badge>
+                        <div className="text-muted-foreground font-semibold text-xs">Supporting Documents:</div>
+                        {contentFiles.length > 0 ? (
+                            <div className="flex flex-wrap items-center justify-start gap-2">
+                                {contentFiles.map((contentFile, index) => (
+                                    <Badge key={index} variant="outline" className="flex items-center gap-1 h-8">
+                                        <div className="text-sm max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis">
+                                            {contentFile.name}
+                                        </div>
+                                        <Button
+                                            onClick={() =>
+                                                setContentFiles((prev) => prev.filter((_, i) => i !== index))
+                                            }
+                                            variant="ghost"
+                                            size="sm"
+                                            className="w-auto h-auto p-0.5 rounded-full"
+                                        >
+                                            <Icon name="X" className="w-3 h-3" />
+                                        </Button>
+                                    </Badge>
+                                ))}
+                            </div>
                         ) : (
-                            <FileUpload
-                                onFileUpload={onFileUpload}
-                                buttonText="Select Document"
-                                allowUpload={false}
-                                iconName="FileInput"
-                                buttonVariant="outline"
-                            />
+                            <MatrixFileSelector setSelectedFiles={setContentFiles} />
                         )}
                     </div>
                     <div className="flex items-center gap-1">

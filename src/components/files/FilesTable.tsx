@@ -25,7 +25,7 @@ import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { getFile } from "./FileOpsHandler";
 import { FilterWrapper as Filter } from "./FilesTableFilter";
@@ -51,8 +51,6 @@ import {
     IconDocumentZip,
 } from "@/components/ui/icons";
 import { getVectorConfig } from "@/vector/getconfig";
-
-
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -118,15 +116,15 @@ function getIconComponent(fileName: string): React.ComponentType<React.Component
 const downloadFile = async (e: React.SyntheticEvent, file: File, currentUserId: string): Promise<void> => {
     e.preventDefault();
     e.stopPropagation();
-    if (file.mimetype==="application/pdf"){
+    if (file.mimetype === "application/pdf") {
         try {
-            getFile(file.mediaId, currentUserId).then((blob)=>{
-                const url = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-                window.open(url, '_blank');
+            getFile(file.mediaId, currentUserId).then((blob) => {
+                const url = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
+                window.open(url, "_blank");
                 file.downloadUrl && URL.revokeObjectURL(file.downloadUrl);
             });
         } catch (err) {
-            console.error('Unable to download file: ', err);
+            console.error("Unable to download file: ", err);
         }
     } else {
         try {
@@ -138,7 +136,7 @@ const downloadFile = async (e: React.SyntheticEvent, file: File, currentUserId: 
                 autoDownload: true,
             });
         } catch (err) {
-            console.error('Unable to download file: ', err);
+            console.error("Unable to download file: ", err);
         }
     }
 };
@@ -157,7 +155,7 @@ export interface FilesTableProps {
 }
 
 export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
-    ({ data, rowSelection, setRowSelection, mode, onDelete,onUpdate }, ref): JSX.Element => {
+    ({ data, rowSelection, setRowSelection, mode, onDelete, onUpdate }, ref): JSX.Element => {
         const [sorting, setSorting] = React.useState<SortingState>([]);
         const [dialogOpen, setDialogOpen] = React.useState(false);
         const [showDelete, setShowDelete] = React.useState(true);
@@ -167,15 +165,15 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
         const inputRef = React.useRef<HTMLInputElement>(null);
 
         const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-        const generatePrimaryKey = (length:number):string => {
-            let result = '';
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const generatePrimaryKey = (length: number): string => {
+            let result = "";
+            const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             const charactersLength = characters.length;
             for (let i = 0; i < length; i++) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
             return result;
-        }    
+        };
         const onFileInput = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
             const files = e.target.files;
             if (files && files.length > 0) {
@@ -184,9 +182,9 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     const apiUrl = configData?.plugins["websocket"].url;
                     const wsUrl = `${apiUrl}/pdf_upload`;
                     const websocket = new WebSocket(wsUrl);
-                    const mxcUrl = generatePrimaryKey(18)
+                    const mxcUrl = generatePrimaryKey(18);
                     let count = 0;
-                    setBusy(true)
+                    setBusy(true);
                     websocket.onopen = () => {
                         console.log("WebSocket connection established");
                         // Example data to be sent to the server
@@ -202,45 +200,42 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         websocket.send(textToSend);
                         const reader = new FileReader();
                         reader.readAsDataURL(files[0]);
-                        reader.onloadend =  () => {
+                        reader.onloadend = () => {
                             const base64data = reader.result as string;
-                            const encodedPdf = base64data?.split(',')[1]; // Remove the data URL part
+                            const encodedPdf = base64data?.split(",")[1]; // Remove the data URL part
                             const fileObjects = {
                                 filename: [files[0].name],
                                 content: [encodedPdf],
                             };
-    
+
                             // Send encoded PDF data as string
                             websocket.send(JSON.stringify(fileObjects));
                         };
                         websocket.onmessage = (event) => {
-                            if(event.data.startsWith("success")){
-                                count+=1/4
-                                setProgress((prev)=>prev+1)
-                                if(count===1){
+                            if (event.data.startsWith("success")) {
+                                count += 1 / 4;
+                                setProgress((prev) => prev + 1);
+                                if (count === 1) {
                                     // all file completed reinitialize record state
-                                        console.log("upload success, closing websocket",event);
-                                        onUpdate&&onUpdate();
-                                        setBusy(false);
-                                        setProgress(0);
-                                    }
+                                    console.log("upload success, closing websocket", event);
+                                    onUpdate && onUpdate();
+                                    setBusy(false);
+                                    setProgress(0);
                                 }
-   
-                            else if(event.data.startsWith("fail")){
-                                console.log('');
+                            } else if (event.data.startsWith("fail")) {
+                                console.log("");
                                 setBusy(false);
                                 // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
                             }
-    
                         };
                         websocket.onerror = (event) => {
                             console.error("WebSocket error observed:", event);
                             setBusy(false);
                         };
-                      };
+                    };
                 }
             }
-        }
+        };
         React.useEffect(() => {
             let temp = true;
             for (const key in rowSelection) {
@@ -271,25 +266,27 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                         aria-label="Select all"
                         className="translate-y-[2px] mx-2"
-                        hidden={data.length>5&&!onDelete}
+                        hidden={data.length > 5 && !onDelete}
                     />
                 ),
                 cell: ({ row }) => (
                     <Checkbox
                         checked={row.getIsSelected()}
-                        onCheckedChange={(value) => {if(onDelete){row.toggleSelected(!!value)}
-                    else{
-                        const selectedCount = Object.keys(rowSelection).length;
-                        if (value && selectedCount < 5) {
-                            row.toggleSelected(true);
-                        }
-                        else if(!value){
-                            row.toggleSelected(false);
-                        }else if (value && selectedCount === 5) {
-                            // toast.info('You can only select up to 5 files at a time');
-                            alert('You can only select up to 5 files at a time')
-                        }
-                    }}}
+                        onCheckedChange={(value) => {
+                            if (onDelete) {
+                                row.toggleSelected(!!value);
+                            } else {
+                                const selectedCount = Object.keys(rowSelection).length;
+                                if (value && selectedCount < 5) {
+                                    row.toggleSelected(true);
+                                } else if (!value) {
+                                    row.toggleSelected(false);
+                                } else if (value && selectedCount === 5) {
+                                    // toast.info('You can only select up to 5 files at a time');
+                                    alert("You can only select up to 5 files at a time");
+                                }
+                            }
+                        }}
                         aria-label="Select row"
                         className="translate-y-[8px] mx-2"
                     />
@@ -312,7 +309,6 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                             <Button
                                 onClick={(e) => {
                                     downloadFile(e, file, client.getUserId());
-
                                 }}
                                 variant="ghost"
                                 size="sm"
@@ -325,12 +321,16 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 )}
                                 <span className="max-w-[250px] truncate font-medium">{row.getValue("name")}</span>
                             </Button>
-                            {file.sender!==client.getUserId()&&file.roomId&&<span className="flex text-xs rounded-lg bg-slate-300 px-1 items-center text-slate-700">shared</span>}
+                            {file.sender !== client.getUserId() && file.roomId && (
+                                <span className="flex text-xs rounded-lg bg-slate-300 px-1 items-center text-slate-700">
+                                    shared
+                                </span>
+                            )}
                         </div>
                     );
                 },
                 meta: {
-                    filterVariant: 'select',
+                    filterVariant: "select",
                 },
                 enableSorting: false,
                 enableHiding: false,
@@ -355,7 +355,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     return value.includes(row.getValue(id));
                 },
                 meta: {
-                    filterVariant: 'select',
+                    filterVariant: "select",
                 },
                 enableSorting: false,
                 enableHiding: false,
@@ -367,8 +367,8 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     const file = row.original;
                     const room = file.roomId ? client.getRoom(file.roomId) : null;
                     let message = "Room Deleted";
-                    if(!file.roomId){
-                        message = "-"
+                    if (file.roomId === "None") {
+                        message = "None";
                     }
 
                     return (
@@ -393,7 +393,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     );
                 },
                 meta: {
-                    filterVariant: 'select',
+                    filterVariant: "select",
                 },
                 filterFn: (row, id, value): boolean => {
                     return value.includes(row.getValue(id));
@@ -430,7 +430,13 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             {
                 id: "actions",
                 cell: ({ row }) => (
-                    <DataTableRowActions row={row} onDelete={onDelete} mode={mode} userId={client.getUserId()!} setRowSelection={setRowSelection} />
+                    <DataTableRowActions
+                        row={row}
+                        onDelete={onDelete}
+                        mode={mode}
+                        userId={client.getUserId()!}
+                        setRowSelection={setRowSelection}
+                    />
                 ),
                 meta: {
                     filterVariant: null,
@@ -485,20 +491,30 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     <div className="flex justify-between items-center">
                         <DataTableToolbar table={table} />
                         <div className="flex flex-row gap-x-1">
-                            {busy?<UploadLoader progress={progress+1} />:<Button onClick={handleClick}>
-                                <Icon name="Upload" className="w-5 h-5" strokeWidth={2} />
-                            </Button>}
-                            
+                            {busy ? (
+                                <UploadLoader progress={progress + 1} />
+                            ) : (
+                                <Button onClick={handleClick}>
+                                    <Icon name="Upload" className="w-5 h-5" strokeWidth={2} />
+                                </Button>
+                            )}
+
                             {onDelete && showDelete && Object.keys(rowSelection).length !== 0 && (
                                 <Button variant="destructive" onClick={() => setDialogOpen(true)}>
                                     <Icon name="Trash2" className="w-5 h-5" strokeWidth={2} />
                                 </Button>
                             )}
-                        <input type="file" ref={inputRef} onChange={onFileInput} style={{ display: 'none' }} accept=".pdf, .docx, .doc" />
+                            <input
+                                type="file"
+                                ref={inputRef}
+                                onChange={onFileInput}
+                                style={{ display: "none" }}
+                                accept=".pdf, .docx, .doc"
+                            />
                         </div>
                     </div>
 
-                    <div className="rounded-md border">
+                    <div className="rounded-md border max-h-[400px] overflow-y-auto scrollbar--custom">
                         <Table>
                             <TableHeader>
                                 {table.getHeaderGroups().map((headerGroup) => (
@@ -506,17 +522,20 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         {headerGroup.headers.map((header) => {
                                             return (
                                                 <TableHead key={header.id} colSpan={header.colSpan}>
-                                                    <div className="flex">
-                                                        {header.isPlaceholder
-                                                            ? null
-                                                            : <div className="w-full text-xs">
+                                                    <div className="flex flex-row gap-x-2">
+                                                        {header.isPlaceholder ? null : (
+                                                            <div className="w-fit text-xs">
                                                                 {flexRender(
                                                                     header.column.columnDef.header,
                                                                     header.getContext(),
                                                                 )}
-                                                            </div>                }
+                                                            </div>
+                                                        )}
                                                         {header.column.getCanFilter() ? (
-                                                            <Filter title={header.column.columnDef.accessorKey} column={header.column} />
+                                                            <Filter
+                                                                title={header.column.columnDef.accessorKey}
+                                                                column={header.column}
+                                                            />
                                                         ) : null}
                                                     </div>
                                                 </TableHead>

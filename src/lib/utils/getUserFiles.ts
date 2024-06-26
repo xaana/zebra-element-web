@@ -5,7 +5,7 @@ import { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
 import { IRoomEvent } from "matrix-js-sdk/src/matrix";
 
 import type { MatrixClient } from "matrix-js-sdk/src/matrix";
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 
 interface IMessagesResponse {
     start?: string;
