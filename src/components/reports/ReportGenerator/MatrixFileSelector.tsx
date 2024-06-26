@@ -2,7 +2,6 @@ import React from "react";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { MsgType } from "matrix-js-sdk/src/matrix";
 
 import type { MatrixFile } from "@/plugins/files/types";
 
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 export const MatrixFileSelector = ({
     setSelectedFiles,
@@ -24,10 +23,16 @@ export const MatrixFileSelector = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const client = useMatrixClientContext();
 
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
+    };
+
     const handleDialogToggle = async (open: boolean): Promise<void> => {
         if (open) {
-            const fetchedFiles = await getUserFiles(client);
-            setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+            await fetchFiles();
         } else {
             setFilesDialogOpen(false);
             setRowSelection({});
@@ -75,12 +80,13 @@ export const MatrixFileSelector = ({
                             rowSelection={rowSelection}
                             setRowSelection={setRowSelection}
                             mode="dialog"
+                            onUpdate={async () => await fetchFiles()}
                         />
                         <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
                             <Button
                                 type="button"
                                 variant="default"
-                                size="sm"
+                                // size="sm"
                                 className="mb-0.5"
                                 disabled={Object.keys(rowSelection).length == 0}
                                 onClick={async (e) => {
@@ -88,7 +94,8 @@ export const MatrixFileSelector = ({
                                     await handleDoneClick();
                                 }}
                             >
-                                Done
+                                Select
+                                <Icon name="ArrowBigRightDash" className="ml-1" />
                             </Button>
                         </div>
                     </div>
