@@ -14,7 +14,6 @@ import type { MatrixFile as File } from "@/plugins/files/types";
 // import { Button } from "@/components/ui/ButtonAlt";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/LoaderAlt";
-import { Loader as LoaderAlt } from "@/components/ui/loader";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
 import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
@@ -71,8 +70,8 @@ export const AiWriterView = ({
     };
 
     const formatResponse = (rawText: string) => {
-        let ps = rawText.split(/\n/).filter((line) => line.length > 0);
-        let newText = ps
+        const ps = rawText.split(/\n/).filter((line) => line.length > 0);
+        const newText = ps
             .map((p, i) => {
                 if (i !== 0 && i !== ps.length - 1) {
                     return `<p>${p}</p>`;
@@ -353,11 +352,44 @@ export const AiWriterView = ({
                                                     <h2 className="text-2xl font-semibold tracking-tight my-1">
                                                         Select Files
                                                     </h2>
-                                                    <LoaderAlt
-                                                        className="w-full h-full flex justify-center"
-                                                        height="50"
-                                                        width="50"
+                                                    <Loader />
+                                                </div>
+                                            )}
+                                            {documents && (
+                                                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                                                    <h2 className="text-2xl font-semibold tracking-tight my-1">
+                                                        Select Files
+                                                    </h2>
+                                                    <FilesTable
+                                                        data={documents}
+                                                        rowSelection={rowSelection}
+                                                        setRowSelection={setRowSelection}
+                                                        mode="dialog"
+                                                        onUpdate={onUpdate}
                                                     />
+
+                                                    <div
+                                                        className={cn(
+                                                            "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                                            selectedFiles.length > 0
+                                                                ? "justify-between"
+                                                                : "justify-end",
+                                                        )}
+                                                    >
+                                                        {selectedFiles.length > 0 && (
+                                                            <div className="text-sm text-muted-foreground ml-2">
+                                                                {selectedFiles.length}{" "}
+                                                                {selectedFiles.length === 1 ? "file" : "files"} selected
+                                                            </div>
+                                                        )}
+                                                        <Button
+                                                            size="sm"
+                                                            disabled={selectedFiles.length === 0}
+                                                            onClick={() => setFilesDialogOpen(false)}
+                                                        >
+                                                            Done
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             )}
                                             {documents && (

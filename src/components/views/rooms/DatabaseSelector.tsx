@@ -4,7 +4,6 @@ import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
@@ -40,7 +39,7 @@ export const DatabaseSelector = () => {
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger style={{ padding: 0 }}>
                 <CollapsibleButton
-                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px" }}
+                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px", color: "#6100FF" }}
                     title="Select Database"
                     className="mx_MessageComposer_button"
                     iconClassName="database_button"

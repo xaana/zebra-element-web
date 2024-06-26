@@ -256,7 +256,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
             case "select_files":
                 if (payload.context === TimelineRenderingType.Thread) {
                     const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
-                    if (payload.roomId === this.props.room.roomId || !payload.roomId) {
+                    if (payload.roomId === this.props.room.roomId) {
                         if (payload.files.length > 0 && mergedFiles.length > this.state.files.length) {
                             const fileList = mergedFiles.map((file: DocFile) => {
                                 if (

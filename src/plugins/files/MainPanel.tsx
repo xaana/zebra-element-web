@@ -9,7 +9,7 @@ import { MediaGrid } from "../../components/files/MediaGrid";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 import { deleteFiles, dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
-import { Loader } from "@/components/ui/loader";
+import { Loader } from "@/components/ui/LoaderAlt";
 
 export const MainPanel = (): JSX.Element => {
     const client = useMatrixClientContext();
@@ -72,6 +72,8 @@ export const MainPanel = (): JSX.Element => {
                     <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
                     <Loader className="w-full h-full flex justify-center" height="70" width="70" />
                 </div>
+                <FilesTabs className="mt-8 mb-4" displayType={displayType} setDisplayType={setDisplayType} />
+                <Loader />
             </div>
         );
     }

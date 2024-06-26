@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
-import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
 import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
@@ -13,14 +12,13 @@ import { init as initRouting } from "../../../vector/routing";
 import "./style/button.css";
 import { MatrixFile as File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
-import { Loader } from "@/components/ui/loader";
+import { Loader } from "@/components/ui/LoaderAlt";
 
 interface IProps {
     roomId: string;
@@ -164,6 +162,7 @@ export const FileSelector = (props: IProps): JSX.Element => {
         <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
                 <CollapsibleButton
+                    style={{ color: "#6100FF" }}
                     title="Select Files"
                     className="mx_MessageComposer_button"
                     iconClassName="files_button"
