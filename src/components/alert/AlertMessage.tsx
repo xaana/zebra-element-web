@@ -107,7 +107,7 @@ export const AlertMessageWithColsPanel = (props: {
                     <Table>
                         <TableCaption>
                             A new tender has been posted and requires our attention.
-                            Please review the details below and determine who should be assigned to work on it:
+                            Please review the details above and determine who should be assigned to work on it.
                         </TableCaption>
                         <TableHeader>
                             <TableRow>
@@ -121,7 +121,14 @@ export const AlertMessageWithColsPanel = (props: {
                             {formatedData.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{index+1}</TableCell>
-                                    {Object.values(item).map(i=><TableCell>{i}</TableCell>)}
+                                    {Object.values(item).map(i=>
+                                        <TableCell>
+                                            {
+                                                i.length > 100
+                                                ? i.substring(0, 97) + "..."
+                                                : i
+                                            }
+                                        </TableCell>)}
                                 </TableRow>
                             ))}
                         </TableBody>
