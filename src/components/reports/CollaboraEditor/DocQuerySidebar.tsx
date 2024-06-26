@@ -174,8 +174,8 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                     },
                     body: JSON.stringify({
                         user_requirement: payload.text,
-                        tone: payload.tone || "",
                         media_ids: extractedFilenames,
+                        ...(payload.tone && payload.tone.length > 0 ? { tone: payload.tone } : {}),
                     }),
                 },
             );
