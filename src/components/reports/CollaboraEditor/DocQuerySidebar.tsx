@@ -1,14 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { RowSelectionState } from "@tanstack/react-table";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+// import { RowSelectionState } from "@tanstack/react-table";
+// import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { toast } from "sonner";
 
-import type { MatrixFile as File } from "@/plugins/files/types";
+import type { MatrixFile } from "@/plugins/files/types";
+import { MatrixFileSelector } from "../ReportGenerator/MatrixFileSelector";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+// import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Textarea } from "@/components/ui/TextareaAlt";
 import { Button } from "@/components/ui/button";
@@ -18,9 +19,9 @@ import { DropdownButton } from "@/components/ui/Dropdown";
 import { Separator } from "@/components/ui/separator";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
-import { cn } from "@/lib/utils";
-import { FilesTable } from "@/components/files/FilesTable";
+// import { getUserFiles } from "@/lib/utils/getUserFiles";
+// import { cn } from "@/lib/utils";
+// import { FilesTable } from "@/components/files/FilesTable";
 import { Badge } from "@/components/ui/badge";
 
 export type AiTone =
@@ -76,19 +77,19 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
     });
     const currentTone = tones.find((t) => t.value === data.tone);
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
-    const [documents, setDocuments] = useState<File[]>([]);
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    // const [documents, setDocuments] = useState<MatrixFile[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<MatrixFile[]>([]);
     const [isFetching, setIsFetching] = useState(false);
-    const [filesDialogOpen, setFilesDialogOpen] = useState(false);
+    // const [filesDialogOpen, setFilesDialogOpen] = useState(false);
     const textareaId = useMemo(() => uuid(), []);
-    const client = useMatrixClientContext();
-    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+    // const client = useMatrixClientContext();
+    // const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
-    const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
-        // setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
-        setDocuments([...fetchedFiles]);
-    };
+    // const fetchFiles = async (): Promise<void> => {
+    //     const fetchedFiles = await getUserFiles(client);
+    //     // setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+    //     setDocuments([...fetchedFiles]);
+    // };
 
     const formatResponse = (rawText: string): string => {
         const ps = rawText.split(/\n/).filter((line) => line.length > 0);
@@ -224,25 +225,25 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
         };
     }, []);
 
-    const handleDialogOpenChange = async (open: boolean): Promise<void> => {
-        if (open) {
-            await fetchFiles();
-        } else {
-            setFilesDialogOpen(false);
-        }
-    };
+    // const handleDialogOpenChange = async (open: boolean): Promise<void> => {
+    //     if (open) {
+    //         await fetchFiles();
+    //     } else {
+    //         setFilesDialogOpen(false);
+    //     }
+    // };
 
-    const handleRemoveFile = (file: File): void => {
-        setSelectedFiles(selectedFiles.filter((f) => f.id !== file.id));
-        setRowSelection({});
-    };
+    // const handleRemoveFile = (file: MatrixFile): void => {
+    //     setSelectedFiles(selectedFiles.filter((f) => f.id !== file.id));
+    //     // setRowSelection({});
+    // };
 
-    useEffect(() => {
-        if (Object.keys(rowSelection).length === 1) {
-            setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
-            setFilesDialogOpen(false);
-        }
-    }, [rowSelection, documents]);
+    // useEffect(() => {
+    //     if (Object.keys(rowSelection).length === 1) {
+    //         setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
+    //         setFilesDialogOpen(false);
+    //     }
+    // }, [rowSelection, documents]);
 
     return (
         <div className="h-full w-full px-2 py-4 relative">
@@ -324,12 +325,14 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                     </Dropdown.Root>
 
                     {selectedFiles.length > 0 ? (
-                        <div className="flex items-center gap-2">
-                            {selectedFiles.map((file, index) => (
-                                <Badge key={index} variant="outline" className="flex items-center gap-2 h-8">
-                                    <div className="text-xs">{file.name}</div>
+                        <div className="flex flex-col gap-2">
+                            {selectedFiles.map((selectedFile, index) => (
+                                <Badge key={index} variant="outline" className="flex items-center gap-1 h-8">
+                                    <div className="text-sm w-full overflow-hidden whitespace-nowrap text-ellipsis">
+                                        {selectedFile.name}
+                                    </div>
                                     <Button
-                                        onClick={() => handleRemoveFile(file)}
+                                        onClick={() => setSelectedFiles((prev) => prev.filter((_, i) => i !== index))}
                                         variant="ghost"
                                         size="sm"
                                         className="w-auto h-auto p-0.5 rounded-full"
@@ -340,46 +343,70 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                             ))}
                         </div>
                     ) : (
-                        <Dialog open={filesDialogOpen} onOpenChange={handleDialogOpenChange}>
-                            <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" onClick={() => setFilesDialogOpen(true)}>
+                        // <div className="flex items-center gap-2">
+                        //     {selectedFiles.map((file, index) => (
+                        //         <Badge key={index} variant="outline" className="flex items-center gap-2 h-8">
+                        //             <div className="text-xs">{file.name}</div>
+                        //             <Button
+                        //                 onClick={() => handleRemoveFile(file)}
+                        //                 variant="ghost"
+                        //                 size="sm"
+                        //                 className="w-auto h-auto p-0.5 rounded-full"
+                        //             >
+                        //                 <Icon name="X" className="w-3 h-3" />
+                        //             </Button>
+                        //         </Badge>
+                        //     ))}
+                        // </div>
+                        <MatrixFileSelector
+                            setSelectedFiles={setSelectedFiles}
+                            triggerContent={
+                                <Button className="w-full" variant="outline" size="sm">
                                     <Icon name="FileText" className="mr-2" />
                                     Add context file
                                 </Button>
-                            </DialogTrigger>
-                            <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
-                                    <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
-                                    <FilesTable
-                                        data={documents}
-                                        rowSelection={rowSelection}
-                                        setRowSelection={setRowSelection}
-                                        mode="dialog"
-                                    />
+                            }
+                        />
+                        // <Dialog open={filesDialogOpen} onOpenChange={handleDialogOpenChange}>
+                        //     <DialogTrigger asChild>
+                        //         <Button variant="outline" size="sm" onClick={() => setFilesDialogOpen(true)}>
+                        //             <Icon name="FileText" className="mr-2" />
+                        //             Add context file
+                        //         </Button>
+                        //     </DialogTrigger>
+                        //     <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
+                        //         <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                        //             <h2 className="text-2xl font-semibold tracking-tight my-1">Select Files</h2>
+                        //             <FilesTable
+                        //                 data={documents}
+                        //                 rowSelection={rowSelection}
+                        //                 setRowSelection={setRowSelection}
+                        //                 mode="dialog"
+                        //             />
 
-                                    <div
-                                        className={cn(
-                                            "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
-                                            selectedFiles.length > 0 ? "justify-between" : "justify-end",
-                                        )}
-                                    >
-                                        {selectedFiles.length > 0 && (
-                                            <div className="text-sm text-muted-foreground ml-2">
-                                                {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"}{" "}
-                                                selected
-                                            </div>
-                                        )}
-                                        <Button
-                                            size="sm"
-                                            disabled={selectedFiles.length === 0}
-                                            onClick={() => setFilesDialogOpen(false)}
-                                        >
-                                            Done
-                                        </Button>
-                                    </div>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                        //             <div
+                        //                 className={cn(
+                        //                     "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                        //                     selectedFiles.length > 0 ? "justify-between" : "justify-end",
+                        //                 )}
+                        //             >
+                        //                 {selectedFiles.length > 0 && (
+                        //                     <div className="text-sm text-muted-foreground ml-2">
+                        //                         {selectedFiles.length} {selectedFiles.length === 1 ? "file" : "files"}{" "}
+                        //                         selected
+                        //                     </div>
+                        //                 )}
+                        //                 <Button
+                        //                     size="sm"
+                        //                     disabled={selectedFiles.length === 0}
+                        //                     onClick={() => setFilesDialogOpen(false)}
+                        //                 >
+                        //                     Done
+                        //                 </Button>
+                        //             </div>
+                        //         </div>
+                        //     </DialogContent>
+                        // </Dialog>
                     )}
 
                     <div className="flex justify-between w-auto gap-1">

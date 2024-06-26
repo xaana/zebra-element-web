@@ -67,7 +67,7 @@ export const AdvancedOptions = ({
                                 ))}
                             </div>
                         ) : (
-                            <MatrixFileSelector contentFiles={contentFiles} setContentFiles={setContentFiles} />
+                            <MatrixFileSelector setSelectedFiles={setContentFiles} />
                         )}
                     </div>
                     <div className="flex items-center gap-1">

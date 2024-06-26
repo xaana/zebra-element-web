@@ -13,11 +13,11 @@ import { FilesTable } from "@/components/files/FilesTable";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
 
 export const MatrixFileSelector = ({
-    contentFiles,
-    setContentFiles,
+    setSelectedFiles,
+    triggerContent,
 }: {
-    contentFiles: MatrixFile[];
-    setContentFiles: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
+    setSelectedFiles: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
+    triggerContent?: React.ReactNode;
 }): JSX.Element => {
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
@@ -38,7 +38,7 @@ export const MatrixFileSelector = ({
         handleDialogToggle(false);
         const rowIndices = Object.keys(rowSelection);
         if (rowIndices.length > 0) {
-            setContentFiles(
+            setSelectedFiles(
                 () =>
                     rowIndices
                         .map((index) => documents[parseInt(index)])
@@ -57,16 +57,15 @@ export const MatrixFileSelector = ({
     return (
         <div>
             <Dialog open={filesDialogOpen} onOpenChange={handleDialogToggle}>
-                <DialogTrigger asChild>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="font-semibold text-sm"
-                        onClick={() => setFilesDialogOpen(true)}
-                    >
-                        <Icon name="FileInput" className="mr-2" />
-                        Select Documents
-                    </Button>
+                <DialogTrigger asChild onClick={() => setFilesDialogOpen(true)}>
+                    {triggerContent ? (
+                        triggerContent
+                    ) : (
+                        <Button variant="outline" size="sm" className="font-semibold text-sm">
+                            <Icon name="FileInput" className="mr-2" />
+                            Select Documents
+                        </Button>
+                    )}
                 </DialogTrigger>
                 <DialogContent className="w-[70vw] max-w-[70vw] h-[70vh] p-0 overflow-hidden">
                     <div className="relative w-[70vw] max-w-[70vw] h-[70vh] p-4">
