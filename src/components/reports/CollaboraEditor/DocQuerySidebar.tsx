@@ -6,7 +6,7 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { toast } from "sonner";
 
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Loader } from "@/components/ui/LoaderAlt";

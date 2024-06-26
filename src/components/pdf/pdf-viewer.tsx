@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetPortal } from "../ui/sheet";
 import { Citations } from "./citations";
 
 import { getUserFiles } from "@/lib/utils/getUserFiles";
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 import { Loader } from "../ui/loader";
 
 export const PdfViewer = ({
@@ -21,7 +21,7 @@ export const PdfViewer = ({
     citations: any[];
     content: IContent;
     mxEvent: MatrixEvent;
-}): JSX.Element|null => {
+}): JSX.Element | null => {
     const [showCitations, setShowCitations] = useState(false);
     const [pdfUrls, setPdfUrls] = useState<any>([]);
     // const [events, setEvents] = useState<MatrixEvent[]>([]);
@@ -52,27 +52,27 @@ export const PdfViewer = ({
         const uniqueSet = new Set<string>(files);
 
         // Convert the Set back into an array
-        const uniqueList:string[] = Array.from(uniqueSet);
+        const uniqueList: string[] = Array.from(uniqueSet);
         setAllMediaIds(uniqueList);
 
-        return ()=>{
+        return () => {
             allFiles.current.forEach((url) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
                 URL.revokeObjectURL(url);
-            })
-        }
+            });
+        };
     }, []);
 
     useEffect(() => {
-        if(!showCitations){
+        if (!showCitations) {
             allFiles.current.forEach((url) => {
                 // Asynchronous cleanup if necessary or synchronous access to URLs
                 URL.revokeObjectURL(url);
-            })
+            });
             allFiles.current = [];
             setPdfUrls([]);
         }
-    },[showCitations])
+    }, [showCitations]);
 
     // useEffect(() => {
     //     const fetchFiles = async (): Promise<void> => {
@@ -135,14 +135,14 @@ export const PdfViewer = ({
     //         fetchFiles();
     //     }
     // }, [apiUrl]);
-    
+
     async function fetchPdfAndCreateObjectURL(mediaIds: string[]): Promise<{ name: string; url: string }[]> {
         try {
             const payload = { media_ids: mediaIds };
             const url = `${apiUrl}/api/get_docfile`;
             const request = new Request(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
             const response = await fetch(request);
@@ -152,18 +152,17 @@ export const PdfViewer = ({
             const jsonResponse = await response.json();
             const pdfFiles = jsonResponse.pdf.map((file: any) => {
                 const contentBase64 = file.content;
-                const pdfBlob = base64ToBlob(contentBase64, 'application/pdf');
+                const pdfBlob = base64ToBlob(contentBase64, "application/pdf");
                 const objectURL = URL.createObjectURL(pdfBlob);
                 allFiles.current.push(objectURL);
                 return { name: file.filename, url: objectURL };
             });
             return pdfFiles;
         } catch (error) {
-            console.error('Error fetching or converting PDF:', error);
+            console.error("Error fetching or converting PDF:", error);
             throw error;
         }
     }
-
 
     // async function temp(mediaIds: string[]): Promise<{ name: string; url: string }> {
     //     try {
@@ -220,10 +219,10 @@ export const PdfViewer = ({
             console.error("Error fetching the blob:", error);
         }
     }
-    if (citations===undefined) {
+    if (citations === undefined) {
         return null;
     }
-    if(allMediaIds.length === 0||apiUrl===undefined) {
+    if (allMediaIds.length === 0 || apiUrl === undefined) {
         return null;
     }
     return (
@@ -235,18 +234,22 @@ export const PdfViewer = ({
                     setShowCitations(!showCitations);
                     fetchPdfAndCreateObjectURL(allMediaIds).then((res) => {
                         setPdfUrls(res);
-                    })
+                    });
                 }}
                 disabled={showCitations}
             >
                 <IconTable className="mr-2" />
                 {/* {showCitations ? "Hide Citations" : "Show Citations"} */}
-                {citations.length>0?"Show Citations": "View Files"}
+                {citations.length > 0 ? "Show Citations" : "View Files"}
             </Button>
             <Sheet open={showCitations} onOpenChange={(open: boolean) => setShowCitations(open)} modal={false}>
                 <SheetPortal>
                     <SheetContent className="min-w-[100vw] sm:min-w-[70vw] lg:min-w-[50vw] bg-secondary" side="left">
-                        {pdfUrls.length>0?<Citations citations={citations} pdfUrls={pdfUrls} />:<Loader className="flex justify-center mt-[100px] w-full h-full" height="100" width="100" />}
+                        {pdfUrls.length > 0 ? (
+                            <Citations citations={citations} pdfUrls={pdfUrls} />
+                        ) : (
+                            <Loader className="flex justify-center mt-[100px] w-full h-full" height="100" width="100" />
+                        )}
                     </SheetContent>
                 </SheetPortal>
             </Sheet>

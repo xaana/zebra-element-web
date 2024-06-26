@@ -1,16 +1,3 @@
-export type MatrixFile = {
-    id: string;
-    name: string;
-    downloadUrl: string;
-    timestamp: Date;
-    sender: string;
-    roomId: string;
-    //   room?: Room
-    isEncrypted: boolean;
-    //   mediaHelper: MediaEventHelper
-    mediaId: string;
-};
-
 export type StepItem = {
     id: number;
     text: string;
@@ -41,13 +28,6 @@ export type Report = {
     content?: string;
     status?: string;
     aiContent?: AiGenerationContent;
-};
-
-export type File = {
-    id: string;
-    name: string;
-    owner: string;
-    createdAt: Date;
 };
 
 export type Message = {
