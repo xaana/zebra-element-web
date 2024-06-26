@@ -72,6 +72,7 @@
     "src/stores/spaces/SpaceStore.ts": "src/stores/spaces/SpaceStore.ts",
     "src/utils/DecryptFile.ts": "src/utils/DecryptFile.ts",
     "src/utils/direct-messages.ts": "src/utils/direct-messages.ts",
+    "src/utils/Reply.ts": "src/utils/Reply.ts",
     "src/components/views/dialogs/UploadConfirmDialog.tsx": "src/components/views/dialogs/UploadConfirmDialog.tsx",
     "src/toasts/UpdateToast.tsx": "src/toasts/UpdateToast.tsx",
     "src/components/views/elements/AppTile.tsx": "src/components/views/elements/AppTile.tsx",
