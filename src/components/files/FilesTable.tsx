@@ -508,7 +508,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         document.body.removeChild(anchor);
                       
                         // Clean up the blob URL
-                        URL.revokeObjectURL(url);
+                        URL.revokeObjectURL(blobUrl);
                     });
                 })
                 setRowSelection({});

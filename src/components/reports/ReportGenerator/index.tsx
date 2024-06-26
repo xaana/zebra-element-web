@@ -7,7 +7,7 @@ import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
-import type { File as MatrixFile } from "@/plugins/files/types";
+import type { MatrixFile } from "@/plugins/files/types";
 import { AdvancedOptions } from "./AdvancedOptions";
 
 import { IconZebra } from "@/components/ui/icons";
@@ -35,7 +35,7 @@ export const ReportGenerator = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
-        contentMediaId?: string,
+        contentMediaIds?: string[],
         selectedTemplateId?: string,
     ) => void;
     allReports: Report[];
@@ -49,8 +49,8 @@ export const ReportGenerator = ({
     const [outlineItems, setOutlineItems] = React.useState<string[]>([]);
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
-    const [contentFile, setContentFile] = React.useState<File>();
-    const [contentMediaId, setContentMediaId] = React.useState<string>();
+    const [contentFiles, setContentFiles] = React.useState<MatrixFile[]>([]);
+    const [contentMediaIds, setContentMediaIds] = React.useState<string[]>([]);
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -64,6 +64,15 @@ export const ReportGenerator = ({
     const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>();
 
     const handleGenerateOutline = async (): Promise<void> => {
+        const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
+        const mediaIds = contentFiles
+            .map((file) => file.mediaId)
+            .map((mediaId) => {
+                const match = mediaIdRegexPattern.exec(mediaId);
+                return match ? match[1] : null;
+            })
+            .filter(Boolean) as string[];
+        setContentMediaIds(mediaIds);
         setOutlineItems([]);
         setIsOutlineLoading(true);
         setShowOutline(true);
@@ -76,7 +85,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
-                    ...(contentMediaId && { content_media_id: contentMediaId }),
+                    ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
                 }),
             });
             const data = await res.json();
@@ -105,8 +114,8 @@ export const ReportGenerator = ({
             setTone("");
             setPrompt("");
             setSelectedTemplateId(undefined);
-            setContentFile(undefined);
-            setContentMediaId(undefined);
+            setContentFiles([]);
+            setContentMediaIds([]);
         }
     };
 
@@ -118,22 +127,9 @@ export const ReportGenerator = ({
             contentSize,
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
-            contentMediaId ?? undefined,
+            contentMediaIds ?? [],
             selectedTemplateId ?? undefined,
         );
-    };
-
-    const handleFileUpload = async (file: File, matrixFile?: MatrixFile): Promise<void> => {
-        setContentFile(file);
-        let mediaId: string | null = null;
-        if (matrixFile) {
-            const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
-            const match = mediaIdRegexPattern.exec(matrixFile.mediaId);
-            if (match) {
-                mediaId = match[1];
-            }
-        }
-        mediaId && setContentMediaId(mediaId);
     };
 
     return (
@@ -182,9 +178,8 @@ export const ReportGenerator = ({
                                     allReports={allReports}
                                     selectedTemplateId={selectedTemplateId}
                                     setSelectedTemplateId={setSelectedTemplateId}
-                                    onFileUpload={handleFileUpload}
-                                    contentFile={contentFile}
-                                    setContentFile={setContentFile}
+                                    contentFiles={contentFiles}
+                                    setContentFiles={setContentFiles}
                                 />
                             )}
                             {showOutline && (

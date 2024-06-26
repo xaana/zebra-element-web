@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
-import { FileUpload } from "@/components/reports/FileUpload";
+import { ReportFileImport } from "@/components/reports/ReportFileImport";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { ReportsList } from "@/components/reports/ReportsList";
 import { ReportCard } from "@/components/reports/ReportCard";
@@ -60,7 +60,7 @@ export const ReportSelector = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
-        contentMediaId?: string,
+        contentMediaIds?: string[],
         selectedTemplateId?: string,
     ): Promise<void> => {
         onAiGenerate({
@@ -69,7 +69,7 @@ export const ReportSelector = ({
             contentSize,
             tone,
             targetAudience,
-            contentMediaId,
+            contentMediaIds,
             templateId: selectedTemplateId,
         } as AiGenerationContent);
     };
@@ -82,7 +82,7 @@ export const ReportSelector = ({
             </div>
             <div className="flex items-center gap-2 mb-6">
                 <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
-                <FileUpload onFileUpload={onFileUpload} />
+                <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
                     onClick={() => onCreateNewFromBlank()} // open blank editor

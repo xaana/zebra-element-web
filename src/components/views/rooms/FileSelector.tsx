@@ -5,18 +5,18 @@ import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClie
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
 import { RowSelectionState } from "@tanstack/react-table";
+import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
 import { init as initRouting } from "../../../vector/routing";
 
 import "./style/button.css";
-import { File } from "@/plugins/files/types";
+import { MatrixFile as File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
 import FilesTabs from "@/components/files/FilesTabs";
 import { MediaGrid, MediaItem } from "@/components/files/MediaGrid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 import { Loader } from "@/components/ui/LoaderAlt";
 

@@ -144,13 +144,9 @@ export const Home = (): JSX.Element => {
             formData.append("file", file);
             formData.append("user_id", userId);
             setIsLoading(true);
-            // Make API request
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
-                // headers: {
-                //     "Content-Type": "multipart/form-data",
-                // },
             });
             const responseData = await response.json();
 
@@ -236,7 +232,7 @@ export const Home = (): JSX.Element => {
                 setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
                 return true;
             } else {
-                toast.error("Error updating document name");
+                toast.error("Error in renaming the document. Please try again later.");
                 return false;
             }
         } catch (error) {
@@ -257,7 +253,7 @@ export const Home = (): JSX.Element => {
             if (response.ok) {
                 setReports((prev) => prev.filter((report) => report.id !== reportId));
             } else {
-                toast.error("Error updating document name");
+                toast.error("Error in deleting the document. Please try again later.");
             }
         } catch (error) {
             console.error("Error updating document name", error);
@@ -278,7 +274,7 @@ export const Home = (): JSX.Element => {
     };
 
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-full overflow-auto">
             {/* No report selected - Show report selector */}
             {selectedReport === undefined && (
                 <motion.div
