@@ -38,16 +38,18 @@ export const MatrixFileSelector = ({
         handleDialogToggle(false);
         const rowIndices = Object.keys(rowSelection);
         if (rowIndices.length > 0) {
-            setContentFiles(() =>
-                rowIndices
-                    .map((index) => documents[parseInt(index)])
-                    .filter((matrixFile) =>
-                        [
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                            "application/pdf",
-                            "application/msword",
-                        ].includes(matrixFile.mimetype ?? ""),
-                    ),
+            setContentFiles(
+                () =>
+                    rowIndices
+                        .map((index) => documents[parseInt(index)])
+                        .filter((matrixFile) =>
+                            [
+                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                "application/pdf",
+                                "application/msword",
+                            ].includes(matrixFile.mimetype ?? ""),
+                        )
+                        .slice(0, 5), // This slices the number of files to a maximum of 5,
             );
         }
     };
