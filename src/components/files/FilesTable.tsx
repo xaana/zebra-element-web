@@ -25,7 +25,7 @@ import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { getFile } from "./FileOpsHandler";
 import { FilterWrapper as Filter } from "./FilesTableFilter";
