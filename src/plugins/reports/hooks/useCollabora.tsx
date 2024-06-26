@@ -423,7 +423,7 @@ export function useCollabora({
                         selectedReport.aiContent.contentSize,
                         selectedReport.aiContent.targetAudience,
                         selectedReport.aiContent.tone,
-                        selectedReport.aiContent.contentMediaId ?? undefined,
+                        selectedReport.aiContent.contentMediaIds ?? undefined,
                     )
                         .then(async (data) => {
                             if (!data) {

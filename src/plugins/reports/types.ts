@@ -13,7 +13,7 @@ export type AiGenerationContent = {
     contentSize: string;
     tone: string;
     targetAudience: string;
-    contentMediaId?: string;
+    contentMediaIds?: string[];
     templateId?: string;
 };
 
