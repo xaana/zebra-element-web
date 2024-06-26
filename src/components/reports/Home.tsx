@@ -144,13 +144,9 @@ export const Home = (): JSX.Element => {
             formData.append("file", file);
             formData.append("user_id", userId);
             setIsLoading(true);
-            // Make API request
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
-                // headers: {
-                //     "Content-Type": "multipart/form-data",
-                // },
             });
             const responseData = await response.json();
 
