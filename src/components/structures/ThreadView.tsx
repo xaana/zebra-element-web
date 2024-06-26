@@ -41,11 +41,13 @@ import { ComposerInsertPayload, ComposerType } from "matrix-react-sdk/src/dispat
 import Heading from "matrix-react-sdk/src/components/views/typography/Heading";
 import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 import { ThreadPayload } from "matrix-react-sdk/src/dispatcher/payloads/ThreadPayload";
+import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
+
 import { DocFile } from "../views/rooms/FileSelector";
 import MessageComposer from "../views/rooms/MessageComposer";
-import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
-import { File } from "@/plugins/files/types";
 import ZebraAlert from "../ui/ZebraAlert";
+
+import { MatrixFile as File } from "@/plugins/files/types";
 
 interface IProps {
     room: Room;
@@ -100,7 +102,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
             }),
             database: "",
             files: [],
-            showStop:false,
+            showStop: false,
             botStreamId: "",
         };
 
@@ -123,6 +125,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
                             file.eventId &&
                             !this.props.room.findEventById(file.eventId)?.isRedacted()
                         ) {
+                            return file;
+                        } else if (!file.eventId) {
                             return file;
                         }
                     });
@@ -187,11 +191,11 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
     private mergeUniqueByMediaId(first: DocFile[], second: DocFile[]): DocFile[] {
         // Create a Set from mediaIds of the first list for quick lookup
-        const mediaIdSet = new Set(first.map(item => item.mediaId));
-    
+        const mediaIdSet = new Set(first.map((item) => item.mediaId));
+
         // Filter out objects in the second list whose mediaId is not in the Set
-        const uniqueFromSecond = second.filter(item => !mediaIdSet.has(item.mediaId));
-    
+        const uniqueFromSecond = second.filter((item) => !mediaIdSet.has(item.mediaId));
+
         // Concatenate the first list with the unique items from the second list
         return first.concat(uniqueFromSecond);
     }
@@ -253,7 +257,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                 if (payload.context === TimelineRenderingType.Thread) {
                     const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
                     if (payload.roomId === this.props.room.roomId) {
-                        if (payload.files.length > 0&&mergedFiles.length>this.state.files.length) {
+                        if (payload.files.length > 0 && mergedFiles.length > this.state.files.length) {
                             const fileList = mergedFiles.map((file: DocFile) => {
                                 if (
                                     this.props.room &&
@@ -267,30 +271,36 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                         eventId: file.eventId,
                                         roomId: file.roomId,
                                     };
+                                } else if (!file.eventId) {
+                                    return {
+                                        mediaId: file.mediaId,
+                                        name: file.name,
+                                    };
                                 }
                             });
                             const filteredList = fileList.filter((item) => item !== undefined);
-                                const hasDocument = filteredList.some(file => /\.(pdf|docx|doc)$/i.test(file.name));
+                            const hasDocument = filteredList.some((file) => /\.(pdf|docx|doc)$/i.test(file.name));
                             let filteredFiles = filteredList;
 
                             // If there is a document, remove all images from the list
                             if (hasDocument) {
-                                filteredFiles = filteredList.filter(file => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name));
-    }
-                            if(filteredFiles.length>5){
-                                filteredFiles.splice(5,filteredList.length-5)
+                                filteredFiles = filteredList.filter(
+                                    (file) => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name),
+                                );
+                            }
+                            if (filteredFiles.length > 5) {
+                                filteredFiles.splice(5, filteredList.length - 5);
                             }
                             this.setState({
                                 database: "",
                                 files: filteredFiles,
                             });
-                        } else if (payload.files.length > 0&&mergedFiles.length===this.state.files.length) {
+                        } else if (payload.files.length > 0 && mergedFiles.length === this.state.files.length) {
                             this.setState({
-                                database:"",
+                                database: "",
                                 files: payload.files,
                             });
                         } else {
-                            console.log('...')
                             this.setState({
                                 files: [],
                             });
@@ -331,29 +341,31 @@ export default class ThreadView extends React.Component<IProps, IState> {
         this.setState({
             lastReply: this.threadLastReply,
         });
-        if(this.state.botStreamId&&this.threadLastReply?.getId()!==this.state.botStreamId){
-            this.setState({showStop: false});
+        if (this.state.botStreamId && this.threadLastReply?.getId() !== this.state.botStreamId) {
+            this.setState({ showStop: false });
         }
-        if(this.threadLastReply?.getContent().open==="open"&&!this.threadLastReply?.getContent().database){
-            this.threadLastReply.getId()&&this.setState({botStreamId: this.threadLastReply.getId()});
-            this.setState({showStop: true});
+        if (this.threadLastReply?.getContent().open === "open" && !this.threadLastReply?.getContent().database) {
+            this.threadLastReply.getId() && this.setState({ botStreamId: this.threadLastReply.getId() });
+            this.setState({ showStop: true });
         }
     };
-    public stopBotStream=():void=>{
-        this.setState({showStop: false});
+    public stopBotStream = (): void => {
+        this.setState({ showStop: false });
         //send http request for endpoint in the bot.
         const payload = {
-            eventId:this.state.botStreamId,
+            eventId: this.state.botStreamId,
         };
         const url = `${SettingsStore.getValue("botApiUrl")}/stop_streaming`;
         const request = new Request(url, {
             method: "POST",
             body: JSON.stringify(payload),
         });
-        fetch(request).then((res)=>res.json()).then((data)=>{
-            console.log(data)
-        });
-    }
+        fetch(request)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+            });
+    };
 
     private get threadLastReply(): MatrixEvent | undefined {
         return (
@@ -385,6 +397,8 @@ export default class ThreadView extends React.Component<IProps, IState> {
                             file.eventId &&
                             !this.props.room.findEventById(file.eventId)?.isRedacted()
                         ) {
+                            return file;
+                        } else if (!file.eventId) {
                             return file;
                         }
                     });

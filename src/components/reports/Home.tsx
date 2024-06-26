@@ -20,6 +20,7 @@ export const Home = (): JSX.Element => {
     const [isLoading, setIsLoading] = useState(false);
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
+    const [allUsers, setAllUsers] = useState<string[]>([]);
 
     const createNewReport = async (
         documentName?: string,
@@ -59,6 +60,21 @@ export const Home = (): JSX.Element => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchUsers = async (): Promise<void> => {
+            const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
+            const request = new Request(url, {
+                method: "GET",
+            });
+            fetch(request)
+                .then((response) => response.json())
+                .then((data) => {
+                    data.user && setAllUsers(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
+                });
+        };
+        fetchUsers();
+    }, []);
 
     useEffect(() => {
         const fetchReports = async (): Promise<void> => {
@@ -128,13 +144,9 @@ export const Home = (): JSX.Element => {
             formData.append("file", file);
             formData.append("user_id", userId);
             setIsLoading(true);
-            // Make API request
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
-                // headers: {
-                //     "Content-Type": "multipart/form-data",
-                // },
             });
             const responseData = await response.json();
 
@@ -158,7 +170,7 @@ export const Home = (): JSX.Element => {
         }
     };
 
-    const handleDuplicate = async (reportId: string): Promise<void> => {
+    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent): Promise<void> => {
         try {
             setIsLoading(true);
 
@@ -179,6 +191,9 @@ export const Home = (): JSX.Element => {
                     owner: client.getSafeUserId(),
                     accessType: "admin",
                     timestamp: new Date().toISOString(),
+                    ...(aiContent && {
+                        aiContent,
+                    }),
                 };
 
                 setReports((prev) => [...prev, newReport]);
@@ -194,7 +209,11 @@ export const Home = (): JSX.Element => {
     };
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
-        await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        if (aiContent.templateId !== undefined) {
+            await handleDuplicate(aiContent.templateId, aiContent);
+        } else {
+            await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        }
     };
 
     const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
@@ -213,7 +232,7 @@ export const Home = (): JSX.Element => {
                 setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
                 return true;
             } else {
-                toast.error("Error updating document name");
+                toast.error("Error in renaming the document. Please try again later.");
                 return false;
             }
         } catch (error) {
@@ -234,7 +253,7 @@ export const Home = (): JSX.Element => {
             if (response.ok) {
                 setReports((prev) => prev.filter((report) => report.id !== reportId));
             } else {
-                toast.error("Error updating document name");
+                toast.error("Error in deleting the document. Please try again later.");
             }
         } catch (error) {
             console.error("Error updating document name", error);
@@ -255,7 +274,7 @@ export const Home = (): JSX.Element => {
     };
 
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-full overflow-auto">
             {/* No report selected - Show report selector */}
             {selectedReport === undefined && (
                 <motion.div
@@ -276,6 +295,7 @@ export const Home = (): JSX.Element => {
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
+                        allUsers={allUsers}
                     />
                 </motion.div>
             )}
@@ -311,6 +331,8 @@ export const Home = (): JSX.Element => {
                             onCloseEditor={handleCloseEditor}
                             selectedReport={selectedReport}
                             onDocumentLoadFailed={handleDocumentLoadFailed}
+                            currentUser={userId}
+                            allUsers={allUsers}
                         />
                     </div>
                 </motion.div>

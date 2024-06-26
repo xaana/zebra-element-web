@@ -3,7 +3,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { streamContent, generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -31,6 +31,7 @@ export interface CollaboraExports {
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
     redo: () => void;
+    goToDocumentEnd: () => void;
 }
 
 interface PendingRequest {
@@ -49,6 +50,8 @@ export function useCollabora({
     onDocumentLoadFailed,
     isAiLoading,
     setIsAiLoading,
+    currentUser,
+    allUsers,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     selectedReport: Report;
@@ -59,6 +62,8 @@ export function useCollabora({
     onDocumentLoadFailed: () => void;
     isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    currentUser: string;
+    allUsers: string[];
 }): CollaboraExports {
     const [wopiUrl, setWopiUrl] = useState("");
     const [documentLoaded, setDocumentLoaded] = useState(false);
@@ -72,11 +77,14 @@ export function useCollabora({
     const contentQueue = useRef<AiContentResponse[]>([]);
     // State for tracking currently rendered content
     const renderIndex = useRef(0);
-    // State to store generated content buffer while streaming
-    const contentBuffer = useRef("");
 
     useEffect(() => {
         const initializeEditorIframe = (): void => {
+            const accessToken = {
+                origin: window.location.origin,
+                userId: currentUser,
+            };
+            const accessTokenJsonString = JSON.stringify(accessToken);
             const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${selectedReport.id}`;
             fetch(`${SettingsStore.getValue("reportsApiUrl")}/wopi/get_editor_url`)
                 .then((response) => response.json())
@@ -84,8 +92,8 @@ export function useCollabora({
                     const wopiClientUrl = data.url;
                     // const wopiUrl = `${wopiClientUrl.replace("http://collabora:9980", SettingsStore.getValue("collaboraServerUrl"))}WOPISrc=${encodeURIComponent(wopiSrc)}`;
                     const wopi = `${wopiClientUrl}WOPISrc=${encodeURIComponent(wopiSrc)}`;
-                    console.log(wopi);
-                    setWopiUrl(`${wopi}&access_token=${window.location.origin}`);
+                    // console.log(wopi);
+                    setWopiUrl(`${wopi}&access_token=${encodeURIComponent(accessTokenJsonString)}`);
                     setStartLoading(true);
                 });
         };
@@ -176,36 +184,30 @@ export function useCollabora({
                     }
                 }
                 break;
-            case "CallPythonScript-Result":
-                {
-                    if (
-                        msg.Values.commandName &&
-                        typeof msg.Values.commandName === "string" &&
-                        msg.Values.commandName.indexOf("GetSelection") >= 0 &&
-                        msg.Values.success &&
-                        msg.Values.result &&
-                        typeof msg.Values.result === "object" &&
-                        "value" in msg.Values.result &&
-                        typeof msg.Values.result.value === "string"
-                    ) {
-                        console.log(`Selected text:`, msg.Values.result.value);
-                    }
-                }
-                break;
+            // case "CallPythonScript-Result":
+            //     {
+            //         if (
+            //             msg.Values.commandName &&
+            //             typeof msg.Values.commandName === "string" &&
+            //             msg.Values.commandName.indexOf("GetSelection") >= 0 &&
+            //             msg.Values.success &&
+            //             msg.Values.result &&
+            //             typeof msg.Values.result === "object" &&
+            //             "value" in msg.Values.result &&
+            //             typeof msg.Values.result.value === "string"
+            //         ) {
+            //             console.log(`Selected text:`, msg.Values.result.value);
+            //         }
+            //     }
+            //     break;
             case "UI_Mention": {
-                const dummyUserDatabase = [
-                    {
-                        username: "Abigail",
-                        profile: "Abigail profile link",
-                    },
-                    {
-                        username: "Alexandra",
-                        profile: "Alexandra profile link",
-                    },
-                ];
+                const usersList = allUsers.map((user) => ({
+                    username: user.split(":")[0].substring(1),
+                    profile: user,
+                }));
                 const type = msg.Values.type;
                 const text = msg.Values.text as string;
-                const users = dummyUserDatabase.filter((user) => user.username.includes(text));
+                const users = usersList.filter((user) => user.username.includes(text));
                 if (type === "autocomplete") {
                     setTimeout(sendMessage, 0, {
                         MessageId: "Action_Mention",
@@ -214,6 +216,8 @@ export function useCollabora({
                             list: users,
                         },
                     });
+                } else if (type === "selected") {
+                    console.log(`Mentioned:`, msg.Values.username);
                 }
                 break;
             }
@@ -351,6 +355,14 @@ export function useCollabora({
         });
     };
 
+    const goToDocumentEnd = (): void => {
+        // .uno:ClearUndoStack
+        sendMessage({
+            MessageId: "Send_UNO_Command",
+            SendTime: Date.now(),
+            Values: { Command: ".uno:GoToEndOfDoc" },
+        });
+    };
     const undo = (): void => {
         // .uno:ClearUndoStack
         sendMessage({
@@ -387,7 +399,8 @@ export function useCollabora({
                     renderIndex.current += 1; // Optionally, you could retry instead of skipping
                 } else if (currentContent.content) {
                     // Await here ensures we don't move to the next content until this one is fully processed
-                    await streamContent(currentContent.content, contentBuffer, insertText);
+                    // await streamContent(currentContent.content, contentBuffer, insertText);
+                    insertCustomHtml(currentContent.content);
                     contentQueue.current[renderIndex.current].isRendered = true;
                     renderIndex.current += 1; // Move to the next response
                 }
@@ -410,7 +423,7 @@ export function useCollabora({
                         selectedReport.aiContent.contentSize,
                         selectedReport.aiContent.targetAudience,
                         selectedReport.aiContent.tone,
-                        selectedReport.aiContent.contentMediaId ?? undefined,
+                        selectedReport.aiContent.contentMediaIds ?? undefined,
                     )
                         .then(async (data) => {
                             if (!data) {
@@ -424,8 +437,9 @@ export function useCollabora({
                                 error: false,
                             };
                             if (index === 0) {
-                                setIsAiLoading(false);
+                                // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
+                                goToDocumentEnd();
                                 processContentSequentially();
                             }
                         })
@@ -454,5 +468,6 @@ export function useCollabora({
         insertCustomHtml,
         undo,
         redo,
+        goToDocumentEnd,
     } as CollaboraExports;
 }

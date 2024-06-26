@@ -6,9 +6,8 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { toast } from "sonner";
-import { icons } from "lucide-react";
 
-import type { File as MatrixFile } from "@/plugins/files/types";
+import type { MatrixFile } from "@/plugins/files/types";
 
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
@@ -16,20 +15,11 @@ import { Form } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
 import { getUserFiles } from "@/lib/utils/getUserFiles";
-import { dtoToFileAdapters, listFiles } from "../files/FileOpsHandler";
 
-export const FileUpload = ({
+export const ReportFileImport = ({
     onFileUpload,
-    allowUpload = true,
-    iconName = "Import",
-    buttonText = "Import from file",
-    buttonVariant = "secondary",
 }: {
-    onFileUpload: (file: File, matrixFile?: MatrixFile) => Promise<void>;
-    allowUpload?: boolean;
-    iconName?: keyof typeof icons;
-    buttonText?: string;
-    buttonVariant?: "default" | "outline" | "secondary";
+    onFileUpload: (fileBlob: File) => Promise<void>;
 }): JSX.Element => {
     const [errors, setErrors] = useState<z.ZodIssue[]>([]);
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
@@ -102,19 +92,11 @@ export const FileUpload = ({
             await onFileUpload(fileInput[0]);
         }
     };
-    const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = (await listFiles(client.getUserId() ?? "", undefined, "zebra")).map((item) =>
-            dtoToFileAdapters(item, client.getUserId()),
-        );
-        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
-    };
-    const onUpdate = (): void => {
-        fetchFiles();
-    };
 
     const handleDialogToggle = async (open: boolean): Promise<void> => {
         if (open) {
-            await fetchFiles()
+            const fetchedFiles = await getUserFiles(client);
+            setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
         } else {
             setFilesDialogOpen(false);
             setRowSelection({});
@@ -122,14 +104,23 @@ export const FileUpload = ({
     };
 
     const handleUploadedFileSelection = async (matrixFile: MatrixFile): Promise<void> => {
-        if (matrixFile.mimetype !== "application/pdf") {
-            toast.error("Only PDF files supported.");
+        if (
+            ![
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/pdf",
+                "application/msword",
+            ].includes(matrixFile.mimetype ?? "")
+        ) {
+            handleDialogToggle(false);
+            setTimeout(() => {
+                toast.error("Only PDF, DOCX, and DOC files supported.");
+            }, 300);
             return;
         }
         const fileBlob = await matrixFile.mediaHelper!.sourceBlob.value;
-        const file = new File([fileBlob], matrixFile.name, { type: "application/pdf" });
+        const file = new File([fileBlob], matrixFile.name, { type: matrixFile.mimetype ?? "application/pdf" });
         handleDialogToggle(false);
-        await onFileUpload(file, matrixFile);
+        await onFileUpload(file);
     };
 
     useEffect(() => {
@@ -143,13 +134,13 @@ export const FileUpload = ({
             <Dialog open={filesDialogOpen} onOpenChange={handleDialogToggle}>
                 <DialogTrigger asChild>
                     <Button
-                        variant={buttonVariant}
+                        variant="secondary"
                         size="sm"
                         className="font-semibold text-sm"
                         onClick={() => setFilesDialogOpen(true)}
                     >
-                        <Icon name={iconName} className="mr-2" />
-                        {buttonText}
+                        <Icon name="Import" className="mr-2" />
+                        Import from file
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[70vw] max-w-[70vw] h-[70vh] p-0 overflow-hidden">
@@ -160,49 +151,46 @@ export const FileUpload = ({
                             rowSelection={rowSelection}
                             setRowSelection={setRowSelection}
                             mode="dialog"
-                            onUpdate={onUpdate}
                         />
-                        {allowUpload && (
-                            <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
-                                <Form {...fileUploadForm}>
-                                    <form
-                                        className="flex items-center gap-2"
-                                        onSubmit={(e) => {
-                                            e.preventDefault(); // Prevent form submission
+                        <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
+                            <Form {...fileUploadForm}>
+                                <form
+                                    className="flex items-center gap-2"
+                                    onSubmit={(e) => {
+                                        e.preventDefault(); // Prevent form submission
+                                    }}
+                                >
+                                    <input
+                                        ref={inputRef}
+                                        type="file"
+                                        // multiple
+                                        onChange={onFileChange}
+                                        accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        className="hidden"
+                                    />
+                                    <div className="flex items-center gap-2">
+                                        {errors.map((error: z.ZodIssue, index) => (
+                                            <p key={index} className="text-center text-xs font-normal text-red-500">
+                                                {error.message}
+                                            </p>
+                                        ))}
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="mb-0.5"
+                                        onClick={(e) => {
+                                            e.preventDefault(); // Prevent any default action
+                                            inputRef.current?.click();
                                         }}
                                     >
-                                        <input
-                                            ref={inputRef}
-                                            type="file"
-                                            // multiple
-                                            onChange={onFileChange}
-                                            accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                            className="hidden"
-                                        />
-                                        <div className="flex items-center gap-2">
-                                            {errors.map((error: z.ZodIssue, index) => (
-                                                <p key={index} className="text-center text-xs font-normal text-red-500">
-                                                    {error.message}
-                                                </p>
-                                            ))}
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            size="sm"
-                                            className="mb-0.5"
-                                            onClick={(e) => {
-                                                e.preventDefault(); // Prevent any default action
-                                                inputRef.current?.click();
-                                            }}
-                                        >
-                                            <Icon name="Upload" className="mr-2" />
-                                            Upload File
-                                        </Button>
-                                    </form>
-                                </Form>
-                            </div>
-                        )}
+                                        <Icon name="Upload" className="mr-2" />
+                                        Upload File
+                                    </Button>
+                                </form>
+                            </Form>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>

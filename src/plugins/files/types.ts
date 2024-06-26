@@ -1,6 +1,6 @@
 import type { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
 import type { MsgType, MatrixEvent } from "matrix-js-sdk/src/matrix";
-export type File = {
+export type MatrixFile = {
     id?: string;
     name: string;
     downloadUrl: string;

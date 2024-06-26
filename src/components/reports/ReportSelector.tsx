@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
-import { FileUpload } from "@/components/reports/FileUpload";
+import { ReportFileImport } from "@/components/reports/ReportFileImport";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { ReportsList } from "@/components/reports/ReportsList";
 import { ReportCard } from "@/components/reports/ReportCard";
@@ -21,6 +21,7 @@ interface ReportSelectorProps {
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
+    allUsers: string[];
 }
 
 export const ReportSelector = ({
@@ -33,6 +34,7 @@ export const ReportSelector = ({
     onDuplicate,
     onDelete,
     onAiGenerate,
+    allUsers,
 }: ReportSelectorProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
@@ -58,7 +60,8 @@ export const ReportSelector = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
-        contentMediaId?: string,
+        contentMediaIds?: string[],
+        selectedTemplateId?: string,
     ): Promise<void> => {
         onAiGenerate({
             documentPrompt,
@@ -66,7 +69,8 @@ export const ReportSelector = ({
             contentSize,
             tone,
             targetAudience,
-            contentMediaId,
+            contentMediaIds,
+            templateId: selectedTemplateId,
         } as AiGenerationContent);
     };
 
@@ -77,8 +81,8 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleAiGenerate} />
-                <FileUpload onFileUpload={onFileUpload} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
+                <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
                     onClick={() => onCreateNewFromBlank()} // open blank editor
@@ -139,6 +143,7 @@ export const ReportSelector = ({
                             onDuplicate={onDuplicate}
                             userId={userId}
                             onDelete={onDelete}
+                            allUsers={allUsers}
                         />
                     ))}
                 </div>
@@ -149,6 +154,7 @@ export const ReportSelector = ({
                     onRename={onRename}
                     onDuplicate={onDuplicate}
                     onDelete={onDelete}
+                    allUsers={allUsers}
                 />
             )}
         </>

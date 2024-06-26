@@ -7,8 +7,8 @@ import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
-import { FileUpload } from "../FileUpload";
-import type { File as MatrixFile } from "@/plugins/files/types";
+import type { MatrixFile } from "@/plugins/files/types";
+import { AdvancedOptions } from "./AdvancedOptions";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,10 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-// import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { Report } from "@/plugins/reports/types";
 export const ReportGenerator = ({
     onReportGenerate,
+    allReports,
 }: {
     onReportGenerate: (
         documentPrompt: string,
@@ -35,8 +35,10 @@ export const ReportGenerator = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
-        contentMediaId?: string,
+        contentMediaIds?: string[],
+        selectedTemplateId?: string,
     ) => void;
+    allReports: Report[];
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
     const [prompt, setPrompt] = React.useState("");
@@ -47,8 +49,8 @@ export const ReportGenerator = ({
     const [outlineItems, setOutlineItems] = React.useState<string[]>([]);
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
-    const [contentFile, setContentFile] = React.useState<File>();
-    const [contentMediaId, setContentMediaId] = React.useState<string>();
+    const [contentFiles, setContentFiles] = React.useState<MatrixFile[]>([]);
+    const [contentMediaIds, setContentMediaIds] = React.useState<string[]>([]);
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -59,7 +61,18 @@ export const ReportGenerator = ({
         }
     }, []);
 
+    const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>();
+
     const handleGenerateOutline = async (): Promise<void> => {
+        const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
+        const mediaIds = contentFiles
+            .map((file) => file.mediaId)
+            .map((mediaId) => {
+                const match = mediaIdRegexPattern.exec(mediaId);
+                return match ? match[1] : null;
+            })
+            .filter(Boolean) as string[];
+        setContentMediaIds(mediaIds);
         setOutlineItems([]);
         setIsOutlineLoading(true);
         setShowOutline(true);
@@ -72,7 +85,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
-                    ...(contentMediaId && { content_media_id: contentMediaId }),
+                    ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
                 }),
             });
             const data = await res.json();
@@ -100,6 +113,9 @@ export const ReportGenerator = ({
             setTargetAudience("");
             setTone("");
             setPrompt("");
+            setSelectedTemplateId(undefined);
+            setContentFiles([]);
+            setContentMediaIds([]);
         }
     };
 
@@ -111,21 +127,9 @@ export const ReportGenerator = ({
             contentSize,
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
-            contentMediaId ?? undefined,
+            contentMediaIds ?? [],
+            selectedTemplateId ?? undefined,
         );
-    };
-
-    const handleFileUpload = async (file: File, matrixFile?: MatrixFile): Promise<void> => {
-        setContentFile(file);
-        let mediaId: string | null = null;
-        if (matrixFile) {
-            const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
-            const match = mediaIdRegexPattern.exec(matrixFile.mediaId);
-            if (match) {
-                mediaId = match[1];
-            }
-        }
-        mediaId && setContentMediaId(mediaId);
     };
 
     return (
@@ -164,45 +168,28 @@ export const ReportGenerator = ({
                         <HeaderText showOutline={showOutline} />
                         <div
                             className={cn(
-                                "flex gap-4 w-full mt-10 mb-2 justify-between",
+                                "flex gap-4 w-full mt-10 mb-2 justify-between items-end",
                                 // showOutline ? "justify-between" : "justify-end",
                                 // showOutline ? "justify-end" : "justify-between",
                             )}
                         >
                             {!showOutline && (
-                                <div className="flex items-center gap-3">
-                                    <div className="text-muted-foreground font-semibold text-sm">
-                                        Supporting Document:
-                                    </div>
-                                    {contentFile ? (
-                                        <Badge variant="outline" className="flex items-center gap-2 h-8">
-                                            <div className="text-xs">{contentFile.name}</div>
-                                            <Button
-                                                onClick={() => setContentFile(undefined)}
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-auto h-auto p-0.5 rounded-full"
-                                            >
-                                                <Icon name="X" className="w-3 h-3" />
-                                            </Button>
-                                        </Badge>
-                                    ) : (
-                                        <FileUpload
-                                            onFileUpload={handleFileUpload}
-                                            buttonText="Select Document"
-                                            allowUpload={false}
-                                            iconName="FileInput"
-                                            buttonVariant="outline"
-                                        />
-                                    )}
-                                </div>
+                                <AdvancedOptions
+                                    allReports={allReports}
+                                    selectedTemplateId={selectedTemplateId}
+                                    setSelectedTemplateId={setSelectedTemplateId}
+                                    contentFiles={contentFiles}
+                                    setContentFiles={setContentFiles}
+                                />
                             )}
                             {showOutline && (
                                 <div className="text-muted-foreground font-semibold text-base translate-y-1">
                                     Prompt
                                 </div>
                             )}
-                            <PagesSelector pages={pages} setPages={setPages} />
+                            <div className="flex items-end">
+                                <PagesSelector pages={pages} setPages={setPages} />
+                            </div>
                         </div>
                         <div className="relative w-full">
                             <Textarea
