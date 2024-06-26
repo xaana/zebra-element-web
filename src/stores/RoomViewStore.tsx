@@ -61,9 +61,10 @@ import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import { CancelAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/CancelAskToJoinPayload";
 import { SubmitAskToJoinPayload } from "matrix-react-sdk/src/dispatcher/payloads/SubmitAskToJoinPayload";
 import { ModuleRunner } from "matrix-react-sdk/src/modules/ModuleRunner";
-import { DocFile } from "@/components/views/rooms/FileSelector";
-import { File } from "@/plugins/files/types";
 import { toast } from "sonner";
+
+import { DocFile } from "@/components/views/rooms/FileSelector";
+import { MatrixFile as File } from "@/plugins/files/types";
 
 const NUM_JOIN_RETRY = 5;
 
@@ -125,7 +126,7 @@ interface State {
     promptAskToJoin: boolean;
 
     viewRoomOpts: ViewRoomOpts;
-    database:string;
+    database: string;
     files: DocFile[];
     uploading: boolean;
 }
@@ -150,7 +151,7 @@ const INITIAL_STATE: State = {
     viewingCall: false,
     promptAskToJoin: false,
     viewRoomOpts: { buttons: [] },
-    database: '',
+    database: "",
     files: [],
     uploading: false,
 };
@@ -269,11 +270,11 @@ export class RoomViewStore extends EventEmitter {
     }
     private mergeUniqueByMediaId(first: DocFile[], second: DocFile[]): DocFile[] {
         // Create a Set from mediaIds of the first list for quick lookup
-        const mediaIdSet = new Set(first.map(item => item.mediaId));
-    
+        const mediaIdSet = new Set(first.map((item) => item.mediaId));
+
         // Filter out objects in the second list whose mediaId is not in the Set
-        const uniqueFromSecond = second.filter(item => !mediaIdSet.has(item.mediaId));
-    
+        const uniqueFromSecond = second.filter((item) => !mediaIdSet.has(item.mediaId));
+
         // Concatenate the first list with the unique items from the second list
         return first.concat(uniqueFromSecond);
     }
@@ -384,103 +385,116 @@ export class RoomViewStore extends EventEmitter {
                 }
                 break;
             case "select_database":
-            // Thread timeline view handles its own reply-to-state
-            if (TimelineRenderingType.Thread !== payload.context) {
-                // If currently viewed room does not match the room in which we wish to reply then change rooms this
-                // can happen when performing a search across all rooms. Persist the data from this event for both
-                // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
-                if (payload.event && payload.event.getRoomId() !== this.state.roomId) {
-                    this.dis?.dispatch<ViewRoomPayload>({
-                        action: Action.ViewRoom,
-                        room_id: payload.event.getRoomId(),
-                        metricsTrigger: undefined, // room doesn't change
-                    });
-                } else {
-                    if (payload.roomId===this.state.roomId){
-                    this.setState({
-                        database: payload.database,
-                    });}
-                }
-            }
-            break;
-            case "select_files":
-            // Thread timeline view handles its own reply-to-state
-            if (TimelineRenderingType.Thread !== payload.context) {
-                // If currently viewed room does not match the room in which we wish to reply then change rooms this
-                // can happen when performing a search across all rooms. Persist the data from this event for both
-                // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
-                if (payload.event && payload.event.getRoomId() !== this.state.roomId) {
-                    this.dis?.dispatch<ViewRoomPayload>({
-                        action: Action.ViewRoom,
-                        room_id: payload.event.getRoomId(),
-                        metricsTrigger: undefined, // room doesn't change
-                    });
-                } else {
-                    const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
-                    if (payload.roomId===this.state.roomId){
-                        if(payload.files.length>0&&mergedFiles.length>this.state.files.length){
-                        const newState = [...this.state.files,...payload.files]
-                        const uniqueList =newState.filter((item, index, self) =>
-                            index === self.findIndex((t) => (
-                                t.mediaId === item.mediaId && t.name === item.name
-                            )))
-                        const fileList = uniqueList.map((file:DocFile) => {
-                            if (this.state.roomId&&file.eventId&&(!this.stores.client?.getRoom(this.state.roomId)?.findEventById(file.eventId)?.isRedacted()||!this.stores.client?.getRoom(this.state.roomId)?.findEventById(file.eventId))){
-                                return {
-                                    mediaId: file.mediaId,
-                                    name: file.name,
-                                    eventId: file.eventId,
-                                    roomId: file.roomId,
-                                };
-                            }else if (!file.eventId){
-                                return {
-                                    mediaId: file.mediaId,
-                                    name: file.name,
-                                };
-                            }
-                            
-                        })
-                        // console.log(this.stores.client?.mxcUrlToHttp(fileList[0].mediaId),'trying to get url')
-                        // console.log(this.state.roomId&&this.stores.client?.getRoom(this.state.roomId)?.findEventById(fileList[0].eventId)?.getClearContent())
-                        const filteredList = fileList.filter(item => item !== undefined);
-                        const hasDocument = filteredList.some(file => /\.(pdf|docx|doc)$/i.test(file.name));
-                        let filteredFiles = filteredList;
-
-                        // If there is a document, remove all images from the list
-                        if (hasDocument) {
-                            filteredFiles = filteredList.filter(file => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name));
-}
-                        if(filteredFiles.length>5){
-                            filteredFiles.splice(5,filteredList.length-5)
+                // Thread timeline view handles its own reply-to-state
+                if (TimelineRenderingType.Thread !== payload.context) {
+                    // If currently viewed room does not match the room in which we wish to reply then change rooms this
+                    // can happen when performing a search across all rooms. Persist the data from this event for both
+                    // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
+                    if (payload.event && payload.event.getRoomId() !== this.state.roomId) {
+                        this.dis?.dispatch<ViewRoomPayload>({
+                            action: Action.ViewRoom,
+                            room_id: payload.event.getRoomId(),
+                            metricsTrigger: undefined, // room doesn't change
+                        });
+                    } else {
+                        if (payload.roomId === this.state.roomId) {
+                            this.setState({
+                                database: payload.database,
+                            });
                         }
-                        filteredList&&this.setState({
-                            files: filteredFiles,
-                        });}
-                    else if(payload.files.length>0&&mergedFiles.length===this.state.files.length) {
-                        this.setState({
-                            files: payload.files,
-                        });
-                    }
-                    else{
-                        this.setState({
-                            files: [],
-                        });
-                    }
                     }
                 }
-            }
-            break;
+                break;
+            case "select_files":
+                // Thread timeline view handles its own reply-to-state
+                if (TimelineRenderingType.Thread !== payload.context) {
+                    // If currently viewed room does not match the room in which we wish to reply then change rooms this
+                    // can happen when performing a search across all rooms. Persist the data from this event for both
+                    // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
+                    if (payload.event && payload.event.getRoomId() !== this.state.roomId) {
+                        this.dis?.dispatch<ViewRoomPayload>({
+                            action: Action.ViewRoom,
+                            room_id: payload.event.getRoomId(),
+                            metricsTrigger: undefined, // room doesn't change
+                        });
+                    } else {
+                        const mergedFiles = this.mergeUniqueByMediaId(this.state.files, payload.files);
+                        if (payload.roomId === this.state.roomId) {
+                            if (payload.files.length > 0 && mergedFiles.length > this.state.files.length) {
+                                const newState = [...this.state.files, ...payload.files];
+                                const uniqueList = newState.filter(
+                                    (item, index, self) =>
+                                        index ===
+                                        self.findIndex((t) => t.mediaId === item.mediaId && t.name === item.name),
+                                );
+                                const fileList = uniqueList.map((file: DocFile) => {
+                                    if (
+                                        this.state.roomId &&
+                                        file.eventId &&
+                                        (!this.stores.client
+                                            ?.getRoom(this.state.roomId)
+                                            ?.findEventById(file.eventId)
+                                            ?.isRedacted() ||
+                                            !this.stores.client
+                                                ?.getRoom(this.state.roomId)
+                                                ?.findEventById(file.eventId))
+                                    ) {
+                                        return {
+                                            mediaId: file.mediaId,
+                                            name: file.name,
+                                            eventId: file.eventId,
+                                            roomId: file.roomId,
+                                        };
+                                    } else if (!file.eventId) {
+                                        return {
+                                            mediaId: file.mediaId,
+                                            name: file.name,
+                                        };
+                                    }
+                                });
+                                // console.log(this.stores.client?.mxcUrlToHttp(fileList[0].mediaId),'trying to get url')
+                                // console.log(this.state.roomId&&this.stores.client?.getRoom(this.state.roomId)?.findEventById(fileList[0].eventId)?.getClearContent())
+                                const filteredList = fileList.filter((item) => item !== undefined);
+                                const hasDocument = filteredList.some((file) => /\.(pdf|docx|doc)$/i.test(file.name));
+                                let filteredFiles = filteredList;
+
+                                // If there is a document, remove all images from the list
+                                if (hasDocument) {
+                                    filteredFiles = filteredList.filter(
+                                        (file) => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name),
+                                    );
+                                }
+                                if (filteredFiles.length > 5) {
+                                    filteredFiles.splice(5, filteredList.length - 5);
+                                }
+                                filteredList &&
+                                    this.setState({
+                                        files: filteredFiles,
+                                    });
+                            } else if (payload.files.length > 0 && mergedFiles.length === this.state.files.length) {
+                                this.setState({
+                                    files: payload.files,
+                                });
+                            } else {
+                                this.setState({
+                                    files: [],
+                                });
+                            }
+                        }
+                    }
+                }
+                break;
             case "uploading_files":
-            // Thread timeline view handles its own reply-to-state
-            if (TimelineRenderingType.Thread !== payload.context) {
-                // If currently viewed room does not match the room in which we wish to reply then change rooms this
-                // can happen when performing a search across all rooms. Persist the data from this event for both
-                // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
+                // Thread timeline view handles its own reply-to-state
+                if (TimelineRenderingType.Thread !== payload.context) {
+                    // If currently viewed room does not match the room in which we wish to reply then change rooms this
+                    // can happen when performing a search across all rooms. Persist the data from this event for both
+                    // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
                     this.setState({
                         uploading: payload.uploading,
                     });
-            }
-            break;
+                }
+                break;
             case Action.PromptAskToJoin: {
                 this.setState({ promptAskToJoin: true });
                 break;
@@ -583,9 +597,9 @@ export class RoomViewStore extends EventEmitter {
                         ? this.state.viewingCall
                         : CallStore.instance.getActiveCall(payload.room_id) !== null),
                 viewRoomOpts,
-                database:'',
-                files:[],
-                uploading:false,
+                database: "",
+                files: [],
+                uploading: false,
             };
 
             // Allow being given an event to be replied to when switching rooms but sanity check its for this room
@@ -881,11 +895,11 @@ export class RoomViewStore extends EventEmitter {
         return this.state.replyingToEvent;
     }
 
-    public getDatabase():string| null{
+    public getDatabase(): string | null {
         return this.state.database;
     }
 
-    public getUploading():boolean{
+    public getUploading(): boolean {
         return this.state.uploading;
     }
 
