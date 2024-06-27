@@ -4,6 +4,7 @@ import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { useInView } from "react-intersection-observer";
 
 import { Separator } from "@/components/ui/separator";
 import { Loader } from "@/components/ui/LoaderAlt";
@@ -58,6 +59,25 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
         getDbList();
     }, []);
 
+    const {
+        ref: previewTextScrollAnchorRef,
+        entry,
+        inView,
+    } = useInView({
+        trackVisibility: true,
+        delay: 100,
+        rootMargin: "0px 0px 0px 0px",
+    });
+
+    // Effect to auto-scroll down when previewText updates
+    useEffect(() => {
+        if (isFetching) {
+            entry?.target.scrollIntoView({
+                block: "start",
+            });
+        }
+    }, [previewText, isFetching, entry, inView]);
+
     const onTextAreaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setData((prevData) => ({ ...prevData, text: e.target.value }));
     }, []);
@@ -111,9 +131,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
     }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const insert = useCallback(() => {
-        if (!fetchedData && previewText) {
-            editor.insertText(previewText, false);
-        }
+        previewText && editor.insertText(previewText, false);
 
         const tableContent = arrayToHTMLTable(fetchedData);
 
@@ -169,11 +187,12 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                 {previewText && (
                     <>
                         <div className="text-sm text-muted-foreground mb-1 font-medium">Preview</div>
-                        <div
-                            className="bg-white dark:bg-black border-l-4 border-neutral-100 dark:border-neutral-700 text-black dark:text-white text-sm max-h-[14rem] mb-4 ml-2.5 overflow-y-auto px-4 relative"
-                            dangerouslySetInnerHTML={{ __html: previewText }}
-                        />
-                        <div className="p-4">
+
+                        <div className="bg-background text-sm max-h-[14rem] mb-4 p-4 overflow-y-auto relative">
+                            <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: previewText }} />
+                            <div ref={previewTextScrollAnchorRef} className="h-px w-full" />
+                        </div>
+                        <div className="bg-background rounded-md border">
                             {fetchedData && <QueryResultTable data={fetchedData} handleViewCharts={() => {}} />}
                         </div>
                     </>
