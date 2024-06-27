@@ -381,7 +381,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
     private calculateUrlPreview(): void {
         //console.info("calculateUrlPreview: ShowUrlPreview for %s is %s", this.props.mxEvent.getId(), this.props.showUrlPreview);
         // if (this.props.showUrlPreview && this.contentRef.current) {
-        if (this.contentRef.current) {
+        if (this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
             // pass only the first child which is the event tile otherwise this recurses on edited events
             let links = this.findLinks([this.contentRef.current]);
             if (links.length) {
