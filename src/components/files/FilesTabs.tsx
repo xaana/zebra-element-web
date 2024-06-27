@@ -1,9 +1,9 @@
 import React from "react";
+import { RowSelectionState } from "@tanstack/react-table";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils";
-import { RowSelectionState } from "@tanstack/react-table";
 const FilesTabs = ({
     displayType,
     setDisplayType,

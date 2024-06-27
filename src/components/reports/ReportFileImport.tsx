@@ -1,102 +1,39 @@
-import React, { useEffect, useRef } from "react";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { ChangeEvent, useState } from "react";
+import React, { useEffect, useState } from "react";
+// import * as z from "zod";
+// import { useForm } from "react-hook-form";
+// import { ChangeEvent, useRef } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { MsgType } from "matrix-js-sdk/src/matrix";
 import { toast } from "sonner";
 
 import type { MatrixFile } from "@/plugins/files/types";
 
+import { dtoToFileAdapters, listFiles, getFile } from "@/components/files/FileOpsHandler";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
-import { Form } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { FilesTable } from "@/components/files/FilesTable";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
 
 export const ReportFileImport = ({
     onFileUpload,
 }: {
     onFileUpload: (fileBlob: File) => Promise<void>;
 }): JSX.Element => {
-    const [errors, setErrors] = useState<z.ZodIssue[]>([]);
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
     const client = useMatrixClientContext();
-    const inputRef = useRef<HTMLInputElement>(null);
 
-    const MAX_FILE_SIZE = 5; // in MB
-
-    const fileUploadFormSchema = z.object({
-        files: z
-            .any()
-            .refine((data: unknown) => data instanceof FileList && data.length > 0, {
-                message: "At least one file is required",
-                path: [],
-            })
-            .refine(
-                (data: FileList) => {
-                    for (let i = 0; i < data.length; i++) {
-                        const fileExtension = data.item(i)?.name.split(".").pop();
-                        if (["pdf", "docx", "doc"].indexOf(fileExtension?.toLowerCase() ?? "") === -1) {
-                            return false;
-                        }
-                    }
-                    return true;
-                },
-                { message: "All files should be in .pdf format" },
-            )
-            .refine(
-                (data: FileList) => {
-                    for (let i = 0; i < data.length; i++) {
-                        const fileSize = data.item(i)?.size;
-                        if (fileSize === undefined || fileSize > MAX_FILE_SIZE * 1024 * 1024) return false;
-                    }
-                    return true;
-                },
-                {
-                    message: `File size of all files should be no more than ${MAX_FILE_SIZE}MB`,
-                },
-            ),
-    });
-
-    const fileUploadForm = useForm<z.infer<typeof fileUploadFormSchema>>({
-        defaultValues: {
-            files: null,
-        },
-    });
-
-    const onFileChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
-        const fileInput = e.target.files;
-        if (!fileInput) {
-            console.warn("No files selected.");
-            return; // Exit early if no files are selected.
-        }
-        // setFiles(fileInput);
-        const validationResult = fileUploadFormSchema.safeParse({
-            files: fileInput,
-        });
-        if (!validationResult.success) {
-            setErrors(validationResult.error.errors);
-            validationResult.error.errors.forEach((error) =>
-                fileUploadForm.setError("files", { type: "manual", message: error.message }),
-            );
-        } else {
-            setErrors([]);
-            fileUploadForm.clearErrors("files");
-
-            handleDialogToggle(false);
-            await onFileUpload(fileInput[0]);
-        }
+    const fetchFiles = async (): Promise<void> => {
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
     };
 
     const handleDialogToggle = async (open: boolean): Promise<void> => {
         if (open) {
-            const fetchedFiles = await getUserFiles(client);
-            setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+            await fetchFiles();
         } else {
             setFilesDialogOpen(false);
             setRowSelection({});
@@ -117,7 +54,8 @@ export const ReportFileImport = ({
             }, 300);
             return;
         }
-        const fileBlob = await matrixFile.mediaHelper!.sourceBlob.value;
+
+        const fileBlob = await getFile(matrixFile.mediaId, client.getUserId() ?? "");
         const file = new File([fileBlob], matrixFile.name, { type: matrixFile.mimetype ?? "application/pdf" });
         handleDialogToggle(false);
         await onFileUpload(file);
@@ -151,46 +89,8 @@ export const ReportFileImport = ({
                             rowSelection={rowSelection}
                             setRowSelection={setRowSelection}
                             mode="dialog"
+                            onUpdate={async () => await fetchFiles()}
                         />
-                        <div className="absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1] justify-end">
-                            <Form {...fileUploadForm}>
-                                <form
-                                    className="flex items-center gap-2"
-                                    onSubmit={(e) => {
-                                        e.preventDefault(); // Prevent form submission
-                                    }}
-                                >
-                                    <input
-                                        ref={inputRef}
-                                        type="file"
-                                        // multiple
-                                        onChange={onFileChange}
-                                        accept=".pdf, .doc, .docx, application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                        className="hidden"
-                                    />
-                                    <div className="flex items-center gap-2">
-                                        {errors.map((error: z.ZodIssue, index) => (
-                                            <p key={index} className="text-center text-xs font-normal text-red-500">
-                                                {error.message}
-                                            </p>
-                                        ))}
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        className="mb-0.5"
-                                        onClick={(e) => {
-                                            e.preventDefault(); // Prevent any default action
-                                            inputRef.current?.click();
-                                        }}
-                                    >
-                                        <Icon name="Upload" className="mr-2" />
-                                        Upload File
-                                    </Button>
-                                </form>
-                            </Form>
-                        </div>
                     </div>
                 </DialogContent>
             </Dialog>

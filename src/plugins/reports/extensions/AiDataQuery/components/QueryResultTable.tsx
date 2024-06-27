@@ -33,7 +33,7 @@ export const QueryResultTable: React.FC<TableProps<DataItem>> = ({ data, handleV
     return (
         <div className="zexa-w-full">
             <TableStyle>
-                <div className="table__container zexa-rounded-md zexa-border scrollbar--custom">
+                <div className="table__container zexa-rounded-md zexa-border scrollbar--custom max-h-[400px] overflow-auto">
                     {data && data.length > 0 && (
                         <>
                             <Table>

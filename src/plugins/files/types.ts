@@ -10,9 +10,9 @@ export type MatrixFile = {
     // room?: Room;
     type: MsgType | string;
     isEncrypted: boolean;
+    mediaId: string;
     mediaHelper?: MediaEventHelper;
     mxEvent?: MatrixEvent;
-    mediaId: string;
     event?: string;
     fileSize?: number;
     mimetype?: string;

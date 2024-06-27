@@ -20,35 +20,44 @@ export const listFiles = async (
     uploadService?: string,
     url: string = SettingsStore.getValue("reportsApiUrl"),
 ): Promise<FileDTO[]> => {
-    return fetch(url + "/api/files/get_info", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            media_type: type,
-            upload_service: uploadService,
-        }),
-    })
-        .then((res) => res.json())
-        .then((res) => {
-            const result = res.map((item) => {
-                return {
-                    mediaId: item.session_id,
-                    eventId: item.event_id ?? null,
-                    roomId: item.room_id,
-                    userIds: item.user_ids,
-                    senderId: item.sender_id,
-                    filename: item.filename,
-                    filetype: item.mime_type,
-                    size: typeof item.size === "string" ? parseFloat(item.metadata.size) : item.metadata.size,
-                    timestamp: new Date(item.metadata.timestamp),
-                };
-            });
-            return result.reverse();
+    try {
+        const response = await fetch(url + "/api/files/get_info", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                media_type: type,
+                upload_service: uploadService,
+            }),
         });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        const data = await response.json();
+
+        const result = data.map((item) => ({
+            mediaId: item.session_id,
+            eventId: item.event_id ?? null,
+            roomId: item.room_id,
+            userIds: item.user_ids,
+            senderId: item.sender_id,
+            filename: item.filename,
+            filetype: item.mime_type,
+            size: typeof item.size === "string" ? parseFloat(item.metadata.size) : item.metadata.size,
+            timestamp: new Date(item.metadata.timestamp),
+        }));
+
+        return result.reverse();
+    } catch (error) {
+        console.error("Failed to list files:", error);  // Logging the error for debugging purposes
+        return [];  // Returning null or you could throw an error instead
+    }
 };
+
 
 export const getFile = async (
     mediaIds: string | string[],

@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 
 import { LoaderProps, LoadingWrapperProps } from "./types";
 
+import { cn } from "@/lib/utils";
+
 const LoadingWrapper = ({ label }: LoadingWrapperProps): JSX.Element => {
     return (
         <div className="flex flex-col items-center justify-center gap-2 p-4 text-white bg-black rounded-lg shadow-2xl dark:text-black dark:bg-white">
@@ -23,10 +25,15 @@ const LoadingWrapper = ({ label }: LoadingWrapperProps): JSX.Element => {
     );
 };
 
-export const Loader = ({ hasOverlay = true, label }: LoaderProps): JSX.Element => {
+export const Loader = ({ hasOverlay = true, label, className }: LoaderProps): JSX.Element => {
     return hasOverlay ? (
         createPortal(
-            <div className="items-center justify-center bg-black/60 flex h-full w-full fixed top-0 left-0 select-none z-[9999]">
+            <div
+                className={cn(
+                    "items-center justify-center bg-black/60 flex h-full w-full fixed top-0 left-0 select-none z-[9999]",
+                    className,
+                )}
+            >
                 <LoadingWrapper label={label} />
             </div>,
             document.body,

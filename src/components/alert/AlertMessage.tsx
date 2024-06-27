@@ -4,7 +4,7 @@ import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { generateAlertBody, generateAlertFromCols } from "./AlertHelper";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { PluginActions } from "../../plugins";
 
@@ -105,6 +105,10 @@ export const AlertMessageWithColsPanel = (props: {
             <CardContent className="p-2 pt-3">
                 {formatedData.length >= 1 && (
                     <Table>
+                        <TableCaption>
+                            A new tender has been posted and requires our attention.
+                            Please review the details above and determine who should be assigned to work on it.
+                        </TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>No.</TableHead>
@@ -117,7 +121,14 @@ export const AlertMessageWithColsPanel = (props: {
                             {formatedData.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{index+1}</TableCell>
-                                    {Object.values(item).map(i=><TableCell>{i}</TableCell>)}
+                                    {Object.values(item).map(i=>
+                                        <TableCell>
+                                            {
+                                                i.length > 100
+                                                ? i.substring(0, 97) + "..."
+                                                : i
+                                            }
+                                        </TableCell>)}
                                 </TableRow>
                             ))}
                         </TableBody>
