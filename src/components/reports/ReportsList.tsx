@@ -17,17 +17,23 @@ import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 import { ReportActions } from "@/components/reports/ReportActions";
 
+interface ReportsListProps {
+    reports: Report[];
+    onSelectReport: (report: Report) => void;
+    onRename: (reportId: string, newName: string) => Promise<boolean>;
+    onDuplicate: (reportId: string) => Promise<void>;
+    onDelete: (reportId: string) => Promise<void>;
+    allUsers: string[];
+}
+
 export const ReportsList = ({
     reports,
     onSelectReport,
+    onRename,
     onDuplicate,
     onDelete,
-}: {
-    reports: Report[];
-    onSelectReport: (report: Report) => void;
-    onDuplicate: (reportId: string) => Promise<void>;
-    onDelete: (reportId: string) => Promise<void>;
-}): JSX.Element => {
+    allUsers,
+}: ReportsListProps): JSX.Element => {
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const columns: ColumnDef<Report>[] = [
@@ -85,7 +91,15 @@ export const ReportsList = ({
         // },
         {
             id: "actions",
-            cell: ({ row }) => <ReportActions row={row.original} onDuplicate={onDuplicate} onDelete={onDelete} />,
+            cell: ({ row }) => (
+                <ReportActions
+                    row={row.original}
+                    onRename={onRename}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                    allUsers={allUsers}
+                />
+            ),
             size: 20,
         },
     ];

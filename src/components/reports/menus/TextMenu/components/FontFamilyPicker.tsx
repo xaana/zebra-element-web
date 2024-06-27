@@ -54,7 +54,7 @@ export const FontFamilyPicker = ({ onChange, value }: FontFamilyPickerProps): JS
                 </Toolbar.Button>
             </Dropdown.Trigger>
             <Dropdown.Content asChild>
-                <Surface className="flex flex-col gap-1 px-2 py-4">
+                <Surface className="flex flex-col gap-1 px-2 py-4 overflow-y-scroll" style={{ maxHeight: 200 }}>
                     {FONT_FAMILY_GROUPS.map((group) => (
                         <div className="mt-2.5 first:mt-0 gap-0.5 flex flex-col" key={group.label}>
                             <DropdownCategoryTitle>{group.label}</DropdownCategoryTitle>

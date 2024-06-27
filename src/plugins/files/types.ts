@@ -1,6 +1,6 @@
 import type { MediaEventHelper } from "matrix-react-sdk/src/utils/MediaEventHelper";
-import type { Room, MsgType, MatrixEvent } from "matrix-js-sdk/src/matrix";
-export type File = {
+import type { MsgType, MatrixEvent } from "matrix-js-sdk/src/matrix";
+export type MatrixFile = {
     id?: string;
     name: string;
     downloadUrl: string;
@@ -8,10 +8,11 @@ export type File = {
     sender: string;
     roomId: string | null;
     // room?: Room;
+    type: MsgType | string;
     isEncrypted: boolean;
+    mediaId: string;
     mediaHelper?: MediaEventHelper;
     mxEvent?: MatrixEvent;
-    mediaId: string;
     event?: string;
     fileSize?: number;
     mimetype?: string;

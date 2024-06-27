@@ -7,7 +7,8 @@ import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
-import { FileUpload } from "../FileUpload";
+import type { MatrixFile } from "@/plugins/files/types";
+import { AdvancedOptions } from "./AdvancedOptions";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
@@ -23,9 +24,10 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
+import { Report } from "@/plugins/reports/types";
 export const ReportGenerator = ({
     onReportGenerate,
+    allReports,
 }: {
     onReportGenerate: (
         documentPrompt: string,
@@ -33,7 +35,10 @@ export const ReportGenerator = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
+        contentMediaIds?: string[],
+        selectedTemplateId?: string,
     ) => void;
+    allReports: Report[];
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
     const [prompt, setPrompt] = React.useState("");
@@ -44,7 +49,8 @@ export const ReportGenerator = ({
     const [outlineItems, setOutlineItems] = React.useState<string[]>([]);
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
-    const [contentFile, setContentFile] = React.useState<File>();
+    const [contentFiles, setContentFiles] = React.useState<MatrixFile[]>([]);
+    const [contentMediaIds, setContentMediaIds] = React.useState<string[]>([]);
     const [tone, setTone] = React.useState<string>("");
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
     const promptsRef = React.useRef<HTMLDivElement>(null);
@@ -55,7 +61,18 @@ export const ReportGenerator = ({
         }
     }, []);
 
+    const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>();
+
     const handleGenerateOutline = async (): Promise<void> => {
+        const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
+        const mediaIds = contentFiles
+            .map((file) => file.mediaId)
+            .map((mediaId) => {
+                const match = mediaIdRegexPattern.exec(mediaId);
+                return match ? match[1] : null;
+            })
+            .filter(Boolean) as string[];
+        setContentMediaIds(mediaIds);
         setOutlineItems([]);
         setIsOutlineLoading(true);
         setShowOutline(true);
@@ -68,6 +85,7 @@ export const ReportGenerator = ({
                 body: JSON.stringify({
                     request: prompt,
                     pages_count: pages,
+                    ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
                 }),
             });
             const data = await res.json();
@@ -95,6 +113,9 @@ export const ReportGenerator = ({
             setTargetAudience("");
             setTone("");
             setPrompt("");
+            setSelectedTemplateId(undefined);
+            setContentFiles([]);
+            setContentMediaIds([]);
         }
     };
 
@@ -106,29 +127,9 @@ export const ReportGenerator = ({
             contentSize,
             tone.length > 0 ? tone : "neutral",
             targetAudience.length > 0 ? targetAudience : "general",
+            contentMediaIds ?? [],
+            selectedTemplateId ?? undefined,
         );
-    };
-
-    const handleFileUpload = async (file: File): Promise<void> => {
-        setContentFile(file);
-        // try {
-        //     const formData = new FormData();
-        //     formData.append("files", file);
-        //     // Make API request
-        //     const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
-        //         method: "POST",
-        //         body: formData,
-        //     });
-        //     const responseData = await response.json();
-
-        //     if (responseData?.html_pages?.length > 0) {
-        //         const combinedString = responseData.html_pages.join("\n");
-        //         await createNewReport(combinedString);
-        //     }
-        // } catch (error) {
-        //     console.error("Error fetching data:", error);
-        //     setIsLoading(false);
-        // }
     };
 
     return (
@@ -144,21 +145,51 @@ export const ReportGenerator = ({
             </DialogTrigger>
             <DialogContent className="h-screen w-screen max-w-[100vw] bg-card p-0 overflow-hidden">
                 <DialogClose className="absolute top-2 right-2" />
+                {showOutline && (
+                    <div className="absolute top-2 left-2 z-20">
+                        <Button
+                            className="w-auto h-auto p-2 text-muted-foreground"
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                                setOutlineItems([]);
+                                setShowOutline(false);
+                            }}
+                        >
+                            <Icon name="ArrowLeftToLine" />
+                        </Button>
+                    </div>
+                )}
+                <div className="absolute top-2 right-2">
+                    <DialogClose />
+                </div>
                 <div className={cn("overflow-auto relative px-3", showOutline ? "pt-4 pb-16" : "py-10")}>
                     <div className="flex flex-col justify-center w-full max-w-screen-md mx-auto">
                         <HeaderText showOutline={showOutline} />
                         <div
                             className={cn(
-                                "flex items-end gap-2 w-full mt-10 mb-2",
-                                showOutline ? "justify-between" : "justify-end",
+                                "flex gap-4 w-full mt-10 mb-2 justify-between items-end",
+                                // showOutline ? "justify-between" : "justify-end",
+                                // showOutline ? "justify-end" : "justify-between",
                             )}
                         >
+                            {!showOutline && (
+                                <AdvancedOptions
+                                    allReports={allReports}
+                                    selectedTemplateId={selectedTemplateId}
+                                    setSelectedTemplateId={setSelectedTemplateId}
+                                    contentFiles={contentFiles}
+                                    setContentFiles={setContentFiles}
+                                />
+                            )}
                             {showOutline && (
                                 <div className="text-muted-foreground font-semibold text-base translate-y-1">
                                     Prompt
                                 </div>
                             )}
-                            <PagesSelector pages={pages} setPages={setPages} />
+                            <div className="flex items-end">
+                                <PagesSelector pages={pages} setPages={setPages} />
+                            </div>
                         </div>
                         <div className="relative w-full">
                             <Textarea
@@ -239,11 +270,6 @@ export const ReportGenerator = ({
                                         {prompt.length === 0 && <SamplePrompts setPrompt={setPrompt} />}
                                     </div>
                                 </SwitchSlideTransition>
-
-                                <div>
-                                    <Separator className="my-2" />
-                                    <FileUpload onFileUpload={handleFileUpload} />
-                                </div>
                             </>
                         )}
                     </div>

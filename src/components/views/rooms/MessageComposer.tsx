@@ -14,71 +14,74 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { createRef, ReactNode } from "react";
+import React, {createRef, ReactNode} from "react";
 import classNames from "classnames";
 import {
+    EventType,
     IEventRelation,
     MatrixEvent,
     Room,
     RoomMember,
-    EventType,
     THREAD_RELATION_TYPE,
 } from "matrix-js-sdk/src/matrix";
-import { Optional } from "matrix-events-sdk";
-import { _t } from "matrix-react-sdk/src/languageHandler";
-import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
+import {Optional} from "matrix-events-sdk";
+import {_t} from "matrix-react-sdk/src/languageHandler";
+import {MatrixClientPeg} from "matrix-react-sdk/src/MatrixClientPeg";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
+import {ActionPayload} from "matrix-react-sdk/src/dispatcher/payloads";
 import Stickerpicker from "matrix-react-sdk/src/components/views/rooms/Stickerpicker";
-import { makeRoomPermalink, RoomPermalinkCreator } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
+import {makeRoomPermalink, RoomPermalinkCreator} from "matrix-react-sdk/src/utils/permalinks/Permalinks";
 import E2EIcon from "matrix-react-sdk/src/components/views/rooms/E2EIcon";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { aboveLeftOf, MenuProps } from "matrix-react-sdk/src/components/structures/ContextMenu";
+import {aboveLeftOf, MenuProps} from "matrix-react-sdk/src/components/structures/ContextMenu";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
-import { UPDATE_EVENT } from "matrix-react-sdk/src/stores/AsyncStore";
+import {UPDATE_EVENT} from "matrix-react-sdk/src/stores/AsyncStore";
 import VoiceRecordComposerTile from "matrix-react-sdk/src/components/views/rooms/VoiceRecordComposerTile";
-import { VoiceRecordingStore } from "matrix-react-sdk/src/stores/VoiceRecordingStore";
-import { RecordingState } from "matrix-react-sdk/src/audio/VoiceRecording";
-import Tooltip, { Alignment } from "matrix-react-sdk/src/components/views/elements/Tooltip";
+import {VoiceRecordingStore} from "matrix-react-sdk/src/stores/VoiceRecordingStore";
+import {RecordingState} from "matrix-react-sdk/src/audio/VoiceRecording";
+import Tooltip, {Alignment} from "matrix-react-sdk/src/components/views/elements/Tooltip";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
-import { E2EStatus } from "matrix-react-sdk/src/utils/ShieldUtils";
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import {E2EStatus} from "matrix-react-sdk/src/utils/ShieldUtils";
+import {ComposerInsertPayload} from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+import {Action} from "matrix-react-sdk/src/dispatcher/actions";
 import EditorModel from "matrix-react-sdk/src/editor/model";
-import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
-import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
-import { SettingUpdatedPayload } from "matrix-react-sdk/src/dispatcher/payloads/SettingUpdatedPayload";
-import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
-import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
-import { isLocalRoom } from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
-import { Features } from "matrix-react-sdk/src/settings/Settings";
-import { VoiceMessageRecording } from "matrix-react-sdk/src/audio/VoiceMessageRecording";
+import UIStore, {UI_EVENTS} from "matrix-react-sdk/src/stores/UIStore";
+import RoomContext, {TimelineRenderingType} from "matrix-react-sdk/src/contexts/RoomContext";
+import {SettingUpdatedPayload} from "matrix-react-sdk/src/dispatcher/payloads/SettingUpdatedPayload";
+import {ButtonEvent} from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+import {ViewRoomPayload} from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
+import {isLocalRoom} from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
+import {Features} from "matrix-react-sdk/src/settings/Settings";
+import {VoiceMessageRecording} from "matrix-react-sdk/src/audio/VoiceMessageRecording";
 import {
-    SendWysiwygComposer,
-    sendMessage,
     getConversionFunctions,
+    sendMessage,
+    SendWysiwygComposer,
 } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer/";
-import { MatrixClientProps, withMatrixClientHOC } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { setUpVoiceBroadcastPreRecording } from "matrix-react-sdk/src/voice-broadcast/utils/setUpVoiceBroadcastPreRecording";
-import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
-import { VoiceBroadcastInfoState } from "matrix-react-sdk/src/voice-broadcast";
-import { createCantStartVoiceMessageBroadcastDialog } from "matrix-react-sdk/src/components/views/dialogs/CantStartVoiceMessageBroadcastDialog";
-import { UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
-import { formatTimeLeft } from "matrix-react-sdk/src/DateUtils";
+import {MatrixClientProps, withMatrixClientHOC} from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import {
+    setUpVoiceBroadcastPreRecording
+} from "matrix-react-sdk/src/voice-broadcast/utils/setUpVoiceBroadcastPreRecording";
+import {SdkContextClass} from "matrix-react-sdk/src/contexts/SDKContext";
+import {VoiceBroadcastInfoState} from "matrix-react-sdk/src/voice-broadcast";
+import {
+    createCantStartVoiceMessageBroadcastDialog
+} from "matrix-react-sdk/src/components/views/dialogs/CantStartVoiceMessageBroadcastDialog";
+import {UIFeature} from "matrix-react-sdk/src/settings/UIFeature";
+import {formatTimeLeft} from "matrix-react-sdk/src/DateUtils";
 import MessageComposerButtons from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
 
-import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } from "./SendMessageComposer";
-import { DocFile } from "./FileSelector";
+import SendMessageComposer, {SendMessageComposer as SendMessageComposerClass} from "./SendMessageComposer";
+import {DocFile} from "./FileSelector";
 
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WebSearchPill from "@/components/ui/WebSearchPill";
 import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
-import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
+import {getFunctionalMembers} from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
-import { isJoinedOrNearlyJoined } from "matrix-react-sdk/src/utils/membership";
-import { Files } from "lucide-react";
+import {isJoinedOrNearlyJoined} from "matrix-react-sdk/src/utils/membership";
 
 let instanceCount = 0;
 
@@ -120,7 +123,6 @@ interface IState {
     haveRecording: boolean;
     recordingTimeLeftSeconds?: number;
     me?: RoomMember;
-    isFileMenuOpen: boolean;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     showStickersButton: boolean;
@@ -136,22 +138,19 @@ interface IState {
 }
 
 export class MessageComposer extends React.Component<IProps, IState> {
+    public static contextType = RoomContext;
+    public static defaultProps = {
+        compact: false,
+        showVoiceBroadcastButton: false,
+        isRichTextEnabled: true,
+    };
+    public context!: React.ContextType<typeof RoomContext>;
     private tooltipId = `mx_MessageComposer_${Math.random()}`;
     private dispatcherRef?: string;
     private messageComposerInput = createRef<SendMessageComposerClass>();
     private voiceRecordingButton = createRef<VoiceRecordComposerTile>();
     private ref: React.RefObject<HTMLDivElement> = createRef();
     private instanceId: number;
-    private _voiceRecording: Optional<VoiceMessageRecording>;
-
-    public static contextType = RoomContext;
-    public context!: React.ContextType<typeof RoomContext>;
-
-    public static defaultProps = {
-        compact: false,
-        showVoiceBroadcastButton: false,
-        isRichTextEnabled: true,
-    };
 
     public constructor(props: IProps) {
         super(props);
@@ -185,6 +184,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
         SettingsStore.monitorSetting("feature_wysiwyg_composer", null);
     }
 
+    private _voiceRecording: Optional<VoiceMessageRecording>;
+
     private get voiceRecording(): Optional<VoiceMessageRecording> {
         return this._voiceRecording;
     }
@@ -208,6 +209,10 @@ export class MessageComposer extends React.Component<IProps, IState> {
         }
     }
 
+    private get showStickersButton(): boolean {
+        return this.state.showStickersButton && !isLocalRoom(this.props.room);
+    }
+
     public componentDidMount(): void {
         this.dispatcherRef = dis.register(this.onAction);
         this.waitForOwnMember();
@@ -228,6 +233,287 @@ export class MessageComposer extends React.Component<IProps, IState> {
                 this.setState({ showWebSearch: true });
             }
         }
+    }
+
+    public componentDidUpdate(): void {
+        this.updateVisibilities();
+    }
+
+    public componentWillUnmount(): void {
+        VoiceRecordingStore.instance.off(UPDATE_EVENT, this.onVoiceStoreUpdate);
+        if (this.dispatcherRef) dis.unregister(this.dispatcherRef);
+        UIStore.instance.stopTrackingElementDimensions(`MessageComposer${this.instanceId}`);
+        UIStore.instance.removeListener(`MessageComposer${this.instanceId}`, this.onResize);
+
+        // clean up our listeners by setting our cached recording to falsy (see internal setter)
+        this.voiceRecording = null;
+    }
+
+    public render(): React.ReactNode {
+        const hasE2EIcon = Boolean(!this.state.isWysiwygLabEnabled && this.props.e2eStatus);
+        const e2eIcon = hasE2EIcon && (
+            <E2EIcon key="e2eIcon" status={this.props.e2eStatus!} className="mx_MessageComposer_e2eIcon" />
+        );
+
+        const controls: ReactNode[] = [];
+        const menuPosition = this.getMenuPosition();
+
+        const canSendMessages = this.context.canSendMessages && !this.context.tombstone;
+        let composer: ReactNode;
+        if (canSendMessages || this.props.fromHomepage) {
+            if (this.state.isWysiwygLabEnabled && menuPosition) {
+                composer = (
+                    <SendWysiwygComposer
+                        key="controls_input"
+                        disabled={this.state.haveRecording}
+                        onChange={this.onWysiwygChange}
+                        onSend={this.sendMessage}
+                        isRichTextEnabled={this.state.isRichTextEnabled}
+                        initialContent={this.state.initialComposerContent}
+                        e2eStatus={this.props.e2eStatus}
+                        menuPosition={menuPosition}
+                        placeholder={this.renderPlaceholderText()}
+                        eventRelation={this.props.relation}
+                    />
+                );
+            } else {
+                composer = (
+                    <SendMessageComposer
+                        ref={this.messageComposerInput}
+                        key="controls_input"
+                        room={this.props.room}
+                        placeholder={this.renderPlaceholderText()}
+                        permalinkCreator={this.props.permalinkCreator}
+                        relation={this.props.relation}
+                        replyToEvent={this.props.replyToEvent}
+                        onChange={this.onChange}
+                        disabled={this.state.haveRecording}
+                        toggleStickerPickerOpen={this.toggleStickerPickerOpen}
+                        database={this.props.database}
+                        files={this.props.files}
+                        onSendCallback={this.props.onSendCallback}
+                        resetReplies={this.setReply}
+                        stopBotStream={this.props.stopBotStream}
+                        showStop={this.props.showStop}
+                    />
+                );
+            }
+
+            controls.push(
+                <VoiceRecordComposerTile
+                    key="controls_voice_record"
+                    ref={this.voiceRecordingButton}
+                    room={this.props.room}
+                    permalinkCreator={this.props.permalinkCreator}
+                    relation={this.props.relation}
+                    replyToEvent={this.props.replyToEvent}
+                />,
+            );
+        } else if (this.context.tombstone) {
+            const replacementRoomId = this.context.tombstone.getContent()["replacement_room"];
+
+            const continuesLink = replacementRoomId ? (
+                <a
+                    href={makeRoomPermalink(MatrixClientPeg.safeGet(), replacementRoomId)}
+                    className="mx_MessageComposer_roomReplaced_link"
+                    onClick={this.onTombstoneClick}
+                >
+                    {_t("composer|room_upgraded_link")}
+                </a>
+            ) : (
+                ""
+            );
+
+            controls.push(
+                <div className="mx_MessageComposer_replaced_wrapper" key="room_replaced">
+                    <div className="mx_MessageComposer_replaced_valign">
+                        <img
+                            aria-hidden
+                            alt=""
+                            className="mx_MessageComposer_roomReplaced_icon"
+                            // eslint-disable-next-line @typescript-eslint/no-var-requires
+                            src={require("./room_replaced.svg").default}
+                        />
+                        <span className="mx_MessageComposer_roomReplaced_header">
+                            {_t("composer|room_upgraded_notice")}
+                        </span>
+                        <br />
+                        {continuesLink}
+                    </div>
+                </div>,
+            );
+        } else {
+            controls.push(
+                <div key="controls_error" className="mx_MessageComposer_noperm_error">
+                    {_t("composer|no_perms_notice")}
+                </div>,
+            );
+        }
+
+        let recordingTooltip: JSX.Element | undefined;
+        if (this.state.recordingTimeLeftSeconds) {
+            const secondsLeft = Math.round(this.state.recordingTimeLeftSeconds);
+            recordingTooltip = (
+                <Tooltip id={this.tooltipId} label={formatTimeLeft(secondsLeft)} alignment={Alignment.Top} />
+            );
+        }
+
+        const threadId =
+            this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
+
+        controls.push(
+            <Stickerpicker
+                room={this.props.room}
+                threadId={threadId}
+                isStickerPickerOpen={this.state.isStickerPickerOpen}
+                setStickerPickerOpen={this.setStickerPickerOpen}
+                menuPosition={menuPosition}
+                key="stickers"
+            />,
+        );
+
+        const showSendButton =
+            (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
+
+        const classes = classNames("mx_MessageComposer px-8", {
+            "mx_MessageComposer--compact": this.props.compact,
+            "mx_MessageComposer_e2eStatus": hasE2EIcon,
+            "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
+        });
+
+        return (
+            <div
+                className={classes}
+                ref={this.ref}
+                aria-describedby={this.state.recordingTimeLeftSeconds ? this.tooltipId : undefined}
+                role="region"
+                aria-label={_t("a11y|message_composer")}
+            >
+                {recordingTooltip}
+
+                <div className="flex flex-row ml-50 mb-2 justify-end">
+                    {this.state.smartReply.map((reply: string) => (
+                        <SmartReply
+                            key={reply}
+                            reply={reply}
+                            client={MatrixClientPeg.safeGet()}
+                            roomId={this.context.roomId}
+                            setReply={this.setReply}
+                        />
+                    ))}
+                </div>
+                <div className="mb-2">
+                    <ReplyPreview
+                        replyToEvent={this.props.replyToEvent}
+                        permalinkCreator={this.props.permalinkCreator}
+                    />
+                    <DatabasePill
+                        database={this.props.database}
+                        timelineRenderingType={this.context.timelineRenderingType}
+                        roomId={this.context.roomId}
+                    />
+                    <div className="flex flex-row gap-x-1">
+                        {this.props.files &&
+                            this.props.files.map((file) => (
+                                <FilesPill
+                                    file={file}
+                                    files={this.props.files}
+                                    timelineRenderingType={this.context.timelineRenderingType}
+                                    roomId={this.context.roomId}
+                                />
+                            ))}
+                    </div>
+
+                    {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
+                        !this.props.database &&
+                        this.props.files?.length === 0 &&
+                        this.state.showWebSearch && <WebSearchPill />}
+                </div>
+                <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
+                    <div className="mx_MessageComposer_row">
+                        {e2eIcon}
+                        {/* {this.state.isInputBoxVisible && (composer)} */}
+                        <div
+                            onClick={() => {
+                                this.getSmartReplies();
+                            }}
+                            className="w-full"
+                        >
+                            {composer}
+                        </div>
+                        {this.state.isButtonGroupVisible && (
+                            <div className="mx_MessageComposer_actions">
+                                {controls}
+                                {(canSendMessages || this.props.fromHomepage) && (
+                                    <MessageComposerButtons
+                                        addEmoji={this.addEmoji}
+                                        haveRecording={this.state.haveRecording}
+                                        isMenuOpen={this.state.isMenuOpen}
+                                        isStickerPickerOpen={this.state.isStickerPickerOpen}
+                                        menuPosition={menuPosition}
+                                        relation={this.props.relation}
+                                        onRecordStartEndClick={this.onRecordStartEndClick}
+                                        setStickerPickerOpen={this.setStickerPickerOpen}
+                                        showLocationButton={
+                                            !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
+                                        }
+                                        showPollsButton={this.state.showPollsButton}
+                                        showStickersButton={this.showStickersButton}
+                                        isRichTextEnabled={this.state.isRichTextEnabled}
+                                        onComposerModeClick={this.onRichTextToggle}
+                                        toggleButtonMenu={this.toggleButtonMenu}
+                                        showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
+                                        onStartVoiceBroadcastClick={() => {
+                                            setUpVoiceBroadcastPreRecording(
+                                                this.props.room,
+                                                MatrixClientPeg.safeGet(),
+                                                SdkContextClass.instance.voiceBroadcastPlaybacksStore,
+                                                SdkContextClass.instance.voiceBroadcastRecordingsStore,
+                                                SdkContextClass.instance.voiceBroadcastPreRecordingStore,
+                                            );
+                                            this.toggleButtonMenu();
+                                        }}
+                                        editorContent={this.state.composerContent}
+                                        onSendCallback={(content: string, rawContent: string) => {
+                                            this.props.mxClient.sendMessage(this.context.roomId!, threadId, {
+                                                msgtype: "m.text",
+                                                format: "org.matrix.custom.html",
+                                                body: rawContent,
+                                                formatted_body: content,
+                                            });
+                                            this.setState({
+                                                composerContent: "",
+                                                initialComposerContent: "",
+                                            });
+                                            this.messageComposerInput?.current?.clearComposer();
+                                        }}
+                                        onScheduleSendCallback={(content: string, rawContent: string) => {
+                                            // TODO
+                                        }}
+                                        onRichTextEditorDestroyCallback={(data: string) => {
+                                            this.setState({
+                                                composerContent: data,
+                                            });
+                                        }}
+                                    />
+                                )}
+                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && (
+                                    <SendButton
+                                        key="controls_send"
+                                        onClick={this.sendMessage}
+                                        title={
+                                            this.state.haveRecording
+                                                ? _t("composer|send_button_voice_message")
+                                                : undefined
+                                        }
+                                    />
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     private updateVisibilities = (): void => {
@@ -253,10 +539,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
             }
         }
     };
-
-    public componentDidUpdate(): void {
-        this.updateVisibilities();
-    }
 
     private onResize = (type: UI_EVENTS, entry: ResizeObserverEntry): void => {
         if (type === UI_EVENTS.Resize) {
@@ -330,16 +612,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
             const me = this.props.room.getMember(MatrixClientPeg.safeGet().getSafeUserId()) ?? undefined;
             this.setState({ me });
         });
-    }
-
-    public componentWillUnmount(): void {
-        VoiceRecordingStore.instance.off(UPDATE_EVENT, this.onVoiceStoreUpdate);
-        if (this.dispatcherRef) dis.unregister(this.dispatcherRef);
-        UIStore.instance.stopTrackingElementDimensions(`MessageComposer${this.instanceId}`);
-        UIStore.instance.removeListener(`MessageComposer${this.instanceId}`, this.onResize);
-
-        // clean up our listeners by setting our cached recording to falsy (see internal setter)
-        this.voiceRecording = null;
     }
 
     private onTombstoneClick = (ev: ButtonEvent): void => {
@@ -508,21 +780,11 @@ export class MessageComposer extends React.Component<IProps, IState> {
         this.setStickerPickerOpen(!this.state.isStickerPickerOpen);
     };
 
-    private toggleFileButtonMenu = (): void => {
-        this.setState({
-            isFileMenuOpen: !this.state.isFileMenuOpen,
-        });
-    };
-
     private toggleButtonMenu = (): void => {
         this.setState({
             isMenuOpen: !this.state.isMenuOpen,
         });
     };
-
-    private get showStickersButton(): boolean {
-        return this.state.showStickersButton && !isLocalRoom(this.props.room);
-    }
 
     private getMenuPosition(): MenuProps | undefined {
         if (this.ref.current) {
@@ -556,11 +818,13 @@ export class MessageComposer extends React.Component<IProps, IState> {
             this.toggleButtonMenu();
         }
     };
+
     private setReply = (): void => {
         this.setState({
             smartReply: [],
         });
     };
+
     private getSmartReplies = (): void => {
         if (this.state.smartReply.length !== 0) return;
         if (this.context.timelineRenderingType !== TimelineRenderingType.Room) return;
@@ -600,274 +864,6 @@ export class MessageComposer extends React.Component<IProps, IState> {
 
         // this.setState({smartReply:["Yes, I will","No, I won't","Sure!"]})
     };
-
-    public render(): React.ReactNode {
-        const hasE2EIcon = Boolean(!this.state.isWysiwygLabEnabled && this.props.e2eStatus);
-        const e2eIcon = hasE2EIcon && (
-            <E2EIcon key="e2eIcon" status={this.props.e2eStatus!} className="mx_MessageComposer_e2eIcon" />
-        );
-
-        const controls: ReactNode[] = [];
-        const menuPosition = this.getMenuPosition();
-
-        const canSendMessages = this.context.canSendMessages && !this.context.tombstone;
-        let composer: ReactNode;
-        if (canSendMessages || this.props.fromHomepage) {
-            if (this.state.isWysiwygLabEnabled && menuPosition) {
-                composer = (
-                    <SendWysiwygComposer
-                        key="controls_input"
-                        disabled={this.state.haveRecording}
-                        onChange={this.onWysiwygChange}
-                        onSend={this.sendMessage}
-                        isRichTextEnabled={this.state.isRichTextEnabled}
-                        initialContent={this.state.initialComposerContent}
-                        e2eStatus={this.props.e2eStatus}
-                        menuPosition={menuPosition}
-                        placeholder={this.renderPlaceholderText()}
-                        eventRelation={this.props.relation}
-                    />
-                );
-            } else {
-                composer = (
-                    <SendMessageComposer
-                        ref={this.messageComposerInput}
-                        key="controls_input"
-                        room={this.props.room}
-                        placeholder={this.renderPlaceholderText()}
-                        permalinkCreator={this.props.permalinkCreator}
-                        relation={this.props.relation}
-                        replyToEvent={this.props.replyToEvent}
-                        onChange={this.onChange}
-                        disabled={this.state.haveRecording}
-                        toggleStickerPickerOpen={this.toggleStickerPickerOpen}
-                        database={this.props.database}
-                        files={this.props.files}
-                        onSendCallback={this.props.onSendCallback}
-                        resetReplies={this.setReply}
-                        stopBotStream={this.props.stopBotStream}
-                        showStop={this.props.showStop}
-                    />
-                );
-            }
-
-            controls.push(
-                <VoiceRecordComposerTile
-                    key="controls_voice_record"
-                    ref={this.voiceRecordingButton}
-                    room={this.props.room}
-                    permalinkCreator={this.props.permalinkCreator}
-                    relation={this.props.relation}
-                    replyToEvent={this.props.replyToEvent}
-                />,
-            );
-        } else if (this.context.tombstone) {
-            const replacementRoomId = this.context.tombstone.getContent()["replacement_room"];
-
-            const continuesLink = replacementRoomId ? (
-                <a
-                    href={makeRoomPermalink(MatrixClientPeg.safeGet(), replacementRoomId)}
-                    className="mx_MessageComposer_roomReplaced_link"
-                    onClick={this.onTombstoneClick}
-                >
-                    {_t("composer|room_upgraded_link")}
-                </a>
-            ) : (
-                ""
-            );
-
-            controls.push(
-                <div className="mx_MessageComposer_replaced_wrapper" key="room_replaced">
-                    <div className="mx_MessageComposer_replaced_valign">
-                        <img
-                            aria-hidden
-                            alt=""
-                            className="mx_MessageComposer_roomReplaced_icon"
-                            // eslint-disable-next-line @typescript-eslint/no-var-requires
-                            src={require("./room_replaced.svg").default}
-                        />
-                        <span className="mx_MessageComposer_roomReplaced_header">
-                            {_t("composer|room_upgraded_notice")}
-                        </span>
-                        <br />
-                        {continuesLink}
-                    </div>
-                </div>,
-            );
-        } else {
-            controls.push(
-                <div key="controls_error" className="mx_MessageComposer_noperm_error">
-                    {_t("composer|no_perms_notice")}
-                </div>,
-            );
-        }
-
-        let recordingTooltip: JSX.Element | undefined;
-        if (this.state.recordingTimeLeftSeconds) {
-            const secondsLeft = Math.round(this.state.recordingTimeLeftSeconds);
-            recordingTooltip = (
-                <Tooltip id={this.tooltipId} label={formatTimeLeft(secondsLeft)} alignment={Alignment.Top} />
-            );
-        }
-
-        const threadId =
-            this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
-
-        controls.push(
-            <Stickerpicker
-                room={this.props.room}
-                threadId={threadId}
-                isStickerPickerOpen={this.state.isStickerPickerOpen}
-                setStickerPickerOpen={this.setStickerPickerOpen}
-                menuPosition={menuPosition}
-                key="stickers"
-            />,
-        );
-
-        const showSendButton =
-            (canSendMessages || this.props.fromHomepage) && (!this.state.isComposerEmpty || this.state.haveRecording);
-
-        const classes = classNames("mx_MessageComposer px-8", {
-            "mx_MessageComposer--compact": this.props.compact,
-            "mx_MessageComposer_e2eStatus": hasE2EIcon,
-            "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
-        });
-
-        return (
-            <div
-                className={classes}
-                ref={this.ref}
-                aria-describedby={this.state.recordingTimeLeftSeconds ? this.tooltipId : undefined}
-                role="region"
-                aria-label={_t("a11y|message_composer")}
-            >
-                {recordingTooltip}
-
-                <div className="flex flex-row ml-50 mb-2 justify-end">
-                    {this.state.smartReply.map((reply: string) => (
-                        <SmartReply
-                            key={reply}
-                            reply={reply}
-                            client={MatrixClientPeg.safeGet()}
-                            roomId={this.context.roomId}
-                            setReply={this.setReply}
-                        />
-                    ))}
-                </div>
-                <div className="mb-2">
-                    <ReplyPreview
-                        replyToEvent={this.props.replyToEvent}
-                        permalinkCreator={this.props.permalinkCreator}
-                    />
-                    <DatabasePill
-                        database={this.props.database}
-                        timelineRenderingType={this.context.timelineRenderingType}
-                        roomId={this.context.roomId}
-                    />
-                    <div className="flex flex-row gap-x-1">
-                        {this.props.files && this.props.files.map((file) => (
-                            <FilesPill
-                            file={file}
-                            files={this.props.files}
-                            timelineRenderingType={this.context.timelineRenderingType}
-                            roomId={this.context.roomId}
-                            />
-                        ))}
-                        </div>
-                   
-                    {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
-                        !this.props.database &&
-                        this.props.files?.length === 0 &&
-                        this.state.showWebSearch && <WebSearchPill />}
-                </div>
-                <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
-                    <div className="mx_MessageComposer_row">
-                        {e2eIcon}
-                        {/* {this.state.isInputBoxVisible && (composer)} */}
-                        <div
-                            onClick={() => {
-                                this.getSmartReplies();
-                            }}
-                            className="w-full"
-                        >
-                            {composer}
-                        </div>
-                        {this.state.isButtonGroupVisible && (
-                            <div className="mx_MessageComposer_actions">
-                                {controls}
-                                {(canSendMessages || this.props.fromHomepage) && (
-                                    <MessageComposerButtons
-                                        addEmoji={this.addEmoji}
-                                        haveRecording={this.state.haveRecording}
-                                        isFileMenuOpen={this.state.isFileMenuOpen}
-                                        isMenuOpen={this.state.isMenuOpen}
-                                        isStickerPickerOpen={this.state.isStickerPickerOpen}
-                                        menuPosition={menuPosition}
-                                        relation={this.props.relation}
-                                        onRecordStartEndClick={this.onRecordStartEndClick}
-                                        setStickerPickerOpen={this.setStickerPickerOpen}
-                                        showLocationButton={
-                                            !window.electron && SettingsStore.getValue(UIFeature.LocationSharing)
-                                        }
-                                        showPollsButton={this.state.showPollsButton}
-                                        showStickersButton={this.showStickersButton}
-                                        isRichTextEnabled={this.state.isRichTextEnabled}
-                                        onComposerModeClick={this.onRichTextToggle}
-                                        toggleFileButtonMenu={this.toggleFileButtonMenu}
-                                        toggleButtonMenu={this.toggleButtonMenu}
-                                        showVoiceBroadcastButton={this.state.showVoiceBroadcastButton}
-                                        onStartVoiceBroadcastClick={() => {
-                                            setUpVoiceBroadcastPreRecording(
-                                                this.props.room,
-                                                MatrixClientPeg.safeGet(),
-                                                SdkContextClass.instance.voiceBroadcastPlaybacksStore,
-                                                SdkContextClass.instance.voiceBroadcastRecordingsStore,
-                                                SdkContextClass.instance.voiceBroadcastPreRecordingStore,
-                                            );
-                                            this.toggleButtonMenu();
-                                        }}
-                                        editorContent={this.state.composerContent}
-                                        onSendCallback={(content: string, rawContent: string) => {
-                                            this.props.mxClient.sendMessage(this.context.roomId!, threadId, {
-                                                msgtype: "m.text",
-                                                format: "org.matrix.custom.html",
-                                                body: rawContent,
-                                                formatted_body: content,
-                                            });
-                                            this.setState({
-                                                composerContent: "",
-                                                initialComposerContent: "",
-                                            });
-                                            this.messageComposerInput?.current?.clearComposer();
-                                        }}
-                                        onScheduleSendCallback={(content: string, rawContent: string) => {
-                                            // TODO
-                                        }}
-                                        onRichTextEditorDestroyCallback={(data: string) => {
-                                            this.setState({
-                                                composerContent: data,
-                                            });
-                                        }}
-                                    />
-                                )}
-                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && (
-                                    <SendButton
-                                        key="controls_send"
-                                        onClick={this.sendMessage}
-                                        title={
-                                            this.state.haveRecording
-                                                ? _t("composer|send_button_voice_message")
-                                                : undefined
-                                        }
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        );
-    }
 }
 
 const MessageComposerWithMatrixClient = withMatrixClientHOC(MessageComposer);

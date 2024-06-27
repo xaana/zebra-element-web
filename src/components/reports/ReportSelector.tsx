@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
-import { FileUpload } from "@/components/reports/FileUpload";
+import { ReportFileImport } from "@/components/reports/ReportFileImport";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { ReportsList } from "@/components/reports/ReportsList";
 import { ReportCard } from "@/components/reports/ReportCard";
@@ -15,10 +15,13 @@ interface ReportSelectorProps {
     reports: Report[];
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
+    onCreateNewFromBlank: () => void;
     onFileUpload: (file: File) => Promise<void>;
+    onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
+    allUsers: string[];
 }
 
 export const ReportSelector = ({
@@ -26,9 +29,12 @@ export const ReportSelector = ({
     setSelectedReport,
     userId,
     onFileUpload,
+    onCreateNewFromBlank,
+    onRename,
     onDuplicate,
     onDelete,
     onAiGenerate,
+    allUsers,
 }: ReportSelectorProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
@@ -54,8 +60,18 @@ export const ReportSelector = ({
         contentSize: string,
         tone: string,
         targetAudience: string,
+        contentMediaIds?: string[],
+        selectedTemplateId?: string,
     ): Promise<void> => {
-        onAiGenerate({ documentPrompt, allTitles, contentSize, tone, targetAudience } as AiGenerationContent);
+        onAiGenerate({
+            documentPrompt,
+            allTitles,
+            contentSize,
+            tone,
+            targetAudience,
+            contentMediaIds,
+            templateId: selectedTemplateId,
+        } as AiGenerationContent);
     };
 
     return (
@@ -65,11 +81,11 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleAiGenerate} />
-                <FileUpload onFileUpload={onFileUpload} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
+                <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
-                    onClick={() => setSelectedReport(null)} // open blank editor
+                    onClick={() => onCreateNewFromBlank()} // open blank editor
                     size="sm"
                     variant="outline"
                 >
@@ -123,9 +139,11 @@ export const ReportSelector = ({
                             key={report.id}
                             report={report}
                             onSelectReport={(report) => setSelectedReport(report)}
+                            onRename={onRename}
                             onDuplicate={onDuplicate}
                             userId={userId}
                             onDelete={onDelete}
+                            allUsers={allUsers}
                         />
                     ))}
                 </div>
@@ -133,8 +151,10 @@ export const ReportSelector = ({
                 <ReportsList
                     reports={filteredReports}
                     onSelectReport={handleSelectReport}
+                    onRename={onRename}
                     onDuplicate={onDuplicate}
                     onDelete={onDelete}
+                    allUsers={allUsers}
                 />
             )}
         </>

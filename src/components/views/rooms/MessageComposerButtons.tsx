@@ -15,43 +15,42 @@ limitations under the License.
 */
 
 import classNames from "classnames";
-import { IEventRelation, Room, MatrixClient, THREAD_RELATION_TYPE, M_POLL_START } from "matrix-js-sdk/src/matrix";
-import React, { createContext, ReactElement, ReactNode, useContext, useRef } from "react";
-import { _t } from "matrix-react-sdk/src/languageHandler";
+import {IEventRelation, M_POLL_START, MatrixClient, Room, THREAD_RELATION_TYPE} from "matrix-js-sdk/src/matrix";
+import React, {createContext, ReactElement, ReactNode, useContext, useRef} from "react";
+import {_t} from "matrix-react-sdk/src/languageHandler";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
-import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
-import { MenuProps } from "matrix-react-sdk/src/components/structures/ContextMenu";
+import {CollapsibleButton} from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
+import {MenuProps} from "matrix-react-sdk/src/components/structures/ContextMenu";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import LocationButton from "matrix-react-sdk/src/components/views/location/LocationButton";
 import Modal from "matrix-react-sdk/src/Modal";
 import PollCreateDialog from "matrix-react-sdk/src/components/views/elements/PollCreateDialog";
-import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
+import {MatrixClientPeg} from "matrix-react-sdk/src/MatrixClientPeg";
 import ContentMessages from "matrix-react-sdk/src/ContentMessages";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
-import { useDispatcher } from "matrix-react-sdk/src/hooks/useDispatcher";
-import { chromeFileInputFix } from "matrix-react-sdk/src/utils/BrowserWorkarounds";
+import {useDispatcher} from "matrix-react-sdk/src/hooks/useDispatcher";
+import {chromeFileInputFix} from "matrix-react-sdk/src/utils/BrowserWorkarounds";
 import IconizedContextMenu, {
     IconizedContextMenuOptionList,
 } from "matrix-react-sdk/src/components/views/context_menus/IconizedContextMenu";
-import { EmojiButton } from "matrix-react-sdk/src/components/views/rooms/EmojiButton";
-import { filterBoolean } from "matrix-react-sdk/src/utils/arrays";
-import { useSettingValue } from "matrix-react-sdk/src/hooks/useSettings";
-import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
-import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import { Action } from "matrix-react-sdk/src/dispatcher/actions";
+import {EmojiButton} from "matrix-react-sdk/src/components/views/rooms/EmojiButton";
+import {filterBoolean} from "matrix-react-sdk/src/utils/arrays";
+import {useSettingValue} from "matrix-react-sdk/src/hooks/useSettings";
+import {ButtonEvent} from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+import {ComposerInsertPayload} from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+import {Action} from "matrix-react-sdk/src/dispatcher/actions";
 
-import { AudioCapture } from "./audio-capture";
-import { VoiceBotButton } from "./voiceBot/VoiceBotButton";
-import { DatabaseSelector } from "./DatabaseSelector";
-import { FileSelector } from "./FileSelector";
+import {AudioCapture} from "./audio-capture";
+import {VoiceBotButton} from "./voiceBot/VoiceBotButton";
+import {DatabaseSelector} from "./DatabaseSelector";
+import {FileSelector} from "./FileSelector";
 import EditorDialog from "../../rich-text-editor/EditorDialog";
 
 interface IProps {
     addEmoji: (emoji: string) => boolean;
     haveRecording: boolean;
-    isFileMenuOpen: boolean;
     isMenuOpen: boolean;
     isStickerPickerOpen: boolean;
     menuPosition?: MenuProps;
@@ -61,7 +60,6 @@ interface IProps {
     showLocationButton: boolean;
     showPollsButton: boolean;
     showStickersButton: boolean;
-    toggleFileButtonMenu: () => void;
     toggleButtonMenu: () => void;
     showVoiceBroadcastButton: boolean;
     onStartVoiceBroadcastClick: () => void;
@@ -85,7 +83,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     }
 
     let mainButtons: ReactNode[];
-    let fileButtons: ReactNode[];
     let moreButtons: ReactNode[];
     if (narrow) {
         mainButtons = [
@@ -99,10 +96,11 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
                 emojiButton(props)
             ),
         ];
-        fileButtons = [uploadButton(), databaseSelector(), filesSelector(room.roomId)];
 
         moreButtons = [
             uploadButton(), // props passed via UploadButtonContext
+            databaseSelector(),
+            filesSelector(room.roomId),
             showStickersButton(props),
             voiceRecordingButton(props, narrow),
             startVoiceBroadcastButton(props),
@@ -134,11 +132,13 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             // databaseSelector(),
             // filesSelector(room.roomId),
         ];
-        fileButtons = [uploadButton(), databaseSelector(), filesSelector(room.roomId)];
         moreButtons = [
             // Transfer buttons from message bar to here
             // richTextEditorButton(props.onSendCallback, props.onRichTextEditorDestroyCallback),
             // uploadButton(), // props passed via UploadButtonContext
+            uploadButton(),
+            databaseSelector(),
+            filesSelector(room.roomId),
             voiceRecordingButton(props, narrow),
             audioCaptureButton(),
             // voiceBotButton(matrixClient, room),
@@ -151,6 +151,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             showLocationButton(props, room, matrixClient),
         ];
     }
+
     function audioCaptureButton(): ReactElement {
         return (
             <AudioCapture
@@ -165,13 +166,9 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             />
         );
     }
-    mainButtons = filterBoolean(mainButtons);
-    fileButtons = filterBoolean(fileButtons);
-    moreButtons = filterBoolean(moreButtons);
 
-    const moreFileOptionsClasses = classNames("mx_MessageComposer_button mx_MessageComposer_upload", {
-        mx_MessageComposer_closeButtonMenu: props.isFileMenuOpen,
-    });
+    mainButtons = filterBoolean(mainButtons);
+    moreButtons = filterBoolean(moreButtons);
 
     const moreOptionsClasses = classNames("mx_MessageComposer_button mx_MessageComposer_buttonMenu", {
         mx_MessageComposer_closeButtonMenu: props.isMenuOpen,
@@ -180,30 +177,11 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
     return (
         <UploadButtonContextProvider roomId={room.roomId} relation={props.relation}>
             {mainButtons}
-            {fileButtons.length > 0 && (
-                <AccessibleTooltipButton
-                    className={moreFileOptionsClasses}
-                    onClick={props.toggleFileButtonMenu}
-                    title={_t("quick_settings|sidebar_settings")}
-                />
-            )}
-            {props.isFileMenuOpen && (
-                <IconizedContextMenu
-                    onFinished={props.toggleFileButtonMenu}
-                    {...props.menuPosition}
-                    wrapperClassName="mx_MessageComposer_Menu"
-                    compact={true}
-                >
-                    <OverflowMenuContext.Provider value={props.toggleFileButtonMenu}>
-                        <IconizedContextMenuOptionList>{fileButtons}</IconizedContextMenuOptionList>
-                    </OverflowMenuContext.Provider>
-                </IconizedContextMenu>
-            )}
             {moreButtons.length > 0 && (
                 <AccessibleTooltipButton
                     className={moreOptionsClasses}
                     onClick={props.toggleButtonMenu}
-                    title={_t("quick_settings|sidebar_settings")}
+                    title="Actions and AI"
                 />
             )}
             {props.isMenuOpen && (
@@ -257,7 +235,7 @@ function richTextEditorButton(
 ): ReactElement {
     const trigger = (
         <CollapsibleButton
-            title="Rich Text Editor"
+            title="Format"
             className="mx_MessageComposer_button"
             iconClassName="editor_button"
             onClick={null}
@@ -413,6 +391,20 @@ class PollButton extends React.PureComponent<IPollButtonProps> {
     public static contextType = OverflowMenuContext;
     public context!: React.ContextType<typeof OverflowMenuContext>;
 
+    public render(): React.ReactNode {
+        // do not allow sending polls within threads at this time
+        if (this.props.relation?.rel_type === THREAD_RELATION_TYPE.name) return null;
+
+        return (
+            <CollapsibleButton
+                className="mx_MessageComposer_button"
+                iconClassName="mx_MessageComposer_poll"
+                onClick={this.onCreateClick}
+                title={_t("composer|poll_button")}
+            />
+        );
+    }
+
     private onCreateClick = (): void => {
         this.context?.(); // close overflow menu
         const canSend = this.props.room.currentState.maySendEvent(
@@ -440,20 +432,6 @@ class PollButton extends React.PureComponent<IPollButtonProps> {
             );
         }
     };
-
-    public render(): React.ReactNode {
-        // do not allow sending polls within threads at this time
-        if (this.props.relation?.rel_type === THREAD_RELATION_TYPE.name) return null;
-
-        return (
-            <CollapsibleButton
-                className="mx_MessageComposer_button"
-                iconClassName="mx_MessageComposer_poll"
-                onClick={this.onCreateClick}
-                title={_t("composer|poll_button")}
-            />
-        );
-    }
 }
 
 function showLocationButton(props: IProps, room: Room, matrixClient: MatrixClient): ReactElement | null {

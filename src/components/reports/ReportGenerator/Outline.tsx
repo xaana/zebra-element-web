@@ -68,7 +68,7 @@ const Outline = ({
                                                 }}
                                             >
                                                 <Icon name="Plus" className="w-2 h-2" />
-                                                Add page
+                                                Add Section
                                             </Button>
                                         </div>
                                     ) : (
@@ -83,7 +83,7 @@ const Outline = ({
                                 onClick={() => setOutlineItems([...outlineItems, ""])}
                             >
                                 <Icon name="Plus" className="w-4 h-4 mr-2" />
-                                Add Page
+                                Add Section
                             </Button>
                         )}
                     </DndProvider>

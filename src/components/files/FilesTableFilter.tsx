@@ -7,11 +7,12 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 
 const Filter = ({ column }: { column: Column<any, unknown> }):React.JSX.Element => {
     const { filterVariant } = column.columnDef.meta ?? {}
-
+    const client = useMatrixClientContext()
     const columnFilterValue = column.getFilterValue()
 
     const sortedUniqueValues = React.useMemo(
@@ -23,6 +24,7 @@ const Filter = ({ column }: { column: Column<any, unknown> }):React.JSX.Element 
                 .slice(0, 5000),
         [column.getFacetedUniqueValues(), filterVariant]
     )
+    console.log(sortedUniqueValues,column)
 
     return filterVariant === 'range' ? (
         <div>
@@ -67,12 +69,30 @@ const Filter = ({ column }: { column: Column<any, unknown> }):React.JSX.Element 
             value={columnFilterValue?.toString()}
         >
             <option value="">All</option>
-            {sortedUniqueValues.map(value => (
-            //dynamically generated select options from faceted values feature
-                <option value={value} key={value}>
-                    {value}
-                </option>
-            ))}
+            {sortedUniqueValues.map(value => {
+                let showContent = ''
+                if (column.id==="sender"){
+                    showContent = value.split(":")[0].substring(1);
+                }
+                else if (column.id==="roomId"){
+                    if(value==="None")showContent = "None"
+                    else{
+                        const room = client.getRoom(value);
+                        showContent = room?.name ?? "Room Deleted";
+                    }
+                }
+                else{
+                    showContent = value
+                }
+                if (showContent.length > 30) {
+                    showContent = showContent.substring(0, 19) + '...'
+                }
+                //dynamically generated select options from faceted values feature
+                return (<option value={value} key={value} title={column.id!=="roomId"&&value}>
+                    {showContent}
+                </option>)
+                
+            })}
         </select>
     ) : filterVariant === 'input' ? (
       <>

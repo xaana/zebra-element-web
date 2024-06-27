@@ -10,15 +10,19 @@ import { ReportActions } from "./ReportActions";
 export const ReportCard = ({
     report,
     onSelectReport,
+    onRename,
     onDuplicate,
     onDelete,
     userId,
+    allUsers,
 }: {
     report: Report;
     onSelectReport: (report: Report) => void;
+    onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
     userId: string;
+    allUsers: string[];
 }): JSX.Element => {
     return (
         <div
@@ -51,7 +55,13 @@ export const ReportCard = ({
                 </div>
             </div>
             <div className="absolute bottom-0 right-0 p-1">
-                <ReportActions row={report} onDuplicate={onDuplicate} onDelete={onDelete} />
+                <ReportActions
+                    row={report}
+                    onRename={onRename}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                    allUsers={allUsers}
+                />
             </div>
         </div>
     );

@@ -5,8 +5,8 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
 import type { Report, AiGenerationContent } from "@/plugins/reports/types";
-// import { CollaborationProvider } from "./CollaborationProvider";
 
+import { CreateOrRenameDialog } from "@/components/reports/ReportActions";
 import { ReportSelector } from "@/components/reports/ReportSelector";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
@@ -18,11 +18,13 @@ export const Home = (): JSX.Element => {
     const client = useMatrixClientContext();
     const userId = client.getSafeUserId();
     const [isLoading, setIsLoading] = useState(false);
+    const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
+    const [allUsers, setAllUsers] = useState<string[]>([]);
 
     const createNewReport = async (
-        initialContent?: string,
         documentName?: string,
+        initialContent?: string,
         aiContent?: AiGenerationContent,
     ): Promise<void> => {
         try {
@@ -31,7 +33,7 @@ export const Home = (): JSX.Element => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: "Untitled" }),
+                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: documentName ?? "Untitled" }),
             });
             const data = await response.json();
 
@@ -58,6 +60,21 @@ export const Home = (): JSX.Element => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchUsers = async (): Promise<void> => {
+            const url = `${SettingsStore.getValue("reportsApiUrl")}/api/get_users`;
+            const request = new Request(url, {
+                method: "GET",
+            });
+            fetch(request)
+                .then((response) => response.json())
+                .then((data) => {
+                    data.user && setAllUsers(data.user.filter((item: string) => item !== "@zebra:securezebra.com"));
+                });
+        };
+        fetchUsers();
+    }, []);
 
     useEffect(() => {
         const fetchReports = async (): Promise<void> => {
@@ -115,7 +132,8 @@ export const Home = (): JSX.Element => {
             fetchReports();
             return;
         } else if (selectedReport === null) {
-            createNewReport();
+            // New From Blank
+            setNameDialogOpen(true);
             return;
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -123,18 +141,28 @@ export const Home = (): JSX.Element => {
     const handleFileUpload = async (file: File): Promise<void> => {
         try {
             const formData = new FormData();
-            formData.append("files", file);
+            formData.append("file", file);
+            formData.append("user_id", userId);
             setIsLoading(true);
-            // Make API request
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/extract/pdf`, {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
                 body: formData,
             });
             const responseData = await response.json();
 
-            if (responseData?.html_pages?.length > 0) {
-                const combinedString = responseData.html_pages.join("\n");
-                await createNewReport(combinedString);
+            if (responseData?.status && responseData?.document_id) {
+                setIsLoading(false);
+
+                const newReport: Report = {
+                    id: responseData.document_id.toString(),
+                    name: responseData.document_name,
+                    owner: client.getSafeUserId(),
+                    accessType: "admin",
+                    timestamp: new Date().toISOString(),
+                };
+
+                setReports((prev) => [...prev, newReport]);
+                setSelectedReport(newReport);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -142,21 +170,35 @@ export const Home = (): JSX.Element => {
         }
     };
 
-    const handleDuplicate = async (reportId: string): Promise<void> => {
+    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent): Promise<void> => {
         try {
             setIsLoading(true);
 
-            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/get_document_html`, {
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/duplicate_document`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ document_id: Number(reportId) }),
+                body: JSON.stringify({ user_id: userId, document_id: reportId }),
             });
             const data = await response.json();
 
-            if (data && data.document_html && data.document_name) {
-                await createNewReport(data.document_html, data.document_name);
+            if (data && data.status && data.document_id && data.document_name) {
+                setIsLoading(false);
+
+                const newReport: Report = {
+                    id: data.document_id.toString(),
+                    name: data.document_name,
+                    owner: client.getSafeUserId(),
+                    accessType: "admin",
+                    timestamp: new Date().toISOString(),
+                    ...(aiContent && {
+                        aiContent,
+                    }),
+                };
+
+                setReports((prev) => [...prev, newReport]);
+                setSelectedReport(newReport);
             } else {
                 console.error("Error fetching data:", data);
                 setIsLoading(false);
@@ -168,36 +210,37 @@ export const Home = (): JSX.Element => {
     };
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
-        await createNewReport(undefined, aiContent.allTitles[0].substring(0, 30), aiContent);
+        if (aiContent.templateId !== undefined) {
+            await handleDuplicate(aiContent.templateId, aiContent);
+        } else {
+            await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+        }
     };
 
-    // const handleUpdateName = async (name: string): Promise<boolean> => {
-    //     if (!selectedReport) return false;
-    //     try {
-    //         const response = await fetch(
-    //             `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
-    //             {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                 },
-    //                 body: JSON.stringify({ document_id: selectedReport.id, updated_name: name }),
-    //             },
-    //         );
-    //         if (response.ok) {
-    //             setReports((prev) =>
-    //                 prev.map((report) => (report.id === selectedReport.id ? { ...report, name } : report)),
-    //             );
-    //             return true;
-    //         } else {
-    //             toast.error("Error updating document name");
-    //             return false;
-    //         }
-    //     } catch (error) {
-    //         console.error("Error updating document name", error);
-    //         return false;
-    //     }
-    // };
+    const handleUpdateName = async (reportId: string, name: string): Promise<boolean> => {
+        try {
+            const response = await fetch(
+                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/update_document_name`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ document_id: reportId, updated_name: name }),
+                },
+            );
+            if (response.ok) {
+                setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
+                return true;
+            } else {
+                toast.error("Error in renaming the document. Please try again later.");
+                return false;
+            }
+        } catch (error) {
+            console.error("Error updating document name", error);
+            return false;
+        }
+    };
 
     const handleDeleteReport = async (reportId: string): Promise<void> => {
         try {
@@ -211,15 +254,28 @@ export const Home = (): JSX.Element => {
             if (response.ok) {
                 setReports((prev) => prev.filter((report) => report.id !== reportId));
             } else {
-                toast.error("Error updating document name");
+                toast.error("Error in deleting the document. Please try again later.");
             }
         } catch (error) {
             console.error("Error updating document name", error);
         }
     };
 
+    const handleCloseEditor = (): void => {
+        setSelectedReport(undefined);
+    };
+
+    const handleCreateNewFromBlank = (): void => {
+        setNameDialogOpen(true);
+    };
+
+    const handleDocumentLoadFailed = (): void => {
+        setSelectedReport(undefined);
+        toast.error("Failed to load document. Please try again later.");
+    };
+
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-full overflow-auto">
             {/* No report selected - Show report selector */}
             {selectedReport === undefined && (
                 <motion.div
@@ -234,15 +290,18 @@ export const Home = (): JSX.Element => {
                         reports={reports}
                         setSelectedReport={setSelectedReport}
                         userId={userId}
+                        onCreateNewFromBlank={handleCreateNewFromBlank}
                         onFileUpload={handleFileUpload}
+                        onRename={handleUpdateName}
                         onDuplicate={handleDuplicate}
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
+                        allUsers={allUsers}
                     />
                 </motion.div>
             )}
             {/* Various Scenarios - Show loader */}
-            {(selectedReport === null || isLoading) && (
+            {isLoading && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     exit={{ opacity: 0 }}
@@ -268,17 +327,23 @@ export const Home = (): JSX.Element => {
                     key={selectedReport.id}
                     ref={stepRef}
                 >
-                    {/* <CollaborationProvider
-                        userId={userId}
-                        selectedReport={selectedReport}
-                        setSelectedReport={setSelectedReport}
-                        onUpdateName={handleUpdateName}
-                    /> */}
                     <div className="overflow-hidden" style={{ height: "100vh", width: "calc(100vw - 68px)" }}>
-                        <CollaboraEditor fileId={selectedReport.id} />
+                        <CollaboraEditor
+                            onCloseEditor={handleCloseEditor}
+                            selectedReport={selectedReport}
+                            onDocumentLoadFailed={handleDocumentLoadFailed}
+                            currentUser={userId}
+                            allUsers={allUsers}
+                        />
                     </div>
                 </motion.div>
             )}
+            <CreateOrRenameDialog
+                mode="create"
+                open={nameDialogOpen}
+                setOpen={setNameDialogOpen}
+                onSubmit={(newName: string) => createNewReport(newName)}
+            />
         </div>
     );
 };

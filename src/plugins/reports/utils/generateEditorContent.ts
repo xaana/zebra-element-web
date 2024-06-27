@@ -1,14 +1,12 @@
 import * as htmlparser2 from "htmlparser2";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import type { Editor as TiptapEditor } from "@tiptap/react";
-
 export const streamContent = async (
     htmlContent: string,
-    editor: TiptapEditor,
     contentBuffer: React.MutableRefObject<string>,
+    insertText: (text: string, selectInsertedText?: boolean) => void,
 ): Promise<void> => {
-    if (!editor) return Promise.resolve();
+    // if (!editor) return Promise.resolve();
 
     const openTagsStack: string[] = [];
     let position = contentBuffer.current.length;
@@ -49,13 +47,15 @@ export const streamContent = async (
                 const tempCloseTags = openTagsStack.slice().reverse().join("");
                 const tempOpenTags = openTagsStack.map((tag) => tag.replace("/", "")).join("");
 
-                editor.commands.setContent(contentChunk + tempCloseTags + tempOpenTags);
+                // editor.commands.setContent(contentChunk + tempCloseTags + tempOpenTags);
+                insertText(contentChunk + tempCloseTags + tempOpenTags, false);
                 position = nextPosition;
                 setTimeout(updateContentInChunks, delay);
             } else {
-                editor.commands.setContent(contentBuffer.current);
-                editor.commands.selectTextblockEnd();
-                editor.commands.scrollIntoView();
+                // editor.commands.setContent(contentBuffer.current);
+                insertText(contentBuffer.current, false);
+                // editor.commands.selectTextblockEnd();
+                // editor.commands.scrollIntoView();
                 resolve();
             }
         };
@@ -70,6 +70,7 @@ export const generateContent = async (
     contentSize: string,
     targetAudience?: string,
     tone?: string,
+    mediaIds?: string[],
 ): Promise<string | undefined> => {
     try {
         const res = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/content`, {
@@ -82,6 +83,7 @@ export const generateContent = async (
                 content_size: contentSize,
                 ...(targetAudience && { target_audience: targetAudience }),
                 ...(tone && { tone: tone }),
+                ...(mediaIds && mediaIds.length > 0 && { content_media_ids: mediaIds }),
             }),
         });
         const data = await res.json();

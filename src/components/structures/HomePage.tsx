@@ -40,6 +40,7 @@ import { IconTurium } from "@/components/ui/icons";
 import ZebraAlert from "../ui/ZebraAlert";
 import { startDmOnFirstMessage } from "@/utils/direct-messages";
 import ContentMessages from "matrix-react-sdk/src/ContentMessages";
+import HomePageInput from "./HomePageInput";
 
 interface IProps {
     justRegistered?: boolean;
@@ -96,7 +97,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
         user_id: "@zebra:securezebra.com",
         display_name: "zebra",
     });
-    const targetDMRoom = findDMRoom(cli, [botDM]);
 
     const onClickWebSearchHandler = (): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
@@ -122,13 +122,13 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
 
     const onClickDocumentHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, undefined, cli, undefined);
         });
     };
 
     const onClickImageHandler = (file: File): void => {
         startDmOnFirstMessage(cli, [botDM]).then((roomId) => {
-            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, null, cli, null);
+            ContentMessages.sharedInstance().sendContentToRoom(file, roomId, undefined, cli, undefined);
         });
     };
 
@@ -142,62 +142,6 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             </h1>
         </div>
     );
-
-    const DefaultButton = ({
-        title,
-        query,
-        onClick,
-        Icon,
-    }: {
-        title: string;
-        query: string;
-        onClick: () => void;
-        Icon: JSX.Element;
-    }) => (
-        <Button className="h-18 max-w-xs default_button rounded-2xl" variant="outline" onClick={onClick}>
-            <div className="w-full flex justify-between">
-                <p style={{ fontSize: 18, fontWeight: 100 }}>{title}</p>
-                <div className="w-1/6 mr-0">
-                    <Icon />
-                </div>
-            </div>
-            <div className="w-full text-start">
-                <p className="truncate" style={{ fontSize: 14, fontWeight: 100 }}>
-                    {query}
-                </p>
-            </div>
-        </Button>
-    );
-
-    const UploadButton: React.FC<{
-        title: string;
-        query: string;
-        Icon: React.JSX.Element;
-        onFinish?: (file: File | null) => void;
-        accept: string;
-    }> = ({ title, query, Icon, onFinish, accept }) => {
-        const fileInputRef = useRef<HTMLInputElement>(null);
-
-        const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            const file = event.target.files?.[0];
-            if (file && onFinish) {
-                onFinish(file);
-            }
-            event.target.value = "";
-        };
-        return (
-            <>
-                <DefaultButton title={title} query={query} onClick={() => fileInputRef.current?.click()} Icon={Icon} />
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    style={{ display: "none" }}
-                    onChange={handleFileInputChange}
-                    accept={accept === "image" ? ".jpg, .jpeg, .png" : ".pdf, .docx, .doc, .webp"}
-                />
-            </>
-        );
-    };
 
     if (pageUrl) {
         return <EmbeddedPage className="mx_HomePage" url={pageUrl} scrollbar={true} />;
@@ -239,25 +183,76 @@ const HomePage: React.FC<IProps> = ({ justRegistered = false }) => {
             </div>
 
             <div className="absolute w-full bottom-0">
-                {targetDMRoom && (
-                    <>
-                        <MessageComposer
-                            room={targetDMRoom}
-                            resizeNotifier={new ResizeNotifier()}
+                    <div className="flex items-center flex-col">
+                        <HomePageInput
                             mxClient={cli}
-                            fromHomepage={true}
-                            onSendCallback={() => {
-                                dis.dispatch({
-                                    action: "view_room",
-                                    room_id: targetDMRoom.roomId,
-                                });
-                            }}
                         />
                         <ZebraAlert />
-                    </>
-                )}
+                    </div>
             </div>
         </AutoHideScrollbar>
+    );
+};
+
+const DefaultButton = ({
+    title,
+    query,
+    onClick,
+    Icon,
+}: {
+    title: string;
+    query: string;
+    onClick: () => void;
+    Icon: JSX.Element;
+}) => (
+    <Button className="h-18 max-w-xs default_button rounded-2xl" variant="outline" onClick={onClick}>
+        <div className="w-full flex justify-between">
+            <p style={{ fontSize: 18, fontWeight: 100 }}>{title}</p>
+            <div className="w-1/6 mr-0">
+                <Icon />
+            </div>
+        </div>
+        <div className="w-full text-start">
+            <p className="truncate" style={{ fontSize: 14, fontWeight: 100 }}>
+                {query}
+            </p>
+        </div>
+    </Button>
+);
+
+const UploadButton: React.FC<{
+    title: string;
+    query: string;
+    Icon: React.JSX.Element;
+    onFinish?: (file: File | null) => void;
+    accept: string;
+}> = ({ title, query, Icon, onFinish, accept }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+        fileInputRef.current?.click();
+    };
+
+    const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file && onFinish) {
+            onFinish(file);
+        }
+    };
+    return (
+        <>
+            <DefaultButton title={title} query={query} onClick={handleClick} Icon={Icon} />
+            <input
+                ref={fileInputRef}
+                type="file"
+                style={{ display: "none" }}
+                onChange={handleFileInputChange}
+                accept={accept === "image" ? ".jpg, .jpeg, .png" : ".pdf, .docx, .doc, .webp"}
+            />
+        </>
     );
 };
 

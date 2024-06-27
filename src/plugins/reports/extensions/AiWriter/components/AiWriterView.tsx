@@ -9,7 +9,7 @@ import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClie
 import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
 
-import type { File } from "@/plugins/files/types";
+import type { MatrixFile as File } from "@/plugins/files/types";
 
 // import { Button } from "@/components/ui/ButtonAlt";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
 
 export interface DataProps {
     text: string;
@@ -53,7 +54,7 @@ export const AiWriterView = ({
     });
     const currentTone = tones.find((t) => t.value === data.tone);
     const [previewText, setPreviewText] = useState<string | undefined>(undefined);
-    const [documents, setDocuments] = useState<File[]>([]);
+    const [documents, setDocuments] = useState<File[] | undefined>();
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
@@ -62,18 +63,24 @@ export const AiWriterView = ({
     const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     const fetchFiles = async (): Promise<void> => {
-        const fetchedFiles = await getUserFiles(client);
-        setDocuments([...fetchedFiles.filter((f) => f.type === MsgType.File)]);
+        const fetchedFiles = (await listFiles(client.getUserId() ?? "", undefined, "zebra")).map((item) =>
+            dtoToFileAdapters(item, client.getUserId()),
+        );
+        setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
     };
 
     const formatResponse = (rawText: string) => {
-        let ps = rawText.split(/\n/).filter((line) => line.length > 0);
-        let newText = ps
+        const ps = rawText.split(/\n/).filter((line) => line.length > 0);
+        // ignore html list
+        const regex1 = /^\s*<[^>]+>.*<\/[^>]+>$/;
+        const regex2 = /^\s*<\/?\w+(\s+[^>]*)?\/?>$/;
+
+        const newText = ps
             .map((p, i) => {
                 if (i !== 0 && i !== ps.length - 1) {
-                    return `<p>${p}</p>`;
+                    return regex1.test(p) || regex2.test(p) ? p.trim() : `<p>${p.trim()}</p>`;
                 }
-                return p;
+                return p.trim();
             })
             .join("");
         return newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
@@ -216,9 +223,13 @@ export const AiWriterView = ({
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
         if (open) {
             await fetchFiles();
+            console.log();
         } else {
             setFilesDialogOpen(false);
         }
+    };
+    const onUpdate = (): void => {
+        fetchFiles();
     };
 
     const handleRemoveFile = (file: File): void => {
@@ -227,6 +238,7 @@ export const AiWriterView = ({
     };
 
     useEffect(() => {
+        if (!documents) return;
         if (Object.keys(rowSelection).length === 1) {
             setSelectedFiles(Object.keys(rowSelection).map((i) => documents[parseInt(i)]));
             setFilesDialogOpen(false);
@@ -260,7 +272,7 @@ export const AiWriterView = ({
                         required
                         className="mb-2"
                     />
-                    <div className="flex flex-row items-center justify-between gap-1">
+                    <div className="flex items-center justify-between gap-1">
                         <div className="flex justify-between w-auto gap-1">
                             <div className="flex items-center gap-3">
                                 <Dropdown.Root>
@@ -273,7 +285,10 @@ export const AiWriterView = ({
                                     </Dropdown.Trigger>
                                     <Dropdown.Portal>
                                         <Dropdown.Content style={{ zIndex: 99 }} side="bottom" align="start" asChild>
-                                            <Surface className="p-2 min-w-[12rem]">
+                                            <Surface
+                                                className="p-2 min-w-[12rem] overflow-y-scroll"
+                                                style={{ maxHeight: 200 }}
+                                            >
                                                 {!!data.tone && (
                                                     <>
                                                         <Dropdown.Item asChild>
@@ -311,7 +326,7 @@ export const AiWriterView = ({
                                                 variant="outline"
                                                 className="flex items-center gap-2 h-8"
                                             >
-                                                <div className="text-xs">{file.name}</div>
+                                                <div className="text-xs truncate" style={{maxWidth: 100}}>{file.name}</div>
                                                 <Button
                                                     onClick={() => handleRemoveFile(file)}
                                                     variant="ghost"
@@ -336,38 +351,88 @@ export const AiWriterView = ({
                                             </Button>
                                         </DialogTrigger>
                                         <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-hidden">
-                                            <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
-                                                <h2 className="text-2xl font-semibold tracking-tight my-1">
-                                                    Select Files
-                                                </h2>
-                                                <FilesTable
-                                                    data={documents}
-                                                    rowSelection={rowSelection}
-                                                    setRowSelection={setRowSelection}
-                                                    mode="dialog"
-                                                />
-
-                                                <div
-                                                    className={cn(
-                                                        "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
-                                                        selectedFiles.length > 0 ? "justify-between" : "justify-end",
-                                                    )}
-                                                >
-                                                    {selectedFiles.length > 0 && (
-                                                        <div className="text-sm text-muted-foreground ml-2">
-                                                            {selectedFiles.length}{" "}
-                                                            {selectedFiles.length === 1 ? "file" : "files"} selected
-                                                        </div>
-                                                    )}
-                                                    <Button
-                                                        size="sm"
-                                                        disabled={selectedFiles.length === 0}
-                                                        onClick={() => setFilesDialogOpen(false)}
-                                                    >
-                                                        Done
-                                                    </Button>
+                                            {!documents && (
+                                                <div className="relative w-[90vw] max-w-[90vw] h-full p-4">
+                                                    <h2 className="text-2xl font-semibold tracking-tight my-1">
+                                                        Select Files
+                                                    </h2>
+                                                    <Loader />
                                                 </div>
-                                            </div>
+                                            )}
+                                            {documents && (
+                                                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                                                    <h2 className="text-2xl font-semibold tracking-tight my-1">
+                                                        Select Files
+                                                    </h2>
+                                                    <FilesTable
+                                                        data={documents}
+                                                        rowSelection={rowSelection}
+                                                        setRowSelection={setRowSelection}
+                                                        mode="dialog"
+                                                        onUpdate={onUpdate}
+                                                    />
+
+                                                    <div
+                                                        className={cn(
+                                                            "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                                            selectedFiles.length > 0
+                                                                ? "justify-between"
+                                                                : "justify-end",
+                                                        )}
+                                                    >
+                                                        {selectedFiles.length > 0 && (
+                                                            <div className="text-sm text-muted-foreground ml-2">
+                                                                {selectedFiles.length}{" "}
+                                                                {selectedFiles.length === 1 ? "file" : "files"} selected
+                                                            </div>
+                                                        )}
+                                                        <Button
+                                                            size="sm"
+                                                            disabled={selectedFiles.length === 0}
+                                                            onClick={() => setFilesDialogOpen(false)}
+                                                        >
+                                                            Done
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {documents && (
+                                                <div className="relative w-[90vw] max-w-[90vw] h-[90vh] p-4">
+                                                    <h2 className="text-2xl font-semibold tracking-tight my-1">
+                                                        Select Files
+                                                    </h2>
+                                                    <FilesTable
+                                                        data={documents}
+                                                        rowSelection={rowSelection}
+                                                        setRowSelection={setRowSelection}
+                                                        mode="dialog"
+                                                        onUpdate={onUpdate}
+                                                    />
+
+                                                    <div
+                                                        className={cn(
+                                                            "absolute bottom-0 inset-x-0 flex p-2 border-t items-center bg-background z-[1]",
+                                                            selectedFiles.length > 0
+                                                                ? "justify-between"
+                                                                : "justify-end",
+                                                        )}
+                                                    >
+                                                        {selectedFiles.length > 0 && (
+                                                            <div className="text-sm text-muted-foreground ml-2">
+                                                                {selectedFiles.length}{" "}
+                                                                {selectedFiles.length === 1 ? "file" : "files"} selected
+                                                            </div>
+                                                        )}
+                                                        <Button
+                                                            size="sm"
+                                                            disabled={selectedFiles.length === 0}
+                                                            onClick={() => setFilesDialogOpen(false)}
+                                                        >
+                                                            Done
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </DialogContent>
                                     </Dialog>
                                 )}
