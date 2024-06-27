@@ -246,7 +246,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
     // }, [rowSelection, documents]);
 
     return (
-        <div className="h-full w-full px-2 py-4 relative">
+        <div className="h-full w-full px-2 py-4 relative overflow-auto">
             <div className="absolute top-1.5 right-2 flex gap-1.5 items-center z-10">
                 <Button size="sm" variant="outline" onClick={onClose} className="p-1 h-auto rounded-full">
                     <Icon name="X" className="w-3.5 h-3.5" />
