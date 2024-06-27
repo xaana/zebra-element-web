@@ -525,7 +525,6 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         <div className="flex flex-row gap-x-2">
                             {mode === "standalone" &&
                                 onDelete &&
-                                showDelete &&
                                 Object.keys(rowSelection).length !== 0 && (
                                     <Button size="sm" variant="destructive" onClick={() => setDialogOpen(true)}>
                                         <Icon name="Trash2" className="w-4 h-4" strokeWidth={2} />
