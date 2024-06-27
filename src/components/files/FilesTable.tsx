@@ -531,7 +531,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                         <Icon name="Trash2" className="w-4 h-4" strokeWidth={2} />
                                     </Button>
                                 )}
-                            {mode === "standalone" && showDelete && Object.keys(rowSelection).length !== 0 && (
+                            {mode === "standalone" && Object.keys(rowSelection).length !== 0 && (
                                 <Button
                                     className="text-sm"
                                     size="sm"
