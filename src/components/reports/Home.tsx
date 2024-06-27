@@ -174,12 +174,13 @@ export const Home = (): JSX.Element => {
         try {
             setIsLoading(true);
 
-            const response = await fetch(
-                `${SettingsStore.getValue("reportsApiUrl")}/api/reports/duplicate_document/${reportId}`,
-                {
-                    method: "POST",
+            const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/duplicate_document`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            );
+                body: JSON.stringify({ user_id: userId, document_id: reportId }),
+            });
             const data = await response.json();
 
             if (data && data.status && data.document_id && data.document_name) {
