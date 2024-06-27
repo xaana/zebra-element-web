@@ -1082,7 +1082,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (isNotice) {
             return (
-                <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+                <div className={`mx_MNoticeBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
                     {content.fetching && rawQuestion && (
@@ -1097,7 +1097,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         return (
-            <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+            <div className={`mx_MTextBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                 {body}
                 {widgets}
             </div>
