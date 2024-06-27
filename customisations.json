@@ -78,5 +78,7 @@
     "src/components/views/elements/AppTile.tsx": "src/components/views/elements/AppTile.tsx",
     "src/LegacyCallHandler.tsx": "src/LegacyCallHandler.tsx",
     "src/components/views/dialogs/ReportEventDialog.tsx": "src/components/views/dialogs/ReportEventDialog.tsx",
-    "src/components/views/messages/MFileBody.tsx": "src/components/views/messages/MFileBody.tsx"
+    "src/components/views/messages/MFileBody.tsx": "src/components/views/messages/MFileBody.tsx",
+    "src/components/views/rooms/LinkPreviewGroup.tsx": "src/components/views/rooms/LinkPreviewGroup.tsx",
+    "src/components/views/rooms/LinkPreviewWidget.tsx": "src/components/views/rooms/LinkPreviewWidget.tsx"
 }
