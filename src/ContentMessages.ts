@@ -421,7 +421,7 @@ export default class ContentMessages {
                 title: _t("upload_failed_title"),
                 description: "You can only upload up to 5 files at a time",
             });
-            return
+            return;
         }
 
         const replyToEvent = SdkContextClass.instance.roomViewStore.getQuotingEvent();
