@@ -250,7 +250,6 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                         <div className="text-sm text-muted-foreground mb-1 font-medium">Preview</div>
                         <div className="bg-background text-sm max-h-[14rem] mb-4 p-4 overflow-y-auto relative">
                             <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: previewText }} />
-                            {/* <PreviewTextScrollAnchor trackVisibility={isFetching} /> */}
                             <div ref={previewTextScrollAnchorRef} className="h-px w-full" />
                         </div>
                     </>
