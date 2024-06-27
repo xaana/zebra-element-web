@@ -2,8 +2,6 @@ import React from "react";
 import { MatrixClient } from "matrix-js-sdk/src/client";
 
 import { Button } from "./button";
-import { Icon } from "./Icon";
-import { ChatBubble } from "./icons";
 
 // Define a functional component
 const SmartReply = ({
@@ -27,7 +25,7 @@ const SmartReply = ({
 
     return (
         <Button
-            className="px-4 ml-4 h-6 text-xs rounded-lg w-fit items-center flex SmartReply_Button"
+            className="px-4 ml-4 h-6 text-xs rounded-lg w-fit items-center flex smart-reply-btn"
             // variant="outline"
             onClick={() => {
                 send();

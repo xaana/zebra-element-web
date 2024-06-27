@@ -179,7 +179,6 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             {mainButtons}
             {moreButtons.length > 0 && (
                 <AccessibleTooltipButton
-                    style={{ color: "#6100FF" }}
                     className={moreOptionsClasses}
                     onClick={props.toggleButtonMenu}
                     title="Actions and AI"

@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
-// import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+import React, { useContext, useEffect, useState } from "react"; // import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import { Action } from "matrix-react-sdk/src/dispatcher/actions";
@@ -10,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 
 import "./style/button.css";
 import { CollapsibleButton } from "matrix-react-sdk/src/components/views/rooms/CollapsibleButton";
-import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
+import { OverflowMenuContext } from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons"; // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const DatabaseSelector = () => {
@@ -39,7 +38,7 @@ export const DatabaseSelector = () => {
         <Popover open={spacePopoverOpen} onOpenChange={setSpacePopoverOpen}>
             <PopoverTrigger style={{ padding: 0 }}>
                 <CollapsibleButton
-                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px", color: "#6100FF" }}
+                    style={{ borderRadius: 0, padding: "8px 16px 8px 11px", color: "#7B6AE0" }}
                     title="Select Database"
                     className="mx_MessageComposer_button"
                     iconClassName="database_button"
@@ -60,7 +59,7 @@ export const DatabaseSelector = () => {
                 />
                 {/* <div className="flex items-center justify-center place-content-center w-[26px] h-[26px] mx_MessageComposer_button database_button" /> */}
             </PopoverTrigger>
-            <PopoverContent className="!p-1" side="left" align="start" sideOffset={6}>
+            <PopoverContent className="!p-1" side="left" align="start" sideOffset={6} style={{ height: 300 }}>
                 <Command>
                     <CommandInput placeholder="Search by Database Name..." className="text-xs" />
                     <CommandList>
