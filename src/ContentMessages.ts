@@ -416,6 +416,13 @@ export default class ContentMessages {
             dis.dispatch({ action: "require_registration" });
             return;
         }
+        if(files.length > 5) {
+            Modal.createDialog(ErrorDialog, {
+                title: _t("upload_failed_title"),
+                description: "You can only upload up to 5 files at a time",
+            });
+            return;
+        }
 
         const replyToEvent = SdkContextClass.instance.roomViewStore.getQuotingEvent();
         if (!this.mediaConfig) {
