@@ -33,6 +33,7 @@ export const MediaGrid = ({
 
     useEffect(() => {
         async function processMedia(): Promise<void> {
+            if (!media) return;
             const mediaItemsPromises = media.map(async (m) => {
                 try {
                     if (m.roomId && m.event) {
