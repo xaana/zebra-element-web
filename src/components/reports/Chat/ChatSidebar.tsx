@@ -36,14 +36,14 @@ export const ChatSidebar = ({ sidebar, chat: editorChat }: { sidebar: SidebarSta
         <Sidebar side="right" isOpen={sidebar.isOpen}>
             <div className="w-full h-full relative bg-card">
                 <div className="absolute top-1.5 right-2 w-full flex justify-end gap-1.5 items-center z-10">
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => editorChat?.reset()}
-                        className="p-1 h-auto rounded-full"
-                    >
-                        <Icon name="Trash2" strokeWidth={1.75} className="w-3.5 h-3.5" />
-                    </Button>
+                    {/*<Button*/}
+                    {/*    size="sm"*/}
+                    {/*    variant="outline"*/}
+                    {/*    onClick={() => editorChat?.reset()}*/}
+                    {/*    className="p-1 h-auto rounded-full"*/}
+                    {/*>*/}
+                    {/*    <Icon name="Trash2" strokeWidth={1.75} className="w-3.5 h-3.5" />*/}
+                    {/*</Button>*/}
                     <Button
                         size="sm"
                         variant="outline"
