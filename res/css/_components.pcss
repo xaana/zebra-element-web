@@ -889,16 +889,24 @@
     color: white !important;
 }
 
-.mx_LegacyRoomHeader_button:hover::before {
+.mx_LegacyRoomHeader_button:hover::before,
+.mx_LegacyRoomHeader_button--highlight::before {
     background-color: $accent-900 !important;
 }
 
 .mx_AccessibleButton.mx_AccessibleButton_kind_link,
-.mx_Dialog button:not(.mx_Dialog_nonDialogButton):not([class|="maplibregl"]):not(.mx_AccessibleButton) {
+.mx_Dialog button:not(.mx_Dialog_nonDialogButton):not([class|="maplibregl"]):not(.mx_AccessibleButton),
+.mx_SettingsSubsection_content summary,
+.mx_AccessibleButton.mx_AccessibleButton_kind_link_inline,
+.mx_FilterTabGroup input[type="radio"]:checked + span {
     color: $accent-900;
 }
 
 .mx_AccessibleButton.mx_AccessibleButton_kind_primary_outline {
     color: $accent-900;
     border: 1px solid $accent-900;
+}
+
+.mx_Slider input[type="range"] {
+    --active-color: $accent-900;
 }
