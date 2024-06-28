@@ -864,3 +864,41 @@
         padding-bottom: 100px;
     }
 }
+
+.mx_TabbedView_tabsOnLeft .mx_TabbedView_tabLabel_active,
+.mx_LegacyRoomHeader_button:hover::before,
+.mx_StyledRadioButton input[type="radio"]:checked + div > div,
+.mx_MessageComposer_button:hover::before {
+    background-color: $accent-900;
+}
+
+.mx_AccessibleButton.mx_AccessibleButton_kind_primary {
+    background-color: $accent-900;
+    border: none;
+}
+
+.mx_StyledRadioButton input[type="radio"]:checked + div,
+.mx_StyledRadioButton_checked,
+.mx_LayoutSwitcher_RadioButtons > .mx_LayoutSwitcher_RadioButton.mx_LayoutSwitcher_RadioButton_selected {
+    border-color: $accent-900;
+}
+
+.mx_Dialog_buttons button.mx_Dialog_primary:not(.mx_Dialog_nonDialogButton):not(.mx_AccessibleButton) {
+    background-color: $accent-900;
+    border: 1px solid $accent-900;
+    color: white !important;
+}
+
+.mx_LegacyRoomHeader_button:hover::before {
+    background-color: $accent-900 !important;
+}
+
+.mx_AccessibleButton.mx_AccessibleButton_kind_link,
+.mx_Dialog button:not(.mx_Dialog_nonDialogButton):not([class|="maplibregl"]):not(.mx_AccessibleButton) {
+    color: $accent-900;
+}
+
+.mx_AccessibleButton.mx_AccessibleButton_kind_primary_outline {
+    color: $accent-900;
+    border: 1px solid $accent-900;
+}
