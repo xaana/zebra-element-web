@@ -1,13 +1,12 @@
-import React, { useState, memo, useCallback, useMemo, useRef, useContext } from "react";
+import React, { memo, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { Editor, EditorContent } from "@tiptap/react";
-import { Mail, SendHorizontal, ChevronDown, PanelRightClose, PanelRight } from "lucide-react";
-import classNames from "classnames";
+import { SendHorizontal } from "lucide-react";
 
 import "@/plugins/reports/styles/editor.css";
 import "@/plugins/reports/styles/index.css";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { ContentItemMenu, LinkMenu, TextMenu, TextMenuProps } from "../reports/menus";
+import { ContentItemMenu, LinkMenu, TextMenu } from "../reports/menus";
 // import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
 import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
 // import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
@@ -25,7 +24,7 @@ import { IconZebra } from "../ui/icons";
 
 import { Icon } from "@/components/ui/Icon";
 // import { TableOfContents } from "@/components/reports/TableOfContents";
-import { TableRowMenu, TableColumnMenu } from "@/plugins/reports/extensions/Table/menus";
+import { TableColumnMenu, TableRowMenu } from "@/plugins/reports/extensions/Table/menus";
 import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
 import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
 import { useAIState } from "@/plugins/reports/hooks/useAIState";
@@ -413,7 +412,7 @@ const EditorHeader = ({
                 </Popover>
                 <Toolbar.Divider />
                 <MemoButton tooltip="Toggle Zebra" onClick={rightSidebar.toggle} active={rightSidebar.isOpen}>
-                    <IconZebra className="h-6 w-6 fill-primary dark:fill-white" />
+                    <IconZebra className="h-6 w-6 fill-primary dark:fill-purple-300" />
                 </MemoButton>
                 {/* <Toggle
                         aria-label="Toggle bold"
