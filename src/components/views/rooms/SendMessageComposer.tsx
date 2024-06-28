@@ -461,6 +461,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
             // do not send messages if the upload is in progress
             return;
         }
+        if(this.props.showStop) {
+            return
+        }
         this.props.resetReplies && this.props.resetReplies();
         const model = this.model;
         if (model.isEmpty) {
