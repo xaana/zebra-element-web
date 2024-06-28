@@ -71,12 +71,16 @@ export const AiWriterView = ({
 
     const formatResponse = (rawText: string) => {
         const ps = rawText.split(/\n/).filter((line) => line.length > 0);
+        // ignore html list
+        const regex1 = /^\s*<[^>]+>.*<\/[^>]+>$/;
+        const regex2 = /^\s*<\/?\w+(\s+[^>]*)?\/?>$/;
+
         const newText = ps
             .map((p, i) => {
                 if (i !== 0 && i !== ps.length - 1) {
-                    return `<p>${p}</p>`;
+                    return regex1.test(p) || regex2.test(p) ? p.trim() : `<p>${p.trim()}</p>`;
                 }
-                return p;
+                return p.trim();
             })
             .join("");
         return newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
@@ -268,7 +272,7 @@ export const AiWriterView = ({
                         required
                         className="mb-2"
                     />
-                    <div className="flex flex-row items-center justify-between gap-1">
+                    <div className="flex items-center justify-between gap-1">
                         <div className="flex justify-between w-auto gap-1">
                             <div className="flex items-center gap-3">
                                 <Dropdown.Root>
@@ -322,7 +326,7 @@ export const AiWriterView = ({
                                                 variant="outline"
                                                 className="flex items-center gap-2 h-8"
                                             >
-                                                <div className="text-xs">{file.name}</div>
+                                                <div className="text-xs truncate" style={{maxWidth: 100}}>{file.name}</div>
                                                 <Button
                                                     onClick={() => handleRemoveFile(file)}
                                                     variant="ghost"

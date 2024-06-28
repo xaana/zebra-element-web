@@ -110,7 +110,7 @@ export const uploadFile = async (
             user_ids: userIds,
             event_id: eventId,
             room_id: roomId,
-            send_id: senderId,
+            sender_id: senderId,
         }),
     }).then((res) => res.json());
 };

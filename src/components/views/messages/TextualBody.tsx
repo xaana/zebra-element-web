@@ -39,7 +39,6 @@ import Spoiler from "matrix-react-sdk/src/components/views/elements/Spoiler";
 import QuestionDialog from "matrix-react-sdk/src/components/views/dialogs/QuestionDialog";
 import MessageEditHistoryDialog from "matrix-react-sdk/src/components/views/dialogs/MessageEditHistoryDialog";
 import EditMessageComposer from "matrix-react-sdk/src/components/views/rooms/EditMessageComposer";
-import LinkPreviewGroup from "matrix-react-sdk/src/components/views/rooms/LinkPreviewGroup";
 import { IBodyProps } from "matrix-react-sdk/src/components/views/messages/IBodyProps";
 import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
 import AccessibleButton from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
@@ -71,6 +70,7 @@ import WeatherWidget from "@/components/weather/WeatherWidget";
 import { Bell, List } from "lucide-react";
 import ZebraStream from "./ZebraStream";
 import { DocFile } from "../rooms/FileSelector";
+import LinkPreviewGroup from "../rooms/LinkPreviewGroup";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -380,8 +380,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private calculateUrlPreview(): void {
         //console.info("calculateUrlPreview: ShowUrlPreview for %s is %s", this.props.mxEvent.getId(), this.props.showUrlPreview);
-
-        if (this.props.showUrlPreview && this.contentRef.current) {
+        if (this.props.showUrlPreview && this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
+        // if (this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
             // pass only the first child which is the event tile otherwise this recurses on edited events
             let links = this.findLinks([this.contentRef.current]);
             if (links.length) {
@@ -1041,7 +1041,6 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             );
         }
-
         if (this.props.highlightLink) {
             body = <a href={this.props.highlightLink}>{body}</a>;
         } else if (content.data && typeof content.data["org.matrix.neb.starter_link"] === "string") {
@@ -1056,7 +1055,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
 
         let widgets;
-        if (this.state.links.length && !this.state.widgetHidden && this.props.showUrlPreview) {
+        // if (this.state.links.length && !this.state.widgetHidden&&this.props.showUrlPreview) {
+        if (this.state.links.length && !this.state.widgetHidden) {
             widgets = (
                 <LinkPreviewGroup
                     links={this.state.links}
@@ -1082,7 +1082,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (isNotice) {
             return (
-                <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+                <div className={`mx_MNoticeBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
                     {content.fetching && rawQuestion && (
@@ -1097,7 +1097,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         return (
-            <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+            <div className={`mx_MTextBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                 {body}
                 {widgets}
             </div>
