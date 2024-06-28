@@ -879,7 +879,9 @@
 
 .mx_StyledRadioButton input[type="radio"]:checked + div,
 .mx_StyledRadioButton_checked,
-.mx_LayoutSwitcher_RadioButtons > .mx_LayoutSwitcher_RadioButton.mx_LayoutSwitcher_RadioButton_selected {
+.mx_LayoutSwitcher_RadioButtons > .mx_LayoutSwitcher_RadioButton.mx_LayoutSwitcher_RadioButton_selected,
+.mx_Field_valid.mx_Field,
+.mx_Field_valid.mx_Field:focus-within {
     border-color: $accent-900;
 }
 
@@ -909,4 +911,9 @@
 
 .mx_Slider input[type="range"] {
     --active-color: $accent-900;
+}
+
+.mx_Checkbox.mx_Checkbox_kind_solid input[type="checkbox"]:checked + label > .mx_Checkbox_background {
+    background-color: $accent-900;
+    border-color: $accent-900;
 }
