@@ -380,8 +380,8 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
 
     private calculateUrlPreview(): void {
         //console.info("calculateUrlPreview: ShowUrlPreview for %s is %s", this.props.mxEvent.getId(), this.props.showUrlPreview);
-        // if (this.props.showUrlPreview && this.contentRef.current) {
-        if (this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
+        if (this.props.showUrlPreview && this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
+        // if (this.contentRef.current&&this.props.mxEvent.getSender()!=='@zebra:securezebra.com') {
             // pass only the first child which is the event tile otherwise this recurses on edited events
             let links = this.findLinks([this.contentRef.current]);
             if (links.length) {
@@ -1082,7 +1082,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         }
         if (isNotice) {
             return (
-                <div className="mx_MNoticeBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+                <div className={`mx_MNoticeBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                     {body}
                     {widgets}
                     {content.fetching && rawQuestion && (
@@ -1097,7 +1097,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             );
         }
         return (
-            <div className="mx_MTextBody mx_EventTile_content" onClick={this.onBodyLinkClick}>
+            <div className={`mx_MTextBody mx_EventTile_content ${mxEvent.getSender()!==MatrixClientPeg.safeGet().getUserId()?"":"my_body"}`} onClick={this.onBodyLinkClick}>
                 {body}
                 {widgets}
             </div>
