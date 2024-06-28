@@ -53,8 +53,8 @@
         },
         "reports": {
             "api": "https://zebraap2-demo.turium.ai",
-            "collabServerWebsocketUrl": "wss://demo-reporting.turium.ai",
-            "collabServerHttpUrl": "https://demo-reporting.turium.ai"
+            "collaboraServerUrl": "https://demo-reporting.turium.ai",
+            "wopiSrc": "http://fastapi:8000"
         },
         "algology": {
             "url": "https://zebraalgology-demo.turium.ai"
