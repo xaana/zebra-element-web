@@ -497,7 +497,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         }}
                                     />
                                 )}
-                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && (
+                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && !this.props.showStop&&  (
                                     <SendButton
                                         key="controls_send"
                                         onClick={this.sendMessage}

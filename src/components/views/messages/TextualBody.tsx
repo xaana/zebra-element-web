@@ -674,6 +674,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
         const approvalId = content.approvalId;
         const database = content.database;
         const fileSelected = content.fileSelected;
+        const showSuggestion = mxEvent.getThread()?.lastReply()?.getId() === mxEvent.getId();
         // const databaseSelected = content.database;
         // only strip reply if this is the original replying event, edits thereafter do not have the fallback
         const stripReply = !mxEvent.replacingEvent() && !!getParentEventId(mxEvent);
@@ -736,7 +737,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     <Separator />
                     {this.getSectionTitle("Answer", Bell)}
                     {body}
-                    {roomId && (
+                    {roomId && showSuggestion && (
                         <SuggestionPrompt
                             suggestions={content.prompt}
                             rootId={rootId}
@@ -887,12 +888,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                     {!content.open && this.getSectionTitle("Answer", Bell)}
                     {body}
                     {!content.is_image && <PdfViewer citations={citations} content={content} mxEvent={mxEvent} />}
-                    <SuggestionPrompt
+                    {showSuggestion&&<SuggestionPrompt
                         suggestions={content.file_prompt}
                         rootId={rootId}
                         roomId={roomId}
                         type={content.files_}
-                    />
+                    />}
                     {/* <PdfViewer roomId={roomId} citations={citations} rootId={rootId} />
                     <SuggestionPrompt
                         suggestions={content.file_prompt}
@@ -1004,12 +1005,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                 <div className="shadow-none">
                                     <CollapsibleMessage title="View SQL Query" contents={query || []} />
                                 </div>
-                                <SuggestionPrompt
+                                {showSuggestion&&<SuggestionPrompt
                                     suggestions={content.database_prompt}
                                     rootId={rootId}
                                     roomId={roomId}
                                     type={content.database_}
-                                />
+                                />}
                             </>
                         )}
                     </div>
