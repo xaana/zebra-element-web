@@ -456,8 +456,10 @@
         }
 
         &.mx_SpaceButton_active {
-            color: var(--cpd-color-zebra-900);
-            stroke: var(--cpd-color-zebra-900);
+            //color: var(--cpd-color-zebra-900);
+            //stroke: var(--cpd-color-zebra-900);
+            color: $accent-900;
+            stroke: $accent-900;
 
             &:not(.mx_SpaceButton_narrow) .mx_SpaceButton_selectionWrapper {
                 background-color: var(--activeBackground-color);
@@ -787,7 +789,8 @@
 
                 &::before {
                     background: $background;
-                    color: var(--cpd-color-zebra-900);
+                    //color: var(--cpd-color-zebra-900);
+                    color: $accent-900;
                 }
             }
         }
@@ -807,7 +810,8 @@
 }
 
 .sparkle-button {
-    color: var(--cpd-color-zebra-900);
+    //color: var(--cpd-color-zebra-900);
+    color: $accent-900;
     border: none;
 
     &:hover {
