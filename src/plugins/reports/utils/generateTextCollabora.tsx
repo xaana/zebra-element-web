@@ -1,5 +1,8 @@
 import React from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkHtml from "remark-html";
 
 import { Chat } from "@/plugins/reports/hooks/use-chat";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
@@ -72,7 +75,18 @@ export const generateText = async (
                         ) : null,
                 })),
             );
-            editor.insertText(response, false);
+            // Insert plain text response
+            // editor.insertText(response, false);
+
+            // Insert markdown->html converted response
+            unified()
+                .use(remarkParse)
+                .use(remarkHtml)
+                .process(response)
+                .then((file) => {
+                    editor.insertCustomHtml(String(file));
+                })
+                .catch(console.error);
         };
 
         reader &&
