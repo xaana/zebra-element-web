@@ -4,9 +4,15 @@ import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkHtml from "remark-html";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 import type { MatrixFile } from "@/plugins/files/types";
 import { MatrixFileSelector } from "../ReportGenerator/MatrixFileSelector";
+import { MemoizedReactMarkdown } from "./markdown";
 
 import { Loader } from "@/components/ui/LoaderAlt";
 import { Textarea } from "@/components/ui/TextareaAlt";
@@ -71,7 +77,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
         language: undefined,
     });
     const currentTone = tones.find((t) => t.value === data.tone);
-    const [previewText, setPreviewText] = useState<string | undefined>(undefined);
+    const [previewTextMd, setPreviewTextMd] = useState<string>();
     const [selectedFiles, setSelectedFiles] = useState<MatrixFile[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const textareaId = useMemo(() => uuid(), []);
@@ -93,20 +99,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                 block: "start",
             });
         }
-    }, [previewText, isFetching, entry, inView]);
-
-    const formatResponse = (rawText: string): string => {
-        const ps = rawText.split(/\n/).filter((line) => line.length > 0);
-        const newText = ps
-            .map((p, i) => {
-                if (i !== 0 && i !== ps.length - 1) {
-                    return `<p>${p}</p>`;
-                }
-                return p;
-            })
-            .join("");
-        return newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-    };
+    }, [previewTextMd, isFetching, entry, inView]);
 
     const generateText = useCallback(async () => {
         const { text: dataText, tone, textLength, textUnit, addHeading, language } = data;
@@ -139,7 +132,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                     return;
                 }
                 // responseBuffer += decoder.decode(value)
-                setPreviewText((prev) => (prev ? prev + decoder.decode(value) : decoder.decode(value)));
+                setPreviewTextMd((prev) => (prev ? prev + decoder.decode(value) : decoder.decode(value)));
 
                 // Continue reading the stream
                 try {
@@ -202,14 +195,19 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
     }, [data, selectedFiles]);
 
     const insert = useCallback(() => {
-        // Insert plain text
-        // previewText && editor.insertText(formatResponse(previewText), false);
-
         // Insert html formatted content
-        previewText && editor.insertCustomHtml(formatResponse(previewText));
+        previewTextMd &&
+            unified()
+                .use(remarkParse)
+                .use(remarkHtml)
+                .process(previewTextMd)
+                .then((file) => {
+                    editor.insertCustomHtml(String(file));
+                })
+                .catch(console.error);
 
         onClose();
-    }, [editor, previewText, onClose]);
+    }, [editor, previewTextMd, onClose]);
 
     const discard = useCallback(() => {
         onClose();
@@ -245,11 +243,37 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
             </div>
             <div className="flex flex-col p-1">
                 {isFetching && <Loader label="Zebra is now doing its job!" />}
-                {previewText && (
+                {previewTextMd && (
                     <>
                         <div className="text-sm text-muted-foreground mb-1 font-medium">Preview</div>
                         <div className="bg-background text-sm max-h-[14rem] mb-4 p-4 overflow-y-auto relative">
-                            <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: previewText }} />
+                            {/* <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: previewText }} /> */}
+                            <MemoizedReactMarkdown
+                                className="prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+                                remarkPlugins={[remarkGfm, remarkMath]}
+                                components={{
+                                    p({ children }: any) {
+                                        return <p className="zexa-mb-2 last:zexa-mb-0">{children}</p>;
+                                    },
+                                    a({ href, children }: any) {
+                                        return (
+                                            <a
+                                                href={href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="zexa-text-zinc-500 dark:zexa-text-zinc-400 hover:zexa-underline"
+                                            >
+                                                {children}
+                                                <span className="zexa-text-xs">
+                                                    <sup>↗</sup>
+                                                </span>
+                                            </a>
+                                        );
+                                    },
+                                }}
+                            >
+                                {previewTextMd}
+                            </MemoizedReactMarkdown>
                             <div ref={previewTextScrollAnchorRef} className="h-px w-full" />
                         </div>
                     </>
@@ -339,7 +363,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                     )}
 
                     <div className="flex justify-between w-auto gap-1">
-                        {previewText && (
+                        {previewTextMd && (
                             <Button
                                 variant="ghost"
                                 className="w-full text-red-500 hover:bg-red-500/10 hover:text-red-500"
@@ -350,13 +374,13 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                                 Discard
                             </Button>
                         )}
-                        {previewText && (
+                        {previewTextMd && (
                             <Button
                                 variant="ghost"
                                 className="w-full"
                                 size="sm"
                                 onClick={insert}
-                                disabled={!previewText}
+                                disabled={!previewTextMd}
                             >
                                 <Icon name="Check" />
                                 Insert
@@ -366,19 +390,19 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                             variant="default"
                             size="sm"
                             onClick={async () => {
-                                previewText && setPreviewText(undefined);
+                                previewTextMd && setPreviewTextMd(undefined);
                                 await generateText();
                             }}
                             style={{ whiteSpace: "nowrap" }}
                             className="w-full"
                             disabled={!data.text || data.text.length < 3}
                         >
-                            {previewText ? (
+                            {previewTextMd ? (
                                 <Icon className="mr-2" name="Repeat" />
                             ) : (
                                 <Icon className="mr-2" name="PencilLine" />
                             )}
-                            {previewText ? "Regenerate" : "Write"}
+                            {previewTextMd ? "Regenerate" : "Write"}
                         </Button>
                     </div>
                 </div>

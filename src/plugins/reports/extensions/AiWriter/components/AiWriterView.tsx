@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { NodeViewWrapper, NodeViewWrapperProps } from "@tiptap/react";
-import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 as uuid } from "uuid";
 import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import { MsgType } from "matrix-js-sdk/src/matrix";
 import { RowSelectionState } from "@tanstack/react-table";
 
 import type { MatrixFile as File } from "@/plugins/files/types";
@@ -23,11 +21,13 @@ import { Toolbar } from "@/components/ui/Toolbar";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { getUserFiles } from "@/lib/utils/getUserFiles";
 import { FilesTable } from "@/components/files/FilesTable";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkHtml from "remark-html";
 
 export interface DataProps {
     text: string;
@@ -67,23 +67,6 @@ export const AiWriterView = ({
             dtoToFileAdapters(item, client.getUserId()),
         );
         setDocuments([...fetchedFiles.filter((f) => f.mimetype && !f.mimetype.startsWith("image/"))]);
-    };
-
-    const formatResponse = (rawText: string) => {
-        const ps = rawText.split(/\n/).filter((line) => line.length > 0);
-        // ignore html list
-        const regex1 = /^\s*<[^>]+>.*<\/[^>]+>$/;
-        const regex2 = /^\s*<\/?\w+(\s+[^>]*)?\/?>$/;
-
-        const newText = ps
-            .map((p, i) => {
-                if (i !== 0 && i !== ps.length - 1) {
-                    return regex1.test(p) || regex2.test(p) ? p.trim() : `<p>${p.trim()}</p>`;
-                }
-                return p.trim();
-            })
-            .join("");
-        return newText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
     };
 
     const generateText = useCallback(async () => {
@@ -183,11 +166,15 @@ export const AiWriterView = ({
         const from = getPos();
         const to = from + node.nodeSize;
 
-        editor
-            .chain()
-            .focus()
-            .insertContentAt({ from, to }, previewText && formatResponse(previewText))
-            .run();
+        previewText &&
+            unified()
+                .use(remarkParse)
+                .use(remarkHtml)
+                .process(previewText)
+                .then((file) => {
+                    editor.chain().focus().insertContentAt({ from, to }, String(file)).run();
+                })
+                .catch(console.error);
     }, [editor, previewText, getPos, node.nodeSize]);
 
     const discard = useCallback(() => {
@@ -279,7 +266,7 @@ export const AiWriterView = ({
                                     <Dropdown.Trigger asChild>
                                         <Button variant="outline" size="sm">
                                             <Icon name="Mic" className="mr-2" />
-                                            {currentTone?.label || "Change tone"}
+                                            {currentTone?.label || "Tone"}
                                             <Icon name="ChevronDown" className="ml-1" />
                                         </Button>
                                     </Dropdown.Trigger>
@@ -326,7 +313,9 @@ export const AiWriterView = ({
                                                 variant="outline"
                                                 className="flex items-center gap-2 h-8"
                                             >
-                                                <div className="text-xs truncate" style={{maxWidth: 100}}>{file.name}</div>
+                                                <div className="text-xs truncate" style={{ maxWidth: 100 }}>
+                                                    {file.name}
+                                                </div>
                                                 <Button
                                                     onClick={() => handleRemoveFile(file)}
                                                     variant="ghost"
@@ -447,13 +436,11 @@ export const AiWriterView = ({
                                     onClick={discard}
                                 >
                                     <Icon name="Trash" />
-                                    Discard
                                 </Button>
                             )}
                             {previewText && (
-                                <Button variant="ghost" onClick={insert} disabled={!previewText}>
+                                <Button variant="outline" size="sm" onClick={insert} disabled={!previewText}>
                                     <Icon name="Check" />
-                                    Insert
                                 </Button>
                             )}
                             <Button

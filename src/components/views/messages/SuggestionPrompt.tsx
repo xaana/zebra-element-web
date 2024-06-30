@@ -17,6 +17,7 @@ export const SuggestionPrompt = ({
     type?: any[] | string | boolean;
 }) => {
     const client = useContext(MatrixClientContext);
+    const [clicked, setClicked] = React.useState(false);
 
     // if (!suggestions){
     //   return(
@@ -27,7 +28,7 @@ export const SuggestionPrompt = ({
     //     </div>
     //   )
     // }
-
+    if (clicked)return null
     if (!suggestions || suggestions.length === 0) return null;
     return (
         <div className="space-y-2 mt-2">
@@ -41,6 +42,7 @@ export const SuggestionPrompt = ({
                     <div
                         className="suggest-button text-xs p-1 border rounded-md cursor-pointer flex items-center gap-1"
                         onClick={async () => {
+                            setClicked(true)
                             const content = { msgtype: "m.text", body: suggestion } as IContent;
                             if (Array.isArray(type) && type.length > 0) {
                                 content.fileSelected = type;

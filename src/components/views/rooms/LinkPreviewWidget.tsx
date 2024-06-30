@@ -111,7 +111,7 @@ export default class LinkPreviewWidget extends React.Component<IProps> {
 
         const title = p["og:title"]?.trim() ?? "";
         const anchor = (
-            <a href={this.props.link} target="_blank" rel="noreferrer noopener" className="!underline-offset-1">
+            <a href={this.props.link} target="_blank" rel="noreferrer noopener" className="!text-primary">
                 {title}
             </a>
         );

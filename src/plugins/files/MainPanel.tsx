@@ -31,16 +31,21 @@ export const MainPanel = (): JSX.Element => {
     }, [client]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onDelete = (currentFile: any): void => {
-        const roomId = currentFile.roomId;
-        const event = currentFile.event;
-        if (roomId && event) {
-            const eventId = typeof currentFile.event === "string" ? currentFile.event : currentFile.event?.getId();
-            eventId &&
-                client.redactEvent(roomId, eventId, undefined, {
-                    reason: "File has been deleted by user.",
-                });
-        }
-        deleteFiles(currentFile.mediaId, currentFile.sender);
+        
+        deleteFiles(currentFile.mediaId, currentFile.sender).then((res)=>{
+            if(res.message==="File deleted successfully from Local DB and S3"){
+                
+                const roomId = currentFile.roomId;
+                const event = currentFile.event;
+                if (roomId && event) {
+                    const eventId = typeof currentFile.event === "string" ? currentFile.event : currentFile.event?.getId();
+                    eventId &&
+                        client.redactEvent(roomId, eventId, undefined, {
+                            reason: "File has been deleted by user.",
+                        });
+                }
+                    }
+        });
         if (!currentFile.mimetype.startsWith("image/")) {
             setDocuments((prev) => prev?.filter((item) => item.mediaId !== currentFile.mediaId));
         } else if (currentFile.mimetype.startsWith("image/")) {
