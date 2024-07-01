@@ -66,7 +66,7 @@ export const AiDataQueryView = ({
         const { text: dataText, database } = data;
 
         if (!data.text) {
-            toast.error("Please enter a description");
+            toast.error("Please enter a description", { closeButton: true });
             return;
         }
 
@@ -99,7 +99,7 @@ export const AiDataQueryView = ({
                 errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
 
             setIsFetching(false);
-            toast.error(message);
+            toast.error(message, { closeButton: true });
         }
     }, [data, api]);
 

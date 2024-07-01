@@ -1,13 +1,12 @@
+import type { Editor } from "@tiptap/react";
 import { useEditor } from "@tiptap/react";
 import { HocuspocusProvider, WebSocketStatus } from "@hocuspocus/provider";
 import Collaboration from "@tiptap/extension-collaboration";
 import CollaborationCursor from "@tiptap/extension-collaboration-cursor";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-
-import type { Editor } from "@tiptap/react";
 import { AiGenerationContent } from "../types";
-import { streamContent, generateContent } from "../utils/generateEditorContent";
+import { generateContent, streamContent } from "../utils/generateEditorContent";
 
 import { ExtensionKit } from "@/plugins/reports/extensions/extension-kit";
 import { EditorUser } from "@/components/reports/BlockEditor/types";
@@ -118,7 +117,7 @@ export const useBlockEditor = ({
     useEffect(() => {
         if (isSynced) {
             if (!editor) {
-                toast.error("An error occured in generating content. Please refresh the page.");
+                toast.error("An error occured in generating content. Please refresh the page.", { closeButton: true });
             }
             if (initialContent) {
                 editor?.commands.setContent(initialContent);

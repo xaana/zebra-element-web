@@ -25,7 +25,7 @@ export const MediaGrid = ({
     media: File[];
     mode: "dialog" | "standalone";
     onImageSelect?: (image: MediaItem) => void;
-    onDelete?: (currentFile: any) => void;
+    onDelete?: (currentFile: any, sender:string) => void;
 }): JSX.Element => {
     const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
     const [showLoading, setShowLoading] = useState<boolean>(true);

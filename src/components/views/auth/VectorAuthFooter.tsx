@@ -39,7 +39,7 @@ const VectorAuthFooter = (): ReactElement => {
     return (
         <footer className="mx_AuthFooter" role="contentinfo">
             {/* {authFooterLinks} */}
-            <a href="https://zebra-chat-uat.algoreus.net/" target="_blank" rel="noreferrer noopener">
+            <a href="https://www.turium.ai/" target="_blank" rel="noreferrer noopener">
                 {_t("powered_by_matrix")}
             </a>
         </footer>

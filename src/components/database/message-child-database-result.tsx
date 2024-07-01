@@ -1,6 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
-import { Sparkles, Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, Sparkles } from "lucide-react";
 import SpaceStore from "matrix-react-sdk/src/stores/spaces/SpaceStore";
 import defaultDispatcher from "matrix-react-sdk/src/dispatcher/dispatcher";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
@@ -15,7 +15,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { cn } from "../../lib/utils";
 import { PluginActions } from "../../plugins";
 
 import { getVectorConfig } from "@/vector/getconfig";
@@ -29,6 +28,7 @@ const TableStyle = styled.div`
         width: 5px;
         background-color: #f5f5f5;
     }
+
     .table__container > div::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
         background-color: #f5f5f5;
@@ -43,6 +43,7 @@ const TableStyle = styled.div`
 export type DataItem = {
     [key: string]: string | number | null | undefined;
 };
+
 interface TableProps<T extends DataItem> {
     data: T[];
     totalEntries: string | undefined;
@@ -99,12 +100,12 @@ export const MessageChildDatabaseResult: React.FC<TableProps<DataItem>> = ({
             .then(async (response) => {
                 // Check if the response is ok and what type it is
                 if (!response.ok) {
-                    toast.error("Network error. Please try again later.");
+                    toast.error("Network error. Please try again later.", { closeButton: true });
                 }
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const data = await response.json();
-                    toast.error(data.msg);
+                    toast.error(data.msg, { closeButton: true });
                 }
                 return response.blob();
             })

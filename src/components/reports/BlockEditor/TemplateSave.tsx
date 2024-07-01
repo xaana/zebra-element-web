@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
@@ -54,11 +53,11 @@ export function TemplateSave({ editor }: { editor: Editor }): JSX.Element {
             setName("");
             setLoading(false);
             setDialogOpen(false);
-            toast.success("Template saved successfully!");
+            toast.success("Template saved successfully!", { closeButton: true });
         } else {
             setSaveResult("Failed to save template. Please try again later.");
             setLoading(false);
-            toast.error("Failed to save template. Please try again later.");
+            toast.error("Failed to save template. Please try again later.", { closeButton: true });
         }
     };
     return (

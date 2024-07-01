@@ -9,6 +9,9 @@ export const shouldSetTimeOutForComposer = (event:MatrixEvent, room:Room, client
     if(event.getContent()["m.mentions"]?.user_ids?.includes("@zebra:securezebra.com")){
         return true
     }
+    if (event.getContent().forceDatabase||event.getContent().forceDoc||event.getContent().web) {
+        return true
+    }
     const members = room.getMembers();
     const joinedMembers = members.filter(
         (m) => m.membership && isJoinedOrNearlyJoined(m.membership),

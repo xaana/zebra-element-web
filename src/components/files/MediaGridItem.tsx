@@ -23,7 +23,7 @@ export const MediaGridItem = ({
     mediaItem: MediaItem;
     showActionButtons: boolean;
     onImageSelect?: (image: MediaItem) => void;
-    onDelete?: (currentFile: any) => void;
+    onDelete?: (currentFile: any, sender:string) => void;
 }): JSX.Element => {
     const [hover, setHover] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -91,7 +91,7 @@ export const MediaGridItem = ({
                             >
                                 <IconZebra className="w-6 h-6" />
                             </Button> */}
-                            {onDelete && mediaItem.currentFile.sender === client.getUserId() && (
+                            {onDelete &&  (
                                 <Button
                                     className="h-auto w-auto rounded-full p-2"
                                     size="sm"
@@ -105,13 +105,13 @@ export const MediaGridItem = ({
                     )}
                 </div>
             </li>
-            {onDelete && mediaItem.currentFile.sender === client.getUserId() && (
+            {onDelete && (
                 <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Are you sure you want to delete this file?</DialogTitle>
                             <DialogDescription>
-                                The action will delete the file permanently, the message will be unrecoverable.
+                                The action will delete the file permanently.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
@@ -121,7 +121,7 @@ export const MediaGridItem = ({
                             <Button
                                 variant="destructive"
                                 onClick={() => {
-                                    onDelete?.(mediaItem.currentFile);
+                                    onDelete?.(mediaItem.currentFile,client.getUserId()!);
                                     setDialogOpen(false);
                                 }}
                             >
