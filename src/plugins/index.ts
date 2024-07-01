@@ -2,7 +2,7 @@ import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import { SpaceKey } from "matrix-react-sdk/src/stores/spaces";
 
 import { VideoPlugin } from "./video";
-import { StoragePlugin } from "./storage"
+import { CalendarPlugin } from "./calendar"
 import { FilesPlugin } from "./files";
 import { ReportsPlugin } from "./reports";
 import { AlgologyIntegrationPlugin } from "./algology-integration";
@@ -15,7 +15,7 @@ export const pluginList: Plugin[] = [
     FilesPlugin,
     ReportsPlugin,
     AlgologyIntegrationPlugin,
-    // StoragePlugin,
+    CalendarPlugin,
 ];
 export interface PluginActionPayload extends ActionPayload {
     plugin: string;

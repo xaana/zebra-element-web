@@ -73,6 +73,11 @@
     },
     "dependencies": {
         "@cycjimmy/jsmpeg-player": "^6.0.5",
+        "@fullcalendar/core": "^6.1.14",
+        "@fullcalendar/daygrid": "^6.1.14",
+        "@fullcalendar/interaction": "^6.1.14",
+        "@fullcalendar/react": "^6.1.14",
+        "@fullcalendar/timegrid": "^6.1.14",
         "@hocuspocus/provider": "^2.12.2",
         "@matrix-org/olm": "3.2.15",
         "@matrix-org/react-sdk-module-api": "^2.2.1",

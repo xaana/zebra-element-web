@@ -148,7 +148,7 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
-    onDelete?: (currentFile: any) => void;
+    onDelete?: (currentFile: any,sender:string) => void;
     onUpdate?: () => void;
 }
 
@@ -476,11 +476,15 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
         }));
 
         const deleteMultiFiles = (): void => {
-            for (const key in rowSelection) {
-                onDelete && onDelete(data[Number(key)]);
-                setDialogOpen(false);
+            const userId = client.getUserId();
+            if(userId){
+                for (const key in rowSelection) {
+                    onDelete && onDelete(data[Number(key)],userId);
+                }
+                onDelete && setRowSelection({});
             }
-            onDelete && setRowSelection({});
+            setDialogOpen(false);
+            
         };
         const handleClick = (): void => {
             if (inputRef.current) {
@@ -523,13 +527,11 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     <div className="flex justify-between items-center">
                         <DataTableToolbar table={table} />
                         <div className="flex flex-row gap-x-2">
-                            {mode === "standalone" &&
-                                onDelete &&
-                                Object.keys(rowSelection).length !== 0 && (
-                                    <Button size="sm" variant="destructive" onClick={() => setDialogOpen(true)}>
-                                        <Icon name="Trash2" className="w-4 h-4" strokeWidth={2} />
-                                    </Button>
-                                )}
+                            {mode === "standalone" && onDelete && Object.keys(rowSelection).length !== 0 && (
+                                <Button size="sm" variant="destructive" onClick={() => setDialogOpen(true)}>
+                                    <Icon name="Trash2" className="w-4 h-4" strokeWidth={2} />
+                                </Button>
+                            )}
                             {mode === "standalone" && Object.keys(rowSelection).length !== 0 && (
                                 <Button
                                     className="text-sm"
@@ -564,7 +566,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         </div>
                     </div>
 
-                    <div className="rounded-md border">
+                    <div className="rounded-md border max-h-[400px] overflow-y-auto scrollbar--custom">
                         <Table>
                             <TableHeader>
                                 {table.getHeaderGroups().map((headerGroup) => (
@@ -622,7 +624,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         <DialogHeader>
                             <DialogTitle>Are you sure you want to delete all files?</DialogTitle>
                             <DialogDescription>
-                                The action will delete files permanently, messages will be unrecoverable.
+                                The action will delete files permanently.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>

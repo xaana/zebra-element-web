@@ -81,7 +81,7 @@ export const ReportSelector = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} />
+                <ReportGenerator onReportGenerate={handleAiGenerate} allReports={reports} userId={userId} />
                 <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
