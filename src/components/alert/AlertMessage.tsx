@@ -13,6 +13,14 @@ import { init } from "@/vector/routing";
 const BUTTON_STYLE =
     "bg-gray-300 hover:bg-gray-500 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center h-8 my-1 w-full";
 
+const buttonClickHandler = (uri: string): void => {
+    localStorage.setItem("pluginUri", uri);
+    window.location.hash = "/plugins/algology";
+    window.matrixChat.setState({ activePluginName: "algology" });
+    SpaceStore.instance.setActiveSpace("plugin.algology");
+    defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
+};
+
 export const AlertMessagePanel = (props: any): React.JSX.Element => {
     const { content } = props;
     const alertBody = generateAlertBody(content);
@@ -20,14 +28,6 @@ export const AlertMessagePanel = (props: any): React.JSX.Element => {
     React.useEffect(() => {
         init();
     }, []);
-
-    const buttonClickHandler = (uri: string): void => {
-        localStorage.setItem("pluginUri", uri);
-        window.location.hash = "/plugins/algology";
-        window.matrixChat.setState({ activePluginName: "algology" });
-        SpaceStore.instance.setActiveSpace("plugin.algology");
-        defaultDispatcher.dispatch({ action: PluginActions.LoadPlugin, plugin: "algology" });
-    };
 
     return (
         <Card className="w-[600px]">
@@ -98,8 +98,12 @@ export const AlertMessageWithColsPanel = (props: {
     return (
         <Card className="w-full">
             <CardHeader>
-                <div className="font-bold text-2xl">
-                    {props.status === "alert" ? `❗️Alerting` : `🔔Resolved`}
+                <div
+                    className="font-bold text-2xl"
+                    onClick={() => buttonClickHandler('d/ddb11dc2-8b4a-4d1f-aed8-a6a5d49aa3ab/bids-dashboard?orgId=1')}
+                >
+                    {/* {props.status === "alert" ? `❗️Alerting` : `🔔Resolved`} */}
+                    Notification
                 </div>
             </CardHeader>
             <CardContent className="p-2 pt-3">

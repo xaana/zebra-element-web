@@ -115,6 +115,7 @@ interface IProps extends MatrixClientProps {
     onSendCallback?: () => void;
     showStop?: boolean;
     stopBotStream?: () => void;
+    canSend?: boolean;
 }
 
 interface IState {
@@ -295,6 +296,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         resetReplies={this.setReply}
                         stopBotStream={this.props.stopBotStream}
                         showStop={this.props.showStop}
+                        canSend={this.props.canSend}
                     />
                 );
             }
@@ -380,6 +382,10 @@ export class MessageComposer extends React.Component<IProps, IState> {
             "mx_MessageComposer_e2eStatus": hasE2EIcon,
             "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
         });
+        let showSend=true;
+        if (this.props.canSend!==undefined) {
+            showSend = this.props.canSend;
+        }
 
         return (
             <div
@@ -497,7 +503,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         }}
                                     />
                                 )}
-                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && !this.props.showStop&&  (
+                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && !this.props.showStop&& showSend && (
                                     <SendButton
                                         key="controls_send"
                                         onClick={this.sendMessage}

@@ -49,6 +49,7 @@ export const SuggestionPrompt = ({
                                 content.forceDoc = true;
                             } else if (typeof type === "string") {
                                 content.database = type;
+                                content.forceDatabase = true
                             } else if (typeof type === "boolean") {
                                 content.web = type;
                             }
