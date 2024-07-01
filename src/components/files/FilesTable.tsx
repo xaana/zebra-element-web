@@ -148,7 +148,7 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
-    onDelete?: (currentFile: any) => void;
+    onDelete?: (currentFile: any,sender:string) => void;
     onUpdate?: () => void;
 }
 
@@ -476,11 +476,15 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
         }));
 
         const deleteMultiFiles = (): void => {
-            for (const key in rowSelection) {
-                onDelete && onDelete(data[Number(key)]);
-                setDialogOpen(false);
+            const userId = client.getUserId();
+            if(userId){
+                for (const key in rowSelection) {
+                    onDelete && onDelete(data[Number(key)],userId);
+                }
+                onDelete && setRowSelection({});
             }
-            onDelete && setRowSelection({});
+            setDialogOpen(false);
+            
         };
         const handleClick = (): void => {
             if (inputRef.current) {
@@ -620,7 +624,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         <DialogHeader>
                             <DialogTitle>Are you sure you want to delete all files?</DialogTitle>
                             <DialogDescription>
-                                The action will delete files permanently, messages will be unrecoverable.
+                                The action will delete files permanently.
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
