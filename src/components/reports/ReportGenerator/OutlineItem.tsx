@@ -25,7 +25,7 @@ interface ItemProps {
     text: string;
     index: number;
     moveCard: (dragIndex: number, hoverIndex: number) => void;
-    setOutlineItems: React.Dispatch<React.SetStateAction<string[]>>;
+    setOutlineItems: React.Dispatch<React.SetStateAction<string[] | undefined>>;
 }
 
 const OutlineItem = ({ id, text, index, moveCard, setOutlineItems }: ItemProps): JSX.Element => {
@@ -116,7 +116,7 @@ const OutlineItem = ({ id, text, index, moveCard, setOutlineItems }: ItemProps):
             <input
                 value={text}
                 onChange={(e) =>
-                    setOutlineItems((prev) => prev.map((item, id) => (id === index ? e.target.value : item)))
+                    setOutlineItems((prev) => prev && prev.map((item, id) => (id === index ? e.target.value : item)))
                 }
                 placeholder="Add page title..."
                 className="bg-card border-none w-full focus-within:outline-none focus-within:bg-popover p-2 text-sm"
@@ -125,7 +125,7 @@ const OutlineItem = ({ id, text, index, moveCard, setOutlineItems }: ItemProps):
                 className="transition-all opacity-0 group-hover:opacity-100 h-auto w-auto p-1 rounded-full absolute right-2 top-1/2 -translate-y-1/2"
                 variant="ghost"
                 size="sm"
-                onClick={() => setOutlineItems((prev) => prev.filter((_, id) => id !== index))}
+                onClick={() => setOutlineItems((prev) => prev && prev.filter((_, id) => id !== index))}
             >
                 <Icon name="Trash2" className="w-3.5 h-3.5 text-muted-foreground hover:text-primary-default" />
             </Button>

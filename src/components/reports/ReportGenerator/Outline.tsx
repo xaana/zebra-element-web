@@ -19,17 +19,19 @@ const Outline = ({
 }: {
     pages: number;
     outlineItems: string[];
-    setOutlineItems: React.Dispatch<React.SetStateAction<string[]>>;
+    setOutlineItems: React.Dispatch<React.SetStateAction<string[] | undefined>>;
     isOutlineLoading: boolean;
 }): JSX.Element => {
     const moveCard = (dragIndex: number, hoverIndex: number): void => {
-        setOutlineItems((prevItems: string[]) =>
-            update(prevItems, {
-                $splice: [
-                    [dragIndex, 1],
-                    [hoverIndex, 0, prevItems[dragIndex] as string],
-                ],
-            }),
+        setOutlineItems(
+            (prevItems: string[] | undefined) =>
+                prevItems &&
+                update(prevItems, {
+                    $splice: [
+                        [dragIndex, 1],
+                        [hoverIndex, 0, prevItems[dragIndex] as string],
+                    ],
+                }),
         );
     };
     return (
