@@ -48,6 +48,7 @@ import MessageComposer from "../views/rooms/MessageComposer";
 import ZebraAlert from "../ui/ZebraAlert";
 
 import { MatrixFile as File } from "@/plugins/files/types";
+import { shouldSetTimeOutForComposer } from "@/utils/MessageUtils";
 
 interface IProps {
     room: Room;
@@ -72,6 +73,7 @@ interface IState {
     files: DocFile[];
     showStop: boolean;
     botStreamId?: string;
+    canSend: boolean;
 }
 
 export default class ThreadView extends React.Component<IProps, IState> {
@@ -104,7 +106,9 @@ export default class ThreadView extends React.Component<IProps, IState> {
             files: [],
             showStop: false,
             botStreamId: "",
+            canSend: true,
         };
+        this.updateCanSend = this.updateCanSend.bind(this);
 
         this.layoutWatcherRef = SettingsStore.watchSetting("layout", null, (...[, , , value]) =>
             this.setState({ layout: value as Layout }),
@@ -138,6 +142,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     break;
                 }
             }
+            this.updateCanSend();
         }
 
         this.setupThread(this.props.mxEvent);
@@ -170,7 +175,21 @@ export default class ThreadView extends React.Component<IProps, IState> {
         this.props.room.removeListener(ThreadEvent.New, this.onNewThread);
     }
 
-    public componentDidUpdate(prevProps: IProps): void {
+    public updateCanSend(): void {
+            const threadStart = this.state.thread?.events.length === 1;
+            if (!threadStart&&this.state.lastReply) {
+                const shouldSetTimeOut = shouldSetTimeOutForComposer(this.state.lastReply,this.props.room);
+                if (shouldSetTimeOut) {
+                    this.setState({canSend: false})
+                    setTimeout(() => {
+                        this.setState({canSend: true})
+                    },4000)
+                }
+                
+            }
+    }
+
+    public componentDidUpdate(prevProps: IProps,prevState: IState): void {
         if (prevProps.mxEvent !== this.props.mxEvent) {
             this.setEventId(this.props.mxEvent);
             this.setupThread(this.props.mxEvent);
@@ -178,6 +197,9 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
         if (prevProps.room !== this.props.room) {
             RightPanelStore.instance.setCard({ phase: RightPanelPhases.RoomSummary });
+        }
+        if (prevState.lastReply !== this.state.lastReply) {
+            this.updateCanSend();
         }
     }
 
@@ -630,6 +652,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 files={this.state.files}
                                 showStop={this.state.showStop}
                                 stopBotStream={this.stopBotStream}
+                                canSend={this.state.canSend}
                             />
                             <ZebraAlert />
                         </>
