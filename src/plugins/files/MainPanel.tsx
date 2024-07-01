@@ -30,9 +30,9 @@ export const MainPanel = (): JSX.Element => {
         fetchFiles();
     }, [client]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const onDelete = (currentFile: any): void => {
+    const onDelete = (currentFile: any, sender:string): void => {
         
-        deleteFiles(currentFile.mediaId, currentFile.sender).then((res)=>{
+        deleteFiles(currentFile.mediaId, sender).then((res)=>{
             if(res.message==="File deleted successfully from Local DB and S3"){
                 
                 const roomId = currentFile.roomId;
