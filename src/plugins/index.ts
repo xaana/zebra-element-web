@@ -15,7 +15,7 @@ export const pluginList: Plugin[] = [
     FilesPlugin,
     ReportsPlugin,
     AlgologyIntegrationPlugin,
-    CalendarPlugin,
+    // CalendarPlugin,
 ];
 export interface PluginActionPayload extends ActionPayload {
     plugin: string;
