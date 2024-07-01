@@ -15,7 +15,7 @@ import { SavedPrompt, SavedPromptsList } from "./SavedPromptsList";
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
-import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
@@ -148,10 +148,10 @@ export const ReportGenerator = ({
                     ...prev,
                     { id: data.prompt_id, text: promptText, outlineItems: outlineItems ?? [] },
                 ]);
-                toast.success("Prompt saved successfully.");
+                toast.success("Prompt saved successfully.", { closeButton: true });
                 !showOutline && setPrompt("");
             } else {
-                toast.error("Failed to save prompt. Please try again later.");
+                toast.error("Failed to save prompt. Please try again later.", { closeButton: true });
             }
         } catch (errPayload: any) {
             console.error(errPayload);

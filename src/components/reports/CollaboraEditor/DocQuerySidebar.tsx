@@ -190,7 +190,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                 errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
 
             setIsFetching(false);
-            toast.error(message);
+            toast.error(message, { closeButton: true });
         }
     }, [data, selectedFiles]);
 
