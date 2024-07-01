@@ -144,7 +144,10 @@ export const ReportGenerator = ({
             });
             const data = await res.json();
             if (res.ok && data.status && data.prompt_id) {
-                setSavedPrompts((prev) => [...prev, { id: data.prompt_id, text: promptText, outlineItems: [] }]);
+                setSavedPrompts((prev) => [
+                    ...prev,
+                    { id: data.prompt_id, text: promptText, outlineItems: outlineItems ?? [] },
+                ]);
                 toast.success("Prompt saved successfully.");
                 !showOutline && setPrompt("");
             } else {
