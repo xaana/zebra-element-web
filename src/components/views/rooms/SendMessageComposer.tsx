@@ -263,9 +263,15 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     resetReplies?: () => void;
     stopBotStream?: () => void;
     showStop?: boolean;
+    canSend?: boolean;
+    // updateCanSend?: (relation:any,room:Room) => void;
 }
 
-export class SendMessageComposer extends React.Component<ISendMessageComposerProps> {
+interface ISendMessageComposerState {
+    isSending: boolean;
+}
+
+export class SendMessageComposer extends React.Component<ISendMessageComposerProps,ISendMessageComposerState> {
     public static contextType = RoomContext;
     public context!: React.ContextType<typeof RoomContext>;
 
@@ -292,6 +298,9 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 { leading: true, trailing: false },
             );
         }
+        this.state = {
+            isSending: false,
+        };
 
         window.addEventListener("beforeunload", this.saveStoredEditorState);
 
@@ -457,6 +466,24 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     }
 
     public async sendMessage(): Promise<void> {
+        if (this.props.canSend!==undefined&&!this.props.canSend)return
+        if (this.state.isSending) return;
+        this.setState({ isSending: true });
+
+        try {
+            // Code that sends the message...
+            
+            // Re-enable button after a delay
+            setTimeout(() => {
+                this.setState({ isSending: false });
+            }, 400); 
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            this.setState({ isSending: false });
+        }
+        // if(this.props.relation&&this.props.room){
+        //     this.props.updateCanSend&&this.props.updateCanSend(this.props.relation,this.props.room);
+        // }
         if (SdkContextClass.instance.roomViewStore.getUploading()) {
             // do not send messages if the upload is in progress
             return;
