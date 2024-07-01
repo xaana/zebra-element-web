@@ -13,7 +13,7 @@ export const useUploader = ({ onUpload }: { onUpload: (url: string) => void }) =
                 onUpload(url); // Pass the blob URL to the onUpload handler
             } catch (errPayload: any) {
                 const error = errPayload?.response?.data?.error || "Something went wrong";
-                toast.error(error);
+                toast.error(error, { closeButton: true });
             }
 
             setLoading(false);

@@ -93,7 +93,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
         const { text: dataText, database } = data;
 
         if (!data.text) {
-            toast.error("Please enter a description");
+            toast.error("Please enter a description", { closeButton: true });
             return;
         }
 
@@ -126,7 +126,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                 errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
 
             setIsFetching(false);
-            toast.error(message);
+            toast.error(message, { closeButton: true });
         }
     }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 

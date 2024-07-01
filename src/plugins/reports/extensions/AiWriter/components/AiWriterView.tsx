@@ -158,7 +158,7 @@ export const AiWriterView = ({
                 errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
 
             setIsFetching(false);
-            toast.error(message);
+            toast.error(message, { closeButton: true });
         }
     }, [data, selectedFiles]);
 

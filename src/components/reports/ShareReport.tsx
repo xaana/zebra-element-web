@@ -44,12 +44,14 @@ export const ShareReport = ({
             });
 
             if (response.status === 200) {
-                toast.success(`Document shared successfully.`);
+                toast.success(`Document shared successfully.`, { closeButton: true });
             } else if (response.status === 403) {
-                toast.error(`Unable to share. You do not have admin privileges for this document.`);
+                toast.error(`Unable to share. You do not have admin privileges for this document.`, {
+                    closeButton: true,
+                });
             }
         } catch (error) {
-            toast.error("Error sharing the document. Please try again later.");
+            toast.error("Error sharing the document. Please try again later.", { closeButton: true });
             console.error("Error fetching data:", error);
         }
     };
