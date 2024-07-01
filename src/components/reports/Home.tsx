@@ -4,7 +4,7 @@ import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClie
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 
-import type { Report, AiGenerationContent } from "@/plugins/reports/types";
+import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
 import { CreateOrRenameDialog } from "@/components/reports/ReportActions";
 import { ReportSelector } from "@/components/reports/ReportSelector";
@@ -233,7 +233,7 @@ export const Home = (): JSX.Element => {
                 setReports((prev) => prev.map((report) => (report.id === reportId ? { ...report, name } : report)));
                 return true;
             } else {
-                toast.error("Error in renaming the document. Please try again later.");
+                toast.error("Error in renaming the document. Please try again later.", { closeButton: true });
                 return false;
             }
         } catch (error) {
@@ -254,7 +254,7 @@ export const Home = (): JSX.Element => {
             if (response.ok) {
                 setReports((prev) => prev.filter((report) => report.id !== reportId));
             } else {
-                toast.error("Error in deleting the document. Please try again later.");
+                toast.error("Error in deleting the document. Please try again later.", { closeButton: true });
             }
         } catch (error) {
             console.error("Error updating document name", error);
@@ -271,7 +271,7 @@ export const Home = (): JSX.Element => {
 
     const handleDocumentLoadFailed = (): void => {
         setSelectedReport(undefined);
-        toast.error("Failed to load document. Please try again later.");
+        toast.error("Failed to load document. Please try again later.", { closeButton: true });
     };
 
     return (

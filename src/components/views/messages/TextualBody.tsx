@@ -992,12 +992,12 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                                                         echartsCode: undefined,
                                                         generating: false,
                                                     });
-                                                    toast.error("Failed to generate echarts. Please try again later.");
+                                                    toast.error("Failed to generate echarts. Please try again later.", { closeButton: true });
                                                 }
                                             })
                                             .catch((error) => {
                                                 console.error(error);
-                                                toast.error("Server error. Please try again later.");
+                                                toast.error("Server error. Please try again later.", { closeButton: true });
                                                 this.setState({ generating: false });
                                             });
                                     }}
