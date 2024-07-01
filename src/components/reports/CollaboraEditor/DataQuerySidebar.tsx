@@ -227,7 +227,7 @@ const DataQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Co
                                 align="start"
                                 asChild
                             >
-                                <Surface className="p-2 min-w-[20rem] !rounded">
+                                <Surface className="p-2 min-w-[20rem] !rounded max-h-[200px] overflow-y-auto scrollbar--custom">
                                     {dbList.map((db, id) => (
                                         <Dropdown.Item asChild key={id}>
                                             <DropdownButton
