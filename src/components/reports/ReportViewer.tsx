@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { generatePdf } from "@/plugins/reports/utils/generatePdf";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
 // import Tooltip from "@/components/ui/TooltipAlt";
 
 interface ReportViewerProps {
     editor: Editor;
 }
+
 export const ReportViewer = ({ editor }: ReportViewerProps): JSX.Element => {
     const [pdfUrl, setPdfUrl] = useState("");
     const [isPdfLoading, setisPdfLoading] = useState(false);
@@ -30,7 +32,7 @@ export const ReportViewer = ({ editor }: ReportViewerProps): JSX.Element => {
                     }
                 })
                 .catch((error) => {
-                    toast.error("Error displaying PDF. Please try again later.");
+                    toast.error("Error displaying PDF. Please try again later.", { closeButton: true });
                 })
                 .finally(() => {
                     setisPdfLoading(false);

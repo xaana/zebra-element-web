@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import type { MatrixFile } from "@/plugins/files/types";
 
-import { dtoToFileAdapters, listFiles, getFile } from "@/components/files/FileOpsHandler";
+import { dtoToFileAdapters, getFile, listFiles } from "@/components/files/FileOpsHandler";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -50,7 +50,7 @@ export const ReportFileImport = ({
         ) {
             handleDialogToggle(false);
             setTimeout(() => {
-                toast.error("Only PDF, DOCX, and DOC files supported.");
+                toast.error("Only PDF, DOCX, and DOC files supported.", { closeButton: true });
             }, 300);
             return;
         }

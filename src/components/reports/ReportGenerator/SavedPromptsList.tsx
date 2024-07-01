@@ -44,10 +44,10 @@ export const SavedPromptsList = ({
             if (res.ok) {
                 setSavedPrompts((prev) => prev.filter((p) => p.id !== promptId));
             } else {
-                toast.error("Failed to delete prompt. Please try again later.");
+                toast.error("Failed to delete prompt. Please try again later.", { closeButton: true });
             }
         } catch (errPayload: any) {
-            toast.error("Failed to delete prompt. Please try again later.");
+            toast.error("Failed to delete prompt. Please try again later.", { closeButton: true });
             console.error(errPayload);
         }
     };

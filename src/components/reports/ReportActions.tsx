@@ -21,22 +21,22 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuShortcut,
-    DropdownMenuTrigger,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
     DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
     DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Report } from "@/plugins/reports/types";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
-    DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -120,14 +120,14 @@ export function ReportActions({
             });
 
             if (response.status === 200) {
-                toast.success("Report sent successfully");
+                toast.success("Report sent successfully", { closeButton: true });
                 setDropDownOpen(false);
             } else if (response.status === 403) {
-                toast.error(`Unable to send for approval. Please try again later.`);
+                toast.error(`Unable to send for approval. Please try again later.`, { closeButton: true });
                 setDropDownOpen(false);
             }
         } catch (error) {
-            toast.error("Unable to send for approval. Please try again later.");
+            toast.error("Unable to send for approval. Please try again later.", { closeButton: true });
             console.error("Error fetching data:", error);
             setDropDownOpen(false);
         }
