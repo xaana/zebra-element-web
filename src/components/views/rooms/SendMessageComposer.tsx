@@ -671,9 +671,20 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     }
 
     public componentWillUnmount(): void {
-        dis.unregister(this.dispatcherRef);
         window.removeEventListener("beforeunload", this.saveStoredEditorState);
-        this.saveStoredEditorState();
+        if(!SdkContextClass.instance.roomViewStore.getUploading())
+            {this.saveStoredEditorState();}
+        else{
+            dis.dispatch({
+                action: "select_files",
+                files: [],
+                roomId: this.props.room.roomId,
+                context: this.context.timelineRenderingType,
+            });
+        }
+        dis.unregister(this.dispatcherRef);
+        
+        
     }
 
     private get editorStateKey(): string {
