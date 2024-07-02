@@ -11,6 +11,7 @@ import { RoomUpload } from "matrix-react-sdk/src/models/RoomUpload";
 import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import { UploadPayload } from "matrix-react-sdk/src/dispatcher/payloads/UploadPayload";
 import { fileSize } from "matrix-react-sdk/src/utils/FileUtils";
+import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
 
 interface IProps {
     room: Room;
@@ -23,6 +24,7 @@ interface IState {
     currentLoaded?: number;
     currentTotal?: number;
     countFiles: number;
+    show: boolean;
 }
 
 function isUploadPayload(payload: ActionPayload): payload is UploadPayload {
@@ -63,6 +65,9 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
     }
 
     private calculateState(payload?: ActionPayload): IState {
+        const files = SdkContextClass.instance.roomViewStore.getFiles();
+        let show = true
+        if(files.length === 0) show=false;
         if(payload&&payload.progress) {
             
             const [currentUpload, ...otherUploads] = this.getUploadsInRoom();
@@ -73,6 +78,7 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
                     currentLoaded: currentUpload?.loaded,
                     currentTotal: currentUpload?.total,
                     countFiles: otherUploads.length,
+                    show:show,
                 }
             }
             return {
@@ -81,6 +87,7 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
                 currentLoaded: payload.progress.loaded,
                 currentTotal: payload.progress.total,
                 countFiles: otherUploads.length + 1,
+                show:show,
             }
         }
         const [currentUpload, ...otherUploads] = this.getUploadsInRoom();
@@ -90,6 +97,7 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
             currentLoaded: currentUpload?.loaded,
             currentTotal: currentUpload?.total,
             countFiles: otherUploads.length + 1,
+            show:show,
         };
     }
 
@@ -124,6 +132,9 @@ export default class UploadBar extends React.PureComponent<IProps, IState> {
         // }
 
         // const uploadSize = fileSize(this.state.currentTotal!);
+        if (!this.state.show) {
+            return null;
+        }
         return (
             <div className="mx_UploadBar">
                 <div className="mx_UploadBar_filename">
