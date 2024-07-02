@@ -276,7 +276,7 @@ export const ReportGenerator = ({
                                 onChange={(e) => setPrompt(e.target.value)}
                                 placeholder={`Describe what you'd like to create`}
                                 spellCheck={false}
-                                className="w-full resize-none py-2.5 pl-2.5 pr-6 mx-auto focus-within:outline-primary/60 bg-popover text-base border rounded-md max-w-screen-md"
+                                className="w-full resize-none py-2.5 pl-2.5 pr-10 mx-auto focus-within:outline-primary/60 bg-popover text-base border rounded-md max-w-screen-md"
                             />
                             {prompt.length > 0 && (
                                 <div className="absolute right-2.5 top-2 flex items-center gap-2">
