@@ -29,7 +29,7 @@ export const PdfViewer = ({
     // const [docFiles,setDocFiles] = useState<File[]>([]);
     const [apiUrl, setApiUrl] = useState<string>("");
     const [allMediaIds, setAllMediaIds] = useState<string[]>([]);
-    const allFiles = useRef<string[]>([]);
+    // const allFiles = useRef<string[]>([]);
     // const client = useMatrixClientContext();
 
     // const client = useMatrixClientContext();
@@ -39,15 +39,18 @@ export const PdfViewer = ({
         let files: any = [];
         const thread = mxEvent.getThread();
         if (thread) {
-            for (const evt of thread.timeline) {
-                const content = evt.getContent();
-                if (content?.files_) {
-                    const temp = content.files_.map((file: any) => {
-                        return file.mediaId;
-                    });
-                    files = [...files, ...temp];
-                }
-            }
+            // for (const evt of thread.timeline) {
+            //     const content = evt.getContent();
+            //     if (content?.files_) {
+            //         const temp = content.files_.map((file: any) => {
+            //             return file.mediaId;
+            //         });
+            //         files = [...files, ...temp];
+            //     }
+            // }
+            files = mxEvent.getContent().files_.map((file: any) => {
+                return file.mediaId;
+            });
         }
         const uniqueSet = new Set<string>(files);
 
@@ -55,21 +58,21 @@ export const PdfViewer = ({
         const uniqueList: string[] = Array.from(uniqueSet);
         setAllMediaIds(uniqueList);
 
-        return () => {
-            allFiles.current.forEach((url) => {
-                // Asynchronous cleanup if necessary or synchronous access to URLs
-                URL.revokeObjectURL(url);
-            });
-        };
+        // return () => {
+        //     allFiles.current.forEach((url) => {
+        //         // Asynchronous cleanup if necessary or synchronous access to URLs
+        //         URL.revokeObjectURL(url);
+        //     });
+        // };
     }, []);
 
     useEffect(() => {
         if (!showCitations) {
-            allFiles.current.forEach((url) => {
-                // Asynchronous cleanup if necessary or synchronous access to URLs
-                URL.revokeObjectURL(url);
-            });
-            allFiles.current = [];
+            // allFiles.current.forEach((url) => {
+            //     // Asynchronous cleanup if necessary or synchronous access to URLs
+            //     URL.revokeObjectURL(url);
+            // });
+            // allFiles.current = [];
             setPdfUrls([]);
         }
     }, [showCitations]);
@@ -135,10 +138,8 @@ export const PdfViewer = ({
     //         fetchFiles();
     //     }
     // }, [apiUrl]);
-
-    async function fetchPdfAndCreateObjectURL(mediaIds: string[]): Promise<{ name: string; url: string }[]> {
-        try {
-            const payload = { media_ids: mediaIds };
+    async function fetchData(mediaIds: string[],rootId:string): Promise<void> {
+        const payload = { media_ids: mediaIds };
             const url = `${apiUrl}/api/get_docfile`;
             const request = new Request(url, {
                 method: "POST",
@@ -150,14 +151,60 @@ export const PdfViewer = ({
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const jsonResponse = await response.json();
-            const pdfFiles = jsonResponse.pdf.map((file: any) => {
+            const allFiles = jsonResponse.pdf.map((file: any) => {
                 const contentBase64 = file.content;
                 const pdfBlob = base64ToBlob(contentBase64, "application/pdf");
                 const objectURL = URL.createObjectURL(pdfBlob);
-                allFiles.current.push(objectURL);
-                return { name: file.filename, url: objectURL };
+                // allFiles.current.push(objectURL);
+                return { name: file.filename, url: objectURL, mediaId: file.media_id };
             });
-            return pdfFiles;
+            allFiles.forEach((file: { name: string; url: string; mediaId: string; }) => {
+                if (rootId) {
+                    if(localStorage.getItem(rootId)){
+                        const current = JSON.parse(localStorage.getItem(rootId) as string);
+                        current[file.mediaId] = {url:file.url,name:file.name};
+                        localStorage.setItem(rootId, JSON.stringify(current));
+                    }else{
+                        const dictionary: { [key: string]: { url: string; name: string; } } = {};
+                        dictionary[file.mediaId] = {url:file.url,name:file.name};
+                        localStorage.setItem(rootId, JSON.stringify(dictionary));
+                    }
+                    
+                }
+            });
+            
+            
+    }
+    async function fetchPdfAndCreateObjectURL(mediaIds: string[]): Promise<void> {
+        try {
+            const rootId = mxEvent.getThread()?.rootEvent?.getId();
+            if(rootId&&localStorage.getItem(rootId)){
+                const current = JSON.parse(localStorage.getItem(rootId) as string);
+                const keys = Object.keys(current);
+                const newMediaIds = mediaIds.filter((mediaId) => !keys.includes(mediaId));
+                if(newMediaIds.length > 0){
+                    if (newMediaIds.length+keys.length>8) {
+                        const removeNumber = newMediaIds.length+keys.length-8;
+                        keys.forEach((key:string) => {
+                            for (let i = 0; i < removeNumber; i++) {
+                               if (!allMediaIds.includes(key)) {
+                                   delete current[key];
+                                   URL.revokeObjectURL(current[key]);
+                               }else{
+                                i--
+                               }
+                            }
+                        })
+                        current
+                        return fetchData(mediaIds,rootId)
+                    }else{
+                        return fetchData(newMediaIds,rootId)
+                    }
+                }
+            }
+            else if (rootId&&!localStorage.getItem(rootId)){
+                return fetchData(mediaIds,rootId)
+            }
         } catch (error) {
             console.error("Error fetching or converting PDF:", error);
             throw error;
@@ -232,8 +279,18 @@ export const PdfViewer = ({
                 className="font-normal text-xs cursor-pointer !border-black border border-solid h-7"
                 onClick={() => {
                     setShowCitations(!showCitations);
-                    fetchPdfAndCreateObjectURL(allMediaIds).then((res) => {
-                        setPdfUrls(res);
+                    fetchPdfAndCreateObjectURL(allMediaIds).then(() => {
+                        const temp = localStorage.getItem(mxEvent.getThread()?.rootEvent?.getId() as string);
+                        if (temp) {
+                            const pdfs = Object.keys(JSON.parse(temp)).map((key:string)=>{
+                                if (allMediaIds.includes(key)) {
+                                    const tempPdf = JSON.parse(temp as string)[key];
+                                    return { name: tempPdf.name, url: tempPdf.url };
+                                }
+                            });
+                            const filteredList = pdfs.filter((item) => item !== undefined);
+                            setPdfUrls(filteredList);
+                        }
                     });
                 }}
                 disabled={showCitations}

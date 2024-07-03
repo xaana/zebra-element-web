@@ -155,7 +155,16 @@ export default class ThreadView extends React.Component<IProps, IState> {
         if (this.dispatcherRef) dis.unregister(this.dispatcherRef);
         const roomId = this.props.mxEvent.getRoomId();
         SettingsStore.unwatchSetting(this.layoutWatcherRef);
-
+        const pdfUrls = localStorage.getItem(this.eventId);
+        if (pdfUrls) {
+            const urls = JSON.parse(pdfUrls);
+            Object.keys(urls).forEach((key: any) => {
+                if (urls[key].url) {
+                    URL.revokeObjectURL(urls[key].url);
+                }
+            })
+            localStorage.removeItem(this.eventId);
+        }
         const hasRoomChanged = SdkContextClass.instance.roomViewStore.getRoomId() !== roomId;
         if (this.props.initialEvent && !hasRoomChanged) {
             dis.dispatch<ViewRoomPayload>({
@@ -399,6 +408,20 @@ export default class ThreadView extends React.Component<IProps, IState> {
 
     private updateThread = (thread?: Thread): void => {
         if (this.state.thread === thread) return;
+        const rootId = this.state.thread?.rootEvent?.getId();
+        if(rootId){
+            const pdfUrls = localStorage.getItem(rootId);
+            if (pdfUrls) {
+                const urls = JSON.parse(pdfUrls);
+                Object.keys(urls).forEach((key: any) => {
+                    if (urls[key].url) {
+                        URL.revokeObjectURL(urls[key].url);
+                    }
+                })
+                localStorage.removeItem(rootId);
+            }
+        }
+        
         this.setupThreadListeners(thread, this.state.thread);
         if (thread) {
             this.setState(
