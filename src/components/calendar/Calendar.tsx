@@ -1,11 +1,19 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate, CalendarApi } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
-import { CalendarEventType, INITIAL_EVENTS, createEventId, deleteEvent, formatToCalendarEventType, formatToCalendarInput, getEvent, saveEvent } from "./event-utils";
+import {
+    CalendarEventType,
+    getNearestHalfPeriod,
+    deleteEvent,
+    formatToCalendarEventType,
+    formatToCalendarInput,
+    getEvent,
+    saveEvent,
+} from "./event-utils";
 import { EventDialog } from "./EventDialog";
 import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
@@ -24,20 +32,18 @@ const Calendar = (): React.JSX.Element => {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const calendarRef = useRef(null);
 
-    const updateCalendarViewCallback = (
-        eventInfo: CalendarEventType,
-    ):void => {
+    const updateCalendarViewCallback = (eventInfo: CalendarEventType): void => {
         const calendarApi = calendarRef.current.getApi();
         const currCalendarEvent = eventInfo.id && calendarApi.getEventById(eventInfo.id);
         if (currCalendarEvent) {
             currCalendarEvent.remove();
         }
-        const formattedEvent = formatToCalendarInput(eventInfo)
+        const formattedEvent = formatToCalendarInput(eventInfo);
         calendarApi.addEvent(formattedEvent);
-    }
+    };
 
     const handleWeekendsToggle = (): void => {
-        setCalState(prevState => ({
+        setCalState((prevState) => ({
             ...prevState,
             weekendsVisible: !calState.weekendsVisible,
         }));
@@ -45,20 +51,31 @@ const Calendar = (): React.JSX.Element => {
 
     const handleDateSelect = (selectInfo: DateSelectArg): void => {
         const calendarApi = calendarRef.current.getApi();
-        const startTime = selectInfo.start
-        const endTime = selectInfo.end
-        startTime.setHours(new Date().getHours())
-        startTime.setMinutes(new Date().getMinutes())
-        endTime.setHours(new Date().getHours())
-        endTime.setMinutes(new Date().getMinutes())
-        const newEvent: CalendarEventType = {
-            startTime: startTime,
-            endTime: endTime,
+        const startTime = selectInfo.start;
+        const endTime = selectInfo.end;
+        const currentTime = new Date();
+        if (endTime.valueOf() - startTime.valueOf() === 86400000) {
+            startTime.setHours(currentTime.getHours());
+            startTime.setMinutes(currentTime.getMinutes());
+            endTime.setDate(startTime.getDate());
+            endTime.setMonth(startTime.getMonth());
+            endTime.setFullYear(startTime.getFullYear());
+            endTime.setHours(new Date(currentTime.valueOf() + 30 * 60 * 1000).getHours());
+            endTime.setMinutes(new Date(currentTime.valueOf() + 30 * 60 * 1000).getMinutes());
+        } else {
+            startTime.setHours(currentTime.getHours());
+            startTime.setMinutes(currentTime.getMinutes());
+            endTime.setHours(currentTime.getHours());
+            endTime.setMinutes(currentTime.getMinutes());
         }
+        const newEvent: CalendarEventType = {
+            startTime: getNearestHalfPeriod(startTime),
+            endTime: getNearestHalfPeriod(endTime),
+        };
         setSelectedEventInfo(newEvent);
         calendarApi.unselect();
         setDialogOpen(true);
-    }
+    };
 
     const handleEventClick = (clickInfo: EventClickArg): void => {
         const calendarApi = calendarRef.current.getApi();
@@ -67,32 +84,31 @@ const Calendar = (): React.JSX.Element => {
         setDialogOpen(true);
     };
 
-    const handleEvents = (events: EventApi[]):void => {
-        setCalState(prevState => ({
+    const handleEvents = (events: EventApi[]): void => {
+        setCalState((prevState) => ({
             ...prevState,
             currentEvents: events,
         }));
     };
 
-    const updateEventCallback = (info: any):void => {
+    const updateEventCallback = (info: any): void => {
         const userId = client.getUserId();
         saveEvent(info.event, userId);
-    }
+    };
 
-    const removeEventCallback = (info: any):void => {
-        deleteEvent(info.event)
-    }
+    const removeEventCallback = (info: any): void => {
+        deleteEvent(info.event);
+    };
 
-    useEffect(()=>{
+    useEffect(() => {
         const userId = client.getUserId();
         const calendarApi = calendarRef.current.getApi();
-        getEvent(userId)
-        .then(res=>{
-            res.forEach(item=>{
-                calendarApi.addEvent(formatToCalendarInput(item))
-            })
-        })
-    },[])
+        getEvent(userId).then((res) => {
+            res.forEach((item) => {
+                calendarApi.addEvent(formatToCalendarInput(item));
+            });
+        });
+    }, []);
 
     return (
         <div className="flex h-full font-sans text-sm">
@@ -117,7 +133,7 @@ const Calendar = (): React.JSX.Element => {
                         today: "Today",
                         dayGridMonth: "Month",
                         timeGridWeek: "Week",
-                        timeGridDay: "Day"
+                        timeGridDay: "Day",
                     }}
                     initialView="dayGridMonth"
                     editable={true}
@@ -138,7 +154,7 @@ const Calendar = (): React.JSX.Element => {
             </div>
         </div>
     );
-}
+};
 
 const renderEventContent = (eventContent: EventContentArg): React.JSX.Element => {
     return (
@@ -147,6 +163,6 @@ const renderEventContent = (eventContent: EventContentArg): React.JSX.Element =>
             <i>{eventContent.event.title}</i>
         </>
     );
-}
+};
 
 export default Calendar;

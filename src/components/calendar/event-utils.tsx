@@ -20,7 +20,7 @@ const parseDate = (dateString: string): Date => {
     } else {
         throw new Error("Invalid date format");
     }
-}
+};
 
 export interface CalendarEventType {
     id?: string;
@@ -93,8 +93,8 @@ export const getNearestHalfPeriod = (date: Date | string | number): Date => {
 };
 
 export const getEvent = (currentUserId: string): Promise<CalendarEventType[]> => {
-    const url = SettingsStore.getValue("reportsApiUrl")
-    return fetch(url+ "/api/calendar_task/get_task", {
+    const url = SettingsStore.getValue("reportsApiUrl");
+    return fetch(url + "/api/calendar_task/get_task", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -105,37 +105,39 @@ export const getEvent = (currentUserId: string): Promise<CalendarEventType[]> =>
     })
         .then((response) => response.json())
         .then((data) => {
-            return data.data.map((item: {
-                id: string;
-                title: string;
-                attendees: {
-                    [key: string]: boolean;
-                };
-                start_time: string;
-                end_time: string;
-                allday: boolean;
-                description: string;
-            })=>{
-                return {
-                    id: item.id,
-                    title: item.title,
-                    attendeeStatus: item.attendees,
-                    startTime: parseDate(item.start_time),
-                    endTime: parseDate(item.end_time),
-                    allDay: item.allday,
-                    description: item.description
-                }
-            })
+            return data.data.map(
+                (item: {
+                    id: string;
+                    title: string;
+                    attendees: {
+                        [key: string]: boolean;
+                    };
+                    start_time: string;
+                    end_time: string;
+                    allday: boolean;
+                    description: string;
+                }) => {
+                    return {
+                        id: item.id,
+                        title: item.title,
+                        attendeeStatus: item.attendees,
+                        startTime: parseDate(item.start_time),
+                        endTime: parseDate(item.end_time),
+                        allDay: item.allday,
+                        description: item.description,
+                    };
+                },
+            );
         })
         .catch((error) => {
             console.error("Error saving event:", error);
         });
 };
 
-export const saveEvent = (event:EventInput, currentUserId: string): void => {
-    const url = SettingsStore.getValue("reportsApiUrl")
+export const saveEvent = (event: EventInput, currentUserId: string): void => {
+    const url = SettingsStore.getValue("reportsApiUrl");
     const formattedBody = formatToCalendarEventType(event);
-    fetch(url+ "/api/calendar_task/set_task", {
+    fetch(url + "/api/calendar_task/set_task", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -151,21 +153,21 @@ export const saveEvent = (event:EventInput, currentUserId: string): void => {
             description: formattedBody.description,
             location: null,
         }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                console.log("Event saved");
-            }
-        })
-        .catch((error) => {
-            console.error("Error saving event:", error);
-        });
+    });
+    // .then((response) => response.json())
+    // .then((data) => {
+    //     if (data.success) {
+    //         console.log("Event saved");
+    //     }
+    // })
+    // .catch((error) => {
+    //     console.error("Error saving event:", error);
+    // });
 };
 
-export const deleteEvent = (event:EventInput): void => {
-    const url = SettingsStore.getValue("reportsApiUrl")
-    fetch(url+"/api/calendar_task/delete-event", {
+export const deleteEvent = (event: EventInput): void => {
+    const url = SettingsStore.getValue("reportsApiUrl");
+    fetch(url + "/api/calendar_task/delete-event", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -173,14 +175,14 @@ export const deleteEvent = (event:EventInput): void => {
         body: JSON.stringify({
             id: event.id,
         }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                console.log("Event deleted");
-            }
-        })
-        .catch((error) => {
-            console.error("Error deleting event:", error);
-        });
+    });
+    // .then((response) => response.json())
+    // .then((data) => {
+    //     if (data.success) {
+    //         console.log("Event deleted");
+    //     }
+    // })
+    // .catch((error) => {
+    //     console.error("Error deleting event:", error);
+    // });
 };
