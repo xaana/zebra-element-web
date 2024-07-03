@@ -149,8 +149,11 @@ export const ReportsList = ({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="h-24 text-center text-muted-foreground text-sm"
+                                >
+                                    No documents to show.
                                 </TableCell>
                             </TableRow>
                         )}

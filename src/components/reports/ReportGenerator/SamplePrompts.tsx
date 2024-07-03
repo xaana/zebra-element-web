@@ -34,7 +34,10 @@ export const samplePrompts: SamplePrompt[] = [
 const SamplePrompts = ({ setPrompt }: { setPrompt: React.Dispatch<React.SetStateAction<string>> }): JSX.Element => {
     return (
         <div>
-            <div className="text-lg font-semibold text-center">Example Prompts</div>
+            <div className="w-full flex items-center justify-center gap-1">
+                <Icon name="ListChecks" className="h-5 w-5 text-primary-900" />
+                <div className="text-lg font-semibold text-center">Example Prompts</div>
+            </div>
             <div className="grid grid-cols-3 gap-3 mt-2">
                 {samplePrompts.map((prompt, index) => (
                     <div
