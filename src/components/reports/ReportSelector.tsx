@@ -133,20 +133,28 @@ export const ReportSelector = ({
             </div>
 
             {displayType === "grid" ? (
-                <div className="w-full grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {filteredReports.map((report) => (
-                        <ReportCard
-                            key={report.id}
-                            report={report}
-                            onSelectReport={(report) => setSelectedReport(report)}
-                            onRename={onRename}
-                            onDuplicate={onDuplicate}
-                            userId={userId}
-                            onDelete={onDelete}
-                            allUsers={allUsers}
-                        />
-                    ))}
-                </div>
+                <>
+                    {filteredReports.length > 0 ? (
+                        <div className="w-full grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {filteredReports.map((report) => (
+                                <ReportCard
+                                    key={report.id}
+                                    report={report}
+                                    onSelectReport={(report) => setSelectedReport(report)}
+                                    onRename={onRename}
+                                    onDuplicate={onDuplicate}
+                                    userId={userId}
+                                    onDelete={onDelete}
+                                    allUsers={allUsers}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="w-full flex justify-center items-center p-10 text-muted-foreground text-sm">
+                            No documents to show.
+                        </div>
+                    )}
+                </>
             ) : (
                 <ReportsList
                     reports={filteredReports}
