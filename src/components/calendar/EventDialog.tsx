@@ -24,71 +24,65 @@ export const EventDialog = ({
     eventInfo,
     open,
     setOpen,
-    saveCallback
+    saveCallback,
 }: {
-    trigger?: React.JSX.Element,
-    eventInfo?: CalendarEventType,
-    open?: boolean,
-    setOpen?: (open:boolean)=>void,
-    saveCallback?: (event: CalendarEventType) => void
+    trigger?: React.JSX.Element;
+    eventInfo?: CalendarEventType;
+    open?: boolean;
+    setOpen?: (open: boolean) => void;
+    saveCallback?: (event: CalendarEventType) => void;
 }): React.JSX.Element => {
-    const eventId = eventInfo?.id || createEventId()
+    const eventId = eventInfo?.id || createEventId();
     const [title, setTitle] = React.useState<string>(eventInfo?.title || "");
-    const [startTime, setStartTime] = React.useState<Date>(
-        eventInfo?.startTime  || getNearestHalfPeriod(Date.now())
-    )
+    const [startTime, setStartTime] = React.useState<Date>(eventInfo?.startTime || getNearestHalfPeriod(Date.now()));
     const [endTime, setEndTime] = React.useState<Date>(
-        eventInfo?.endTime || getNearestHalfPeriod(Date.now()+30*60*1000)
-    )
+        eventInfo?.endTime || getNearestHalfPeriod(Date.now() + 30 * 60 * 1000),
+    );
     const [attendees, setAttendees] = React.useState<{
-        [key: string]: boolean,
-    }>(eventInfo?.attendeeStatus || {})
-    const [allDayEvent, setAllDayEvent] = React.useState<boolean>(eventInfo?.allDay || false)
-    const [description, setDescription] = React.useState<string>(eventInfo?.description || "")
+        [key: string]: boolean;
+    }>(eventInfo?.attendeeStatus || {});
+    const [allDayEvent, setAllDayEvent] = React.useState<boolean>(eventInfo?.allDay || false);
+    const [description, setDescription] = React.useState<string>(eventInfo?.description || "");
 
     const matrixClient = useMatrixClientContext();
 
-    useEffect(()=>{
+    useEffect(() => {
         if (eventInfo) {
             setTitle(eventInfo?.title || ""),
-            setStartTime(eventInfo?.startTime || getNearestHalfPeriod(eventInfo?.startTime || Date.now()))
-            setEndTime(eventInfo?.endTime || getNearestHalfPeriod(eventInfo?.endTime || Date.now()+30*60*1000))
-            setAttendees(eventInfo?.attendeeStatus || {})
-            setAllDayEvent(eventInfo?.allDay || false)
-            setDescription(eventInfo?.description || "")
+                setStartTime(eventInfo?.startTime || getNearestHalfPeriod(eventInfo?.startTime || Date.now()));
+            setEndTime(eventInfo?.endTime || getNearestHalfPeriod(eventInfo?.endTime || Date.now() + 30 * 60 * 1000));
+            setAttendees(eventInfo?.attendeeStatus || {});
+            setAllDayEvent(eventInfo?.allDay || false);
+            setDescription(eventInfo?.description || "");
         }
-    },[eventInfo])
+    }, [eventInfo]);
 
-    const handleSaveClick = ():void => {
-        saveCallback && saveCallback({
-            id: eventId,
-            title: title,
-            attendeeStatus: attendees,
-            startTime: startTime,
-            endTime: endTime,
-            allDay: allDayEvent,
-            description: description,
+    const handleSaveClick = (): void => {
+        saveCallback &&
+            saveCallback({
+                id: eventId,
+                title: title,
+                attendeeStatus: attendees,
+                startTime: startTime,
+                endTime: endTime,
+                allDay: allDayEvent,
+                description: description,
+            });
+    };
 
-        })
-    }
-
-    const handleRemoveClick = ():void => {
-
-    }
+    const handleRemoveClick = (): void => {};
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            { (open!==undefined && setOpen !== undefined) && trigger ||
-                (<DialogTrigger asChild>
+            {(open !== undefined && setOpen !== undefined && trigger) || (
+                <DialogTrigger asChild>
                     <Button variant="outline">Share</Button>
-                </DialogTrigger>)
-            }
+                </DialogTrigger>
+            )}
             <DialogContent className="overflow-hidden" style={{ gap: 0, width: 1100, height: "80%" }}>
                 <DialogHeader>
                     <DialogTitle>{eventInfo ? "Edit Event" : "New Event"}</DialogTitle>
-                    <DialogDescription>
-                        Edit the event
-                    </DialogDescription>
+                    <DialogDescription>Edit the event</DialogDescription>
                 </DialogHeader>
                 <div className="flex items-center space-x-2">
                     <Pencil />
@@ -100,10 +94,10 @@ export const EventDialog = ({
                             id="title"
                             placeholder="Add title"
                             value={title}
-                            onChange={(e)=>{
-                                setTitle(e.target.value)
+                            onChange={(e) => {
+                                setTitle(e.target.value);
                             }}
-                         />
+                        />
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -116,13 +110,13 @@ export const EventDialog = ({
                             id="attendees"
                             placeholder="Add required attendees, split by ','"
                             value={Object.keys(attendees).join(",")}
-                            onChange={(e)=>{
-                                const allAttendees = e.target.value.split(',')
-                                const attendeeStatus: {[key: string]: boolean,} = {}
-                                allAttendees.forEach(item=>{
-                                    attendeeStatus[item] = item===matrixClient.getUserId()
-                                })
-                                setAttendees(attendeeStatus)
+                            onChange={(e) => {
+                                const allAttendees = e.target.value.split(",");
+                                const attendeeStatus: { [key: string]: boolean } = {};
+                                allAttendees.forEach((item) => {
+                                    attendeeStatus[item] = item === matrixClient.getUserId();
+                                });
+                                setAttendees(attendeeStatus);
                             }}
                         />
                     </div>
@@ -135,11 +129,15 @@ export const EventDialog = ({
                         </Label>
                         <Input
                             type="datetime-local"
-                            className="w-1/5"
+                            className="w-1/4"
                             id="startTime"
-                            value={startTime.toISOString().slice(0, 16)}
-                            onChange={(e)=>{
-                                setStartTime(new Date(e.target.value))
+                            value={startTime
+                                .toLocaleString("sv", { timeZoneName: "short" })
+                                .slice(0, 16)
+                                .replace(" ", "T")}
+                            step={1800}
+                            onChange={(e) => {
+                                setStartTime(new Date(e.target.value));
                             }}
                         />
                         <MoveRight />
@@ -148,11 +146,19 @@ export const EventDialog = ({
                         </Label>
                         <Input
                             type="datetime-local"
-                            className="w-1/5"
+                            className="w-1/4"
                             id="endTime"
-                            value={endTime.toISOString().slice(0, 16)}
-                            onChange={(e)=>{
-                                setEndTime(new Date(e.target.value))
+                            min={startTime
+                                .toLocaleString("sv", { timeZoneName: "short" })
+                                .slice(0, 16)
+                                .replace(" ", "T")}
+                            value={endTime
+                                .toLocaleString("sv", { timeZoneName: "short" })
+                                .slice(0, 16)
+                                .replace(" ", "T")}
+                            step={1800}
+                            onChange={(e) => {
+                                setEndTime(new Date(e.target.value));
                             }}
                         />
                     </div>
@@ -167,8 +173,8 @@ export const EventDialog = ({
                             id="description"
                             placeholder="Add Description"
                             value={description}
-                            onChange={(e)=>{
-                                setDescription(e.target.value)
+                            onChange={(e) => {
+                                setDescription(e.target.value);
                             }}
                         />
                     </div>
