@@ -28,6 +28,7 @@ export type Report = {
     content?: string;
     status?: string;
     aiContent?: AiGenerationContent;
+    fileType: string;
 };
 
 export type Message = {

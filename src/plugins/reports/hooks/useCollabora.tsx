@@ -83,6 +83,7 @@ export function useCollabora({
             const accessToken = {
                 origin: window.location.origin,
                 userId: currentUser,
+                fileType: selectedReport.fileType,
             };
             const accessTokenJsonString = JSON.stringify(accessToken);
             const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${selectedReport.id}`;
