@@ -1,9 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkHtml from "remark-html";
+import { toast } from "sonner";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { generateContentFromOutlines } from "@/plugins/reports/utils/generateEditorContent";
+import {
+    generateContentFromOutlines,
+    generateContentFromRequirements,
+} from "@/plugins/reports/utils/generateEditorContent";
 import { mediaIdsFromFiles } from "@/plugins/files/utils";
 
 export type CollaboraPostMessage = {
@@ -373,7 +380,36 @@ export function useCollabora({
     };
 
     const aiGenerateContentFromRequirements = async (): Promise<void> => {
-        console.log(`Generating`);
+        if (!selectedReport.aiContent || !selectedReport.aiContent.requirementDocuments) return;
+        setIsAiLoading(true);
+        const requirementMediaIds = mediaIdsFromFiles(selectedReport.aiContent.requirementDocuments);
+        let supportingMediaIds;
+        if (selectedReport.aiContent.supportingDocuments) {
+            supportingMediaIds = mediaIdsFromFiles(selectedReport.aiContent.supportingDocuments);
+        }
+        const generatedMarkdownContent = await generateContentFromRequirements(
+            requirementMediaIds.join(","),
+            supportingMediaIds ? supportingMediaIds.join(",") : "",
+            currentUser,
+        );
+        setIsAiLoading(false);
+        if (generatedMarkdownContent) {
+            goToDocumentEnd();
+            // Insert html formatted content
+            unified()
+                .use(remarkParse)
+                .use(remarkHtml)
+                .process(generatedMarkdownContent)
+                .then((file) => {
+                    insertCustomHtml(String(file));
+                })
+                .catch((error) => {
+                    console.error(error);
+                    toast.error("Report generation failed. Please try again later.");
+                });
+        } else {
+            toast.error("Report generation failed. Please try again later.");
+        }
     };
 
     const aiGenerateContentFromOutlines = async (): Promise<void> => {

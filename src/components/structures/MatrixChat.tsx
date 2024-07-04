@@ -626,6 +626,14 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     configData.plugins.reports.api,
                 );
             }
+            if (configData?.plugins.reports.cockpitApi) {
+                await SettingsStore.setValue(
+                    "cockpitApiUrl",
+                    null,
+                    SettingLevel.DEVICE,
+                    configData.plugins.reports.cockpitApi,
+                );
+            }
             if (configData?.plugins.reports.collaboraServerUrl) {
                 await SettingsStore.setValue(
                     "collaboraServerUrl",
