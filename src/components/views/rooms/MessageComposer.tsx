@@ -82,6 +82,7 @@ import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
 import {getFunctionalMembers} from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
 import {isJoinedOrNearlyJoined} from "matrix-react-sdk/src/utils/membership";
+import KnowledgePill from "@/components/ui/KnowledgePill";
 
 let instanceCount = 0;
 
@@ -116,6 +117,7 @@ interface IProps extends MatrixClientProps {
     showStop?: boolean;
     stopBotStream?: () => void;
     canSend?: boolean;
+    knowledge?: boolean;
 }
 
 interface IState {
@@ -297,6 +299,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         stopBotStream={this.props.stopBotStream}
                         showStop={this.props.showStop}
                         canSend={this.props.canSend}
+                        knowledge={this.props.knowledge}
                     />
                 );
             }
@@ -418,6 +421,10 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         timelineRenderingType={this.context.timelineRenderingType}
                         roomId={this.context.roomId}
                     />
+                    {this.props.knowledge &&
+                     <KnowledgePill 
+                        timelineRenderingType={this.context.timelineRenderingType}
+                        roomId={this.context.roomId} />}
                     <div className="flex flex-row gap-x-1">
                         {this.props.files &&
                             this.props.files.map((file) => (
@@ -433,7 +440,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                         !this.props.database &&
                         this.props.files?.length === 0 &&
-                        this.state.showWebSearch && <WebSearchPill />}
+                        this.state.showWebSearch && !this.props.knowledge && <WebSearchPill />}
                 </div>
                 <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
                     <div className="mx_MessageComposer_row">
@@ -654,6 +661,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
         }
         if (this.props.files && this.props.files.length > 0) {
             return "Send message to query documents...";
+        }
+        if (this.props.knowledge){
+            return "Send message to query knowledge...";
         }
         if (this.props.replyToEvent) {
             const replyingToThread = this.props.relation?.rel_type === THREAD_RELATION_TYPE.name;
