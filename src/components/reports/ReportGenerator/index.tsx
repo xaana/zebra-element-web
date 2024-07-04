@@ -1,80 +1,58 @@
 import React from "react";
-import Textarea from "react-textarea-autosize";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast, Toaster } from "sonner";
 
 import SamplePrompts from "./SamplePrompts";
-import PagesSelector from "./PagesSelector";
 import HeaderText from "./HeaderText";
 import Outline from "./Outline";
 import OutlineSettings from "./OutlineSettings";
 import type { MatrixFile } from "@/plugins/files/types";
 import { AdvancedOptions } from "./AdvancedOptions";
 import { SavedPrompt, SavedPromptsList } from "./SavedPromptsList";
+import { PromptInput } from "./PromptInput";
 
 import { IconZebra } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
 import { FadeTransition } from "@/components/ui/transitions/fade-transition";
 import { cn } from "@/lib/utils";
-import { Report } from "@/plugins/reports/types";
+import { AiGenerationContent, Report } from "@/plugins/reports/types";
 import { Separator } from "@/components/ui/separator";
+import { mediaIdsFromFiles } from "@/plugins/files/utils";
 
 export const ReportGenerator = ({
     onReportGenerate,
     allReports,
     userId,
 }: {
-    onReportGenerate: (
-        documentPrompt: string,
-        allTitles: string[],
-        contentSize: string,
-        tone: string,
-        targetAudience: string,
-        contentMediaIds?: string[],
-        selectedTemplateId?: string,
-    ) => void;
+    onReportGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
     allReports: Report[];
     userId: string;
 }): JSX.Element => {
-    const { onKeyDown } = useEnterSubmit();
     const [prompt, setPrompt] = React.useState("");
     const [pages, setPages] = React.useState(4);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [showOutline, setShowOutline] = React.useState(false);
     const [isOutlineLoading, setIsOutlineLoading] = React.useState(false);
+    const [useAdvancedOptions, setUseAdvancedOptions] = React.useState(false);
     const [outlineItems, setOutlineItems] = React.useState<string[]>();
     const [savedPrompts, setSavedPrompts] = React.useState<SavedPrompt[]>([]);
+    const [promptSaveStatus, setPromptSaveStatus] = React.useState<string>();
     const [contentSize, setContentSize] = React.useState<string>("medium");
     const [targetAudience, setTargetAudience] = React.useState<string>("");
-    const [contentFiles, setContentFiles] = React.useState<MatrixFile[]>([]);
-    const [contentMediaIds, setContentMediaIds] = React.useState<string[]>([]);
+    const [requirementDocuments, setRequirementDocuments] = React.useState<MatrixFile[]>([]);
+    const [supportingDocuments, setSupportingDocuments] = React.useState<MatrixFile[]>([]);
     const [tone, setTone] = React.useState<string>("");
-    const inputRef = React.useRef<HTMLTextAreaElement>(null);
+
     const promptsRef = React.useRef<HTMLDivElement>(null);
     const buttonRef = React.useRef<HTMLDivElement>(null);
-    React.useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, []);
 
     const [selectedTemplateId, setSelectedTemplateId] = React.useState<string>();
 
     const handleGenerateOutline = async (customOutlineItems?: string[]): Promise<void> => {
-        const mediaIdRegexPattern = /\w+:\/\/\w+\.\w+\/(\w+)/;
-        const mediaIds = contentFiles
-            .map((file) => file.mediaId)
-            .map((mediaId) => {
-                const match = mediaIdRegexPattern.exec(mediaId);
-                return match ? match[1] : null;
-            })
-            .filter(Boolean) as string[];
-        setContentMediaIds(mediaIds);
+        const mediaIds = mediaIdsFromFiles(supportingDocuments);
 
         setIsOutlineLoading(true);
         setShowOutline(true);
@@ -149,6 +127,7 @@ export const ReportGenerator = ({
                     { id: data.prompt_id, text: promptText, outlineItems: outlineItems ?? [] },
                 ]);
                 toast.success("Prompt saved successfully.", { closeButton: true });
+                setPromptSaveStatus(promptText);
                 !showOutline && setPrompt("");
             } else {
                 toast.error("Failed to save prompt. Please try again later.", { closeButton: true });
@@ -166,6 +145,20 @@ export const ReportGenerator = ({
         }
     };
 
+    const resetState = (): void => {
+        setPages(4);
+        setOutlineItems(undefined);
+        setShowOutline(false);
+        setContentSize("medium");
+        setTargetAudience("");
+        setTone("");
+        setPrompt("");
+        setSelectedTemplateId(undefined);
+        setSupportingDocuments([]);
+        setRequirementDocuments([]);
+        setPromptSaveStatus(undefined);
+    };
+
     const handleDialogToggle = async (open: boolean): Promise<void> => {
         if (open) {
             setDrawerOpen(true);
@@ -173,37 +166,37 @@ export const ReportGenerator = ({
         } else {
             setDrawerOpen(false);
             // Reset state
-            setPages(4);
-            setOutlineItems(undefined);
-            setShowOutline(false);
-            setContentSize("medium");
-            setTargetAudience("");
-            setTone("");
-            setPrompt("");
-            setSelectedTemplateId(undefined);
-            setContentFiles([]);
-            setContentMediaIds([]);
+            resetState();
         }
     };
 
     const handleGenerateReport = async (): Promise<void> => {
         setDrawerOpen(false);
-        onReportGenerate(
-            prompt,
-            outlineItems ? outlineItems.filter(Boolean) : [],
+        await onReportGenerate({
+            documentPrompt: prompt,
+            allTitles: outlineItems ? outlineItems.filter(Boolean) : [],
             contentSize,
-            tone.length > 0 ? tone : "neutral",
-            targetAudience.length > 0 ? targetAudience : "general",
-            contentMediaIds ?? [],
-            selectedTemplateId ?? undefined,
-        );
+            tone: tone.length > 0 ? tone : "neutral",
+            targetAudience: targetAudience.length > 0 ? targetAudience : "general",
+            requirementMediaIds: requirementDocuments.length > 0 ? requirementDocuments : undefined,
+            supportingDocuments: supportingDocuments.length > 0 ? supportingDocuments : undefined,
+            templateId: selectedTemplateId ?? undefined,
+        } as AiGenerationContent);
     };
+
+    React.useEffect(() => {
+        if (!useAdvancedOptions) {
+            setSupportingDocuments([]);
+            setRequirementDocuments([]);
+            setSelectedTemplateId(undefined);
+        }
+    }, [useAdvancedOptions]);
 
     return (
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
                 <Button className="font-semibold text-sm" size="sm">
-                    <div className="mr-2 relative overflow-visible">
+                    <div className="mr-2 relative">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2 border-none" />
                     </div>
@@ -211,22 +204,22 @@ export const ReportGenerator = ({
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className="h-[90vh] w-[800px] max-w-[800px] overflow-hidden"
+                className="element h-[90vh] w-[800px] max-w-[800px] overflow-hidden"
                 style={{
-                    borderRadius: "12px",
-                    padding: "3px",
+                    padding: "1.5px",
                     borderStyle: "none",
                     background:
-                        "linear-gradient(90deg, var(--cpd-color-zebra-800) 0%, var(--cpd-color-zebra-400) 50%, var(--cpd-color-zebra-800) 100%)",
+                        "linear-gradient(90deg, var(--cpd-color-zebra-800) 0%, #d58fed 50%, var(--cpd-color-zebra-800) 100%)",
+                    overflow: "visible",
                 }}
             >
                 <div
                     className="w-full h-full bg-card relative overflow-auto scrollbar--custom flex flex-col"
-                    style={{ borderRadius: "8px" }}
+                    style={{ borderRadius: "6px" }}
                 >
                     <Toaster />
                     {showOutline && (
-                        <div className="absolute top-2 left-2 z-20">
+                        <div className="absolute top-4 left-4 z-20">
                             <Button
                                 className="w-auto h-auto p-2 text-muted-foreground"
                                 size="sm"
@@ -240,129 +233,94 @@ export const ReportGenerator = ({
                             </Button>
                         </div>
                     )}
-                    <div className="absolute top-2 right-2">
-                        <DialogClose />
-                    </div>
+                    <DialogClose />
                     <div className={cn("flex-1 w-full overflow-auto scrollbar--custom px-4 py-10 flex flex-col")}>
                         <HeaderText showOutline={showOutline} />
-                        <div className={cn("flex gap-4 w-full mt-10 mb-2 justify-between items-end")}>
-                            {!showOutline && (
-                                <AdvancedOptions
-                                    allReports={allReports}
-                                    selectedTemplateId={selectedTemplateId}
-                                    setSelectedTemplateId={setSelectedTemplateId}
-                                    contentFiles={contentFiles}
-                                    setContentFiles={setContentFiles}
-                                />
-                            )}
-                            {showOutline && (
-                                <div className="text-muted-foreground font-semibold text-base translate-y-1">
-                                    Prompt
-                                </div>
-                            )}
-                            <div className="flex items-end">
-                                <PagesSelector pages={pages} setPages={setPages} />
-                            </div>
-                        </div>
-                        <div className="relative w-full">
-                            <Textarea
-                                ref={inputRef}
-                                tabIndex={0}
-                                onKeyDown={onKeyDown}
-                                style={{ boxSizing: "border-box" }}
-                                minRows={1}
-                                maxRows={3}
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                placeholder={`Describe what you'd like to create`}
-                                spellCheck={false}
-                                className="w-full resize-none py-2.5 pl-2.5 pr-6 mx-auto focus-within:outline-primary/60 bg-popover text-base border rounded-md max-w-screen-md"
+
+                        {requirementDocuments.length === 0 && (
+                            <PromptInput
+                                prompt={prompt}
+                                setPrompt={setPrompt}
+                                showOutline={showOutline}
+                                pages={pages}
+                                setPages={setPages}
+                                promptSaveStatus={promptSaveStatus}
+                                onSavePrompt={handleSavePrompt}
+                                onGenerateOutline={handleGenerateOutline}
                             />
-                            {prompt.length > 0 && (
-                                <div className="absolute right-2.5 top-2 flex items-center gap-2">
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="w-auto h-auto p-1.5 rounded-full z-10"
-                                                onClick={handleSavePrompt}
-                                            >
-                                                <Icon name="Star" className="w-4 h-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>Save Prompt</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    {showOutline && (
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Button
-                                                    variant="default"
-                                                    className="p-1.5 h-auto w-auto z-10 rounded-full"
-                                                    onClick={async () => {
-                                                        await handleGenerateOutline();
-                                                    }}
-                                                >
-                                                    <Icon name="RefreshCw" className="w-4 h-4" />
-                                                </Button>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>Regenerate Outline</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    )}
-                                </div>
-                            )}
-                        </div>
+                        )}
 
                         {showOutline ? (
-                            <div className="flex flex-col gap-4 mt-2">
-                                {outlineItems && (
+                            <>
+                                <div className="flex flex-col gap-4 mt-2">
                                     <Outline
                                         pages={pages}
-                                        outlineItems={outlineItems}
+                                        outlineItems={outlineItems ?? []}
                                         setOutlineItems={setOutlineItems}
                                         isOutlineLoading={isOutlineLoading}
                                     />
-                                )}
-                                {outlineItems && outlineItems.length > 0 && (
-                                    <OutlineSettings
-                                        contentSize={contentSize}
-                                        setContentSize={setContentSize}
-                                        targetAudience={targetAudience}
-                                        setTargetAudience={setTargetAudience}
-                                        tone={tone}
-                                        setTone={setTone}
-                                    />
-                                )}
-                            </div>
+                                    {outlineItems && outlineItems.length > 0 && (
+                                        <OutlineSettings
+                                            contentSize={contentSize}
+                                            setContentSize={setContentSize}
+                                            targetAudience={targetAudience}
+                                            setTargetAudience={setTargetAudience}
+                                            tone={tone}
+                                            setTone={setTone}
+                                        />
+                                    )}
+                                </div>
+                            </>
                         ) : (
                             <>
-                                <FadeTransition in={prompt.length > 0 && !showOutline} nodeRef={buttonRef}>
+                                <AdvancedOptions
+                                    useAdvancedOptions={useAdvancedOptions}
+                                    setUseAdvancedOptions={setUseAdvancedOptions}
+                                    allReports={allReports}
+                                    selectedTemplateId={selectedTemplateId}
+                                    setSelectedTemplateId={setSelectedTemplateId}
+                                    supportingDocuments={supportingDocuments}
+                                    setSupportingDocuments={setSupportingDocuments}
+                                    requirementDocuments={requirementDocuments}
+                                    setRequirementDocuments={setRequirementDocuments}
+                                />
+                                <FadeTransition
+                                    in={(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline}
+                                    nodeRef={buttonRef}
+                                >
                                     <div ref={buttonRef} className="w-full mx-auto mt-2">
-                                        {prompt.length > 0 && !showOutline && (
+                                        {(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline && (
                                             <Button
                                                 className="w-full text-base"
                                                 size="lg"
-                                                onClick={async () => handleGenerateOutline()}
+                                                onClick={async () => {
+                                                    if (requirementDocuments.length === 0) {
+                                                        await handleGenerateOutline();
+                                                    } else {
+                                                        await handleGenerateReport();
+                                                    }
+                                                }}
                                             >
-                                                Generate Outline
-                                                <Icon name="Sparkles" className="ml-2 h-4 w-4" />
+                                                {requirementDocuments.length > 0 ? "Generate Report" : "Next"}
+                                                {requirementDocuments.length > 0 ? (
+                                                    <Icon name="Sparkles" className="ml-2 h-4 w-4" />
+                                                ) : (
+                                                    <Icon name="ArrowBigRightDash" className="ml-2 h-4 w-4" />
+                                                )}
                                             </Button>
                                         )}
                                     </div>
                                 </FadeTransition>
 
                                 <SwitchSlideTransition
-                                    switcher={prompt.length === 0}
+                                    switcher={prompt.length === 0 && !useAdvancedOptions}
                                     nodeRef={promptsRef}
                                     direction="Y"
-                                    reverse={prompt.length !== 0}
+                                    reverse={prompt.length !== 0 || useAdvancedOptions}
                                     duration={200}
                                 >
                                     <div ref={promptsRef} className="max-w-screen-md mx-auto flex flex-col">
-                                        {prompt.length === 0 && (
+                                        {prompt.length === 0 && !useAdvancedOptions && (
                                             <>
                                                 <Separator className="my-2" />
                                                 {savedPrompts && savedPrompts.length > 0 && (

@@ -49,6 +49,7 @@ import {
     IconDocumentZip,
 } from "@/components/ui/icons";
 import { getVectorConfig } from "@/vector/getconfig";
+import { cn } from "@/lib/utils";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -148,7 +149,7 @@ export interface FilesTableProps {
     rowSelection: RowSelectionState;
     setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>;
     mode: "dialog" | "standalone";
-    onDelete?: (currentFile: any,sender:string) => void;
+    onDelete?: (currentFile: any, sender: string) => void;
     onUpdate?: () => void;
 }
 
@@ -477,14 +478,13 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
 
         const deleteMultiFiles = (): void => {
             const userId = client.getUserId();
-            if(userId){
+            if (userId) {
                 for (const key in rowSelection) {
-                    onDelete && onDelete(data[Number(key)],userId);
+                    onDelete && onDelete(data[Number(key)], userId);
                 }
                 onDelete && setRowSelection({});
             }
             setDialogOpen(false);
-            
         };
         const handleClick = (): void => {
             if (inputRef.current) {
@@ -566,7 +566,12 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         </div>
                     </div>
 
-                    <div className="rounded-md border max-h-[400px] overflow-y-auto scrollbar--custom">
+                    <div
+                        className={cn(
+                            "rounded-md border overflow-y-auto scrollbar--custom",
+                            mode === "standalone" ? "max-h-[400px] " : "max-h-[30vh]",
+                        )}
+                    >
                         <Table>
                             <TableHeader>
                                 {table.getHeaderGroups().map((headerGroup) => (
@@ -623,9 +628,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Are you sure you want to delete all files?</DialogTitle>
-                            <DialogDescription>
-                                The action will delete files permanently.
-                            </DialogDescription>
+                            <DialogDescription>The action will delete files permanently.</DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setDialogOpen(false)}>

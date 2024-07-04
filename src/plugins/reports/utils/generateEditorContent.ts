@@ -63,7 +63,7 @@ export const streamContent = async (
     });
 };
 
-export const generateContent = async (
+export const generateContentFromOutlines = async (
     documentPrompt: string,
     currentTitle: string,
     allTitles: string[],
@@ -97,6 +97,40 @@ export const generateContent = async (
         if (!content) throw new Error("No content generated", data);
 
         return content;
+    } catch (errPayload: any) {
+        console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
+        throw errPayload;
+    }
+};
+
+export const generateContentFromRequirements = async (
+    requirementDocumentIds: string, // csv
+    supportingDocumentIds: string, // csv
+    userId: string,
+): Promise<string | undefined> => {
+    try {
+        const res = await fetch(`${SettingsStore.getValue("cockpitApiUrl")}/v1/chat-messages`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer app-MoJ20aVKHRMgKL1uyers4Lis",
+            },
+            body: JSON.stringify({
+                inputs: {
+                    requirement_csv: requirementDocumentIds,
+                    supporting_csv: supportingDocumentIds,
+                },
+                query: `Requirement Media IDs: ${requirementDocumentIds}\n Supporting Media IDs: ${supportingDocumentIds}`,
+                response_mode: "blocking",
+                conversation_id: "",
+                user: userId,
+            }),
+        });
+
+        const data = await res.json();
+        if (data.answer) {
+            return data.answer as string;
+        } else return;
     } catch (errPayload: any) {
         console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
         throw errPayload;
