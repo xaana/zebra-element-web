@@ -147,7 +147,7 @@ export function useCollabora({
                     if (msg.Values.Status && msg.Values.Status == "Document_Loaded") {
                         sendMessage({ MessageId: "Host_PostmessageReady" });
                         setDocumentLoaded(true);
-                        if (selectedReport.fileType === "docx") {
+                        if (selectedReport.fileType === "docx" || selectedReport.fileType === "doc") {
                             defaultUiUpdates();
                         }
                         if (selectedReport.aiContent) {
