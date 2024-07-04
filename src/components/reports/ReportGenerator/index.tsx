@@ -178,7 +178,7 @@ export const ReportGenerator = ({
             contentSize,
             tone: tone.length > 0 ? tone : "neutral",
             targetAudience: targetAudience.length > 0 ? targetAudience : "general",
-            requirementMediaIds: requirementDocuments.length > 0 ? requirementDocuments : undefined,
+            requirementDocuments: requirementDocuments.length > 0 ? requirementDocuments : undefined,
             supportingDocuments: supportingDocuments.length > 0 ? supportingDocuments : undefined,
             templateId: selectedTemplateId ?? undefined,
         } as AiGenerationContent);
