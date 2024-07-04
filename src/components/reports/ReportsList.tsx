@@ -53,7 +53,7 @@ export const ReportsList = ({
             },
             cell: ({ row }) => (
                 <Button onClick={onSelectReport.bind(null, row.original)} variant="link">
-                    {row.getValue("name")}
+                    {`${row.getValue("name")}.${row.original.fileType}`}
                 </Button>
             ),
         },
