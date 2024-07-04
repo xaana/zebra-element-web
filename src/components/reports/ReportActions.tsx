@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { ShareReport } from "./ShareReport";
+import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
 
 import { IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
 import {
@@ -40,7 +41,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
 
 export function ReportActions({
     row,
@@ -311,12 +311,8 @@ export const CreateOrRenameDialog: React.FC<CreateOrRenameDialogProps> = ({
 }) => {
     const [newName, setNewName] = useState(oldName || "");
     const [message, setMessage] = useState("");
-    const [fileType, setFileType] = useState('docx');
+    const [fileType, setFileType] = useState<"docx" | "xlsx">("docx");
 
-  // Handler function to update the state when a radio button is selected
-    const handleRadioChange = (event) => {
-        setFileType(event);
-    };
     useEffect(() => {
         if (!open) {
             setNewName(oldName || "");
@@ -331,10 +327,9 @@ export const CreateOrRenameDialog: React.FC<CreateOrRenameDialogProps> = ({
         } else {
             setMessage("");
             setOpen(false);
-            if(mode === "create") {
-                console.log(fileType,'create new report');
+            if (mode === "create") {
                 await onSubmit(newName, fileType);
-            }else{
+            } else {
                 await onSubmit(newName);
             }
         }
@@ -362,23 +357,29 @@ export const CreateOrRenameDialog: React.FC<CreateOrRenameDialogProps> = ({
                             onChange={(e) => setNewName(e.target.value)}
                         />
                     </div>
-                    
-                    {mode === "create" && 
-                    <div className="flex flex-row items-center gap-4">
-                     <Label htmlFor="name" className="text-right">
-                            Type: 
-                    </Label>   
-                    <RadioGroup defaultValue={fileType} onValueChange={(e)=>handleRadioChange(e)} orientation="horizontal" className="flex flex-row gap-x-2">
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="docx" id="r1" />
-                            <Label htmlFor="r1">docx</Label>
+
+                    {mode === "create" && (
+                        <div className="flex flex-row items-center gap-4">
+                            <Label htmlFor="name" className="text-right">
+                                Type:
+                            </Label>
+                            <RadioGroup
+                                defaultValue={fileType}
+                                onValueChange={(value: string) => setFileType(value as "docx" | "xlsx")}
+                                orientation="horizontal"
+                                className="flex flex-row gap-4"
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <RadioGroupItem value="docx" id="r1" />
+                                    <Label htmlFor="r1">Word</Label>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                    <RadioGroupItem value="xlsx" id="r2" />
+                                    <Label htmlFor="r2">Spreadsheet</Label>
+                                </div>
+                            </RadioGroup>
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="xlsx" id="r2" />
-                            <Label htmlFor="r2">xlsx</Label>
-                        </div>
-                 </RadioGroup></div>}
-                 
+                    )}
                 </div>
                 <DialogFooter className="flex items-center gap-2">
                     {message.length > 0 && <p className="text-red-500 text-xs leading-none">{message}</p>}
