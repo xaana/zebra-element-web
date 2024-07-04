@@ -26,7 +26,7 @@ export const Home = (): JSX.Element => {
         documentName?: string,
         initialContent?: string,
         aiContent?: AiGenerationContent,
-        fileType?: string
+        fileType?: string,
     ): Promise<void> => {
         try {
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/create_document`, {
@@ -34,7 +34,11 @@ export const Home = (): JSX.Element => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ user_id: client.getSafeUserId(), document_name: documentName ?? "Untitled",file_type: fileType ?? "docx" }),
+                body: JSON.stringify({
+                    user_id: client.getSafeUserId(),
+                    document_name: documentName ?? "Untitled",
+                    file_type: fileType ?? "docx",
+                }),
             });
             const data = await response.json();
 
@@ -103,7 +107,7 @@ export const Home = (): JSX.Element => {
                                 owner: owner,
                                 permission_type: accessType,
                                 status: status,
-                                file_type: fileType
+                                file_type: fileType,
                             }: {
                                 id: number;
                                 document_name: string;
@@ -112,7 +116,7 @@ export const Home = (): JSX.Element => {
                                 permission_type: string;
                                 status: string;
                                 updated_at: Date;
-                                file_type: string
+                                file_type: string;
                             }) => ({
                                 id: id.toString(),
                                 name,
@@ -121,7 +125,7 @@ export const Home = (): JSX.Element => {
                                 status,
                                 accessType,
                                 timestamp: updatedAt,
-                                fileType: fileType
+                                fileType: fileType,
                             }),
                         ),
                     );
@@ -164,7 +168,7 @@ export const Home = (): JSX.Element => {
                     owner: client.getSafeUserId(),
                     accessType: "admin",
                     timestamp: new Date().toISOString(),
-                    fileType:"docx"
+                    fileType: "docx",
                 };
 
                 setReports((prev) => [...prev, newReport]);
@@ -201,7 +205,7 @@ export const Home = (): JSX.Element => {
                     ...(aiContent && {
                         aiContent,
                     }),
-                    fileType:data.file_type
+                    fileType: data.file_type,
                 };
 
                 setReports((prev) => [...prev, newReport]);
@@ -355,7 +359,9 @@ export const Home = (): JSX.Element => {
                 mode="create"
                 open={nameDialogOpen}
                 setOpen={setNameDialogOpen}
-                onSubmit={(newName: string,fileType?: string) => createNewReport(newName,undefined,undefined, fileType)}
+                onSubmit={(newName: string, fileType?: string) =>
+                    createNewReport(newName, undefined, undefined, fileType)
+                }
             />
         </div>
     );

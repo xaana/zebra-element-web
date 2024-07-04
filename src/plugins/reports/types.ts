@@ -25,13 +25,13 @@ export type Report = {
     name: string;
     timestamp: string;
     owner: string;
+    fileType: string;
     type?: string;
     description?: string;
     accessType?: string;
     content?: string;
     status?: string;
     aiContent?: AiGenerationContent;
-    fileType: string;
 };
 
 export type Message = {

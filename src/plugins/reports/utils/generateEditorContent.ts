@@ -63,7 +63,7 @@ export const streamContent = async (
     });
 };
 
-export const generateContent = async (
+export const generateContentFromOutlines = async (
     documentPrompt: string,
     currentTitle: string,
     allTitles: string[],

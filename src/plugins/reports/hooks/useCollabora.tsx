@@ -3,7 +3,8 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import { generateContentFromOutlines } from "@/plugins/reports/utils/generateEditorContent";
+import { mediaIdsFromFiles } from "@/plugins/files/utils";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -83,7 +84,6 @@ export function useCollabora({
             const accessToken = {
                 origin: window.location.origin,
                 userId: currentUser,
-                fileType: selectedReport.fileType,
             };
             const accessTokenJsonString = JSON.stringify(accessToken);
             const wopiSrc = `${SettingsStore.getValue("wopiSrc")}/wopi/files/${selectedReport.id}`;
@@ -147,7 +147,14 @@ export function useCollabora({
                         setDocumentLoaded(true);
                         defaultUiUpdates();
                         if (selectedReport.aiContent) {
-                            await aiGenerateContent();
+                            if (
+                                selectedReport.aiContent.requirementDocuments &&
+                                selectedReport.aiContent.requirementDocuments.length > 0
+                            ) {
+                                await aiGenerateContentFromRequirements();
+                            } else {
+                                await aiGenerateContentFromOutlines();
+                            }
                         }
                     }
                 }
@@ -365,7 +372,11 @@ export function useCollabora({
         });
     };
 
-    const aiGenerateContent = async (): Promise<void> => {
+    const aiGenerateContentFromRequirements = async (): Promise<void> => {
+        console.log(`Generating`);
+    };
+
+    const aiGenerateContentFromOutlines = async (): Promise<void> => {
         if (!selectedReport.aiContent) return;
         let interval: ReturnType<typeof setInterval>;
 
@@ -401,14 +412,16 @@ export function useCollabora({
             setIsAiLoading(true);
             selectedReport.aiContent.allTitles.forEach((title, index) => {
                 selectedReport.aiContent &&
-                    generateContent(
+                    generateContentFromOutlines(
                         selectedReport.aiContent.documentPrompt,
                         title,
                         selectedReport.aiContent.allTitles,
                         selectedReport.aiContent.contentSize,
                         selectedReport.aiContent.targetAudience,
                         selectedReport.aiContent.tone,
-                        selectedReport.aiContent.contentMediaIds ?? undefined,
+                        selectedReport.aiContent.supportingDocuments
+                            ? mediaIdsFromFiles(selectedReport.aiContent.supportingDocuments)
+                            : undefined,
                     )
                         .then(async (data) => {
                             if (!data) {
