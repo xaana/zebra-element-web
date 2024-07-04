@@ -213,7 +213,13 @@ export const Home = (): JSX.Element => {
         if (aiContent.templateId !== undefined) {
             await handleDuplicate(aiContent.templateId, aiContent);
         } else {
-            await createNewReport(aiContent.allTitles[0].substring(0, 30), undefined, aiContent);
+            const reportTitle =
+                aiContent.requirementDocuments && aiContent.requirementDocuments.length > 0
+                    ? `Report for ${aiContent.requirementDocuments[0].name}`
+                    : aiContent.allTitles.length > 0
+                      ? aiContent.allTitles[0].substring(0, 30)
+                      : "New Report";
+            await createNewReport(reportTitle, undefined, aiContent);
         }
     };
 

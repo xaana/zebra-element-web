@@ -1,3 +1,5 @@
+import { MatrixFile } from "../files/types";
+
 export type StepItem = {
     id: number;
     text: string;
@@ -13,7 +15,8 @@ export type AiGenerationContent = {
     contentSize: string;
     tone: string;
     targetAudience: string;
-    contentMediaIds?: string[];
+    requirementDocuments?: MatrixFile[];
+    supportingDocuments?: MatrixFile[];
     templateId?: string;
 };
 
