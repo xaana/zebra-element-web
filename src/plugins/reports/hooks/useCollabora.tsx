@@ -35,6 +35,8 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
+    fetchSelectedCells: () => Promise<Object | undefined>;
+    insertCells: () => void;
     insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
@@ -152,7 +154,9 @@ export function useCollabora({
                     if (msg.Values.Status && msg.Values.Status == "Document_Loaded") {
                         sendMessage({ MessageId: "Host_PostmessageReady" });
                         setDocumentLoaded(true);
-                        defaultUiUpdates();
+                        if (selectedReport.fileType === "docx") {
+                            defaultUiUpdates();
+                        }
                         if (selectedReport.aiContent) {
                             if (
                                 selectedReport.aiContent.requirementDocuments &&
@@ -333,6 +337,36 @@ export function useCollabora({
         }
     };
 
+    const fetchSelectedCells = async (): Promise<Object | undefined> => {
+        const response = await sendMessage(
+            {
+                MessageId: "CallPythonScript",
+                ScriptFile: "GetSelectedCellsContent.py", // Ensure this Python script is deployed on the server
+                Function: "GetSelectedCellsContent",
+            },
+            true,
+        );
+        if (!response.success) {
+            throw new Error("Failed to fetch selected text");
+        }
+        if (response.result.value.length === 0) {
+            return undefined;
+        } else {
+            return response.result.value;
+        }
+    };
+
+    const insertCells = (): void => {
+        sendMessage(
+            {
+                MessageId: "CallPythonScript",
+                ScriptFile: "InsertCell.py", // Ensure this Python script is deployed on the server
+                Function: "insertContentIntoCells",
+            },
+            false,
+        );
+    };
+
     const insertText = (text: string, selectInsertedText: boolean = false): void => {
         sendMessage({
             MessageId: "CallPythonScript",
@@ -498,6 +532,8 @@ export function useCollabora({
         sendMessage,
         startLoading,
         fetchSelectedText,
+        fetchSelectedCells,
+        insertCells,
         insertText,
         insertCustomHtml,
         undo,
