@@ -178,6 +178,7 @@ export interface IBaseSetting<T extends SettingValueType = SettingValueType> {
 
     botApiUrl?: string | null;
     reportsApiUrl?: string | null;
+    cockpitApiUrl?: string | null;
     collaboraServerUrl?: string | null;
     wopiSrc?: string | null;
     workflowUrl?: string | null;
@@ -1176,6 +1177,10 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         default: null,
     },
     "reportsApiUrl": {
+        supportedLevels: [SettingLevel.DEVICE],
+        default: null,
+    },
+    "cockpitApiUrl": {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },
