@@ -1,9 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkHtml from "remark-html";
+import { toast } from "sonner";
 
 import { Report } from "@/plugins/reports/types";
 import { Chat } from "@/plugins/reports/hooks/use-chat";
-import { generateContent } from "@/plugins/reports/utils/generateEditorContent";
+import {
+    generateContentFromOutlines,
+    generateContentFromRequirements,
+} from "@/plugins/reports/utils/generateEditorContent";
+import { mediaIdsFromFiles } from "@/plugins/files/utils";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -27,6 +35,8 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
+    fetchSelectedCells: () => Promise<Object | undefined>;
+    insertCells: () => void;
     insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
@@ -144,9 +154,20 @@ export function useCollabora({
                     if (msg.Values.Status && msg.Values.Status == "Document_Loaded") {
                         sendMessage({ MessageId: "Host_PostmessageReady" });
                         setDocumentLoaded(true);
-                        defaultUiUpdates();
+                        if (selectedReport.fileType === "docx" || selectedReport.fileType === "doc") {
+                            documentDefaultUiUpdates();
+                        } else if (selectedReport.fileType === "xlsx" || selectedReport.fileType === "xls") {
+                            spreadsheetDefaultUiUpdates();
+                        }
                         if (selectedReport.aiContent) {
-                            await aiGenerateContent();
+                            if (
+                                selectedReport.aiContent.requirementDocuments &&
+                                selectedReport.aiContent.requirementDocuments.length > 0
+                            ) {
+                                await aiGenerateContentFromRequirements();
+                            } else {
+                                await aiGenerateContentFromOutlines();
+                            }
                         }
                     }
                 }
@@ -240,7 +261,7 @@ export function useCollabora({
         return undefined;
     };
 
-    const defaultUiUpdates = (): void => {
+    const documentDefaultUiUpdates = (): void => {
         // Change UI mode to compact/classic
         // sendMessage({
         //     MessageId: "Action_ChangeUIMode",
@@ -299,6 +320,21 @@ export function useCollabora({
         });
     };
 
+    const spreadsheetDefaultUiUpdates = (): void => {
+        sendMessage({
+            MessageId: "Insert_Button",
+            Values: {
+                id: "custom_exit_editor",
+                imgurl: `${window.location.origin}/img/close-editor.svg`,
+                hint: "Close Document",
+                mobile: true,
+                tablet: true,
+                label: "Close Document",
+                insertBefore: "sidebar",
+            },
+        });
+    };
+
     const fetchSelectedText = async (): Promise<string | undefined> => {
         const response = await sendMessage(
             {
@@ -316,6 +352,36 @@ export function useCollabora({
         } else {
             return response.result.value;
         }
+    };
+
+    const fetchSelectedCells = async (): Promise<Object | undefined> => {
+        const response = await sendMessage(
+            {
+                MessageId: "CallPythonScript",
+                ScriptFile: "GetSelectedCellsContent.py", // Ensure this Python script is deployed on the server
+                Function: "GetSelectedCellsContent",
+            },
+            true,
+        );
+        if (!response.success) {
+            throw new Error("Failed to fetch selected text");
+        }
+        if (response.result.value.length === 0) {
+            return undefined;
+        } else {
+            return response.result.value;
+        }
+    };
+
+    const insertCells = (): void => {
+        sendMessage(
+            {
+                MessageId: "CallPythonScript",
+                ScriptFile: "InsertCell.py", // Ensure this Python script is deployed on the server
+                Function: "insertContentIntoCells",
+            },
+            false,
+        );
     };
 
     const insertText = (text: string, selectInsertedText: boolean = false): void => {
@@ -364,7 +430,40 @@ export function useCollabora({
         });
     };
 
-    const aiGenerateContent = async (): Promise<void> => {
+    const aiGenerateContentFromRequirements = async (): Promise<void> => {
+        if (!selectedReport.aiContent || !selectedReport.aiContent.requirementDocuments) return;
+        setIsAiLoading(true);
+        const requirementMediaIds = mediaIdsFromFiles(selectedReport.aiContent.requirementDocuments);
+        let supportingMediaIds;
+        if (selectedReport.aiContent.supportingDocuments) {
+            supportingMediaIds = mediaIdsFromFiles(selectedReport.aiContent.supportingDocuments);
+        }
+        const generatedMarkdownContent = await generateContentFromRequirements(
+            requirementMediaIds.join(","),
+            supportingMediaIds ? supportingMediaIds.join(",") : "",
+            currentUser,
+        );
+        setIsAiLoading(false);
+        if (generatedMarkdownContent) {
+            goToDocumentEnd();
+            // Insert html formatted content
+            unified()
+                .use(remarkParse)
+                .use(remarkHtml)
+                .process(generatedMarkdownContent)
+                .then((file) => {
+                    insertCustomHtml(String(file));
+                })
+                .catch((error) => {
+                    console.error(error);
+                    toast.error("Report generation failed. Please try again later.");
+                });
+        } else {
+            toast.error("Report generation failed. Please try again later.");
+        }
+    };
+
+    const aiGenerateContentFromOutlines = async (): Promise<void> => {
         if (!selectedReport.aiContent) return;
         let interval: ReturnType<typeof setInterval>;
 
@@ -400,14 +499,16 @@ export function useCollabora({
             setIsAiLoading(true);
             selectedReport.aiContent.allTitles.forEach((title, index) => {
                 selectedReport.aiContent &&
-                    generateContent(
+                    generateContentFromOutlines(
                         selectedReport.aiContent.documentPrompt,
                         title,
                         selectedReport.aiContent.allTitles,
                         selectedReport.aiContent.contentSize,
                         selectedReport.aiContent.targetAudience,
                         selectedReport.aiContent.tone,
-                        selectedReport.aiContent.contentMediaIds ?? undefined,
+                        selectedReport.aiContent.supportingDocuments
+                            ? mediaIdsFromFiles(selectedReport.aiContent.supportingDocuments)
+                            : undefined,
                     )
                         .then(async (data) => {
                             if (!data) {
@@ -448,6 +549,8 @@ export function useCollabora({
         sendMessage,
         startLoading,
         fetchSelectedText,
+        fetchSelectedCells,
+        insertCells,
         insertText,
         insertCustomHtml,
         undo,

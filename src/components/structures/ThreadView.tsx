@@ -74,6 +74,7 @@ interface IState {
     showStop: boolean;
     botStreamId?: string;
     canSend: boolean;
+    knowledge:boolean;
 }
 
 export default class ThreadView extends React.Component<IProps, IState> {
@@ -107,6 +108,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
             showStop: false,
             botStreamId: "",
             canSend: true,
+            knowledge: false,
         };
         this.updateCanSend = this.updateCanSend.bind(this);
 
@@ -120,7 +122,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
             this.postThreadUpdate(this.state.thread);
             for (let i = this.state.thread.timeline.length - 1; i >= 0; i--) {
                 if (this.state.thread.timeline[i]?.getContent().database) {
-                    this.setState({ database: this.state.thread.timeline[i].getContent().database, files: [] });
+                    this.setState({ database: this.state.thread.timeline[i].getContent().database, files: [],knowledge: false });
                     break;
                 } else if (this.state.thread.timeline[i]?.getContent().fileSelected) {
                     const fileList = this.state.thread.timeline[i].getContent().fileSelected.map((file: DocFile) => {
@@ -135,11 +137,13 @@ export default class ThreadView extends React.Component<IProps, IState> {
                         }
                     });
                     const filteredList = fileList.filter((item) => item !== undefined);
-                    this.setState({ files: filteredList, database: "" });
+                    this.setState({ files: filteredList, database: "",knowledge: false });
                     break;
                 } else if (this.state.thread.timeline[i]?.getContent().web) {
-                    this.setState({ database: "", files: [] });
+                    this.setState({ database: "", files: [],knowledge: false });
                     break;
+                }else if(this.state.thread.timeline[i]?.getContent().knowledge){
+                    this.setState({database: "", files: [],knowledge: true});
                 }
             }
             this.updateCanSend();
@@ -281,6 +285,16 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     this.setState({
                         database: payload.database,
                         files: [],
+                        knowledge: false,
+                    });
+                }
+                break;
+            case "select_knowledge":
+                if (payload.context === TimelineRenderingType.Thread) {
+                    this.setState({
+                        database: "",
+                        files: [],
+                        knowledge: payload.knowledge,
                     });
                 }
                 break;
@@ -325,11 +339,13 @@ export default class ThreadView extends React.Component<IProps, IState> {
                             this.setState({
                                 database: "",
                                 files: filteredFiles,
+                                knowledge:false,
                             });
                         } else if (payload.files.length > 0 && mergedFiles.length === this.state.files.length) {
                             this.setState({
                                 database: "",
                                 files: payload.files,
+                                knowledge:false,
                             });
                         } else {
                             this.setState({
@@ -434,7 +450,10 @@ export default class ThreadView extends React.Component<IProps, IState> {
             for (let i = thread.timeline.length - 1; i >= 0; i--) {
                 if (thread.timeline[i]?.getContent().database) {
                     this.setState({ database: thread.timeline[i].getContent().database, files: [] });
-                    break;
+                    break;}
+                else if(thread.timeline[i]?.getContent().knowledge){
+                    this.setState({ knowledge: true, database: '', files: [] });
+                    break;   
                 } else if (thread.timeline[i]?.getContent().fileSelected) {
                     const fileList = thread.timeline[i].getContent().fileSelected.map((file: DocFile) => {
                         if (
@@ -448,10 +467,10 @@ export default class ThreadView extends React.Component<IProps, IState> {
                         }
                     });
                     const filteredList = fileList.filter((item) => item !== undefined);
-                    this.setState({ files: filteredList, database: "" });
+                    this.setState({ files: filteredList, database: "" ,knowledge: false});
                     break;
                 } else if (thread.timeline[i]?.getContent().web) {
-                    this.setState({ database: "", files: [] });
+                    this.setState({ database: "", files: [] ,knowledge: false});
                     break;
                 }
             }
@@ -676,6 +695,7 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 showStop={this.state.showStop}
                                 stopBotStream={this.stopBotStream}
                                 canSend={this.state.canSend}
+                                knowledge={this.state.knowledge}
                             />
                             <ZebraAlert />
                         </>

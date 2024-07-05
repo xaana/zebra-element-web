@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { IconStarFilled } from "@/components/ui/icons";
 
 export type SavedPrompt = { id: number; text: string; outlineItems: string[] };
 
@@ -62,7 +63,10 @@ export const SavedPromptsList = ({
 
     return (
         <div>
-            <div className="text-lg font-semibold text-center white">Saved Prompts</div>
+            <div className="w-full flex items-center justify-center gap-1">
+                <IconStarFilled className="h-5 w-5 text-primary-900" />
+                <div className="text-lg font-semibold text-center">Saved Prompts</div>
+            </div>
             <div className="grid grid-cols-3 gap-3 mt-2">
                 {currentPrompts.map((prompt, index) => (
                     <div

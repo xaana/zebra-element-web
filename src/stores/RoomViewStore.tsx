@@ -129,6 +129,7 @@ interface State {
     database: string;
     files: DocFile[];
     uploading: boolean;
+    knowledge: boolean;
 }
 
 const INITIAL_STATE: State = {
@@ -154,6 +155,7 @@ const INITIAL_STATE: State = {
     database: "",
     files: [],
     uploading: false,
+    knowledge: false,
 };
 
 type Listener = (isActive: boolean) => void;
@@ -484,6 +486,28 @@ export class RoomViewStore extends EventEmitter {
                     }
                 }
                 break;
+                case "select_knowledge":
+                    console.log(payload)
+                    // Thread timeline view handles its own reply-to-state
+                    if (TimelineRenderingType.Thread !== payload.context) {
+                        // If currently viewed room does not match the room in which we wish to reply then change rooms this
+                        // can happen when performing a search across all rooms. Persist the data from this event for both
+                        // room and search timeline rendering types, search will get auto-closed by RoomView at this time.
+                        if (payload.event && payload.event.getRoomId() !== this.state.roomId) {
+                            this.dis?.dispatch<ViewRoomPayload>({
+                                action: Action.ViewRoom,
+                                room_id: payload.event.getRoomId(),
+                                metricsTrigger: undefined, // room doesn't change
+                            });
+                        } else {
+                            if (payload.roomId === this.state.roomId) {
+                                this.setState({
+                                    knowledge: payload.knowledge,
+                                });
+                            }
+                        }
+                    }
+                    break;
             case "uploading_files":
                 // Thread timeline view handles its own reply-to-state
                 if (TimelineRenderingType.Thread !== payload.context) {
@@ -600,6 +624,7 @@ export class RoomViewStore extends EventEmitter {
                 database: "",
                 files: [],
                 uploading: false,
+                knowledge: false,
             };
 
             // Allow being given an event to be replied to when switching rooms but sanity check its for this room
@@ -897,6 +922,10 @@ export class RoomViewStore extends EventEmitter {
 
     public getDatabase(): string | null {
         return this.state.database;
+    }
+
+    public getKnowledge(): boolean {
+        return this.state.knowledge;
     }
 
     public getUploading(): boolean {

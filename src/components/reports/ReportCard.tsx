@@ -33,7 +33,7 @@ export const ReportCard = ({
                 <ReportThumbnail />
             </div>
             <div className="p-3 flex-1 flex w-full flex-col justify-between gap-2 relative">
-                <div className="font-semibold">{report.name}</div>
+                <div className="font-semibold">{`${report.name}.${report.fileType}`}</div>
                 {/* <div>
                     <Badge
                         className="uppercase tracking-wide text-[10px] leading-none p-1 text-muted-foreground"
