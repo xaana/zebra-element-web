@@ -257,13 +257,6 @@ export function useCollabora({
     };
 
     const documentDefaultUiUpdates = (): void => {
-        // Change UI mode to compact/classic
-        // sendMessage({
-        //     MessageId: "Action_ChangeUIMode",
-        //     Values: {
-        //         Mode: "classic",
-        //     },
-        // });
         sendMessage({
             MessageId: "Insert_Button",
             Values: {
