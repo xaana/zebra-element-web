@@ -140,7 +140,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             uploadButton(),
             databaseSelector(),
             filesSelector(room.roomId),
-            knowledgeBaseButton(room.roomId),
+            knowledgeBaseButton(room.roomId,props.toggleButtonMenu),
             voiceRecordingButton(props, narrow),
             audioCaptureButton(),
             // voiceBotButton(matrixClient, room),
@@ -225,8 +225,8 @@ function filesSelector(roomId: string): ReactElement {
     return <FileSelector key="controls_filesSelector" roomId={roomId} />;
 }
 
-function knowledgeBaseButton(roomId: string): ReactElement {
-    return <KnowledgeBaseButton key="KnowledgeBaseButton" />;
+function knowledgeBaseButton(roomId: string, toggleButtonMenu: () => void): ReactElement {
+    return <KnowledgeBaseButton key="KnowledgeBaseButton" toggleButtonMenu={toggleButtonMenu} />;
 }
 
 function voiceBotButton(matrixClient: MatrixClient, room: Room): ReactElement {
