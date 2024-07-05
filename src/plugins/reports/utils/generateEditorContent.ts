@@ -109,20 +109,18 @@ export const generateContentFromRequirements = async (
     userId: string,
 ): Promise<string | undefined> => {
     try {
-        const res = await fetch(`${SettingsStore.getValue("cockpitApiUrl")}/v1/chat-messages`, {
+        const res = await fetch(`${SettingsStore.getValue("cockpitApiUrl")}/v1/workflows/run`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer app-MoJ20aVKHRMgKL1uyers4Lis",
+                "Authorization": "Bearer app-tMA3njgTh2mXNV4kxFrYHJQu",
             },
             body: JSON.stringify({
                 inputs: {
                     requirement_csv: requirementDocumentIds,
                     supporting_csv: supportingDocumentIds,
                 },
-                query: `Requirement Media IDs: ${requirementDocumentIds}\n Supporting Media IDs: ${supportingDocumentIds}`,
                 response_mode: "blocking",
-                conversation_id: "",
                 user: userId,
             }),
         });
