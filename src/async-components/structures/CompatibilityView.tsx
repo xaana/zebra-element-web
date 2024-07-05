@@ -119,12 +119,12 @@ const CompatibilityView: React.FC<IProps> = ({ onAccept }) => {
                                 )}
                             </p>
                             <p>{_t("incompatible_browser|feature_warning")}</p>
-                            <button onClick={onAccept}>{_t("incompatible_browser|continue_warning")}</button>
+                            <button className="mx_Continue_Button" onClick={onAccept}>{_t("incompatible_browser|continue_warning")}</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="mx_HomePage_col">
+                {/* <div className="mx_HomePage_col">
                     <div className="mx_HomePage_row">
                         <div>
                             {mobileHeader}
@@ -132,15 +132,15 @@ const CompatibilityView: React.FC<IProps> = ({ onAccept }) => {
                             {android}
                         </div>
                     </div>
-                </div>
+                </div> */}
 
-                <div className="mx_HomePage_row mx_Center mx_Spacer">
+                {/* <div className="mx_HomePage_row mx_Center mx_Spacer">
                     <p className="mx_Spacer">
                         <a href="https://element.io" target="_blank" className="mx_FooterLink">
                             {_t("go_to_element_io")}
                         </a>
                     </p>
-                </div>
+                </div> */}
             </div>
         </div>
     );

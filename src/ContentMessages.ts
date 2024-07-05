@@ -686,7 +686,7 @@ export default class ContentMessages {
                     };
                     websocket.onmessage = (event) => {
                         if(event.data.startsWith("success")){
-                            count+=1/4
+                            count+=1/3
                             progress = {
                                 loaded: count*file.size,
                                 total: file.size

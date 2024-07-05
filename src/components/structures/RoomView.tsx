@@ -259,6 +259,7 @@ export interface IRoomState {
     viewRoomOpts: ViewRoomOpts;
     database?: string;
     files?: DocFile[];
+    knowledge?: boolean;
 }
 
 interface LocalRoomViewProps {
@@ -681,8 +682,8 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
             viewRoomOpts: this.context.roomViewStore.getViewRoomOpts(),
             database: this.context.roomViewStore.getDatabase() ?? undefined,
             files: this.context.roomViewStore.getFiles() ?? undefined,
+            knowledge: this.context.roomViewStore.getKnowledge() ?? undefined,
         };
-
         if (
             this.state.mainSplitContentType !== MainSplitContentType.Timeline &&
             newState.mainSplitContentType === MainSplitContentType.Timeline &&
@@ -2465,6 +2466,7 @@ export class RoomView extends React.Component<IRoomProps, IRoomState> {
                     permalinkCreator={this.permalinkCreator}
                     database={this.state.database}
                     files={this.state.files}
+                    knowledge={this.state.knowledge}
                 />
             );
         }

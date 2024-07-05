@@ -128,12 +128,19 @@ const downloadFile = async (e: React.SyntheticEvent, file: MatrixFile, currentUs
     } else {
         try {
             const decryptedBlob = await getFile(file.mediaId, currentUserId);
-            const fileDownloader = new FileDownloader();
-            fileDownloader.download({
-                blob: decryptedBlob,
-                name: file.name,
-                autoDownload: true,
-            });
+            const newBlob = new Blob([decryptedBlob], { type: file.mimetype });
+            const blobUrl = URL.createObjectURL(newBlob);
+            const anchor = document.createElement("a");
+            anchor.href = blobUrl;
+            anchor.download = file.name; // Set the default filename for the download
+
+            // Append the anchor to the body, click it, and then remove it
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+
+            // Clean up the blob URL
+            URL.revokeObjectURL(blobUrl);
         } catch (err) {
             console.error("Unable to download file: ", err);
         }
