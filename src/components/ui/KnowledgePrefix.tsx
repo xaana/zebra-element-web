@@ -12,7 +12,7 @@ const KnowledgePrefix = () : React.JSX.Element =>  {
     <div className="px-2 bg-muted rounded-full gap-2 w-fit">
         <div className='flex flex-row text-xs'>
         <IconKnowledge />
-        <span>Knowledge Base</span>
+        <span>Ziggy</span>
       </div>
     </div>
   );
