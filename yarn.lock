@@ -2240,23 +2240,6 @@
   dependencies:
     "@fullcalendar/daygrid" "~6.1.14"
 
-"@hocuspocus/common@^2.12.2":
-  version "2.12.2"
-  resolved "https://registry.yarnpkg.com/@hocuspocus/common/-/common-2.12.2.tgz#bf6ea465a4de4e7d72abc23a543768aecf13ce65"
-  integrity sha512-7Qqja1ER6CnAlThSkmO0srCoj8/OjvHS1DWRq44B3zfqVz5HbDKPKS/ON3+R+956SVAw8Mh0cPdApPEQWeNGHg==
-  dependencies:
-    lib0 "^0.2.87"
-
-"@hocuspocus/provider@^2.12.2":
-  version "2.12.2"
-  resolved "https://registry.yarnpkg.com/@hocuspocus/provider/-/provider-2.12.2.tgz#4436ca49ba39d04a0bb958299c1ba9905781a0f8"
-  integrity sha512-REltj4lbf+Nq30G7b1lFS9gfIv5RdbFZqd6VZ5kXAvDQNGzyiaEh8bbdn6q0O7tMyU+hoR6Y2UKBd9alXb4/gQ==
-  dependencies:
-    "@hocuspocus/common" "^2.12.2"
-    "@lifeomic/attempt" "^3.0.2"
-    lib0 "^0.2.87"
-    ws "^8.14.2"
-
 "@huggingface/jinja@^0.2.1":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.2.2.tgz#faeb205a9d6995089bef52655ddd8245d3190627"
@@ -2770,11 +2753,6 @@
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
-
-"@lifeomic/attempt@^3.0.2":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@lifeomic/attempt/-/attempt-3.1.0.tgz#7fc703559177b81a008b9d263e3d9a001d11d08a"
-  integrity sha512-QZqem4QuAnAyzfz+Gj5/+SLxqwCAw2qmt7732ZXodr6VDWGeYLG6w1i/vYLa55JQM9wRuBKLmXmiZ2P0LtE5rw==
 
 "@mapbox/geojson-rewind@^0.5.2":
   version "0.5.2"
@@ -12438,7 +12416,7 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lib0@^0.2.42, lib0@^0.2.85, lib0@^0.2.86, lib0@^0.2.87:
+lib0@^0.2.42, lib0@^0.2.85, lib0@^0.2.86:
   version "0.2.93"
   resolved "https://registry.yarnpkg.com/lib0/-/lib0-0.2.93.tgz#95487c2a97657313cb1d91fbcf9f6d64b7fcd062"
   integrity sha512-M5IKsiFJYulS+8Eal8f+zAqf5ckm1vffW0fFDxfgxJ+uiVopvDdd3PxJmz0GsVi3YNO7QCFSq0nAsiDmNhLj9Q==
@@ -19681,11 +19659,6 @@ ws@^8.11.0, ws@^8.13.0:
   version "8.16.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.16.0.tgz#d1cd774f36fbc07165066a60e40323eab6446fd4"
   integrity sha512-HS0c//TP7Ina87TfiPUz1rQzMhHrl/SG2guqRcTOIUYD2q8uhUdNHZYJUaQ8aTGPzCh+c6oawMKW35nFl1dxyQ==
-
-ws@^8.14.2:
-  version "8.17.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.0.tgz#d145d18eca2ed25aaf791a183903f7be5e295fea"
-  integrity sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==
 
 xml-name-validator@^3.0.0:
   version "3.0.0"

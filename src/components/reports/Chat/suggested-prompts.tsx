@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
 import { Button } from "@/components/ui/button";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
 import { generateText } from "@/plugins/reports/utils/generateText";
 const prompts = [
     `Rewrite in a professional tone`,

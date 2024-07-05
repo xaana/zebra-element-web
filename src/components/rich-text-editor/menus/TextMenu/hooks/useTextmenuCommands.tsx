@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/react";
 import { useCallback, useContext } from "react";
 
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
 import { generateText } from "@/plugins/reports/utils/generateText";
 
 export const TextModifications = {

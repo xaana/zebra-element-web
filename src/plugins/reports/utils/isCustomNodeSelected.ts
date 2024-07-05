@@ -8,8 +8,8 @@ import {
     ImageUpload,
     Link,
     CodeBlock,
-} from "@/plugins/reports/extensions";
-import { TableOfContentsNode } from "@/plugins/reports/extensions/TableOfContentsNode";
+} from "@/components/rich-text-editor/extensions";
+import { TableOfContentsNode } from "@/components/rich-text-editor/extensions/TableOfContentsNode";
 
 export const isTableGripSelected = (node: HTMLElement): boolean => {
     let container = node;

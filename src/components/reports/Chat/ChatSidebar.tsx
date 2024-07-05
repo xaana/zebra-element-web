@@ -5,7 +5,7 @@ import { ChatContent } from "@/components/reports/Chat/chat-content";
 import { Button } from "@/components/ui/button";
 import { ChatQueryForm } from "@/components/reports/Chat/chat-query-form";
 import { Sidebar } from "@/components/reports/Sidebar";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
 import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
 import { generateText } from "@/plugins/reports/utils/generateText";
 import { Chat } from "@/plugins/reports/hooks/use-chat";

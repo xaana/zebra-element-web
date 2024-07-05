@@ -3,7 +3,7 @@ import { Editor } from "@tiptap/react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Icon } from "@/components/ui/Icon";
-import { useTextmenuCommands } from "../menus/TextMenu/hooks/useTextmenuCommands";
+import { useTextmenuCommands } from "@/components/rich-text-editor/menus/TextMenu/hooks/useTextmenuCommands";
 export const ResponseAction = ({ editor }: { editor: Editor }): JSX.Element => {
     const [actionValue, setActionValue] = useState("suggested");
     const commands = useTextmenuCommands(editor);
