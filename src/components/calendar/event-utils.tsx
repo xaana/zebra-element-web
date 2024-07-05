@@ -101,6 +101,7 @@ export const getEvent = (currentUserId: string): Promise<CalendarEventType[]> =>
         },
         body: JSON.stringify({
             user_id: currentUserId,
+            id: null,
         }),
     })
         .then((response) => response.json())
