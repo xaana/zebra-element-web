@@ -204,18 +204,21 @@ export const ReportGenerator = ({
                 </Button>
             </DialogTrigger>
             <DialogContent
-                className="element h-[90vh] w-[800px] max-w-[800px] overflow-hidden"
+                className="h-[90vh] w-[800px] max-w-[800px]"
                 style={{
-                    padding: "1.5px",
+                    padding: "2px",
                     borderStyle: "none",
                     background:
                         "linear-gradient(90deg, var(--cpd-color-zebra-800) 0%, #d58fed 50%, var(--cpd-color-zebra-800) 100%)",
-                    overflow: "visible",
+                    // overflow: "hidden",
                 }}
             >
                 <div
-                    className="w-full h-full bg-card relative overflow-auto scrollbar--custom flex flex-col"
-                    style={{ borderRadius: "6px" }}
+                    className="w-full h-full relative bg-card overflow-auto scrollbar--custom flex flex-col"
+                    style={{
+                        borderRadius: "6px",
+                        // background: "linear-gradient(transparent -50%, white 20%, white 80%, transparent 150%)",
+                    }}
                 >
                     <Toaster />
                     {showOutline && (
@@ -247,6 +250,9 @@ export const ReportGenerator = ({
                                 promptSaveStatus={promptSaveStatus}
                                 onSavePrompt={handleSavePrompt}
                                 onGenerateOutline={handleGenerateOutline}
+                                onAddDocument={() => {
+                                    setUseAdvancedOptions(true);
+                                }}
                             />
                         )}
 

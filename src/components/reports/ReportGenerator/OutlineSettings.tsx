@@ -32,7 +32,7 @@ const OutlineSettings = ({
             <div className="text-base text-muted-foreground font-semibold">Settings</div>
             <div className="bg-popover p-3 rounded-md mt-1 flex flex-col gap-5">
                 <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Amount of text per page</div>
+                    <div className="text-sm font-medium text-muted-foreground mb-1">Amount of text per section</div>
                     <ToggleGroup
                         size="sm"
                         type="single"
