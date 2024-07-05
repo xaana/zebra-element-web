@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Editor } from "@tiptap/react";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
