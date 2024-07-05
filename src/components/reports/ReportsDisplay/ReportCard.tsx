@@ -5,7 +5,7 @@ import { DocumentThumbnail } from "./DocumentThumbnail";
 import type { Report } from "@/plugins/reports/types";
 import { ReportActions } from "./ReportActions";
 import { SpreadsheetThumbnail } from "./SpreadsheetThumbnail";
-import { IconDocumentExcel, IconDocumentWord } from "../ui/icons";
+import { IconDocumentExcel, IconDocumentWord } from "../../ui/icons";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";

@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 
 import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
+import { ReportsGrid } from "@/components/reports/ReportsDisplay/ReportsGrid";
 import { ReportFileImport } from "@/components/reports/ReportFileImport";
 import { ReportGenerator } from "@/components/reports/ReportGenerator";
-import { ReportsList } from "@/components/reports/ReportsList";
-import { ReportCard } from "@/components/reports/ReportCard";
+import { ReportsList } from "@/components/reports/ReportsDisplay/ReportsList";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-interface ReportSelectorProps {
+interface ReportsHomeProps {
     reports: Report[];
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
@@ -24,7 +24,7 @@ interface ReportSelectorProps {
     allUsers: string[];
 }
 
-export const ReportSelector = ({
+export const ReportsHome = ({
     reports,
     setSelectedReport,
     userId,
@@ -35,7 +35,7 @@ export const ReportSelector = ({
     onDelete,
     onAiGenerate,
     allUsers,
-}: ReportSelectorProps): JSX.Element => {
+}: ReportsHomeProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
     const [displayType, setDisplayType] = useState("grid");
@@ -113,28 +113,15 @@ export const ReportSelector = ({
             </div>
 
             {displayType === "grid" ? (
-                <>
-                    {filteredReports.length > 0 ? (
-                        <div className="w-full grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                            {filteredReports.map((report) => (
-                                <ReportCard
-                                    key={report.id}
-                                    report={report}
-                                    onSelectReport={(report) => setSelectedReport(report)}
-                                    onRename={onRename}
-                                    onDuplicate={onDuplicate}
-                                    userId={userId}
-                                    onDelete={onDelete}
-                                    allUsers={allUsers}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="w-full flex justify-center items-center p-10 text-muted-foreground text-sm">
-                            No documents to show.
-                        </div>
-                    )}
-                </>
+                <ReportsGrid
+                    reports={filteredReports}
+                    onRename={onRename}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                    userId={userId}
+                    allUsers={allUsers}
+                    setSelectedReport={setSelectedReport}
+                />
             ) : (
                 <ReportsList
                     reports={filteredReports}

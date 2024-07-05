@@ -4,8 +4,8 @@ import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import { toast } from "sonner";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
-import { ShareReport } from "./ShareReport";
-import { RadioGroup, RadioGroupItem } from "../ui/RadioGroup";
+import { ShareReport } from "../ShareReport";
+import { RadioGroup, RadioGroupItem } from "../../ui/RadioGroup";
 
 import { IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
 import {

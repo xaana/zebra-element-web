@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
-import { ReportActions } from "@/components/reports/ReportActions";
+import { ReportActions } from "@/components/reports/ReportsDisplay/ReportActions";
 
 interface ReportsListProps {
     reports: Report[];
