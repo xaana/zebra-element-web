@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { format, parseISO, isToday } from "date-fns";
 
+import { IconDocumentExcel, IconDocumentWord } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Icon } from "@/components/ui/Icon";
@@ -52,8 +53,13 @@ export const ReportsList = ({
                 );
             },
             cell: ({ row }) => (
-                <Button onClick={onSelectReport.bind(null, row.original)} variant="link">
-                    {`${row.getValue("name")}.${row.original.fileType}`}
+                <Button onClick={onSelectReport.bind(null, row.original)} variant="link" className="text-foreground">
+                    {row.original.fileType === "docx" ? (
+                        <IconDocumentWord className="w-5 h-5 mr-2 text-[#2d74be]" />
+                    ) : (
+                        <IconDocumentExcel className="w-5 h-5 mr-2 text-[#3c9063]" />
+                    )}
+                    {`${row.getValue("name")}`}
                 </Button>
             ),
         },
