@@ -49,12 +49,10 @@ const CollaboraEditor = ({
     const editor = useCollabora({
         iframeRef: editorRef,
         selectedReport,
-        chat,
         showSidebar,
         setShowSidebar,
         onCloseEditor,
         onDocumentLoadFailed,
-        isAiLoading,
         setIsAiLoading,
         currentUser,
         allUsers,
