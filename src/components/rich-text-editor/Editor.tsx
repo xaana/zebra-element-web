@@ -42,7 +42,7 @@ const MenuBar = (props: { onDestroyCallback?: (data: string) => void }): React.J
             console.log(props.onDestroyCallback);
             // props.onDestroyCallback && editor && props.onDestroyCallback(editor.getText())
         };
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!editor) {
         return <></>;
@@ -69,14 +69,34 @@ const MenuBar = (props: { onDestroyCallback?: (data: string) => void }): React.J
                 <Strikethrough />
             </Toggle>
             <DropdownMenu>
-                <DropdownMenuTrigger><Heading /></DropdownMenuTrigger>
+                <DropdownMenuTrigger>
+                    <Heading />
+                </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 1 }).run()}><Heading1 />Heading 1</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 2 }).run()}><Heading2 />Heading 2</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 3 }).run()}><Heading3 />Heading 3</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 4 }).run()}><Heading4 />Heading 4</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 5 }).run()}><Heading5 />Heading 5</DropdownMenuItem>
-                    <DropdownMenuItem onSelect={()=> editor.chain().focus().toggleHeading({ level: 6 }).run()}><Heading6 />Heading 6</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+                        <Heading1 />
+                        Heading 1
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+                        <Heading2 />
+                        Heading 2
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+                        <Heading3 />
+                        Heading 3
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}>
+                        <Heading4 />
+                        Heading 4
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}>
+                        <Heading5 />
+                        Heading 5
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}>
+                        <Heading6 />
+                        Heading 6
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
             <Separator orientation="vertical" />
@@ -145,7 +165,7 @@ const extensions = [
 ];
 
 const EditorFooter = (props: {
-    onSendCallback: (content: string, rawContent:string) => void;
+    onSendCallback: (content: string, rawContent: string) => void;
     onCancelCallback: () => void;
 }): React.JSX.Element => {
     const { editor } = useCurrentEditor();
@@ -154,7 +174,7 @@ const EditorFooter = (props: {
     }
 
     const sendHandler = (): void => {
-        props.onSendCallback && editor && props.onSendCallback(editor.getHTML(),editor.getText());
+        props.onSendCallback && editor && props.onSendCallback(editor.getHTML(), editor.getText());
     };
 
     return (
@@ -202,7 +222,7 @@ display: none;
 
 const App = (props: {
     onDestroyCallback?: (data: string) => void;
-    onSendCallback: (content: string, rawContent:string) => void;
+    onSendCallback: (content: string, rawContent: string) => void;
     onCancelCallback: () => void;
 }): React.JSX.Element => {
     return (
@@ -211,7 +231,7 @@ const App = (props: {
             slotAfter={
                 <EditorFooter
                     onCancelCallback={props.onCancelCallback}
-                    onSendCallback={(content: string, rawContent:string): void => {
+                    onSendCallback={(content: string, rawContent: string): void => {
                         props.onSendCallback(content, rawContent);
                         props.onCancelCallback();
                     }}

@@ -2,7 +2,7 @@ import React from "react";
 import { Node, NodeViewRendererProps } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 
-import { TableOfContents } from "@/components/reports/TableOfContents";
+import { TableOfContents } from "@/components/rich-text-editor/TableOfContents";
 
 const TableOfNodeContent = (props: NodeViewRendererProps): JSX.Element => {
     const { editor } = props;
