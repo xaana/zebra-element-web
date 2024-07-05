@@ -155,7 +155,9 @@ export function useCollabora({
                         sendMessage({ MessageId: "Host_PostmessageReady" });
                         setDocumentLoaded(true);
                         if (selectedReport.fileType === "docx" || selectedReport.fileType === "doc") {
-                            defaultUiUpdates();
+                            documentDefaultUiUpdates();
+                        } else if (selectedReport.fileType === "xlsx" || selectedReport.fileType === "xls") {
+                            spreadsheetDefaultUiUpdates();
                         }
                         if (selectedReport.aiContent) {
                             if (
@@ -259,7 +261,7 @@ export function useCollabora({
         return undefined;
     };
 
-    const defaultUiUpdates = (): void => {
+    const documentDefaultUiUpdates = (): void => {
         // Change UI mode to compact/classic
         // sendMessage({
         //     MessageId: "Action_ChangeUIMode",
@@ -314,6 +316,21 @@ export function useCollabora({
                 tablet: true,
                 label: "AI Database Query",
                 insertBefore: "custom_toggle_doc_query",
+            },
+        });
+    };
+
+    const spreadsheetDefaultUiUpdates = (): void => {
+        sendMessage({
+            MessageId: "Insert_Button",
+            Values: {
+                id: "custom_exit_editor",
+                imgurl: `${window.location.origin}/img/close-editor.svg`,
+                hint: "Close Document",
+                mobile: true,
+                tablet: true,
+                label: "Close Document",
+                insertBefore: "sidebar",
             },
         });
     };

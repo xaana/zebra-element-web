@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Toaster } from "sonner";
 
 import { init as initRouting } from "@/vector/routing";
-import { Home } from "@/components/reports/Home";
+import { Reports } from "@/components/reports";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const MainPanel = (): JSX.Element => {
@@ -14,7 +14,7 @@ export const MainPanel = (): JSX.Element => {
         <>
             <Toaster />
             <TooltipProvider>
-                <Home />
+                <Reports />
             </TooltipProvider>
         </>
     );

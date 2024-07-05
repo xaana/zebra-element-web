@@ -19,6 +19,7 @@ export const PromptInput = ({
     onSavePrompt,
     promptSaveStatus,
     onGenerateOutline,
+    onAddDocument,
 }: {
     showOutline: boolean;
     pages: number;
@@ -28,6 +29,7 @@ export const PromptInput = ({
     onSavePrompt: () => void;
     promptSaveStatus: string | undefined;
     onGenerateOutline: () => Promise<void>;
+    onAddDocument: () => void;
 }): JSX.Element => {
     const { onKeyDown } = useEnterSubmit();
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
@@ -62,10 +64,24 @@ export const PromptInput = ({
                     maxRows={3}
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
-                    placeholder={`Describe what you'd like to create`}
+                    // placeholder={`Describe what you'd like to create`}
                     spellCheck={false}
                     className="w-full resize-none py-2.5 pl-2.5 pr-12 mx-auto focus-within:outline-primary/60 bg-popover text-base border rounded-md max-w-screen-md"
                 />
+                {prompt.length === 0 && (
+                    <div className="absolute left-2.5 top-2 flex items-center gap-2 text-base text-muted-foreground opacity-80">
+                        <span>Describe what you'd like to create, or</span>
+                        <Button
+                            className="w-auto h-auto py-1 px-2 text-sm"
+                            size="sm"
+                            variant="outline"
+                            onClick={onAddDocument}
+                        >
+                            <Icon name="FileInput" className="mr-1" />
+                            Add a requirements document
+                        </Button>
+                    </div>
+                )}
                 {prompt.length > 0 && (
                     <div className="absolute right-2.5 top-2 flex items-center gap-2">
                         <Tooltip>

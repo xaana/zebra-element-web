@@ -155,8 +155,11 @@ export const PdfViewer = ({
                 const contentBase64 = file.content;
                 const pdfBlob = base64ToBlob(contentBase64, "application/pdf");
                 const objectURL = URL.createObjectURL(pdfBlob);
+                if(file.filename.endsWith(".doc")||file.filename.endsWith(".docx")){
+                    file.filename = file.filename.replace(".docx",".pdf").replace(".doc",".pdf");
+                }
                 // allFiles.current.push(objectURL);
-                return { name: file.filename, url: objectURL, mediaId: file.media_id };
+                return { name: file.filename, url: objectURL, mediaId: file.media_id.replace("-doc","") };
             });
             allFiles.forEach((file: { name: string; url: string; mediaId: string; }) => {
                 if (rootId) {
@@ -289,6 +292,7 @@ export const PdfViewer = ({
                                 }
                             });
                             const filteredList = pdfs.filter((item) => item !== undefined);
+    
                             setPdfUrls(filteredList);
                         }
                     });

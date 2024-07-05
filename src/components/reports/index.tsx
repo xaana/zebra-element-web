@@ -6,12 +6,12 @@ import { toast } from "sonner";
 
 import type { AiGenerationContent, Report } from "@/plugins/reports/types";
 
-import { CreateOrRenameDialog } from "@/components/reports/ReportActions";
-import { ReportSelector } from "@/components/reports/ReportSelector";
+import { CreateOrRenameDialog } from "@/components/reports/ReportsDisplay/ReportActions";
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
+import { ReportsHome } from "@/components/reports/ReportsHome";
 
-export const Home = (): JSX.Element => {
+export const Reports = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
     const [selectedReport, setSelectedReport] = useState<Report | null | undefined>(undefined);
     const stepRef = useRef(null);
@@ -303,7 +303,7 @@ export const Home = (): JSX.Element => {
                     ref={stepRef}
                     className="max-w-screen-lg mx-auto px-3 my-8"
                 >
-                    <ReportSelector
+                    <ReportsHome
                         reports={reports}
                         setSelectedReport={setSelectedReport}
                         userId={userId}
