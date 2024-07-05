@@ -3,15 +3,20 @@ import RoomContext from "matrix-react-sdk/src/contexts/RoomContext";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
 import React, { useContext } from "react";
 import { OverflowMenuContext } from "./MessageComposerButtons";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 
 
-export const KnowledgeBaseButton = (s): JSX.Element => {
+export const KnowledgeBaseButton = (): JSX.Element => {
     const { roomId, timelineRenderingType } = useContext(RoomContext);
     const handleClick = () => {
         dis.dispatch({
             action: "select_knowledge",
             knowledge: true,
             roomId: roomId,
+            context: timelineRenderingType,
+        });
+        dis.dispatch({
+            action: Action.FocusAComposer,
             context: timelineRenderingType,
         });
     };
