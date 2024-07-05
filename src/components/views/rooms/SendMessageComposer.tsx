@@ -612,8 +612,8 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 }
             }
             if (content && this.props.knowledge) {
-                content["knowledge"] = "true";
-                
+                content["knowledge"] = this.props.knowledge;
+                content["knowledgeSelected"] = ""
                 if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
                     dis.dispatch({
                         action: "select_knowledge",
