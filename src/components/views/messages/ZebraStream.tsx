@@ -33,6 +33,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
             const temp = content.fileSelected[0].name.split(".");
             if(["png", "jpg", "jpeg", "webp", "gif"].includes(temp[temp.length-1])) setIsImage(true);
         }
+        if (content.type === "knowledge") fetchZiggyStream();
 
         return () => {
             // Cleanup logic if needed, e.g., aborting the fetch
