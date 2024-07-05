@@ -205,7 +205,7 @@ export const Reports = (): JSX.Element => {
                     ...(aiContent && {
                         aiContent,
                     }),
-                    fileType: data.file_type,
+                    fileType: data.file_type ?? reports.find((r) => r.id === reportId)?.fileType ?? "docx",
                 };
 
                 setReports((prev) => [...prev, newReport]);
