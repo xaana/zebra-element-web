@@ -218,7 +218,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         };
                         websocket.onmessage = (event): void => {
                             if (event.data.startsWith("success")) {
-                                count += 1 / 4;
+                                count += 1 / 3;
                                 setProgress((prev) => prev + 1);
                                 if (count === 1) {
                                     // all file completed reinitialize record state
