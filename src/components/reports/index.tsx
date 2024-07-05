@@ -10,6 +10,7 @@ import { CreateOrRenameDialog } from "@/components/reports/ReportsDisplay/Report
 import { Loader } from "@/components/ui/LoaderAlt";
 import CollaboraEditor from "@/components/reports/CollaboraEditor";
 import { ReportsHome } from "@/components/reports/ReportsHome";
+import { MimeTypeToExtensionMapping } from "@/plugins/files/types";
 
 export const Reports = (): JSX.Element => {
     const [reports, setReports] = useState<Report[]>([]);
@@ -162,13 +163,18 @@ export const Reports = (): JSX.Element => {
             if (responseData?.status && responseData?.document_id) {
                 setIsLoading(false);
 
+                const newFileType = ["pdf", "doc", "docx", "odt", "rtf", "txt"].includes(
+                    MimeTypeToExtensionMapping[file.type],
+                )
+                    ? "docx"
+                    : "xlsx";
                 const newReport: Report = {
                     id: responseData.document_id.toString(),
                     name: responseData.document_name,
                     owner: client.getSafeUserId(),
                     accessType: "admin",
                     timestamp: new Date().toISOString(),
-                    fileType: "docx",
+                    fileType: newFileType,
                 };
 
                 setReports((prev) => [...prev, newReport]);

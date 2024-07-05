@@ -22,7 +22,7 @@ const KnowledgePill = ({roomId,timelineRenderingType}:{roomId?:string;timelineRe
         <div className="inline-block px-2 py-1 bg-muted rounded-full">
             <div className="flex gap-2 text-xs">
                 <IconKnowledge />
-                <span>Knowledge Base</span>
+                <span>Ziggy</span>
 
                 {(timelineRenderingType || roomId) && (
                     <X onClick={() => cancelQuoting()} className="cursor-pointer" size={16} />
