@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import type { MatrixFile } from "@/plugins/files/types";
 
+import { MimeTypeToExtensionMapping } from "@/plugins/files/types";
 import { dtoToFileAdapters, getFile, listFiles } from "@/components/files/FileOpsHandler";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/Icon";
@@ -41,22 +42,16 @@ export const ReportFileImport = ({
     };
 
     const handleUploadedFileSelection = async (matrixFile: MatrixFile): Promise<void> => {
-        if (
-            ![
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "application/pdf",
-                "application/msword",
-            ].includes(matrixFile.mimetype ?? "")
-        ) {
+        if (!matrixFile.mimetype || MimeTypeToExtensionMapping[matrixFile.mimetype] === undefined) {
             handleDialogToggle(false);
             setTimeout(() => {
-                toast.error("Only PDF, DOCX, and DOC files supported.", { closeButton: true });
+                toast.error("Unsupported file type. Allowed types: PDF, DOC, DOCX, ODT, RTF, TXT, XLS, XLSX, ODS.");
             }, 300);
             return;
         }
 
         const fileBlob = await getFile(matrixFile.mediaId, client.getUserId() ?? "");
-        const file = new File([fileBlob], matrixFile.name, { type: matrixFile.mimetype ?? "application/pdf" });
+        const file = new File([fileBlob], matrixFile.name, { type: matrixFile.mimetype });
         handleDialogToggle(false);
         await onFileUpload(file);
     };
