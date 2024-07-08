@@ -120,18 +120,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
-            dis.dispatch({
-                action: "select_database",
-                database: "",
-                roomId: props.roomId,
-                context: timelineRenderingType,
-            });
-            dis.dispatch({
-                action: "select_knowledge",
-                knowledge: false,
-                roomId: props.roomId,
-                context: timelineRenderingType,
-            });
         dis.dispatch({
             action: "select_files",
             files: [
@@ -159,18 +147,6 @@ export const FileSelector = (props: IProps): JSX.Element => {
             dis.dispatch({
                 action: "select_files",
                 files: [],
-                roomId: props.roomId,
-                context: timelineRenderingType,
-            });
-            dis.dispatch({
-                action: "select_database",
-                database: "",
-                roomId: props.roomId,
-                context: timelineRenderingType,
-            });
-            dis.dispatch({
-                action: "select_knowledge",
-                knowledge: false,
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
