@@ -52,6 +52,9 @@ export const MatrixFileSelector = ({
                                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                                 "application/pdf",
                                 "application/msword",
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "application/vnd.ms-excel",
+
                             ].includes(matrixFile.mimetype ?? ""),
                         )
                         .slice(0, 5), // This slices the number of files to a maximum of 5,
