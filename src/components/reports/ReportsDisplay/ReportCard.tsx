@@ -53,7 +53,7 @@ export const ReportCard = ({
                 {report.fileType === "docx" ? <DocumentThumbnail /> : <SpreadsheetThumbnail />}
             </div>
             <div className="p-3 flex-1 flex w-full flex-col justify-between gap-2 relative">
-                <div className="font-semibold">{report.name}</div>
+                <div className="font-semibold">{report.name.split(".")[0]}</div>
                 <div className="text-[10px] text-muted-foreground">
                     {Number(report.id) < 0
                         ? "Preset report"
