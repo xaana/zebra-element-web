@@ -317,7 +317,7 @@ const UploadButtonContextProvider: React.FC<IUploadButtonProps> = ({ roomId, rel
                 ref={uploadInput}
                 type="file"
                 style={uploadInputStyle}
-                accept=".jpg, .jpeg, .png, .pdf, .docx, .doc, .webp, .gif"
+                accept=".jpg, .jpeg, .png, .pdf, .docx, .doc, .webp, .gif, .xlsx, .xls, .odt, .rtf, .csv, .ods"
                 multiple
                 onClick={chromeFileInputFix}
                 onChange={onUploadFileInputChange}

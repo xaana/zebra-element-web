@@ -571,7 +571,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 ref={inputRef}
                                 onChange={onFileInput}
                                 style={{ display: "none" }}
-                                accept=".pdf, .docx, .doc"
+                                accept=".pdf, .docx, .doc, .xlsx, .xls, .odt, .rtf, .csv, .ods"
                             />
                         </div>
                     </div>
