@@ -127,10 +127,14 @@ export const generateContentFromRequirements = async (
             }),
         });
 
-        const data = await res.json();
-        if (data.answer) {
-            return data.answer as string;
-        } else return;
+        const response = await res.json();
+        if (response.data.status === "succeeded") {
+            return response.data.outputs.text;
+        }
+        return;
+        // if (data.answer) {
+        //     return data.answer as string;
+        // } else return;
     } catch (errPayload: any) {
         console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
         throw errPayload;
