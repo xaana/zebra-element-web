@@ -52,6 +52,9 @@ export const MatrixFileSelector = ({
                                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                                 "application/pdf",
                                 "application/msword",
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "application/vnd.ms-excel",
+
                             ].includes(matrixFile.mimetype ?? ""),
                         )
                         .slice(0, 5), // This slices the number of files to a maximum of 5,
@@ -72,8 +75,8 @@ export const MatrixFileSelector = ({
                         </Button>
                     )}
                 </DialogTrigger>
-                <DialogContent className="w-[70vw] max-w-[70vw] h-[70vh] p-0 overflow-hidden">
-                    <div className="relative w-[70vw] max-w-[70vw] h-[70vh] p-4">
+                <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-y-auto">
+                    <div className="relative w-[90vw] max-w-[90vw] h-[85vh] p-4">
                         <h2 className="text-2xl font-semibold tracking-tight mt-1 mb-4">Select Files</h2>
                         <FilesTable
                             data={documents}

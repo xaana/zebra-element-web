@@ -402,6 +402,8 @@ export class RoomViewStore extends EventEmitter {
                         if (payload.roomId === this.state.roomId) {
                             this.setState({
                                 database: payload.database,
+                                knowledge:false,
+                                files: [],
                             });
                         }
                     }
@@ -472,10 +474,14 @@ export class RoomViewStore extends EventEmitter {
                                 filteredList &&
                                     this.setState({
                                         files: filteredFiles,
+                                        knowledge:false,
+                                        database: "",
                                     });
                             } else if (payload.files.length > 0 && mergedFiles.length === this.state.files.length) {
                                 this.setState({
                                     files: payload.files,
+                                    knowledge:false,
+                                    database: "",
                                 });
                             } else {
                                 this.setState({
@@ -487,7 +493,6 @@ export class RoomViewStore extends EventEmitter {
                 }
                 break;
                 case "select_knowledge":
-                    console.log(payload)
                     // Thread timeline view handles its own reply-to-state
                     if (TimelineRenderingType.Thread !== payload.context) {
                         // If currently viewed room does not match the room in which we wish to reply then change rooms this
@@ -503,6 +508,8 @@ export class RoomViewStore extends EventEmitter {
                             if (payload.roomId === this.state.roomId) {
                                 this.setState({
                                     knowledge: payload.knowledge,
+                                    database:"",
+                                    files: [],
                                 });
                             }
                         }
