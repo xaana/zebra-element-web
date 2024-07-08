@@ -7,32 +7,48 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Icon } from "@/components/ui/Icon";
+
+const options = {
+    short: "Short Response",
+    long: "Long Response",
+};
+
 const PagesSelector = ({
-    pages,
-    setPages,
+    responseLength,
+    setResponseLength,
 }: {
-    pages: number;
-    setPages: React.Dispatch<React.SetStateAction<number>>;
+    responseLength: string;
+    setResponseLength: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element => {
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-md py-1 px-2 border w-[120px] text-left bg-popover flex justify-between items-center">
+            <DropdownMenuTrigger className="rounded-md my-2 py-2 px-2 border w-[200px] text-left bg-popover flex justify-between items-center">
                 <span className="text-sm font-medium">
-                    {pages} {pages === 1 ? "section" : "sections"}
+                    {responseLength ? options[responseLength] : "Select response length"}
                 </span>
                 <Icon name="ChevronDown" className="w-4 h-4 text-muted-foreground" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                {Array.from({ length: 8 }, (_, i) => i + 1).map((pagesOption) => (
+            <DropdownMenuContent className="w-[200px]">
+                {Object.entries(options).map(([key, value]) => (
                     <DropdownMenuItem
-                        key={pagesOption}
-                        onClick={() => setPages(pagesOption)}
-                        className="flex justify-between items-center"
+                        key={key}
+                        onClick={() => setResponseLength(key)}
+                        className="flex justify-between items-center py-2"
                     >
-                        {pagesOption} {pagesOption === 1 ? "section" : "sections"}
-                        {pagesOption === pages && <Icon name="Check" />}
+                        {value}
+                        {key === responseLength && <Icon name="Check" />}
                     </DropdownMenuItem>
                 ))}
+                {/*{Array.from({ length: 8 }, (_, i) => i + 1).map((pagesOption) => (*/}
+                {/*    <DropdownMenuItem*/}
+                {/*        key={pagesOption}*/}
+                {/*        onClick={() => setPages(pagesOption)}*/}
+                {/*        className="flex justify-between items-center"*/}
+                {/*    >*/}
+                {/*        {pagesOption} {pagesOption === 1 ? "section" : "sections"}*/}
+                {/*        {pagesOption === pages && <Icon name="Check" />}*/}
+                {/*    </DropdownMenuItem>*/}
+                {/*))}*/}
             </DropdownMenuContent>
         </DropdownMenu>
     );
