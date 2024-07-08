@@ -75,8 +75,8 @@ export const MatrixFileSelector = ({
                         </Button>
                     )}
                 </DialogTrigger>
-                <DialogContent className="w-[70vw] max-w-[70vw] h-[85vh] p-0 overflow-y-auto">
-                    <div className="relative w-[70vw] max-w-[70vw] h-[70vh] p-4">
+                <DialogContent className="w-[90vw] max-w-[90vw] h-[90vh] p-0 overflow-y-auto">
+                    <div className="relative w-[90vw] max-w-[90vw] h-[85vh] p-4">
                         <h2 className="text-2xl font-semibold tracking-tight mt-1 mb-4">Select Files</h2>
                         <FilesTable
                             data={documents}
