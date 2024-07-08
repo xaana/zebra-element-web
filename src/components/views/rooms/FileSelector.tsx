@@ -92,7 +92,29 @@ export const FileSelector = (props: IProps): JSX.Element => {
     const handleDialogOpenChange = async (open: boolean): Promise<void> => {
         if (open) {
             await fetchFiles();
-            dis.dispatch({
+            // dis.dispatch({
+            //     action: "select_files",
+            //     files: [],
+            //     roomId: props.roomId,
+            //     context: timelineRenderingType,
+            // });
+            // dis.dispatch({
+            //     action: "select_database",
+            //     database: "",
+            //     roomId: props.roomId,
+            //     context: timelineRenderingType,
+            // });
+        } else {
+            setDialogOpen(false);
+            overflowMenuCloser?.();
+        }
+    };
+
+    const handleImageSelect = (image: MediaItem): void => {
+        setSelectedFiles(() => [image as File]);
+        overflowMenuCloser?.();
+        setDialogOpen(false);
+        dis.dispatch({
                 action: "select_files",
                 files: [],
                 roomId: props.roomId,
@@ -104,16 +126,12 @@ export const FileSelector = (props: IProps): JSX.Element => {
                 roomId: props.roomId,
                 context: timelineRenderingType,
             });
-        } else {
-            setDialogOpen(false);
-            overflowMenuCloser?.();
-        }
-    };
-
-    const handleImageSelect = (image: MediaItem): void => {
-        setSelectedFiles(() => [image as File]);
-        overflowMenuCloser?.();
-        setDialogOpen(false);
+            dis.dispatch({
+                action: "select_knowledge",
+                knowledge: false,
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
         dis.dispatch({
             action: "select_files",
             files: [
@@ -138,6 +156,24 @@ export const FileSelector = (props: IProps): JSX.Element => {
         overflowMenuCloser?.();
         setDialogOpen(false);
         if (selectedFiles.length > 0) {
+            dis.dispatch({
+                action: "select_files",
+                files: [],
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
+            dis.dispatch({
+                action: "select_database",
+                database: "",
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
+            dis.dispatch({
+                action: "select_knowledge",
+                knowledge: false,
+                roomId: props.roomId,
+                context: timelineRenderingType,
+            });
             dis.dispatch({
                 action: "select_files",
                 files: selectedFiles.map((file) => {
