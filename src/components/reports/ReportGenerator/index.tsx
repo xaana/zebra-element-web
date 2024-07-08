@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { AiGenerationContent, Report } from "@/plugins/reports/types";
 import { Separator } from "@/components/ui/separator";
 import { mediaIdsFromFiles } from "@/plugins/files/utils";
+import PagesSelector from "@/components/reports/ReportGenerator/PagesSelector";
 
 export const ReportGenerator = ({
     onReportGenerate,
@@ -32,7 +33,7 @@ export const ReportGenerator = ({
     userId: string;
 }): JSX.Element => {
     const [prompt, setPrompt] = React.useState("");
-    const [pages, setPages] = React.useState(4);
+    const [responseLength, setResponseLength] = React.useState("short");
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const [showOutline, setShowOutline] = React.useState(false);
     const [isOutlineLoading, setIsOutlineLoading] = React.useState(false);
@@ -65,7 +66,7 @@ export const ReportGenerator = ({
                     },
                     body: JSON.stringify({
                         request: prompt,
-                        pages_count: pages,
+                        pages_count: responseLength === "long" ? 8 : 4,
                         ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
                     }),
                 });
@@ -146,7 +147,7 @@ export const ReportGenerator = ({
     };
 
     const resetState = (): void => {
-        setPages(4);
+        setResponseLength("short");
         setOutlineItems(undefined);
         setShowOutline(false);
         setContentSize("medium");
@@ -172,10 +173,37 @@ export const ReportGenerator = ({
 
     const handleGenerateReport = async (): Promise<void> => {
         setDrawerOpen(false);
+
+        // Send Request
+
+        // try {
+        //     const res: Response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/outlines`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({
+        //             request: prompt,
+        //             section_number: sectionNumber,
+        //             ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
+        //         }),
+        //     });
+        //     const data = await res.json();
+        //     setOutlineItems(data);
+        // } catch (errPayload: any) {
+        //     const errorMessage = errPayload?.response?.data?.error;
+        //     const message =
+        //         errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
+        //     console.error(message);
+        //     setShowOutline(false);
+        // }
+
+        // Callback
         await onReportGenerate({
             documentPrompt: prompt,
             allTitles: outlineItems ? outlineItems.filter(Boolean) : [],
             contentSize,
+            responseLength,
             tone: tone.length > 0 ? tone : "neutral",
             targetAudience: targetAudience.length > 0 ? targetAudience : "general",
             requirementDocuments: requirementDocuments.length > 0 ? requirementDocuments : undefined,
@@ -232,7 +260,7 @@ export const ReportGenerator = ({
                                     setShowOutline(false);
                                 }}
                             >
-                                <Icon name="ArrowLeftToLine" />
+                                <Icon name="ArrowBigLeft" />
                             </Button>
                         </div>
                     )}
@@ -245,8 +273,6 @@ export const ReportGenerator = ({
                                 prompt={prompt}
                                 setPrompt={setPrompt}
                                 showOutline={showOutline}
-                                pages={pages}
-                                setPages={setPages}
                                 promptSaveStatus={promptSaveStatus}
                                 onSavePrompt={handleSavePrompt}
                                 onGenerateOutline={handleGenerateOutline}
@@ -260,7 +286,7 @@ export const ReportGenerator = ({
                             <>
                                 <div className="flex flex-col gap-4 mt-2">
                                     <Outline
-                                        pages={pages}
+                                        pages={responseLength}
                                         outlineItems={outlineItems ?? []}
                                         setOutlineItems={setOutlineItems}
                                         isOutlineLoading={isOutlineLoading}
@@ -279,6 +305,7 @@ export const ReportGenerator = ({
                             </>
                         ) : (
                             <>
+                                <PagesSelector responseLength={responseLength} setResponseLength={setResponseLength} />
                                 <AdvancedOptions
                                     useAdvancedOptions={useAdvancedOptions}
                                     setUseAdvancedOptions={setUseAdvancedOptions}

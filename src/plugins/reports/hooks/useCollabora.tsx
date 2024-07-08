@@ -429,6 +429,7 @@ export function useCollabora({
         const generatedMarkdownContent = await generateContentFromRequirements(
             requirementMediaIds.join(","),
             supportingMediaIds ? supportingMediaIds.join(",") : "",
+            selectedReport.aiContent.responseLength,
             currentUser,
         );
         setIsAiLoading(false);

@@ -1,8 +1,6 @@
 import React from "react";
 import Textarea from "react-textarea-autosize";
 
-import PagesSelector from "./PagesSelector";
-
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { IconStarAdd, IconStarFilled } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
@@ -12,8 +10,6 @@ import { Icon } from "@/components/ui/Icon";
 
 export const PromptInput = ({
     showOutline,
-    pages,
-    setPages,
     prompt,
     setPrompt,
     onSavePrompt,
@@ -22,8 +18,6 @@ export const PromptInput = ({
     onAddDocument,
 }: {
     showOutline: boolean;
-    pages: number;
-    setPages: React.Dispatch<React.SetStateAction<number>>;
     prompt: string;
     setPrompt: React.Dispatch<React.SetStateAction<string>>;
     onSavePrompt: () => void;
@@ -50,9 +44,6 @@ export const PromptInput = ({
                 {showOutline && (
                     <div className="text-muted-foreground font-semibold text-base translate-y-1">Prompt</div>
                 )}
-                <div className="flex items-end">
-                    <PagesSelector pages={pages} setPages={setPages} />
-                </div>
             </div>
             <div className="relative w-full">
                 <Textarea
@@ -70,7 +61,7 @@ export const PromptInput = ({
                 />
                 {prompt.length === 0 && (
                     <div className="absolute left-2.5 top-2 flex items-center gap-2 text-base text-muted-foreground opacity-80">
-                        <span>Describe what you'd like to create, or</span>
+                        <span onClick={() => inputRef.current?.focus()}>Describe what you'd like to create, or</span>
                         <Button
                             className="w-auto h-auto py-1 px-2 text-sm"
                             size="sm"

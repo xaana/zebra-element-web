@@ -106,6 +106,7 @@ export const generateContentFromOutlines = async (
 export const generateContentFromRequirements = async (
     requirementDocumentIds: string, // csv
     supportingDocumentIds: string, // csv
+    responseLength: string,
     userId: string,
 ): Promise<string | undefined> => {
     try {
@@ -119,6 +120,7 @@ export const generateContentFromRequirements = async (
                 inputs: {
                     requirement_csv: requirementDocumentIds,
                     supporting_csv: supportingDocumentIds,
+                    response_length: responseLength,
                 },
                 response_mode: "blocking",
                 user: userId,
