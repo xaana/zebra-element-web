@@ -14,7 +14,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Surface } from "@/components/ui/Surface";
 import { DropdownButton } from "@/components/ui/Dropdown";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
-import { QueryResultTable } from "@/plugins/reports/extensions/AiDataQuery/components/QueryResultTable";
+import { QueryResultTable } from "@/components/rich-text-editor/extensions/AiDataQuery/components/QueryResultTable";
 
 export type DataItem = {
     [key: string]: string | number | null | undefined;

@@ -59,7 +59,7 @@ export const ReportsList = ({
                     ) : (
                         <IconDocumentExcel className="w-5 h-5 mr-2 text-[#3c9063]" />
                     )}
-                    {`${row.getValue("name")}`}
+                    {`${row.getValue("name").split(".")[0]}`}
                 </Button>
             ),
         },

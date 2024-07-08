@@ -1,12 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { memo } from "react";
 
-import { EditorUser } from "./types";
+// import { EditorUser } from "./types";
 
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
-import Tooltip from "@/components/ui/TooltipAlt";
-import { cn } from "@/lib/utils";
-import { getConnectionText } from "@/plugins/reports/utils";
+// import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
+// import Tooltip from "@/components/ui/TooltipAlt";
+// import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
 export type EditorInfoProps = {
@@ -15,7 +14,6 @@ export type EditorInfoProps = {
 };
 
 export const EditorInfo = memo(({ characters, words }: EditorInfoProps) => {
-    const { collabState, users } = useContext(EditorContext);
     return (
         <div className="flex items-center">
             <div className="flex flex-col justify-center">
@@ -27,7 +25,7 @@ export const EditorInfo = memo(({ characters, words }: EditorInfoProps) => {
                 </div>
             </div>
             <Separator orientation="vertical" className="w-[1px] h-10 bg-muted mx-4 my-0" />
-            <div className="flex items-center gap-2 mr-2">
+            {/* <div className="flex items-center gap-2 mr-2">
                 <div
                     className={cn("w-2 h-2 rounded-full", {
                         "bg-yellow-500 dark:bg-yellow-400": collabState === "connecting",
@@ -38,8 +36,8 @@ export const EditorInfo = memo(({ characters, words }: EditorInfoProps) => {
                 <span className="max-w-[4rem] text-xs text-neutral-500 dark:text-neutral-400 font-semibold">
                     {getConnectionText(collabState)}
                 </span>
-            </div>
-            {collabState === "connected" && (
+            </div> */}
+            {/* {collabState === "connected" && (
                 <div className="flex flex-row items-center">
                     <div className="relative flex flex-row items-center ml-3">
                         {users.slice(0, 3).map((user: EditorUser) => (
@@ -64,7 +62,7 @@ export const EditorInfo = memo(({ characters, words }: EditorInfoProps) => {
                         )}
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 });

@@ -6,7 +6,6 @@ import remarkHtml from "remark-html";
 import { toast } from "sonner";
 
 import { Report } from "@/plugins/reports/types";
-import { Chat } from "@/plugins/reports/hooks/use-chat";
 import {
     generateContentFromOutlines,
     generateContentFromRequirements,
@@ -53,24 +52,20 @@ interface PendingRequest {
 export function useCollabora({
     iframeRef,
     selectedReport,
-    chat,
     showSidebar,
     setShowSidebar,
     onCloseEditor,
     onDocumentLoadFailed,
-    isAiLoading,
     setIsAiLoading,
     currentUser,
     allUsers,
 }: {
     iframeRef: React.MutableRefObject<HTMLIFrameElement | null>;
     selectedReport: Report;
-    chat: Chat;
     showSidebar: boolean;
     setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
     onCloseEditor: () => void;
     onDocumentLoadFailed: () => void;
-    isAiLoading: boolean;
     setIsAiLoading: React.Dispatch<React.SetStateAction<boolean>>;
     currentUser: string;
     allUsers: string[];
@@ -262,13 +257,6 @@ export function useCollabora({
     };
 
     const documentDefaultUiUpdates = (): void => {
-        // Change UI mode to compact/classic
-        // sendMessage({
-        //     MessageId: "Action_ChangeUIMode",
-        //     Values: {
-        //         Mode: "classic",
-        //     },
-        // });
         sendMessage({
             MessageId: "Insert_Button",
             Values: {
@@ -441,6 +429,7 @@ export function useCollabora({
         const generatedMarkdownContent = await generateContentFromRequirements(
             requirementMediaIds.join(","),
             supportingMediaIds ? supportingMediaIds.join(",") : "",
+            selectedReport.aiContent.responseLength,
             currentUser,
         );
         setIsAiLoading(false);

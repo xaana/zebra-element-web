@@ -106,6 +106,7 @@ export const generateContentFromOutlines = async (
 export const generateContentFromRequirements = async (
     requirementDocumentIds: string, // csv
     supportingDocumentIds: string, // csv
+    responseLength: string,
     userId: string,
 ): Promise<string | undefined> => {
     try {
@@ -119,16 +120,21 @@ export const generateContentFromRequirements = async (
                 inputs: {
                     requirement_csv: requirementDocumentIds,
                     supporting_csv: supportingDocumentIds,
+                    response_length: responseLength,
                 },
                 response_mode: "blocking",
                 user: userId,
             }),
         });
 
-        const data = await res.json();
-        if (data.answer) {
-            return data.answer as string;
-        } else return;
+        const response = await res.json();
+        if (response.data.status === "succeeded") {
+            return response.data.outputs.text;
+        }
+        return;
+        // if (data.answer) {
+        //     return data.answer as string;
+        // } else return;
     } catch (errPayload: any) {
         console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
         throw errPayload;

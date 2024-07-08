@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Pencil, UserRoundPlus, Text, Clock, MoveRight } from "lucide-react";
 
-import { CalendarEventType, createEventId, getNearestHalfPeriod } from "./event-utils";
+import { CalendarEventType, createEventId, formatToCalendarInput, getNearestHalfPeriod } from "./event-utils";
 import { Textarea } from "../ui/TextareaAlt";
 
 import { Button } from "@/components/ui/button";
@@ -25,12 +25,14 @@ export const EventDialog = ({
     open,
     setOpen,
     saveCallback,
+    removeCallback,
 }: {
     trigger?: React.JSX.Element;
     eventInfo?: CalendarEventType;
     open?: boolean;
     setOpen?: (open: boolean) => void;
     saveCallback?: (event: CalendarEventType) => void;
+    removeCallback?: (event: CalendarEventType) => void;
 }): React.JSX.Element => {
     const eventId = eventInfo?.id || createEventId();
     const [title, setTitle] = React.useState<string>(eventInfo?.title || "");
@@ -70,7 +72,19 @@ export const EventDialog = ({
             });
     };
 
-    const handleRemoveClick = (): void => {};
+    const handleRemoveClick = (): void => {
+        removeCallback && removeCallback(
+            formatToCalendarInput({
+                id: eventId,
+                title: title,
+                attendeeStatus: attendees,
+                startTime: startTime,
+                endTime: endTime,
+                allDay: allDayEvent,
+                description: description,
+            })
+        )
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -163,14 +177,15 @@ export const EventDialog = ({
                         />
                     </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-start space-x-2 h-28 max-h-32 mx-0 my-2">
                     <Text />
-                    <div className="grid flex-1 gap-2">
+                    <div className="grid flex-1 gap-2 h-full">
                         <Label htmlFor="description" className="sr-only">
                             {description || "Description"}
                         </Label>
                         <Textarea
                             id="description"
+                            className="h-full"
                             placeholder="Add Description"
                             value={description}
                             onChange={(e) => {
@@ -179,7 +194,7 @@ export const EventDialog = ({
                         />
                     </div>
                 </div>
-                <DialogFooter className="sm:justify-start">
+                <DialogFooter className="justify-start flex-row-reverse">
                     <DialogClose asChild>
                         <Button type="button" variant="secondary" onClick={handleRemoveClick}>
                             Remove

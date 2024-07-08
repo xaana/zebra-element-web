@@ -4,19 +4,19 @@ import { createPortal } from "react-dom";
 
 import type { Editor as TiptapEditor } from "@tiptap/react";
 
-import { TextMenu } from "@/components/reports/menus/TextMenu";
-import { ContentItemMenu } from "@/components/reports/menus/ContentItemMenu";
-import { TableOfContents } from "@/components/reports/TableOfContents";
+import { TextMenu } from "@/components/rich-text-editor/menus/TextMenu";
+import { ContentItemMenu } from "@/components/rich-text-editor/menus/ContentItemMenu";
+import { TableOfContents } from "@/components/rich-text-editor/TableOfContents";
 import "@/plugins/reports/styles/editor.css";
 import "@/plugins/reports/styles/index.css";
-import { LinkMenu } from "@/components/reports/menus";
+import { LinkMenu } from "@/components/rich-text-editor/menus";
 import { Sidebar } from "@/components/reports/Sidebar";
 import { Loader } from "@/components/ui/LoaderAlt";
-import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
-import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
-import { TableColumnMenu, TableRowMenu } from "@/plugins/reports/extensions/Table/menus";
+import ImageBlockMenu from "@/components/rich-text-editor/extensions/ImageBlock/components/ImageBlockMenu";
+import { ColumnsMenu } from "@/components/rich-text-editor/extensions/MultiColumn/menus";
+import { TableColumnMenu, TableRowMenu } from "@/components/rich-text-editor/extensions/Table/menus";
 import { SidebarState } from "@/plugins/reports/hooks/useSidebar";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";

@@ -12,6 +12,7 @@ export type StepItem = {
 export type AiGenerationContent = {
     documentPrompt: string;
     allTitles: string[];
+    responseLength: "short" | "long";
     contentSize: string;
     tone: string;
     targetAudience: string;

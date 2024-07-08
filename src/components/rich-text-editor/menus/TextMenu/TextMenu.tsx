@@ -11,15 +11,14 @@ import { ContentTypePicker } from "./components/ContentTypePicker";
 import { AIDropdown } from "./components/AIDropdown";
 import { EditLinkPopover } from "./components/EditLinkPopover";
 
-import { Surface } from "@/components/ui/Surface";
-import { ColorPicker } from "@/components/reports/panels";
+// import { ColorPicker } from "@/components/rich-text-editor/panels";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Icon } from "@/components/ui/Icon";
 
 // We memorize the button so each button is not rerendered
 // on every editor state change
 const MemoButton = memo(Toolbar.Button);
-const MemoColorPicker = memo(ColorPicker);
+// const MemoColorPicker = memo(ColorPicker);
 const MemoFontFamilyPicker = memo(FontFamilyPicker);
 const MemoFontSizePicker = memo(FontSizePicker);
 const MemoContentTypePicker = memo(ContentTypePicker);

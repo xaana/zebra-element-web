@@ -59,12 +59,15 @@ const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg"
     doc: IconDocumentWord,
     docx: IconDocumentWord,
     docm: IconDocumentWord,
+    odt: IconDocumentWord,
     xls: IconDocumentExcel,
     xlsx: IconDocumentExcel,
     xlsm: IconDocumentExcel,
     xlt: IconDocumentExcel,
     xltx: IconDocumentExcel,
     xltm: IconDocumentExcel,
+    ods: IconDocumentExcel,
+    tsv: IconDocumentExcel,
     ppt: IconDocumentPPT,
     pptx: IconDocumentPPT,
     pptm: IconDocumentPPT,
@@ -218,7 +221,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         };
                         websocket.onmessage = (event): void => {
                             if (event.data.startsWith("success")) {
-                                count += 1 / 4;
+                                count += 1 / 3;
                                 setProgress((prev) => prev + 1);
                                 if (count === 1) {
                                     // all file completed reinitialize record state
@@ -568,7 +571,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 ref={inputRef}
                                 onChange={onFileInput}
                                 style={{ display: "none" }}
-                                accept=".pdf, .docx, .doc"
+                                accept=".pdf, .docx, .doc, .xlsx, .xls, .odt, .rtf, .csv, .ods"
                             />
                         </div>
                     </div>

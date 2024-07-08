@@ -3,8 +3,8 @@ import React, { useCallback, useState } from "react";
 
 import { MenuProps } from "../types";
 
-import { LinkPreviewPanel } from "@/components/reports/panels/LinkPreviewPanel";
-import { LinkEditorPanel } from "@/components/reports/panels";
+import { LinkPreviewPanel } from "@/components/rich-text-editor/panels/LinkPreviewPanel";
+import { LinkEditorPanel } from "@/components/rich-text-editor/panels";
 
 export const LinkMenu = ({ editor, appendTo }: MenuProps): JSX.Element => {
     const [showEdit, setShowEdit] = useState(false);

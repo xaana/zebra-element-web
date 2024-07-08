@@ -4,6 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import {
     CalendarEventType,
@@ -15,7 +16,6 @@ import {
     saveEvent,
 } from "./event-utils";
 import { EventDialog } from "./EventDialog";
-import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 interface CalendarAppState {
     weekendsVisible: boolean;
@@ -97,7 +97,12 @@ const Calendar = (): React.JSX.Element => {
     };
 
     const removeEventCallback = (info: any): void => {
-        deleteEvent(info.event);
+        const calendarApi = calendarRef.current.getApi();
+        deleteEvent(info);
+        const targetEvent = calendarApi.getEventById(info.id);
+        targetEvent && targetEvent.remove();
+        calendarApi.unselect();
+        // setDialogOpen(false);
     };
 
     useEffect(() => {
@@ -119,6 +124,7 @@ const Calendar = (): React.JSX.Element => {
                 open={dialogOpen}
                 setOpen={setDialogOpen}
                 saveCallback={updateCalendarViewCallback}
+                removeCallback={removeEventCallback}
             />
             <div className="grow p-3">
                 <FullCalendar

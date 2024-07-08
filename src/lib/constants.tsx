@@ -1,4 +1,4 @@
-import { AiToneOption } from "@/components/reports/BlockEditor/types";
+import { AiToneOption } from "@/components/rich-text-editor/BlockEditor/types";
 
 // export const languages: LanguageOption[] = [
 //   { name: 'arabic', label: 'Arabic', value: 'ar' as LanguageOption['value'] },
