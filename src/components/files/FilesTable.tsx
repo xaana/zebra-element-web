@@ -50,6 +50,9 @@ import {
 } from "@/components/ui/icons";
 import { getVectorConfig } from "@/vector/getconfig";
 import { cn } from "@/lib/utils";
+import Modal from "matrix-react-sdk/src/Modal";
+import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
+import { _t } from "@/languageHandler";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -185,67 +188,117 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
         };
         const onFileInput = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
             const files = e.target.files;
-            if (files && files.length > 0) {
+            if (!files) return;
+            if (files.length>5){
+                Modal.createDialog(ErrorDialog, {
+                    title: _t("upload_failed_title"),
+                    description: "You can only upload up to 5 files at a time",
+                });
+                return;
+            }
+            if (files.length > 0) {
                 const configData = await getVectorConfig();
                 if (configData?.plugins["websocket"]) {
-                    const apiUrl = configData?.plugins["websocket"].url;
-                    const wsUrl = `${apiUrl}/pdf_upload`;
-                    const websocket = new WebSocket(wsUrl);
-                    const mxcUrl = generatePrimaryKey(18);
-                    let count = 0;
-                    setBusy(true);
-                    websocket.onopen = (): void => {
-                        // Example data to be sent to the server
-                        const textToSend = JSON.stringify({
-                            media_id: mxcUrl,
-                            room_id: null,
-                            event_id: null,
-                            user_id: [client.getUserId()],
-                            sender_id: client.getUserId(),
-                            media_type: files[0].type,
-                        });
-                        // Sending a JSON string as message to the websocket server
-                        websocket.send(textToSend);
-                        const reader = new FileReader();
-                        reader.readAsDataURL(files[0]);
-                        reader.onloadend = (): void => {
-                            const base64data = reader.result as string;
-                            const encodedPdf = base64data?.split(",")[1]; // Remove the data URL part
-                            const fileObjects = {
-                                filename: [files[0].name],
-                                content: [encodedPdf],
-                            };
+                    let completedConnections = 0;
+                    const progressArray = new Array(files.length).fill(0);   
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const fileName = file.name.toLowerCase();
+                        const allowedExtensions = ['.pdf', '.docx', '.doc', '.xlsx', '.xls', '.odt', '.rtf', '.csv', '.ods'];
 
-                            // Send encoded PDF data as string
-                            websocket.send(JSON.stringify(fileObjects));
-                        };
-                        websocket.onmessage = (event): void => {
-                            if (event.data.startsWith("success")) {
-                                count += 1 / 3;
-                                setProgress((prev) => prev + 1);
-                                if (count === 1) {
-                                    // all file completed reinitialize record state
-                                    onUpdate && onUpdate();
+                        // Check if the file has an allowed extension
+                        const isAllowedType = allowedExtensions.some(ext => fileName.endsWith(ext));
+                        if (!isAllowedType) {
+                        completedConnections+=1;
+                        progressArray[i]=10;
+                        Modal.createDialog(ErrorDialog, {
+                            title: _t("upload_failed_title"),
+                            description: "Found Unsupported file type. Allowed types: PDF, DOC, DOCX, ODT, RTF, XLS, XLSX, ODS.",
+                        });
+                        continue;}
+                        const apiUrl = configData?.plugins["websocket"].url;
+                        const wsUrl = `${apiUrl}/pdf_upload`;
+                        const websocket = new WebSocket(wsUrl);
+                        const mxcUrl = generatePrimaryKey(18);
+                        let count = 0;
+                        setBusy(true);
+                        websocket.onopen = (): void => {
+                            // Example data to be sent to the server
+                            const textToSend = JSON.stringify({
+                                media_id: mxcUrl,
+                                room_id: null,
+                                event_id: null,
+                                user_id: [client.getUserId()],
+                                sender_id: client.getUserId(),
+                                media_type: file.type,
+                            });
+                            // Sending a JSON string as message to the websocket server
+                            websocket.send(textToSend);
+                            const reader = new FileReader();
+                            reader.readAsDataURL(file);
+                            reader.onloadend = (): void => {
+                                const base64data = reader.result as string;
+                                const encodedPdf = base64data?.split(",")[1]; // Remove the data URL part
+                                const fileObjects = {
+                                    filename: [file.name],
+                                    content: [encodedPdf],
+                                };
+
+                                // Send encoded PDF data as string
+                                websocket.send(JSON.stringify(fileObjects));
+                            };
+                            websocket.onmessage = (event): void => {
+                                if (event.data.startsWith("success")) {
+                                    count += 1 / 3;
+                                    progressArray[i] +=1;
+                                    setProgress(Math.min(...progressArray));
+                                    if (count === 1) {
+                                        // all file completed reinitialize record state
+                                        completedConnections++;
+                                        onUpdate && onUpdate();
+                                        if (completedConnections === files.length) {
+                                            setBusy(false);
+                                            setProgress(0);
+                                        }
+                                        const updatedRowSelection: { [key: string]: boolean } = {};
+                                        for (const key in rowSelection) {
+                                            if (rowSelection.hasOwnProperty(key)) {
+                                                const incrementedKey = (parseInt(key, 10) + 1).toString();
+                                                updatedRowSelection[incrementedKey] = rowSelection[key];
+                                            }
+                                        }
+                                        setRowSelection(updatedRowSelection);
+                                    }
+                                } else if (event.data.startsWith("fail")) {
+                                    completedConnections+=1;
+                                    progressArray[i]=10;
+                                    Modal.createDialog(ErrorDialog, {
+                                        title: _t("upload_failed_title"),
+                                        description: `${file.name} upload failed, please try again.`,
+                                    });
+                                    if (completedConnections === files.length) {
+                                        setBusy(false);
+                                        setProgress(0);
+                                    }
+                                    // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
+                                }
+                            };
+                            websocket.onerror = (event): void => {
+                                console.error("WebSocket error observed:", event);
+                                completedConnections+=1;
+                                progressArray[i]=10;
+                                Modal.createDialog(ErrorDialog, {
+                                    title: _t("upload_failed_title"),
+                                    description: `${file.name} upload failed, please try again.`,
+                                });
+                                if (completedConnections === files.length) {
                                     setBusy(false);
                                     setProgress(0);
-                                    const updatedRowSelection: { [key: string]: boolean } = {};
-                                    for (const key in rowSelection) {
-                                        if (rowSelection.hasOwnProperty(key)) {
-                                            const incrementedKey = (parseInt(key, 10) + 1).toString();
-                                            updatedRowSelection[incrementedKey] = rowSelection[key];
-                                        }
-                                    }
-                                    setRowSelection(updatedRowSelection);
                                 }
-                            } else if (event.data.startsWith("fail")) {
                                 setBusy(false);
-                                // matrixClient.redactEvent(roomId, response.event_id,undefined,{reason: "Some error happened when processing the file"});
-                            }
-                        };
-                        websocket.onerror = (event): void => {
-                            console.error("WebSocket error observed:", event);
-                            setBusy(false);
-                        };
+                            };
+                        }
+                    
                     };
                 }
             }
@@ -572,6 +625,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 onChange={onFileInput}
                                 style={{ display: "none" }}
                                 accept=".pdf, .docx, .doc, .xlsx, .xls, .odt, .rtf, .csv, .ods"
+                                multiple
                             />
                         </div>
                     </div>
@@ -579,7 +633,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                     <div
                         className={cn(
                             "rounded-md border overflow-y-auto scrollbar--custom",
-                            mode === "standalone" ? "max-h-[400px] " : "max-h-[30vh]",
+                            mode === "standalone" ? "max-h-3/4 " : "max-h-full",
                         )}
                     >
                         <Table>
