@@ -18,7 +18,7 @@ const HeaderText = ({ showOutline }: { showOutline: boolean }): JSX.Element => {
                 />
             </div>
             <div>
-                <div className={cn("font-semibold", showOutline ? "text-lg" : "text-3xl")}>Generate Report</div>
+                <div className={cn("font-semibold", showOutline ? "text-lg" : "text-3xl")}>Generate Response</div>
                 {!showOutline && <div className="text-muted-foreground">Craft a report using Zebra AI</div>}
             </div>
         </div>
