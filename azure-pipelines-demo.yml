@@ -1,13 +1,13 @@
 trigger:
   branches:
     include:
-    - master
+    - master-demo
     
 
 pr:
   branches:
     include:
-    - master
+    - master-demo
     exclude:
     - '*'
 
@@ -18,7 +18,7 @@ stages:
 - stage: Deploy
   jobs:
   - job: Deploy
-    displayName: 'Deploy to UAT EC2 Instance'
+    displayName: 'Deploy to PROD Instance'
     steps:
     - task: UsePythonVersion@0
       inputs:
@@ -27,7 +27,7 @@ stages:
 
     - task: SSH@0
       inputs:
-        sshEndpoint: 'EC2 UAT Instance'
+        sshEndpoint: 'EC2 PROD Instance'
         runOptions: 'inline'
         inline: |
           cd /opt/zebra-element-web
@@ -40,21 +40,21 @@ stages:
           
     - task: SSH@0
       inputs:
-        sshEndpoint: 'EC2 UAT Instance'
+        sshEndpoint: 'EC2 PROD Instance'
         runOptions: inline
         inline: |
           cd /opt/zebra-element-web
           git config --global --add safe.directory /opt/zebra-element-web
-          sudo git checkout master || echo "Master branch not found"
+          sudo git checkout master-demo || echo "Master branch not found"
           sudo git fetch --all || echo "Remote changes not fetched"
-          sudo git reset --hard origin/master || echo "Git reset failed"
-          sudo git pull origin master || echo "Origin pull failed"
+          sudo git reset --hard origin/master-demo || echo "Git reset failed"
+          sudo git pull origin master-demo || echo "Origin pull failed"
         failOnStdErr: false
       continueOnError: true
 
     - task: SSH@0
       inputs:
-        sshEndpoint: 'EC2 UAT Instance'
+        sshEndpoint: 'EC2 PROD Instance'
         runOptions: inline
         inline: |
           cd /opt/zebra-element-web
