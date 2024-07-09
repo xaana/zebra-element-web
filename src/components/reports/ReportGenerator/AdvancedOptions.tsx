@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
 
@@ -72,7 +72,18 @@ export const AdvancedOptions = ({
     setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }): JSX.Element => {
     const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
-
+    const [listReport, setListReport] = React.useState<Report[]>([]);
+    useEffect(() => {
+        const listReport = reverseArray(allReports)
+        setListReport(listReport)
+    },[])
+    const reverseArray = (arr:Report[]):Report[] => {
+        const newArr = [];
+        for (let i = arr.length - 1; i >= 0; i--) {
+            newArr.push(arr[i]);
+        }
+        return newArr;
+    }
     return (
         <CollapsibleStyle>
             <Collapsible open={useAdvancedOptions} onOpenChange={setUseAdvancedOptions} className="w-full">
@@ -156,7 +167,7 @@ export const AdvancedOptions = ({
                                     className="h-auto text-sm py-1 justify-between"
                                 >
                                     {selectedTemplateId
-                                        ? allReports.find((report) => report.id === selectedTemplateId)?.name
+                                        ? listReport.find((report) => report.id === selectedTemplateId)?.name
                                         : "New From Blank"}
                                     <CaretSortIcon className="ml-1 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
@@ -189,7 +200,7 @@ export const AdvancedOptions = ({
                                         </CommandGroup>
                                         <CommandSeparator />
                                         <CommandGroup>
-                                            {allReports.map((report) => (
+                                            {listReport.map((report) => (
                                                 <CommandItem
                                                     key={report.id}
                                                     value={report.name}
