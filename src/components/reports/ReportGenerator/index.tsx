@@ -334,7 +334,7 @@ export const ReportGenerator = ({
                                                     }
                                                 }}
                                             >
-                                                {requirementDocuments.length > 0 ? "Generate Report" : "Next"}
+                                                {requirementDocuments.length > 0 ? "Generate Response" : "Next"}
                                                 {requirementDocuments.length > 0 ? (
                                                     <Icon name="Sparkles" className="ml-2 h-4 w-4" />
                                                 ) : (
