@@ -21,6 +21,92 @@ export function IconEllipses({ className, ...props }: React.ComponentProps<"svg"
     );
 }
 
+export function IconStarAdd({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <g fill="none">
+                <path
+                    d="M10.788 3.102c.495-1.003 1.926-1.003 2.421 0l2.358 4.778l5.273.766c1.107.16 1.549 1.522.748 2.303l-.905.882a6.462 6.462 0 0 0-1.517-.616l1.157-1.128l-5.05-.734a1.35 1.35 0 0 1-1.016-.739L11.998 4.04L9.74 8.614a1.35 1.35 0 0 1-1.016.739l-5.05.734l3.654 3.562c.318.31.463.757.388 1.195l-.862 5.029l4.149-2.181c.015.542.098 1.067.238 1.569l-3.958 2.081c-.99.52-2.148-.32-1.96-1.423l.901-5.251l-3.815-3.72c-.801-.78-.359-2.141.748-2.302L8.43 7.88l2.358-4.778zM23 17.5a5.5 5.5 0 1 0-11 0a5.5 5.5 0 0 0 11 0zm-5 .5l.001 2.503a.5.5 0 1 1-1 0V18h-2.505a.5.5 0 0 1 0-1H17v-2.501a.5.5 0 0 1 1 0v2.5h2.497a.5.5 0 0 1 0 1H18z"
+                    fill="currentColor"
+                />
+            </g>
+        </svg>
+    );
+}
+
+export function IconStarFilled({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <g fill="none">
+                <path
+                    d="M10.788 3.102c.495-1.003 1.926-1.003 2.421 0l2.358 4.778l5.273.766c1.107.16 1.549 1.522.748 2.303l-3.816 3.719l.901 5.25c.19 1.104-.968 1.945-1.959 1.424l-4.716-2.48l-4.715 2.48c-.99.52-2.148-.32-1.96-1.423l.901-5.251l-3.815-3.72c-.801-.78-.359-2.141.748-2.302L8.43 7.88l2.358-4.778z"
+                    fill="currentColor"
+                />
+            </g>
+        </svg>
+    );
+}
+
+export function IconStar({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <g fill="none">
+                <path
+                    d="M10.788 3.102c.495-1.003 1.926-1.003 2.421 0l2.358 4.778l5.273.766c1.107.16 1.549 1.522.748 2.303l-3.816 3.719l.901 5.25c.19 1.104-.968 1.945-1.959 1.424l-4.716-2.48l-4.715 2.48c-.99.52-2.148-.32-1.96-1.423l.901-5.251l-3.815-3.72c-.801-.78-.359-2.141.748-2.302L8.43 7.88l2.358-4.778zm1.21.937L9.74 8.614a1.35 1.35 0 0 1-1.016.739l-5.05.734l3.654 3.562c.318.31.463.757.388 1.195l-.862 5.029l4.516-2.375a1.35 1.35 0 0 1 1.257 0l4.516 2.375l-.862-5.03a1.35 1.35 0 0 1 .388-1.194l3.654-3.562l-5.05-.734a1.35 1.35 0 0 1-1.016-.739L11.998 4.04z"
+                    fill="currentColor"
+                />
+            </g>
+        </svg>
+    );
+}
+
+export function IconShortText({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            className={cn("h-4 w-4", className)}
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            {...props}
+        >
+            <path
+                d="M5 9h14c.55 0 1 .45 1 1s-.45 1-1 1H5c-.55 0-1-.45-1-1s.45-1 1-1zm0 4h8c.55 0 1 .45 1 1s-.45 1-1 1H5c-.55 0-1-.45-1-1s.45-1 1-1z"
+                fill="currentColor"
+            />
+        </svg>
+    );
+}
+
 export function IconChartDonut({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
     return (
         <svg
@@ -518,6 +604,24 @@ export function IconDatabase({ className, ...props }: React.ComponentProps<"svg"
             <ellipse cx="12" cy="5" rx="9" ry="3" />
             <path d="M3 5V19A9 3 0 0 0 21 19V5" />
             <path d="M3 12A9 3 0 0 0 21 12" />
+        </svg>
+    );
+}
+
+export function IconKnowledge({ className, ...props }: React.ComponentProps<"svg">): JSX.Element {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="#737d8c" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            className="lucide lucide-book-open">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
         </svg>
     );
 }

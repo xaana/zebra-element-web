@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
 import { SwitchSlideTransition } from "@/components/ui/transitions/switch-slide-transition";
+import { IconShortText } from "@/components/ui/icons";
 const audiences = ["Government", "Business", "College students", "Creatives", "Tech enthusiasts"];
 const tones = ["Professional", "Conversational", "Technical", "Academic", "Inspirational", "Humorous"];
 
@@ -31,7 +32,7 @@ const OutlineSettings = ({
             <div className="text-base text-muted-foreground font-semibold">Settings</div>
             <div className="bg-popover p-3 rounded-md mt-1 flex flex-col gap-5">
                 <div>
-                    <div className="text-sm font-medium text-muted-foreground mb-1">Amount of text per page</div>
+                    <div className="text-sm font-medium text-muted-foreground mb-1">Amount of text per section</div>
                     <ToggleGroup
                         size="sm"
                         type="single"
@@ -40,15 +41,16 @@ const OutlineSettings = ({
                         className="justify-start gap-0 w-full border rounded-sm overflow-hidden"
                     >
                         <ToggleGroupItem value="brief" aria-label="Toggle brief" className="flex-1 rounded-none">
-                            <Icon name="SignalLow" className="mr-1" />
+                            {/* <Icon name="SignalLow" className="mr-1" /> */}
+                            <IconShortText className="h-5 w-5 mr-1" />
                             Brief
                         </ToggleGroupItem>
                         <ToggleGroupItem value="medium" aria-label="Toggle medium" className="flex-1 rounded-none">
-                            <Icon name="SignalHigh" className="mr-1" />
+                            <Icon name="Text" className="mr-1" />
                             Medium
                         </ToggleGroupItem>
                         <ToggleGroupItem value="detailed" aria-label="Toggle detailed" className="flex-1 rounded-none">
-                            <Icon name="Signal" className="mr-1" />
+                            <Icon name="AlignJustify" className="mr-1" />
                             Detailed
                         </ToggleGroupItem>
                     </ToggleGroup>

@@ -1,11 +1,20 @@
-import React, {useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { EventApi, DateSelectArg, EventClickArg, EventContentArg, formatDate, CalendarApi } from "@fullcalendar/core";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { useMatrixClientContext } from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
-import { CalendarEventType, INITIAL_EVENTS, createEventId, formatToCalendarEventType, formatToCalendarInput } from "./event-utils";
+import {
+    CalendarEventType,
+    getNearestHalfPeriod,
+    deleteEvent,
+    formatToCalendarEventType,
+    formatToCalendarInput,
+    getEvent,
+    saveEvent,
+} from "./event-utils";
 import { EventDialog } from "./EventDialog";
 
 interface CalendarAppState {
@@ -14,6 +23,7 @@ interface CalendarAppState {
 }
 
 const Calendar = (): React.JSX.Element => {
+    const client = useMatrixClientContext();
     const [calState, setCalState] = useState<CalendarAppState>({
         weekendsVisible: true,
         currentEvents: [],
@@ -22,20 +32,18 @@ const Calendar = (): React.JSX.Element => {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const calendarRef = useRef(null);
 
-    const updateCalendarViewCallback = (
-        eventInfo: CalendarEventType,
-    ):void => {
+    const updateCalendarViewCallback = (eventInfo: CalendarEventType): void => {
         const calendarApi = calendarRef.current.getApi();
         const currCalendarEvent = eventInfo.id && calendarApi.getEventById(eventInfo.id);
         if (currCalendarEvent) {
             currCalendarEvent.remove();
         }
-        const formattedEvent = formatToCalendarInput(eventInfo)
+        const formattedEvent = formatToCalendarInput(eventInfo);
         calendarApi.addEvent(formattedEvent);
-    }
+    };
 
     const handleWeekendsToggle = (): void => {
-        setCalState(prevState => ({
+        setCalState((prevState) => ({
             ...prevState,
             weekendsVisible: !calState.weekendsVisible,
         }));
@@ -43,31 +51,69 @@ const Calendar = (): React.JSX.Element => {
 
     const handleDateSelect = (selectInfo: DateSelectArg): void => {
         const calendarApi = calendarRef.current.getApi();
-        const newEvent: CalendarEventType = {
-            startTime: selectInfo.start,
-            endTime: selectInfo.end,
+        const startTime = selectInfo.start;
+        const endTime = selectInfo.end;
+        const currentTime = new Date();
+        if (endTime.valueOf() - startTime.valueOf() === 86400000) {
+            startTime.setHours(currentTime.getHours());
+            startTime.setMinutes(currentTime.getMinutes());
+            endTime.setDate(startTime.getDate());
+            endTime.setMonth(startTime.getMonth());
+            endTime.setFullYear(startTime.getFullYear());
+            endTime.setHours(new Date(currentTime.valueOf() + 30 * 60 * 1000).getHours());
+            endTime.setMinutes(new Date(currentTime.valueOf() + 30 * 60 * 1000).getMinutes());
+        } else {
+            startTime.setHours(currentTime.getHours());
+            startTime.setMinutes(currentTime.getMinutes());
+            endTime.setHours(currentTime.getHours());
+            endTime.setMinutes(currentTime.getMinutes());
         }
+        const newEvent: CalendarEventType = {
+            startTime: getNearestHalfPeriod(startTime),
+            endTime: getNearestHalfPeriod(endTime),
+        };
         setSelectedEventInfo(newEvent);
         calendarApi.unselect();
         setDialogOpen(true);
-    }
+    };
 
     const handleEventClick = (clickInfo: EventClickArg): void => {
         const calendarApi = calendarRef.current.getApi();
-        // if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-        //     clickInfo.event.remove();
-        // }
         setSelectedEventInfo(formatToCalendarEventType(clickInfo.event));
         calendarApi.unselect();
         setDialogOpen(true);
     };
 
-    const handleEvents = (events: EventApi[]):void => {
-        setCalState(prevState => ({
+    const handleEvents = (events: EventApi[]): void => {
+        setCalState((prevState) => ({
             ...prevState,
             currentEvents: events,
         }));
     };
+
+    const updateEventCallback = (info: any): void => {
+        const userId = client.getUserId();
+        saveEvent(info.event, userId);
+    };
+
+    const removeEventCallback = (info: any): void => {
+        const calendarApi = calendarRef.current.getApi();
+        deleteEvent(info);
+        const targetEvent = calendarApi.getEventById(info.id);
+        targetEvent && targetEvent.remove();
+        calendarApi.unselect();
+        // setDialogOpen(false);
+    };
+
+    useEffect(() => {
+        const userId = client.getUserId();
+        const calendarApi = calendarRef.current.getApi();
+        getEvent(userId).then((res) => {
+            res.forEach((item) => {
+                calendarApi.addEvent(formatToCalendarInput(item));
+            });
+        });
+    }, []);
 
     return (
         <div className="flex h-full font-sans text-sm">
@@ -78,6 +124,7 @@ const Calendar = (): React.JSX.Element => {
                 open={dialogOpen}
                 setOpen={setDialogOpen}
                 saveCallback={updateCalendarViewCallback}
+                removeCallback={removeEventCallback}
             />
             <div className="grow p-3">
                 <FullCalendar
@@ -92,7 +139,7 @@ const Calendar = (): React.JSX.Element => {
                         today: "Today",
                         dayGridMonth: "Month",
                         timeGridWeek: "Week",
-                        timeGridDay: "Day"
+                        timeGridDay: "Day",
                     }}
                     initialView="dayGridMonth"
                     editable={true}
@@ -100,50 +147,19 @@ const Calendar = (): React.JSX.Element => {
                     selectMirror={true}
                     dayMaxEvents={true}
                     weekends={calState.weekendsVisible}
-                    initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+                    // initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
                     select={handleDateSelect}
                     eventContent={renderEventContent} // custom render function
                     eventClick={handleEventClick}
                     eventsSet={handleEvents} // called after events are initialized/added/changed/removed
                     height="100%"
-                    /* you can update a remote database when these fire:
-                    eventAdd={function(){}}
-                    eventChange={function(){}}
-                    eventRemove={function(){}}
-                    */
+                    eventAdd={updateEventCallback}
+                    eventChange={updateEventCallback}
+                    eventRemove={removeEventCallback}
                 />
             </div>
         </div>
     );
-
-    // renderSidebar() {
-    //     return (
-    //         <div className="demo-app-sidebar">
-    //             <div className="demo-app-sidebar-section">
-    //                 <h2>Instructions</h2>
-    //                 <ul>
-    //                     <li>Select dates and you will be prompted to create a new event</li>
-    //                     <li>Drag, drop, and resize events</li>
-    //                     <li>Click an event to delete it</li>
-    //                 </ul>
-    //             </div>
-    //             <div className="demo-app-sidebar-section">
-    //                 <label>
-    //                     <input
-    //                         type="checkbox"
-    //                         checked={this.state.weekendsVisible}
-    //                         onChange={this.handleWeekendsToggle}
-    //                     ></input>
-    //                     toggle weekends
-    //                 </label>
-    //             </div>
-    //             <div className="demo-app-sidebar-section">
-    //                 <h2>All Events ({this.state.currentEvents.length})</h2>
-    //                 <ul>{this.state.currentEvents.map(renderSidebarEvent)}</ul>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 };
 
 const renderEventContent = (eventContent: EventContentArg): React.JSX.Element => {
@@ -153,15 +169,6 @@ const renderEventContent = (eventContent: EventContentArg): React.JSX.Element =>
             <i>{eventContent.event.title}</i>
         </>
     );
-}
-
-// const renderSidebarEvent = (event: EventApi): React.JSX.Element => {
-//     return (
-//         <li key={event.id}>
-//             <b>{formatDate(event.start!, { year: "numeric", month: "short", day: "numeric" })}</b>
-//             <i>{event.title}</i>
-//         </li>
-//     );
-// }
+};
 
 export default Calendar;

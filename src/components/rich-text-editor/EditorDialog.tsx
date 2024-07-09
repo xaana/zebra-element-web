@@ -1,48 +1,34 @@
-import React, { memo, useCallback, useContext, useMemo, useRef, useState } from "react";
+import React, { memo, useContext, useMemo, useRef, useState } from "react";
 import { Editor, EditorContent } from "@tiptap/react";
 import { SendHorizontal } from "lucide-react";
 
-import "@/plugins/reports/styles/editor.css";
-import "@/plugins/reports/styles/index.css";
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
-import { ContentItemMenu, LinkMenu, TextMenu } from "../reports/menus";
-// import { AIDropdown } from "../reports/menus/TextMenu/components/AIDropdown";
-import { ContentTypePicker } from "../reports/menus/TextMenu/components/ContentTypePicker";
-// import { EditLinkPopover } from "../reports/menus/TextMenu/components/EditLinkPopover";
-import { FontFamilyPicker } from "../reports/menus/TextMenu/components/FontFamilyPicker";
-import { FontSizePicker } from "../reports/menus/TextMenu/components/FontSizePicker";
-import { useTextmenuCommands } from "../reports/menus/TextMenu/hooks/useTextmenuCommands";
-import { useTextmenuContentTypes } from "../reports/menus/TextMenu/hooks/useTextmenuContentTypes";
-import { useTextmenuStates } from "../reports/menus/TextMenu/hooks/useTextmenuStates";
-import { ColorPicker } from "../reports/panels";
-import { Surface } from "../ui/Surface";
-import { Toolbar } from "../ui/Toolbar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-// import { EditorInfo } from "../reports/BlockEditor/EditorInfo";
-import { IconZebra } from "../ui/icons";
-
+import "@/components/rich-text-editor/styles/editor.css";
+import "@/components/rich-text-editor/styles/index.css";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { ContentItemMenu, LinkMenu, TextMenu } from "@/components/rich-text-editor/menus";
+import { ContentTypePicker } from "@/components/rich-text-editor/menus/TextMenu/components/ContentTypePicker";
+import { FontFamilyPicker } from "@/components/rich-text-editor/menus/TextMenu/components/FontFamilyPicker";
+import { FontSizePicker } from "@/components/rich-text-editor/menus/TextMenu/components/FontSizePicker";
+import { useTextmenuCommands } from "@/components/rich-text-editor/menus/TextMenu/hooks/useTextmenuCommands";
+import { useTextmenuContentTypes } from "@/components/rich-text-editor/menus/TextMenu/hooks/useTextmenuContentTypes";
+import { useTextmenuStates } from "@/components/rich-text-editor/menus/TextMenu/hooks/useTextmenuStates";
+import { ColorPicker } from "@/components/rich-text-editor/panels";
+import { Surface } from "@/components/ui/Surface";
+import { Toolbar } from "@/components/ui/Toolbar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { IconZebra } from "@/components/ui/icons";
 import { Icon } from "@/components/ui/Icon";
-// import { TableOfContents } from "@/components/reports/TableOfContents";
-import { TableColumnMenu, TableRowMenu } from "@/plugins/reports/extensions/Table/menus";
-import ImageBlockMenu from "@/plugins/reports/extensions/ImageBlock/components/ImageBlockMenu";
-import { ColumnsMenu } from "@/plugins/reports/extensions/MultiColumn/menus";
+import { TableColumnMenu, TableRowMenu } from "@/components/rich-text-editor/extensions/Table/menus";
+import ImageBlockMenu from "@/components/rich-text-editor/extensions/ImageBlock/components/ImageBlockMenu";
+import { ColumnsMenu } from "@/components/rich-text-editor/extensions/MultiColumn/menus";
 import { useAIState } from "@/plugins/reports/hooks/useAIState";
 import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import { SidebarState, useSidebar } from "@/plugins/reports/hooks/useSidebar";
-import { useBlockEditor } from "@/plugins/reports/hooks/useBlockEditor";
-// import { Sidebar } from "@/components/reports/Sidebar";
-import { EditorContext } from "@/plugins/reports/context/EditorContext";
+import { useBlockEditor } from "@/components/rich-text-editor/hooks/useBlockEditor";
+import { EditorContext } from "@/components/rich-text-editor/context/EditorContext";
 import { ChatSidebar } from "@/components/reports/Chat/ChatSidebar";
-import { LinkEditorPanel } from "@/components/reports/panels";
-// import {
-//     DropdownMenu,
-//     DropdownMenuContent,
-//     DropdownMenuItem,
-//     DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import { MatrixEvent } from "matrix-js-sdk/src/matrix";
-// import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
+import { LinkEditorPanel } from "@/components/rich-text-editor/panels";
 
 const MemoButton = memo(Toolbar.Button);
 const MemoColorPicker = memo(ColorPicker);
@@ -66,12 +52,12 @@ const EditorDialog = (props: {
     const [open, setOpen] = useState(false);
     // const ydoc = useMemo(() => new YDoc(), []);
     // const { editor } = useBlockEditor({ydoc:ydoc});
-    const { editor } = useBlockEditor({});
+    const { editor } = useBlockEditor();
 
     const menuContainerRef = useRef(null);
     const editorRef = useRef<HTMLDivElement | null>(null);
 
-    const leftSidebar = useSidebar();
+    // const leftSidebar = useSidebar();
     const rightSidebar = useSidebar();
     const chat: Chat = useChat({
         isOpen: rightSidebar.isOpen,
@@ -96,13 +82,13 @@ const EditorDialog = (props: {
         words: () => 0,
     };
 
-    const handlePotentialCloseLeft = useCallback(() => {
-        if (window.innerWidth < 1024) {
-            leftSidebar.close();
-        }
-    }, [leftSidebar]);
+    // const handlePotentialCloseLeft = useCallback(() => {
+    //     if (window.innerWidth < 1024) {
+    //         leftSidebar.close();
+    //     }
+    // }, [leftSidebar]);
 
-    const handleOpenClose = (open: boolean) => {
+    const handleOpenClose = (open: boolean): void => {
         if (open) {
             setOpen(true);
             // load content from state or message composer

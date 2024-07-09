@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, {createRef, ReactNode} from "react";
+import React, { createRef, ReactNode } from "react";
 import classNames from "classnames";
 import {
     EventType,
@@ -24,64 +24,61 @@ import {
     RoomMember,
     THREAD_RELATION_TYPE,
 } from "matrix-js-sdk/src/matrix";
-import {Optional} from "matrix-events-sdk";
-import {_t} from "matrix-react-sdk/src/languageHandler";
-import {MatrixClientPeg} from "matrix-react-sdk/src/MatrixClientPeg";
+import { Optional } from "matrix-events-sdk";
+import { _t } from "matrix-react-sdk/src/languageHandler";
+import { MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
 import dis from "matrix-react-sdk/src/dispatcher/dispatcher";
-import {ActionPayload} from "matrix-react-sdk/src/dispatcher/payloads";
+import { ActionPayload } from "matrix-react-sdk/src/dispatcher/payloads";
 import Stickerpicker from "matrix-react-sdk/src/components/views/rooms/Stickerpicker";
-import {makeRoomPermalink, RoomPermalinkCreator} from "matrix-react-sdk/src/utils/permalinks/Permalinks";
+import { makeRoomPermalink, RoomPermalinkCreator } from "matrix-react-sdk/src/utils/permalinks/Permalinks";
 import E2EIcon from "matrix-react-sdk/src/components/views/rooms/E2EIcon";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import {aboveLeftOf, MenuProps} from "matrix-react-sdk/src/components/structures/ContextMenu";
+import { aboveLeftOf, MenuProps } from "matrix-react-sdk/src/components/structures/ContextMenu";
 import AccessibleTooltipButton from "matrix-react-sdk/src/components/views/elements/AccessibleTooltipButton";
 import ReplyPreview from "matrix-react-sdk/src/components/views/rooms/ReplyPreview";
-import {UPDATE_EVENT} from "matrix-react-sdk/src/stores/AsyncStore";
+import { UPDATE_EVENT } from "matrix-react-sdk/src/stores/AsyncStore";
 import VoiceRecordComposerTile from "matrix-react-sdk/src/components/views/rooms/VoiceRecordComposerTile";
-import {VoiceRecordingStore} from "matrix-react-sdk/src/stores/VoiceRecordingStore";
-import {RecordingState} from "matrix-react-sdk/src/audio/VoiceRecording";
-import Tooltip, {Alignment} from "matrix-react-sdk/src/components/views/elements/Tooltip";
+import { VoiceRecordingStore } from "matrix-react-sdk/src/stores/VoiceRecordingStore";
+import { RecordingState } from "matrix-react-sdk/src/audio/VoiceRecording";
+import Tooltip, { Alignment } from "matrix-react-sdk/src/components/views/elements/Tooltip";
 import ResizeNotifier from "matrix-react-sdk/src/utils/ResizeNotifier";
-import {E2EStatus} from "matrix-react-sdk/src/utils/ShieldUtils";
-import {ComposerInsertPayload} from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
-import {Action} from "matrix-react-sdk/src/dispatcher/actions";
+import { E2EStatus } from "matrix-react-sdk/src/utils/ShieldUtils";
+import { ComposerInsertPayload } from "matrix-react-sdk/src/dispatcher/payloads/ComposerInsertPayload";
+import { Action } from "matrix-react-sdk/src/dispatcher/actions";
 import EditorModel from "matrix-react-sdk/src/editor/model";
-import UIStore, {UI_EVENTS} from "matrix-react-sdk/src/stores/UIStore";
-import RoomContext, {TimelineRenderingType} from "matrix-react-sdk/src/contexts/RoomContext";
-import {SettingUpdatedPayload} from "matrix-react-sdk/src/dispatcher/payloads/SettingUpdatedPayload";
-import {ButtonEvent} from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
-import {ViewRoomPayload} from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
-import {isLocalRoom} from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
-import {Features} from "matrix-react-sdk/src/settings/Settings";
-import {VoiceMessageRecording} from "matrix-react-sdk/src/audio/VoiceMessageRecording";
+import UIStore, { UI_EVENTS } from "matrix-react-sdk/src/stores/UIStore";
+import RoomContext, { TimelineRenderingType } from "matrix-react-sdk/src/contexts/RoomContext";
+import { SettingUpdatedPayload } from "matrix-react-sdk/src/dispatcher/payloads/SettingUpdatedPayload";
+import { ButtonEvent } from "matrix-react-sdk/src/components/views/elements/AccessibleButton";
+import { ViewRoomPayload } from "matrix-react-sdk/src/dispatcher/payloads/ViewRoomPayload";
+import { isLocalRoom } from "matrix-react-sdk/src/utils/localRoom/isLocalRoom";
+import { Features } from "matrix-react-sdk/src/settings/Settings";
+import { VoiceMessageRecording } from "matrix-react-sdk/src/audio/VoiceMessageRecording";
 import {
     getConversionFunctions,
     sendMessage,
     SendWysiwygComposer,
 } from "matrix-react-sdk/src/components/views/rooms/wysiwyg_composer/";
-import {MatrixClientProps, withMatrixClientHOC} from "matrix-react-sdk/src/contexts/MatrixClientContext";
-import {
-    setUpVoiceBroadcastPreRecording
-} from "matrix-react-sdk/src/voice-broadcast/utils/setUpVoiceBroadcastPreRecording";
-import {SdkContextClass} from "matrix-react-sdk/src/contexts/SDKContext";
-import {VoiceBroadcastInfoState} from "matrix-react-sdk/src/voice-broadcast";
-import {
-    createCantStartVoiceMessageBroadcastDialog
-} from "matrix-react-sdk/src/components/views/dialogs/CantStartVoiceMessageBroadcastDialog";
-import {UIFeature} from "matrix-react-sdk/src/settings/UIFeature";
-import {formatTimeLeft} from "matrix-react-sdk/src/DateUtils";
+import { MatrixClientProps, withMatrixClientHOC } from "matrix-react-sdk/src/contexts/MatrixClientContext";
+import { setUpVoiceBroadcastPreRecording } from "matrix-react-sdk/src/voice-broadcast/utils/setUpVoiceBroadcastPreRecording";
+import { SdkContextClass } from "matrix-react-sdk/src/contexts/SDKContext";
+import { VoiceBroadcastInfoState } from "matrix-react-sdk/src/voice-broadcast";
+import { createCantStartVoiceMessageBroadcastDialog } from "matrix-react-sdk/src/components/views/dialogs/CantStartVoiceMessageBroadcastDialog";
+import { UIFeature } from "matrix-react-sdk/src/settings/UIFeature";
+import { formatTimeLeft } from "matrix-react-sdk/src/DateUtils";
 import MessageComposerButtons from "matrix-react-sdk/src/components/views/rooms/MessageComposerButtons";
+import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
+import { getFunctionalMembers } from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
+import { isJoinedOrNearlyJoined } from "matrix-react-sdk/src/utils/membership";
 
-import SendMessageComposer, {SendMessageComposer as SendMessageComposerClass} from "./SendMessageComposer";
-import {DocFile} from "./FileSelector";
+import SendMessageComposer, { SendMessageComposer as SendMessageComposerClass } from "./SendMessageComposer";
+import { DocFile } from "./FileSelector";
 
 import DatabasePill from "@/components/ui/databasePill";
 import FilesPill from "@/components/ui/FilesPill";
 import WebSearchPill from "@/components/ui/WebSearchPill";
-import DMRoomMap from "matrix-react-sdk/src/utils/DMRoomMap";
-import {getFunctionalMembers} from "matrix-react-sdk/src/utils/room/getFunctionalMembers";
 import SmartReply from "@/components/ui/SmartReply";
-import {isJoinedOrNearlyJoined} from "matrix-react-sdk/src/utils/membership";
+import KnowledgePill from "@/components/ui/KnowledgePill";
 
 let instanceCount = 0;
 
@@ -116,6 +113,7 @@ interface IProps extends MatrixClientProps {
     showStop?: boolean;
     stopBotStream?: () => void;
     canSend?: boolean;
+    knowledge?: boolean;
 }
 
 interface IState {
@@ -297,6 +295,7 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         stopBotStream={this.props.stopBotStream}
                         showStop={this.props.showStop}
                         canSend={this.props.canSend}
+                        knowledge={this.props.knowledge}
                     />
                 );
             }
@@ -382,8 +381,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
             "mx_MessageComposer_e2eStatus": hasE2EIcon,
             "mx_MessageComposer_wysiwyg": this.state.isWysiwygLabEnabled,
         });
-        let showSend=true;
-        if (this.props.canSend!==undefined) {
+        let showSend = true;
+        if (this.props.canSend !== undefined) {
             showSend = this.props.canSend;
         }
 
@@ -398,9 +397,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
                 {recordingTooltip}
 
                 <div className="flex flex-row ml-50 mb-2 justify-end">
-                    {this.state.smartReply.map((reply: string) => (
+                    {this.state.smartReply.map((reply: string, index) => (
                         <SmartReply
-                            key={reply}
+                            key={index}
                             reply={reply}
                             client={MatrixClientPeg.safeGet()}
                             roomId={this.context.roomId}
@@ -418,10 +417,17 @@ export class MessageComposer extends React.Component<IProps, IState> {
                         timelineRenderingType={this.context.timelineRenderingType}
                         roomId={this.context.roomId}
                     />
+                    {this.props.knowledge && (
+                        <KnowledgePill
+                            timelineRenderingType={this.context.timelineRenderingType}
+                            roomId={this.context.roomId}
+                        />
+                    )}
                     <div className="flex flex-row gap-x-1">
                         {this.props.files &&
-                            this.props.files.map((file) => (
+                            this.props.files.map((file, index) => (
                                 <FilesPill
+                                    key={index}
                                     file={file}
                                     files={this.props.files}
                                     timelineRenderingType={this.context.timelineRenderingType}
@@ -433,7 +439,8 @@ export class MessageComposer extends React.Component<IProps, IState> {
                     {this.context.timelineRenderingType === TimelineRenderingType.Thread &&
                         !this.props.database &&
                         this.props.files?.length === 0 &&
-                        this.state.showWebSearch && <WebSearchPill />}
+                        this.state.showWebSearch &&
+                        !this.props.knowledge && <WebSearchPill />}
                 </div>
                 <div className={`mx_MessageComposer_wrapper ${this.props.fromHomepage ? " text-start" : ""}`}>
                     <div className="mx_MessageComposer_row">
@@ -503,17 +510,20 @@ export class MessageComposer extends React.Component<IProps, IState> {
                                         }}
                                     />
                                 )}
-                                {showSendButton && !SdkContextClass.instance.roomViewStore.getUploading() && !this.props.showStop&& showSend && (
-                                    <SendButton
-                                        key="controls_send"
-                                        onClick={this.sendMessage}
-                                        title={
-                                            this.state.haveRecording
-                                                ? _t("composer|send_button_voice_message")
-                                                : undefined
-                                        }
-                                    />
-                                )}
+                                {showSendButton &&
+                                    !SdkContextClass.instance.roomViewStore.getUploading() &&
+                                    !this.props.showStop &&
+                                    showSend && (
+                                        <SendButton
+                                            key="controls_send"
+                                            onClick={this.sendMessage}
+                                            title={
+                                                this.state.haveRecording
+                                                    ? _t("composer|send_button_voice_message")
+                                                    : undefined
+                                            }
+                                        />
+                                    )}
                             </div>
                         )}
                     </div>
@@ -654,6 +664,9 @@ export class MessageComposer extends React.Component<IProps, IState> {
         }
         if (this.props.files && this.props.files.length > 0) {
             return "Send message to query documents...";
+        }
+        if (this.props.knowledge) {
+            return "Send message to query knowledge...";
         }
         if (this.props.replyToEvent) {
             const replyingToThread = this.props.relation?.rel_type === THREAD_RELATION_TYPE.name;

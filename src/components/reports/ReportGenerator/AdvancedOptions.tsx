@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import styled from "styled-components";
 
 import { MatrixFileSelector } from "@/components/reports/ReportGenerator/MatrixFileSelector";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
     Command,
     CommandEmpty,
@@ -19,43 +20,95 @@ import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 import { cn } from "@/lib/utils";
 import { MatrixFile } from "@/plugins/files/types";
+
+const CollapsibleStyle = styled.div`
+    .CollapsibleContent {
+        overflow: hidden;
+    }
+    .CollapsibleContent[data-state="open"] {
+        animation: slideDown 200ms ease-out;
+    }
+    .CollapsibleContent[data-state="closed"] {
+        animation: slideUp 200ms ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            height: 0;
+        }
+        to {
+            height: var(--radix-collapsible-content-height);
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            height: var(--radix-collapsible-content-height);
+        }
+        to {
+            height: 0;
+        }
+    }
+`;
 export const AdvancedOptions = ({
+    useAdvancedOptions,
+    setUseAdvancedOptions,
     allReports,
-    contentFiles,
-    setContentFiles,
+    requirementDocuments,
+    setRequirementDocuments,
+    supportingDocuments,
+    setSupportingDocuments,
     selectedTemplateId,
     setSelectedTemplateId,
 }: {
+    useAdvancedOptions: boolean;
+    setUseAdvancedOptions: React.Dispatch<React.SetStateAction<boolean>>;
     allReports: Report[];
-    contentFiles: MatrixFile[];
-    setContentFiles: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
+    requirementDocuments: MatrixFile[];
+    setRequirementDocuments: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
+    supportingDocuments: MatrixFile[];
+    setSupportingDocuments: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
     selectedTemplateId: string | undefined;
     setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }): JSX.Element => {
-    const [templateSelectorOpen, setTemplateSelectorOpen] = React.useState(false);
-
+    const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
+    const [listReport, setListReport] = React.useState<Report[]>([]);
+    useEffect(() => {
+        const listReport = reverseArray(allReports)
+        setListReport(listReport)
+    },[])
+    const reverseArray = (arr:Report[]):Report[] => {
+        const newArr = [];
+        for (let i = arr.length - 1; i >= 0; i--) {
+            newArr.push(arr[i]);
+        }
+        return newArr;
+    }
     return (
-        <Accordion type="single" collapsible className="w-auto m-0 p-0">
-            <AccordionItem value="item-1" hideBorder={true} className="m-0 p-0">
-                <AccordionTrigger className="w-auto m-0 p-0" hideIcon={true}>
-                    <div className="flex items-center gap-1">
-                        <Icon name="Settings" className="w-3 h-3" />
-                        <span className="text-sm">Advanced Options</span>
-                    </div>
-                </AccordionTrigger>
-                <AccordionContent className="w-auto m-0 pt-2 pb-1 flex flex-col gap-2">
-                    <div className="flex items-center gap-1">
-                        <div className="text-muted-foreground font-semibold text-xs">Supporting Documents:</div>
-                        {contentFiles.length > 0 ? (
+        <CollapsibleStyle>
+            <Collapsible open={useAdvancedOptions} onOpenChange={setUseAdvancedOptions} className="w-full">
+                <CollapsibleTrigger asChild>
+                    <Button size="sm" variant="link" className="text-sm text-foreground mx-0 px-0 h-auto mt-1">
+                        <Icon name="Settings" className="w-3 h-3 mr-1" />
+                        Advanced Options
+                    </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="CollapsibleContent px-3 flex flex-col gap-3">
+                    <div className="flex flex-col gap-1 mb-2 mt-2">
+                        <div className="text-muted-foreground font-semibold text-sm">Requirements Specification</div>
+                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
+                            Add documents specifying the requirements for this report
+                        </div>
+                        {requirementDocuments.length > 0 ? (
                             <div className="flex flex-wrap items-center justify-start gap-2">
-                                {contentFiles.map((contentFile, index) => (
+                                {requirementDocuments.map((contentFile, index) => (
                                     <Badge key={index} variant="outline" className="flex items-center gap-1 h-8">
                                         <div className="text-sm max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis">
                                             {contentFile.name}
                                         </div>
                                         <Button
                                             onClick={() =>
-                                                setContentFiles((prev) => prev.filter((_, i) => i !== index))
+                                                setRequirementDocuments((prev) => prev.filter((_, i) => i !== index))
                                             }
                                             variant="ghost"
                                             size="sm"
@@ -67,22 +120,54 @@ export const AdvancedOptions = ({
                                 ))}
                             </div>
                         ) : (
-                            <MatrixFileSelector setSelectedFiles={setContentFiles} />
+                            <MatrixFileSelector setSelectedFiles={setRequirementDocuments} />
                         )}
                     </div>
-                    <div className="flex items-center gap-1">
-                        <div className="text-muted-foreground font-semibold text-xs">Report Template:</div>
-                        <Popover open={templateSelectorOpen} onOpenChange={setTemplateSelectorOpen}>
-                            <PopoverTrigger asChild>
+                    <div className="flex flex-col gap-1 mb-2">
+                        <div className="text-muted-foreground font-semibold text-sm">Supporting Documents</div>
+                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
+                            Add contextual documents to support content generation
+                        </div>
+                        {supportingDocuments.length > 0 ? (
+                            <div className="flex flex-wrap items-center justify-start gap-2">
+                                {supportingDocuments.map((contentFile, index) => (
+                                    <Badge key={index} variant="outline" className="flex items-center gap-1 h-8">
+                                        <div className="text-sm max-w-[120px] overflow-hidden whitespace-nowrap text-ellipsis">
+                                            {contentFile.name}
+                                        </div>
+                                        <Button
+                                            onClick={() =>
+                                                setSupportingDocuments((prev) => prev.filter((_, i) => i !== index))
+                                            }
+                                            variant="ghost"
+                                            size="sm"
+                                            className="w-auto h-auto p-0.5 rounded-full"
+                                        >
+                                            <Icon name="X" className="w-3 h-3" />
+                                        </Button>
+                                    </Badge>
+                                ))}
+                            </div>
+                        ) : (
+                            <MatrixFileSelector setSelectedFiles={setSupportingDocuments} />
+                        )}
+                    </div>
+                    <div className="flex flex-col gap-1 mb-2">
+                        <div className="text-muted-foreground font-semibold text-sm">Style Template</div>
+                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
+                            Select an existing report to use as a styling template
+                        </div>
+                        <Popover open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
+                            <PopoverTrigger asChild className="w-[300px]">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     role="combobox"
-                                    aria-expanded={templateSelectorOpen}
+                                    aria-expanded={showTemplateSelector}
                                     className="h-auto text-sm py-1 justify-between"
                                 >
                                     {selectedTemplateId
-                                        ? allReports.find((report) => report.id === selectedTemplateId)?.name
+                                        ? listReport.find((report) => report.id === selectedTemplateId)?.name
                                         : "New From Blank"}
                                     <CaretSortIcon className="ml-1 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
@@ -101,7 +186,7 @@ export const AdvancedOptions = ({
                                                 value={undefined}
                                                 onSelect={(currentValue) => {
                                                     setSelectedTemplateId(undefined);
-                                                    setTemplateSelectorOpen(false);
+                                                    setShowTemplateSelector(false);
                                                 }}
                                             >
                                                 New From Blank
@@ -115,14 +200,14 @@ export const AdvancedOptions = ({
                                         </CommandGroup>
                                         <CommandSeparator />
                                         <CommandGroup>
-                                            {allReports.map((report) => (
+                                            {listReport.map((report) => (
                                                 <CommandItem
                                                     key={report.id}
                                                     value={report.name}
                                                     onSelect={(currentValue) => {
                                                         report.id !== selectedTemplateId &&
                                                             setSelectedTemplateId(report.id);
-                                                        setTemplateSelectorOpen(false);
+                                                        setShowTemplateSelector(false);
                                                     }}
                                                 >
                                                     {report.name}
@@ -142,8 +227,8 @@ export const AdvancedOptions = ({
                             </PopoverContent>
                         </Popover>
                     </div>
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+                </CollapsibleContent>
+            </Collapsible>
+        </CollapsibleStyle>
     );
 };

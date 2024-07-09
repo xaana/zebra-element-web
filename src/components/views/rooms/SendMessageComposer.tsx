@@ -264,6 +264,7 @@ interface ISendMessageComposerProps extends MatrixClientProps {
     stopBotStream?: () => void;
     showStop?: boolean;
     canSend?: boolean;
+    knowledge?: boolean;
     // updateCanSend?: (relation:any,room:Room) => void;
 }
 
@@ -610,6 +611,18 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                     });
                 }
             }
+            if (content && this.props.knowledge) {
+                content["knowledge"] = this.props.knowledge;
+                content["knowledgeSelected"] = ""
+                if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
+                    dis.dispatch({
+                        action: "select_knowledge",
+                        knowledge: false,
+                        roomId: roomId,
+                        context: this.context.timelineRenderingType,
+                    });
+                }
+            }
             if (content && this.props.files && this.props.files?.length > 0) {
                 content["fileSelected"] = this.props.files;
                 if (this.context.timelineRenderingType === TimelineRenderingType.Room) {
@@ -671,9 +684,20 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
     }
 
     public componentWillUnmount(): void {
-        dis.unregister(this.dispatcherRef);
         window.removeEventListener("beforeunload", this.saveStoredEditorState);
-        this.saveStoredEditorState();
+        if(!SdkContextClass.instance.roomViewStore.getUploading())
+            {this.saveStoredEditorState();}
+        else{
+            dis.dispatch({
+                action: "select_files",
+                files: [],
+                roomId: this.props.room.roomId,
+                context: this.context.timelineRenderingType,
+            });
+        }
+        dis.unregister(this.dispatcherRef);
+        
+        
     }
 
     private get editorStateKey(): string {
@@ -688,6 +712,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         localStorage.removeItem(this.editorStateKey);
         localStorage.removeItem(`database_${this.editorStateKey}`);
         localStorage.removeItem(`files_${this.editorStateKey}`);
+        localStorage.removeItem(`knowledge_${this.editorStateKey}`);
     }
 
     private restoreStoredEditorState(partCreator: PartCreator): Part[] | null {
@@ -699,6 +724,7 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         const json = localStorage.getItem(this.editorStateKey);
         const database = localStorage.getItem(`database_${this.editorStateKey}`);
         const files = localStorage.getItem(`files_${this.editorStateKey}`);
+        const knowledge = localStorage.getItem(`knowledge_${this.editorStateKey}`);
         if (json) {
             try {
                 const { parts: serializedParts, replyEventId } = JSON.parse(json);
@@ -720,6 +746,14 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
                 dis.dispatch({
                     action: "select_database",
                     database: database,
+                    roomId: this.context.roomId,
+                    context: this.context.timelineRenderingType,
+                });
+            }
+            if (knowledge) {
+                dis.dispatch({
+                    action: "select_knowledge",
+                    knowledge: JSON.parse(knowledge),
                     roomId: this.context.roomId,
                     context: this.context.timelineRenderingType,
                 });
@@ -754,6 +788,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
         }
         if (this.props.database) {
             localStorage.setItem(`database_${this.editorStateKey}`, this.props.database);
+            clear = false;
+        }
+        if (this.props.knowledge) {
+            localStorage.setItem(`knowledge_${this.editorStateKey}`, JSON.stringify(this.props.knowledge));
             clear = false;
         }
         if (clear) {

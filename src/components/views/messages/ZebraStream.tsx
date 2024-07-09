@@ -33,6 +33,7 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
             const temp = content.fileSelected[0].name.split(".");
             if(["png", "jpg", "jpeg", "webp", "gif"].includes(temp[temp.length-1])) setIsImage(true);
         }
+        if (content.type === "knowledge") fetchZiggyStream();
 
         return () => {
             // Cleanup logic if needed, e.g., aborting the fetch
@@ -116,6 +117,57 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
                 
             };
             const url = `${SettingsStore.getValue("botApiUrl")}/pdf_query_stream`;
+            const request = new Request(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+            const response = await fetch(request);
+            
+            // Check if response.body is not null
+            if (response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                const readStream = async () => {
+                    const { done, value } = await reader.read();
+                    if (done) {
+                        console.log("Stream complete");
+                        return;
+                    }
+                    // Decode the stream chunk to text
+                    const chunk = decoder.decode(value, { stream: true });
+                    // console.log("Stream chunk:", JSON.parse(chunk));
+                    const temp = chunk.split("$_$");
+                    if(temp[1]&&temp[1]!=="") setMarkdown(temp[1]);
+                    else{
+                        setMarkdown(temp[0]);
+                    }
+                    // Read the next chunk
+                    await readStream();
+                };
+
+                await readStream();
+            } else {
+                console.error('Response body is null.');
+            }
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
+    }
+
+    const fetchZiggyStream = async () => {
+        try {
+            const payload = {
+                roomId: roomId,
+                firstMessageEventId: eventId,
+                question: rawQuestion,
+                eventId:content.questionId,
+                pipeline: content.pipeline
+                
+            };
+            const url = `${SettingsStore.getValue("botApiUrl")}/pipeline_stream`;
             const request = new Request(url, {
                 method: "POST",
                 headers: {

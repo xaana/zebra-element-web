@@ -63,7 +63,7 @@ export const streamContent = async (
     });
 };
 
-export const generateContent = async (
+export const generateContentFromOutlines = async (
     documentPrompt: string,
     currentTitle: string,
     allTitles: string[],
@@ -97,6 +97,44 @@ export const generateContent = async (
         if (!content) throw new Error("No content generated", data);
 
         return content;
+    } catch (errPayload: any) {
+        console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
+        throw errPayload;
+    }
+};
+
+export const generateContentFromRequirements = async (
+    requirementDocumentIds: string, // csv
+    supportingDocumentIds: string, // csv
+    responseLength: string,
+    userId: string,
+): Promise<string | undefined> => {
+    try {
+        const res = await fetch(`${SettingsStore.getValue("cockpitApiUrl")}/v1/workflows/run`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer app-uLVwneZm4KsJimMqpkszBXJN",
+            },
+            body: JSON.stringify({
+                inputs: {
+                    requirement_csv: requirementDocumentIds,
+                    supporting_csv: supportingDocumentIds,
+                    response_length: responseLength,
+                },
+                response_mode: "blocking",
+                user: userId,
+            }),
+        });
+
+        const response = await res.json();
+        if (response.data.status === "succeeded") {
+            return response.data.outputs.text;
+        }
+        return;
+        // if (data.answer) {
+        //     return data.answer as string;
+        // } else return;
     } catch (errPayload: any) {
         console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
         throw errPayload;

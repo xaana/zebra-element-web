@@ -71,6 +71,7 @@ import { Bell, List } from "lucide-react";
 import ZebraStream from "./ZebraStream";
 import { DocFile } from "../rooms/FileSelector";
 import LinkPreviewGroup from "../rooms/LinkPreviewGroup";
+import KnowledgePrefix from "@/components/ui/KnowledgePrefix";
 
 const MAX_HIGHLIGHT_LENGTH = 4096;
 
@@ -752,6 +753,14 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             body = (
                 <div>
                     <DatabasePrefix database={database} />
+                    {body}
+                </div>
+            );
+        }
+        if (content.knowledge && content.open === undefined) {
+            body = (
+                <div>
+                    <KnowledgePrefix />
                     {body}
                 </div>
             );

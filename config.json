@@ -53,6 +53,7 @@
         },
         "reports": {
             "api": "http://localhost:8000",
+            "cockpitApi": "https://dev-memory.securezebra.com",
             "collaboraServerUrl": "http://localhost:63043",
             "wopiSrc": "http://host.docker.internal:8000"
         },

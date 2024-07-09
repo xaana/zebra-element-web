@@ -52,6 +52,7 @@
             "url": "https://zebra-eye-uat.algoreus.net"
         },
         "reports": {
+            "cockpitApi": "https://dev-memory.securezebra.com",
             "api": "https://zebraap2-demo.turium.ai",
             "collaboraServerUrl": "https://demo-reporting.turium.ai",
             "wopiSrc": "http://fastapi:8000"
