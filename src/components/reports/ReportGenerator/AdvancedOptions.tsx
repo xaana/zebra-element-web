@@ -20,6 +20,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Report } from "@/plugins/reports/types";
 import { cn } from "@/lib/utils";
 import { MatrixFile } from "@/plugins/files/types";
+import { Input } from "@/components/ui/input";
 
 const CollapsibleStyle = styled.div`
     .CollapsibleContent {
@@ -60,6 +61,7 @@ export const AdvancedOptions = ({
     setSupportingDocuments,
     selectedTemplateId,
     setSelectedTemplateId,
+    setName,
 }: {
     useAdvancedOptions: boolean;
     setUseAdvancedOptions: React.Dispatch<React.SetStateAction<boolean>>;
@@ -70,6 +72,7 @@ export const AdvancedOptions = ({
     setSupportingDocuments: React.Dispatch<React.SetStateAction<MatrixFile[]>>;
     selectedTemplateId: string | undefined;
     setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | undefined>>;
+    setName: React.Dispatch<React.SetStateAction<string>>
 }): JSX.Element => {
     const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
     const [listReport, setListReport] = React.useState<Report[]>([]);
@@ -83,7 +86,9 @@ export const AdvancedOptions = ({
         ];
         const temp = reverseArray(allReports)
         const filteredArray = temp.filter(obj => namesList.includes(obj.name));
-        setSelectedTemplateId(filteredArray[0].id)
+        if (filteredArray.length > 0) {
+            setSelectedTemplateId(filteredArray[0].id)
+        }
         setListReport(filteredArray)
     },[])
     const reverseArray = (arr:Report[]):Report[] => {
