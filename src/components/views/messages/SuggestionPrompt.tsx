@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { MessageCircleQuestion } from "lucide-react";
 import { IContent } from "matrix-js-sdk/src/matrix";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 import { Separator } from "@/components/ui/separator";
+import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 
 export const SuggestionPrompt = ({
     suggestions,
@@ -18,7 +19,14 @@ export const SuggestionPrompt = ({
 }) => {
     const client = useContext(MatrixClientContext);
     const [clicked, setClicked] = React.useState(false);
-
+    const [model, setModel] = React.useState("");
+    useEffect(() => {
+        getCurrentSetting()
+    },[])
+    const getCurrentSetting = async() => {
+        const model = await SettingsStore.getValue("LLMModel");
+        setModel(model);
+    }
     // if (!suggestions){
     //   return(
     //     <div className='space-y-2 mt-2'>
@@ -44,6 +52,9 @@ export const SuggestionPrompt = ({
                         onClick={async () => {
                             setClicked(true)
                             const content = { msgtype: "m.text", body: suggestion } as IContent;
+                            if (model){
+                                content.model = model
+                            }
                             if (Array.isArray(type) && type.length > 0) {
                                 content.fileSelected = type;
                                 content.forceDoc = true;

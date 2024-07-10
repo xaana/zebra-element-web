@@ -1196,4 +1196,8 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },
+    "LLMModel":{
+        supportedLevels: [SettingLevel.ACCOUNT],
+        default: "",
+    }
 };
