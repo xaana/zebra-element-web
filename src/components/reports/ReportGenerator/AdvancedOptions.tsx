@@ -74,8 +74,17 @@ export const AdvancedOptions = ({
     const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
     const [listReport, setListReport] = React.useState<Report[]>([]);
     useEffect(() => {
-        const listReport = reverseArray(allReports)
-        setListReport(listReport)
+        const namesList = [
+            'Fujitsu Proposal Template - Green.docx'
+            , 'Fujitsu Proposal Template - Blue.docx'
+            , 'Fujitsu Proposal Template - Orange.docx'
+            , 'Fujitsu Proposal Template - Red.docx'
+            , 'Fujitsu Proposal Template - Yellow.docx'
+        ];
+        const temp = reverseArray(allReports)
+        const filteredArray = temp.filter(obj => namesList.includes(obj.name));
+        setSelectedTemplateId(filteredArray[0].id)
+        setListReport(filteredArray)
     },[])
     const reverseArray = (arr:Report[]):Report[] => {
         const newArr = [];
@@ -181,7 +190,7 @@ export const AdvancedOptions = ({
                                     />
                                     <CommandList>
                                         <CommandEmpty>No report found.</CommandEmpty>
-                                        <CommandGroup>
+                                        {/* <CommandGroup>
                                             <CommandItem
                                                 value={undefined}
                                                 onSelect={(currentValue) => {
@@ -197,7 +206,7 @@ export const AdvancedOptions = ({
                                                     )}
                                                 />
                                             </CommandItem>
-                                        </CommandGroup>
+                                        </CommandGroup> */}
                                         <CommandSeparator />
                                         <CommandGroup>
                                             {listReport.map((report) => (
