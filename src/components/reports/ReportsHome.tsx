@@ -22,6 +22,7 @@ interface ReportsHomeProps {
     onDelete: (reportId: string) => Promise<void>;
     onAiGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
     allUsers: string[];
+    setName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ReportsHome = ({
@@ -35,6 +36,7 @@ export const ReportsHome = ({
     onDelete,
     onAiGenerate,
     allUsers,
+    setName,
 }: ReportsHomeProps): JSX.Element => {
     const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [filterValue, setFilterValue] = useState("all");
@@ -61,7 +63,7 @@ export const ReportsHome = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={onAiGenerate} allReports={reports} userId={userId} />
+                <ReportGenerator onReportGenerate={onAiGenerate} allReports={reports} userId={userId} setName={setName}/>
                 <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"

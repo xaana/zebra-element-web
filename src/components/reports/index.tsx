@@ -22,14 +22,23 @@ export const Reports = (): JSX.Element => {
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
     const [allUsers, setAllUsers] = useState<string[]>([]);
+    const [name, setName] = useState<string>();
 
     const createNewReport = async (
         documentName?: string,
         initialContent?: string,
         aiContent?: AiGenerationContent,
         fileType?: string,
+        name?: string,
     ): Promise<void> => {
         try {
+            let fileName = "Untitled";
+            if(name){
+                fileName = name
+            }else if (documentName) {
+                fileName = documentName;
+            }
+
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/create_document`, {
                 method: "POST",
                 headers: {
@@ -37,7 +46,7 @@ export const Reports = (): JSX.Element => {
                 },
                 body: JSON.stringify({
                     user_id: client.getSafeUserId(),
-                    document_name: documentName ?? "Untitled",
+                    document_name: fileName,
                     file_type: fileType ?? "docx",
                 }),
             });
@@ -47,7 +56,7 @@ export const Reports = (): JSX.Element => {
 
             const newReport: Report = {
                 id: data.document_id.toString(),
-                name: documentName ?? "Untitled",
+                name: fileName,
                 owner: client.getSafeUserId(),
                 accessType: "admin",
                 timestamp: new Date().toISOString(),
@@ -186,7 +195,7 @@ export const Reports = (): JSX.Element => {
         }
     };
 
-    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent): Promise<void> => {
+    const handleDuplicate = async (reportId: string, aiContent?: AiGenerationContent, name?: string): Promise<void> => {
         try {
             setIsLoading(true);
 
@@ -195,7 +204,7 @@ export const Reports = (): JSX.Element => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ user_id: userId, document_id: reportId }),
+                body: JSON.stringify({ user_id: userId, document_id: reportId, name:name }),
             });
             const data = await response.json();
 
@@ -228,7 +237,7 @@ export const Reports = (): JSX.Element => {
 
     const handleAiGenerate = async (aiContent: AiGenerationContent): Promise<void> => {
         if (aiContent.templateId !== undefined) {
-            await handleDuplicate(aiContent.templateId, aiContent);
+            await handleDuplicate(aiContent.templateId, aiContent,name);
         } else {
             const reportTitle =
                 aiContent.requirementDocuments && aiContent.requirementDocuments.length > 0
@@ -236,7 +245,7 @@ export const Reports = (): JSX.Element => {
                     : aiContent.allTitles.length > 0
                       ? aiContent.allTitles[0].substring(0, 30)
                       : "New Report";
-            await createNewReport(reportTitle, undefined, aiContent);
+            await createNewReport(reportTitle, undefined, aiContent,undefined,name);
         }
     };
 
@@ -320,6 +329,7 @@ export const Reports = (): JSX.Element => {
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
                         allUsers={allUsers}
+                        setName={setName}
                     />
                 </motion.div>
             )}
