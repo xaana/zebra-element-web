@@ -59,6 +59,7 @@ import SettingsSubsection, {
 // import InlineSpinner from "matrix-react-sdk/src/components/views/elements/InlineSpinner";
 import { ThirdPartyIdentifier } from "matrix-react-sdk/src/AddThreepid";
 import { SDKContext } from "matrix-react-sdk/src/contexts/SDKContext";
+import ModelSelectDropdown from "./ModelSelectDropdown";
 
 interface IProps {
     closeSettingsFn: () => void;
@@ -562,6 +563,7 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
             <SettingsTab data-testid="mx_GeneralUserSettingsTab">
                 <SettingsSection heading={_t("common|general")}>
                     <ProfileSettings />
+                    <ModelSelectDropdown />
                     {this.renderAccountSection()}
                     {/* {this.renderLanguageSection()} */}
                     {/* {supportsMultiLanguageSpellCheck ? this.renderSpellCheckSection() : null} */}
