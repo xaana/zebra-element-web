@@ -600,6 +600,10 @@ export class SendMessageComposer extends React.Component<ISendMessageComposerPro
 
             const threadId =
                 this.props.relation?.rel_type === THREAD_RELATION_TYPE.name ? this.props.relation.event_id : null;
+            const LLMModel = await SettingsStore.getValue("LLMModel");
+            if (content && LLMModel) {
+                content["model"] = LLMModel;
+            }
             if (content && this.props.database) {
                 content["database"] = this.props.database;
                 if (this.context.timelineRenderingType === TimelineRenderingType.Room) {

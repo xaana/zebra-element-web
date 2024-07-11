@@ -27,10 +27,12 @@ export const ReportGenerator = ({
     onReportGenerate,
     allReports,
     userId,
+    setName,
 }: {
     onReportGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
     allReports: Report[];
     userId: string;
+    setName: React.Dispatch<React.SetStateAction<string>>;
 }): JSX.Element => {
     const [prompt, setPrompt] = React.useState("");
     const [responseLength, setResponseLength] = React.useState("short");
@@ -316,6 +318,7 @@ export const ReportGenerator = ({
                                     setSupportingDocuments={setSupportingDocuments}
                                     requirementDocuments={requirementDocuments}
                                     setRequirementDocuments={setRequirementDocuments}
+                                    setName={setName}
                                 />
                                 <FadeTransition
                                     in={(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline}

@@ -40,7 +40,7 @@ export interface CollaboraExports {
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
     redo: () => void;
-    goToDocumentEnd: () => void;
+    goToSecondPage: () => void;
 }
 
 interface PendingRequest {
@@ -393,12 +393,12 @@ export function useCollabora({
         });
     };
 
-    const goToDocumentEnd = (): void => {
+    const goToSecondPage = (): void => {
         // .uno:ClearUndoStack
         sendMessage({
             MessageId: "Send_UNO_Command",
             SendTime: Date.now(),
-            Values: { Command: ".uno:GoToEndOfDoc" },
+            Values: { Command: ".uno:GoToNextPage" },
         });
     };
     const undo = (): void => {
@@ -434,7 +434,7 @@ export function useCollabora({
         );
         setIsAiLoading(false);
         if (generatedMarkdownContent) {
-            goToDocumentEnd();
+            goToSecondPage();
             // Insert html formatted content
             unified()
                 .use(remarkParse)
@@ -513,7 +513,7 @@ export function useCollabora({
                             if (index === 0) {
                                 // setIsAiLoading(false);
                                 // Start the sequential processing with the first received response
-                                goToDocumentEnd();
+                                goToSecondPage();
                                 processContentSequentially();
                             }
                         })
@@ -544,6 +544,6 @@ export function useCollabora({
         insertCustomHtml,
         undo,
         redo,
-        goToDocumentEnd,
+        goToSecondPage,
     } as CollaboraExports;
 }
