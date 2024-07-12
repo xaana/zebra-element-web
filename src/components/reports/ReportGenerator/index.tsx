@@ -225,7 +225,7 @@ export const ReportGenerator = ({
     return (
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
-                <Button className="font-semibold text-sm" size="sm">
+                <Button className="font-semibold text-sm" size="sm" onClick={()=>setName(undefined)}>
                     <div className="mr-2 relative">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2 border-none" />
