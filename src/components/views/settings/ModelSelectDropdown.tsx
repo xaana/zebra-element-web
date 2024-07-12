@@ -46,7 +46,8 @@ export const ModelSelectDropdown = (): React.JSX.Element => {
         setCurrModel(updatedValue)
     }
     return (
-        <div className="flex items-start space-x-2">
+        <div className="flex flex-row items-center space-x-4">
+            <span className="mr-2">Language Models:</span>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="w-[240px]">{currModel
