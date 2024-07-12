@@ -12,7 +12,7 @@ export const MainPanel = (): JSX.Element => {
 
     return (
         <>
-            <Toaster />
+            {/* <Toaster className="!pointer-events-auto" /> */}
             <TooltipProvider>
                 <Reports />
             </TooltipProvider>

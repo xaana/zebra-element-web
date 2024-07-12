@@ -225,7 +225,7 @@ export const ReportGenerator = ({
     return (
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
-                <Button className="font-semibold text-sm" size="sm">
+                <Button className="font-semibold text-sm" size="sm" onClick={()=>setName(undefined)}>
                     <div className="mr-2 relative">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2 border-none" />
@@ -250,7 +250,7 @@ export const ReportGenerator = ({
                         // background: "linear-gradient(transparent -50%, white 20%, white 80%, transparent 150%)",
                     }}
                 >
-                    <Toaster />
+                    {/* <Toaster /> */}
                     {showOutline && (
                         <div className="absolute top-4 left-4 z-20">
                             <Button

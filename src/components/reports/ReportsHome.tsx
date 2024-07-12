@@ -44,10 +44,14 @@ export const ReportsHome = ({
 
     useEffect(() => {
         if (filterValue === "owned") {
-            setFilteredReports(reports.filter((report) => report.owner === userId));
+            setFilteredReports(reports.filter((report) => report.owner === userId&&!report.name.toLowerCase().includes("template")));
         } else if (filterValue === "shared") {
             setFilteredReports(reports.filter((report) => report.owner !== userId));
-        } else {
+        } 
+        else if (filterValue === "template") {
+            setFilteredReports(reports.filter((report) => report.name.toLowerCase().includes("template")));
+        }
+        else {
             setFilteredReports(reports);
         }
     }, [filterValue, reports, userId]);
@@ -63,7 +67,7 @@ export const ReportsHome = ({
                 All Reports
             </div>
             <div className="flex items-center gap-2 mb-6">
-                <ReportGenerator onReportGenerate={onAiGenerate} allReports={reports} userId={userId} setName={setName}/>
+                <ReportGenerator onReportGenerate={onAiGenerate} allReports={reports} userId={userId} setName={setName} />
                 <ReportFileImport onFileUpload={onFileUpload} />
                 <Button
                     className="font-semibold text-sm"
@@ -93,6 +97,10 @@ export const ReportsHome = ({
                     <ToggleGroupItem value="owned" aria-label="Toggle templates">
                         <Icon name="FileCheck2" className="mr-2" />
                         My Reports
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="template" aria-label="Toggle templates">
+                        <Icon name="FileClock" className="mr-2" />
+                        My Templates
                     </ToggleGroupItem>
                     <ToggleGroupItem value="shared" aria-label="Toggle reports">
                         <Icon name="Users" className="mr-2" />
