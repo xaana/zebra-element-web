@@ -1198,6 +1198,6 @@ export const SETTINGS: { [setting: string]: ISetting } = {
     },
     "LLMModel":{
         supportedLevels: [SettingLevel.ACCOUNT],
-        default: "",
+        default: "Zebra LLM",
     }
 };
