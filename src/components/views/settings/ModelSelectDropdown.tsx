@@ -18,21 +18,20 @@ import { SettingLevel } from "matrix-react-sdk/src/settings/SettingLevel";
 import MatrixClientContext from "matrix-react-sdk/src/contexts/MatrixClientContext";
 
 export const ModelSelectDropdown = (): React.JSX.Element => {
-    const [open, setOpen] = React.useState<boolean>(false);
     const [currModel, setCurrModel] = React.useState("");
     const [models, setModels]= React.useState<string[]>([]);
-    const [position, setPosition] = React.useState<string>("Zebra");
     const client = useContext(MatrixClientContext);
 
     React.useEffect(()=>{
         //TODO
-        fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/llm_mgmt/get_model?user_id=${client.getUserId()}`, {
+        fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/llm_mgmt/get_model/${client.getUserId()}`, {
             method: 'GET', // GET is the default method, so this is optional
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then((res)=>res.json()
         ).then((data)=>{
+
             setModels(data);
         });
         getCurrentSetting();
