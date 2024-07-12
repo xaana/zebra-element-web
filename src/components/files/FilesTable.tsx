@@ -50,9 +50,8 @@ import {
 } from "@/components/ui/icons";
 import { getVectorConfig } from "@/vector/getconfig";
 import { cn } from "@/lib/utils";
-import Modal from "matrix-react-sdk/src/Modal";
-import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 import { _t } from "@/languageHandler";
+import { toast } from "sonner";
 
 const iconMapping: Record<string, React.ComponentType<React.ComponentProps<"svg">>> = {
     exe: IconDocumentEXE,
@@ -190,10 +189,11 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
             const files = e.target.files;
             if (!files) return;
             if (files.length>5){
-                Modal.createDialog(ErrorDialog, {
-                    title: _t("upload_failed_title"),
-                    description: "You can only upload up to 5 files at a time",
-                });
+                // Modal.createDialog(ErrorDialog, {
+                //     title: _t("upload_failed_title"),
+                //     description: "You can only upload up to 5 files at a time",
+                // });
+                toast.error("You can only upload up to 5 files at a time", { closeButton: true});
                 return;
             }
             if (files.length > 0) {
@@ -211,10 +211,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                         if (!isAllowedType) {
                         completedConnections+=1;
                         progressArray[i]=10;
-                        Modal.createDialog(ErrorDialog, {
-                            title: _t("upload_failed_title"),
-                            description: "Found Unsupported file type. Allowed types: PDF, DOC, DOCX, ODT, RTF, XLS, XLSX, ODS.",
-                        });
+                        toast.error("Found Unsupported file type. Allowed types: PDF, DOC, DOCX, ODT, RTF, XLS, XLSX, ODS.", { closeButton: true});
                         continue;}
                         const apiUrl = configData?.plugins["websocket"].url;
                         const wsUrl = `${apiUrl}/pdf_upload`;
@@ -272,10 +269,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 } else if (event.data.startsWith("fail")) {
                                     completedConnections+=1;
                                     progressArray[i]=10;
-                                    Modal.createDialog(ErrorDialog, {
-                                        title: _t("upload_failed_title"),
-                                        description: `${file.name} upload failed, please try again.`,
-                                    });
+                                    toast.error(`${file.name} upload failed, please try again.`, { closeButton: true});
                                     if (completedConnections === files.length) {
                                         setBusy(false);
                                         setProgress(0);
@@ -287,10 +281,7 @@ export const FilesTable = React.forwardRef<FilesTableHandle, FilesTableProps>(
                                 console.error("WebSocket error observed:", event);
                                 completedConnections+=1;
                                 progressArray[i]=10;
-                                Modal.createDialog(ErrorDialog, {
-                                    title: _t("upload_failed_title"),
-                                    description: `${file.name} upload failed, please try again.`,
-                                });
+                                toast.error(`${file.name} upload failed, please try again.`, { closeButton: true});
                                 if (completedConnections === files.length) {
                                     setBusy(false);
                                     setProgress(0);

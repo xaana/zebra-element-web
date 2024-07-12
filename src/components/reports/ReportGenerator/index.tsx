@@ -250,7 +250,7 @@ export const ReportGenerator = ({
                         // background: "linear-gradient(transparent -50%, white 20%, white 80%, transparent 150%)",
                     }}
                 >
-                    <Toaster />
+                    {/* <Toaster /> */}
                     {showOutline && (
                         <div className="absolute top-4 left-4 z-20">
                             <Button
