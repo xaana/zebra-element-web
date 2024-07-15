@@ -22,7 +22,7 @@ export const Reports = (): JSX.Element => {
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
     const [allUsers, setAllUsers] = useState<string[]>([]);
-    const [name, setName] = useState<string>();
+    const [name, setName] = useState<string>("");
 
     const createNewReport = async (
         documentName?: string,
@@ -330,6 +330,7 @@ export const Reports = (): JSX.Element => {
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
                         allUsers={allUsers}
+                        name={name}
                         setName={setName}
                     />
                 </motion.div>
