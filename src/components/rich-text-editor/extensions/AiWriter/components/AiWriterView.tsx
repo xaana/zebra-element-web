@@ -15,7 +15,7 @@ import { Loader } from "@/components/ui/LoaderAlt";
 import { Panel, PanelHeadline } from "@/components/ui/Panel";
 import { Textarea } from "@/components/ui/TextareaAlt";
 import { Icon } from "@/components/ui/Icon";
-import { AiTone, AiToneOption } from "@/components/reports/BlockEditor/types";
+import { AiTone, AiToneOption } from "@/components/rich-text-editor/BlockEditor/types";
 import { tones } from "@/lib/constants";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { Surface } from "@/components/ui/Surface";
@@ -25,9 +25,7 @@ import { FilesTable } from "@/components/files/FilesTable";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { dtoToFileAdapters, listFiles } from "@/components/files/FileOpsHandler";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkHtml from "remark-html";
+import { markdownToHtml } from "@/lib/utils/markdownToHtml";
 
 export interface DataProps {
     text: string;
@@ -167,14 +165,13 @@ export const AiWriterView = ({
         const to = from + node.nodeSize;
 
         previewText &&
-            unified()
-                .use(remarkParse)
-                .use(remarkHtml)
-                .process(previewText)
-                .then((file) => {
-                    editor.chain().focus().insertContentAt({ from, to }, String(file)).run();
+            markdownToHtml(previewText)
+                .then((html) => {
+                    editor.chain().focus().insertContentAt({ from, to }, html).run();
                 })
-                .catch(console.error);
+                .catch((error) => {
+                    console.error("Error while inserting report content:", error);
+                });
     }, [editor, previewText, getPos, node.nodeSize]);
 
     const discard = useCallback(() => {

@@ -43,6 +43,7 @@ import { getInitialScreenAfterLogin, getScreenFromLocation, init as initRouting,
 import { UserFriendlyError } from "../languageHandler";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Root } from "@vector-im/compound-web";
 
 // add React and ReactPerf to the global namespace, to make them easier to access via the console
 // this incidentally means we can forget our React imports in JSX files without penalty.
@@ -118,9 +119,11 @@ export async function loadApp(fragParams: {}, matrixChatRef: React.Ref<MatrixCha
     ModuleRunner.instance.invoke(WrapperLifecycle.Wrapper, wrapperOpts);
 
     return (
-        <wrapperOpts.Wrapper>
-            <Toaster />
+        <>
+        <Toaster offset={5} />
+    <wrapperOpts.Wrapper>
             <TooltipProvider>
+            
                 <MatrixChat
                     ref={matrixChatRef}
                     onNewScreen={onNewScreen}
@@ -133,7 +136,8 @@ export async function loadApp(fragParams: {}, matrixChatRef: React.Ref<MatrixCha
                     defaultDeviceDisplayName={defaultDeviceName}
                 />
             </TooltipProvider>
-        </wrapperOpts.Wrapper>
+        </wrapperOpts.Wrapper></>
+        
     );
 }
 

@@ -77,15 +77,8 @@ export const AdvancedOptions = ({
     const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
     const [listReport, setListReport] = React.useState<Report[]>([]);
     useEffect(() => {
-        const namesList = [
-            'Fujitsu Proposal Template - Green.docx'
-            , 'Fujitsu Proposal Template - Blue.docx'
-            , 'Fujitsu Proposal Template - Orange.docx'
-            , 'Fujitsu Proposal Template - Red.docx'
-            , 'Fujitsu Proposal Template - Yellow.docx'
-        ];
         const temp = reverseArray(allReports)
-        const filteredArray = temp.filter(obj => namesList.includes(obj.name));
+        const filteredArray = temp.filter(obj => obj.type==="template");
         if (filteredArray.length > 0) {
             setSelectedTemplateId(filteredArray[0].id)
         }
@@ -241,13 +234,6 @@ export const AdvancedOptions = ({
                                 </Command>
                             </PopoverContent>
                         </Popover>
-                    </div>
-                    <div className="flex flex-col gap-1 mb-2">
-                        <div className="text-muted-foreground font-semibold text-sm">Name of the new document (Optional)</div>
-                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
-                            Optional name for the generated document, you can change it later.
-                        </div>
-                        <Input placeholder="Name for your document" className="w-[240px]" onChange={(e) => setName(e.target.value)} />
                     </div>
                 </CollapsibleContent>
             </Collapsible>

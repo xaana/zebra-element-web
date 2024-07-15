@@ -22,7 +22,7 @@ export const Reports = (): JSX.Element => {
     const [nameDialogOpen, setNameDialogOpen] = useState(false);
     const [reportsFetched, setReportsFetched] = useState(false);
     const [allUsers, setAllUsers] = useState<string[]>([]);
-    const [name, setName] = useState<string>();
+    const [name, setName] = useState<string>("");
 
     const createNewReport = async (
         documentName?: string,
@@ -157,11 +157,12 @@ export const Reports = (): JSX.Element => {
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleFileUpload = async (file: File): Promise<void> => {
+    const handleFileUpload = async (file: File,template?:boolean): Promise<void> => {
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("user_id", userId);
+            formData.append("template",template? "Template" : "report");
             setIsLoading(true);
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
@@ -329,6 +330,7 @@ export const Reports = (): JSX.Element => {
                         onAiGenerate={handleAiGenerate}
                         onDelete={handleDeleteReport}
                         allUsers={allUsers}
+                        name={name}
                         setName={setName}
                     />
                 </motion.div>
