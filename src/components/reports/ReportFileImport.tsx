@@ -17,8 +17,10 @@ import { FilesTable } from "@/components/files/FilesTable";
 
 export const ReportFileImport = ({
     onFileUpload,
+    template,
 }: {
-    onFileUpload: (fileBlob: File) => Promise<void>;
+    onFileUpload: (fileBlob: File,template?:boolean) => Promise<void>;
+    template?:boolean;
 }): JSX.Element => {
     const [documents, setDocuments] = useState<MatrixFile[]>([]);
     const [filesDialogOpen, setFilesDialogOpen] = useState(false);
@@ -56,9 +58,29 @@ export const ReportFileImport = ({
         await onFileUpload(file);
     };
 
+    const handleTemplateFileSelection = async (matrixFile: MatrixFile): Promise<void> => {
+        if (!matrixFile.mimetype || MimeTypeToExtensionMapping[matrixFile.mimetype] === undefined) {
+            handleDialogToggle(false);
+            setTimeout(() => {
+                toast.error("Unsupported file type. Allowed types: PDF, DOC, DOCX, ODT, RTF, TXT, XLS, XLSX, ODS.");
+            }, 300);
+            return;
+        }
+
+        const fileBlob = await getFile(matrixFile.mediaId, client.getUserId() ?? "");
+        const file = new File([fileBlob], matrixFile.name, { type: matrixFile.mimetype });
+        handleDialogToggle(false);
+        await onFileUpload(file,template);
+    };
+
     useEffect(() => {
         if (Object.keys(rowSelection).length == 1) {
-            handleUploadedFileSelection(documents[parseInt(Object.keys(rowSelection)[0])]);
+            if (template) {
+                handleTemplateFileSelection(documents[parseInt(Object.keys(rowSelection)[0])]);
+            } else{
+                handleUploadedFileSelection(documents[parseInt(Object.keys(rowSelection)[0])]);
+            }
+            
         }
     }, [rowSelection]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -73,7 +95,7 @@ export const ReportFileImport = ({
                         onClick={() => setFilesDialogOpen(true)}
                     >
                         <Icon name="Import" className="mr-2" />
-                        Import from file
+                        {template ? "Import Template" : "Import from file"}
                     </Button>
                 </DialogTrigger>
                 <DialogContent className="w-[70vw] max-w-[70vw] h-[85vh] p-0 overflow-y-auto">
