@@ -7,7 +7,7 @@ import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { ShareReport } from "../ShareReport";
 import { RadioGroup, RadioGroupItem } from "../../ui/RadioGroup";
 
-import { IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
+import { IconDocumentExcel, IconDocumentPDF, IconDocumentText, IconDocumentWord } from "@/components/ui/icons";
 import {
     CommandDialog,
     CommandEmpty,
@@ -42,6 +42,47 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
+type DownloadType = {
+    type: "docx" | "doc" | "pdf" | "xlsx" | "xls";
+    label: string;
+    icon: React.ReactNode;
+};
+
+const documentSupportedDownloadTypes: DownloadType[] = [
+    {
+        type: "docx",
+        label: "Word Document (.docx)",
+        icon: <IconDocumentWord className="w-4 h-4 ml-1" />,
+    },
+    {
+        type: "doc",
+        label: "Word 2003 Document (.doc)",
+        icon: <IconDocumentText className="w-4 h-4 ml-1" />,
+    },
+    {
+        type: "pdf",
+        label: "PDF Document (.pdf)",
+        icon: <IconDocumentPDF className="w-4 h-4 ml-1" />,
+    },
+];
+const spreadsheetSupportedDownloadTypes: DownloadType[] = [
+    {
+        type: "xlsx",
+        label: "Excel Spreadsheet (.xlsx)",
+        icon: <IconDocumentExcel className="w-4 h-4 ml-1" />,
+    },
+    {
+        type: "xls",
+        label: "Excel 2003 Spreadsheet (.xls)",
+        icon: <IconDocumentExcel className="w-4 h-4 ml-1" />,
+    },
+    {
+        type: "pdf",
+        label: "PDF Document (.pdf)",
+        icon: <IconDocumentPDF className="w-4 h-4 ml-1" />,
+    },
+];
+
 export function ReportActions({
     row,
     onRename,
@@ -61,7 +102,7 @@ export function ReportActions({
     const [approveDialogOpen, setApproveDialogOpen] = useState(false);
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
-    const downloadFile = async (asType: "docx" | "doc" | "pdf"): Promise<void> => {
+    const downloadFile = async (asType: "docx" | "doc" | "pdf" | "xlsx" | "xls"): Promise<void> => {
         try {
             const documentId = row.id;
             const response = await fetch(
@@ -178,7 +219,34 @@ export function ReportActions({
                         <DropdownMenuSubTrigger>Download</DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                             <DropdownMenuSubContent>
-                                <DropdownMenuItem
+                                {row.fileType === "docx"
+                                    ? documentSupportedDownloadTypes.map((type, index) => (
+                                          <DropdownMenuItem
+                                              key={index}
+                                              onSelect={async (e: any) => {
+                                                  stopPropagation(e);
+                                                  setDropDownOpen(false);
+                                                  await downloadFile(type.type);
+                                              }}
+                                          >
+                                              {type.label}
+                                              <DropdownMenuShortcut>{type.icon}</DropdownMenuShortcut>
+                                          </DropdownMenuItem>
+                                      ))
+                                    : spreadsheetSupportedDownloadTypes.map((type, index) => (
+                                          <DropdownMenuItem
+                                              key={index}
+                                              onSelect={async (e: any) => {
+                                                  stopPropagation(e);
+                                                  setDropDownOpen(false);
+                                                  await downloadFile(type.type);
+                                              }}
+                                          >
+                                              {type.label}
+                                              <DropdownMenuShortcut>{type.icon}</DropdownMenuShortcut>
+                                          </DropdownMenuItem>
+                                      ))}
+                                {/* <DropdownMenuItem
                                     onSelect={async (e: any) => {
                                         stopPropagation(e);
                                         setDropDownOpen(false);
@@ -213,7 +281,7 @@ export function ReportActions({
                                     <DropdownMenuShortcut>
                                         <IconDocumentPDF className="w-4 h-4 ml-1" />
                                     </DropdownMenuShortcut>
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
