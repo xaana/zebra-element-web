@@ -321,6 +321,43 @@ export function useCollabora({
                 insertBefore: "sidebar",
             },
         });
+        sendMessage({
+            MessageId: "Insert_Button",
+            Values: {
+                id: "custom_toggle_zebra",
+                imgurl: `${window.location.origin}/img/zebra.svg`,
+                hint: "Zebra Chat",
+                mobile: true,
+                tablet: true,
+                label: "Zebra Chat",
+                insertBefore: "sidebar",
+            },
+        });
+        sendMessage({
+            MessageId: "Insert_Button",
+            Values: {
+                id: "custom_toggle_doc_query",
+                imgurl: `${window.location.origin}/img/ai-writer.svg`,
+                hint: "AI Writer",
+                mobile: true,
+                tablet: true,
+                label: "AI Writer",
+                insertBefore: "custom_toggle_zebra",
+            },
+        });
+        // Insert custom buttons for Zebra
+        sendMessage({
+            MessageId: "Insert_Button",
+            Values: {
+                id: "custom_toggle_data_query",
+                imgurl: `${window.location.origin}/img/data-query.svg`,
+                hint: "AI Database Query",
+                mobile: false,
+                tablet: true,
+                label: "AI Database Query",
+                insertBefore: "custom_toggle_doc_query",
+            },
+        });
     };
 
     const fetchSelectedText = async (): Promise<string | undefined> => {
@@ -357,7 +394,12 @@ export function useCollabora({
         if (response.result.value.length === 0) {
             return undefined;
         } else {
-            return response.result.value;
+            const cells: {[key: string]: any} = {}
+            Object.keys(response.result.value).forEach((key) => {
+                cells[response.result.value[key].value["0"].value as string] =  response.result.value[key].value["1"].value;
+            })
+            // position and value pairs, e.g. { "A1": "value", B3: "value" }
+            return cells;
         }
     };
 
