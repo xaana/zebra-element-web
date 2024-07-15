@@ -4,9 +4,6 @@ import * as Dropdown from "@radix-ui/react-dropdown-menu";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkHtml from "remark-html";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
@@ -24,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { Toolbar } from "@/components/ui/Toolbar";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { Badge } from "@/components/ui/badge";
+import { markdownToHtml } from "@/lib/utils/markdownToHtml";
 
 export type AiTone =
     | "academic"
@@ -197,14 +195,14 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
     const insert = useCallback(() => {
         // Insert html formatted content
         previewTextMd &&
-            unified()
-                .use(remarkParse)
-                .use(remarkHtml)
-                .process(previewTextMd)
-                .then((file) => {
-                    editor.insertCustomHtml(String(file));
+            markdownToHtml(previewTextMd)
+                .then((html) => {
+                    editor.insertCustomHtml(html);
                 })
-                .catch(console.error);
+                .catch((error) => {
+                    console.error("Error while inserting report content:", error);
+                    toast.error("Report generation failed. Please try again later.");
+                });
 
         onClose();
     }, [editor, previewTextMd, onClose]);
