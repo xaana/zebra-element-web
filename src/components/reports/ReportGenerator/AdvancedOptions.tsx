@@ -235,13 +235,6 @@ export const AdvancedOptions = ({
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <div className="flex flex-col gap-1 mb-2">
-                        <div className="text-muted-foreground font-semibold text-sm">Name of the new document (Optional)</div>
-                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
-                            Optional name for the generated document, you can change it later.
-                        </div>
-                        <Input placeholder="Name for your document" className="w-[240px]" onChange={(e) => setName(e.target.value)} />
-                    </div>
                 </CollapsibleContent>
             </Collapsible>
         </CollapsibleStyle>
