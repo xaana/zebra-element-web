@@ -146,6 +146,16 @@ export default class ThreadView extends React.Component<IProps, IState> {
                     this.setState({database: "", files: [],knowledge: true});
                 }
             }
+            const pdfUrls = localStorage.getItem(this.eventId);
+            if (pdfUrls) {
+                const urls = JSON.parse(pdfUrls);
+                Object.keys(urls).forEach((key: any) => {
+                    if (urls[key].url) {
+                        URL.revokeObjectURL(urls[key].url);
+                    }
+                })
+                localStorage.removeItem(this.eventId);
+            }
             this.updateCanSend();
         }
 
