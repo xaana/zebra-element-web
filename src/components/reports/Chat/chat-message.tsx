@@ -28,7 +28,7 @@ export function ChatMessage({ message, showRegenerate, ...props }: ChatMessagePr
                     <IconZebra className="h-5 w-5" />
                 )}
             </div>
-            <div className="ml-4 flex-1 space-y-2 overflow-hidden px-1 mt-[1px] leading-7">
+            <div className="ml-4 flex-1 space-y-2 overflow-auto px-1 mt-[1px] leading-7">
                 <MemoizedReactMarkdown
                     className="prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
                     remarkPlugins={[remarkGfm, remarkMath]}

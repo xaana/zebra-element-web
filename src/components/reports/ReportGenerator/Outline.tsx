@@ -17,7 +17,7 @@ const Outline = ({
     setOutlineItems,
     isOutlineLoading,
 }: {
-    pages: number;
+    pages: string;
     outlineItems: string[];
     setOutlineItems: React.Dispatch<React.SetStateAction<string[] | undefined>>;
     isOutlineLoading: boolean;
@@ -40,7 +40,7 @@ const Outline = ({
             <div className="mt-1 w-full bg-background p-3 rounded-md flex flex-col">
                 {isOutlineLoading ? (
                     <div className="flex flex-col gap-3.5">
-                        {Array.from({ length: pages }).map((_, index) => (
+                        {Array.from({ length: Number(pages) }).map((_, index) => (
                             <Skeleton key={index} className="w-full h-[36px] rounded" />
                         ))}
                     </div>
