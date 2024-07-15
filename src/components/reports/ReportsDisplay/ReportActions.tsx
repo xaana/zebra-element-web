@@ -246,42 +246,6 @@ export function ReportActions({
                                               <DropdownMenuShortcut>{type.icon}</DropdownMenuShortcut>
                                           </DropdownMenuItem>
                                       ))}
-                                {/* <DropdownMenuItem
-                                    onSelect={async (e: any) => {
-                                        stopPropagation(e);
-                                        setDropDownOpen(false);
-                                        await downloadFile("docx");
-                                    }}
-                                >
-                                    Word Document (.docx)
-                                    <DropdownMenuShortcut>
-                                        <IconDocumentWord className="w-4 h-4 ml-1" />
-                                    </DropdownMenuShortcut>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onSelect={async (e: any) => {
-                                        stopPropagation(e);
-                                        setDropDownOpen(false);
-                                        await downloadFile("doc");
-                                    }}
-                                >
-                                    Word 2003 Document (.doc)
-                                    <DropdownMenuShortcut>
-                                        <IconDocumentText className="w-4 h-4 ml-1" />
-                                    </DropdownMenuShortcut>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onSelect={async (e: any) => {
-                                        stopPropagation(e);
-                                        setDropDownOpen(false);
-                                        await downloadFile("pdf");
-                                    }}
-                                >
-                                    PDF Document (.pdf)
-                                    <DropdownMenuShortcut>
-                                        <IconDocumentPDF className="w-4 h-4 ml-1" />
-                                    </DropdownMenuShortcut>
-                                </DropdownMenuItem> */}
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
