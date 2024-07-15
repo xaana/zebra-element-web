@@ -16,7 +16,7 @@ interface ReportsHomeProps {
     userId: string;
     setSelectedReport: React.Dispatch<React.SetStateAction<Report | null | undefined>>;
     onCreateNewFromBlank: () => void;
-    onFileUpload: (file: File) => Promise<void>;
+    onFileUpload: (file: File,template?:boolean) => Promise<void>;
     onRename: (reportId: string, newName: string) => Promise<boolean>;
     onDuplicate: (reportId: string) => Promise<void>;
     onDelete: (reportId: string) => Promise<void>;
@@ -49,7 +49,7 @@ export const ReportsHome = ({
             setFilteredReports(reports.filter((report) => report.owner !== userId));
         } 
         else if (filterValue === "template") {
-            setFilteredReports(reports.filter((report) => report.name.toLowerCase().includes("template")));
+            setFilteredReports(reports.filter((report) => report.type === "template"));
         }
         else {
             setFilteredReports(reports);
@@ -69,6 +69,7 @@ export const ReportsHome = ({
             <div className="flex items-center gap-2 mb-6">
                 <ReportGenerator onReportGenerate={onAiGenerate} allReports={reports} userId={userId} setName={setName} />
                 <ReportFileImport onFileUpload={onFileUpload} />
+                <ReportFileImport onFileUpload={onFileUpload} template={true} />
                 <Button
                     className="font-semibold text-sm"
                     onClick={() => onCreateNewFromBlank()} // open blank editor
