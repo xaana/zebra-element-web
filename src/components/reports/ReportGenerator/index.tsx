@@ -22,17 +22,21 @@ import { AiGenerationContent, Report } from "@/plugins/reports/types";
 import { Separator } from "@/components/ui/separator";
 import { mediaIdsFromFiles } from "@/plugins/files/utils";
 import PagesSelector from "@/components/reports/ReportGenerator/PagesSelector";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const ReportGenerator = ({
     onReportGenerate,
     allReports,
     userId,
     setName,
+    name,
 }: {
     onReportGenerate: (aiGenerate: AiGenerationContent) => Promise<void>;
     allReports: Report[];
     userId: string;
     setName: React.Dispatch<React.SetStateAction<string>>;
+    name: string;
 }): JSX.Element => {
     const [prompt, setPrompt] = React.useState("");
     const [responseLength, setResponseLength] = React.useState("short");
@@ -225,7 +229,7 @@ export const ReportGenerator = ({
     return (
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
-                <Button className="font-semibold text-sm" size="sm" onClick={()=>setName(undefined)}>
+                <Button className="font-semibold text-sm" size="sm" onClick={()=>setName("")}>
                     <div className="mr-2 relative">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2 border-none" />
@@ -307,7 +311,17 @@ export const ReportGenerator = ({
                             </>
                         ) : (
                             <>
-                                <PagesSelector responseLength={responseLength} setResponseLength={setResponseLength} />
+                                <div className="flex flex-row gap-1 mb-2 justify-between">
+                                    <PagesSelector responseLength={responseLength} setResponseLength={setResponseLength} />
+                                    
+                                        {/* <div className="text-muted-foreground font-semibold text-sm">Name of the new document (Optional)</div>
+                                        <div className="text-xs text-muted-foreground font-normal mb-1.5">
+                                            Optional name for the generated document, you can change it later.
+                                        </div> */}
+                                    <div className="flex flex-row justify-center items-center gap-1"><Label>Name:</Label>
+                                        <Input placeholder="Name for your document" className="w-[240px]" onChange={(e) => setName(e.target.value)} />
+                                    </div>
+                                </div>
                                 <AdvancedOptions
                                     useAdvancedOptions={useAdvancedOptions}
                                     setUseAdvancedOptions={setUseAdvancedOptions}
@@ -321,7 +335,7 @@ export const ReportGenerator = ({
                                     setName={setName}
                                 />
                                 <FadeTransition
-                                    in={(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline}
+                                    in={(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline && name.length > 0}
                                     nodeRef={buttonRef}
                                 >
                                     <div ref={buttonRef} className="w-full mx-auto mt-2">
