@@ -37,9 +37,9 @@ export const ReportCard = ({
             <div className="w-full aspect-video relative shrink-0">
                 <Badge
                     className={cn(
-                        "absolute bottom-0 right-0 m-2 uppercase tracking-wide text-[10px] leading-none p-1",
+                        "absolute bottom-0 right-0 m-2 uppercase tracking-wide text-[10px] leading-none p-1 bg-white hover:bg-white",
                         // report.fileType === "docx" ? "bg-[#D7E9FF] text-[#2d74be]" : "bg-[#CFE3D7] text-[#3c9063]",
-                        report.fileType === "docx" ? "bg-white text-[#2d74be]" : "bg-white text-[#3c9063]",
+                        report.fileType === "docx" ? "text-[#2d74be]" : "text-[#3c9063]",
                     )}
                     variant="secondary"
                 >
