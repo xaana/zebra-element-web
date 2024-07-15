@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkHtml from "remark-html";
 import { toast } from "sonner";
 
 import { Report } from "@/plugins/reports/types";
@@ -11,6 +8,7 @@ import {
     generateContentFromRequirements,
 } from "@/plugins/reports/utils/generateEditorContent";
 import { mediaIdsFromFiles } from "@/plugins/files/utils";
+import { markdownToHtml } from "@/lib/utils/markdownToHtml";
 
 export type CollaboraPostMessage = {
     MessageId: string;
@@ -478,15 +476,12 @@ export function useCollabora({
         if (generatedMarkdownContent) {
             goToSecondPage();
             // Insert html formatted content
-            unified()
-                .use(remarkParse)
-                .use(remarkHtml)
-                .process(generatedMarkdownContent)
-                .then((file) => {
-                    insertCustomHtml(String(file));
+            markdownToHtml(generatedMarkdownContent)
+                .then((html) => {
+                    insertCustomHtml(html);
                 })
                 .catch((error) => {
-                    console.error(error);
+                    console.error("Error while inserting report content:", error);
                     toast.error("Report generation failed. Please try again later.");
                 });
         } else {
