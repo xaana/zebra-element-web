@@ -162,7 +162,7 @@ export const Reports = (): JSX.Element => {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("user_id", userId);
-            formData.append("template",template? "Template" : "");
+            formData.append("template",template? "Template" : "report");
             setIsLoading(true);
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
