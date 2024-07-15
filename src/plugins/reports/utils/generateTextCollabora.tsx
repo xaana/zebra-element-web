@@ -1,12 +1,10 @@
 import React from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkHtml from "remark-html";
 
 import { Chat } from "@/plugins/reports/hooks/use-chat";
 import { CollaboraExports } from "@/plugins/reports/hooks/useCollabora";
 import { ResponseActionCollabora } from "@/components/reports/Chat/response-action-collabora";
+import { markdownToHtml } from "@/lib/utils/markdownToHtml";
 
 export const generateText = async (
     task: string,
@@ -79,14 +77,13 @@ export const generateText = async (
             // editor.insertText(response, false);
 
             // Insert markdown->html converted response
-            unified()
-                .use(remarkParse)
-                .use(remarkHtml)
-                .process(response)
-                .then((file) => {
-                    editor.insertCustomHtml(String(file));
+            markdownToHtml(response)
+                .then((html) => {
+                    editor.insertCustomHtml(html);
                 })
-                .catch(console.error);
+                .catch((error) => {
+                    console.error("Error while converting md to html:", error);
+                });
         };
 
         reader &&
