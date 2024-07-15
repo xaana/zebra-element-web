@@ -77,15 +77,8 @@ export const AdvancedOptions = ({
     const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
     const [listReport, setListReport] = React.useState<Report[]>([]);
     useEffect(() => {
-        const namesList = [
-            'Fujitsu Proposal Template - Green.docx'
-            , 'Fujitsu Proposal Template - Blue.docx'
-            , 'Fujitsu Proposal Template - Orange.docx'
-            , 'Fujitsu Proposal Template - Red.docx'
-            , 'Fujitsu Proposal Template - Yellow.docx'
-        ];
         const temp = reverseArray(allReports)
-        const filteredArray = temp.filter(obj => namesList.includes(obj.name));
+        const filteredArray = temp.filter(obj => obj.type==="template");
         if (filteredArray.length > 0) {
             setSelectedTemplateId(filteredArray[0].id)
         }

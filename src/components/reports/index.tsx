@@ -157,11 +157,12 @@ export const Reports = (): JSX.Element => {
         }
     }, [selectedReport]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleFileUpload = async (file: File): Promise<void> => {
+    const handleFileUpload = async (file: File,template?:boolean): Promise<void> => {
         try {
             const formData = new FormData();
             formData.append("file", file);
             formData.append("user_id", userId);
+            formData.append("template",template? "Template" : "");
             setIsLoading(true);
             const response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/reports/upload_document`, {
                 method: "POST",
