@@ -1,6 +1,6 @@
 import React from "react";
 import SettingsStore from "matrix-react-sdk/src/settings/SettingsStore";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 import SamplePrompts from "./SamplePrompts";
 import HeaderText from "./HeaderText";
@@ -135,7 +135,7 @@ export const ReportGenerator = ({
                 ]);
                 toast.success("Prompt saved successfully.", { closeButton: true });
                 setPromptSaveStatus(promptText);
-                !showOutline && setPrompt("");
+                // !showOutline && setPrompt("");
             } else {
                 toast.error("Failed to save prompt. Please try again later.", { closeButton: true });
             }
@@ -229,7 +229,7 @@ export const ReportGenerator = ({
     return (
         <Dialog open={drawerOpen} onOpenChange={handleDialogToggle}>
             <DialogTrigger asChild>
-                <Button className="font-semibold text-sm" size="sm" onClick={()=>setName("")}>
+                <Button className="font-semibold text-sm" size="sm" onClick={() => setName("")}>
                     <div className="mr-2 relative">
                         <IconZebra className="w-5 h-5" />
                         <Icon name="Sparkles" className="absolute -top-1 -right-1 h-2 w-2 border-none" />
@@ -312,14 +312,22 @@ export const ReportGenerator = ({
                         ) : (
                             <>
                                 <div className="flex flex-row gap-1 mb-2 justify-between">
-                                    <PagesSelector responseLength={responseLength} setResponseLength={setResponseLength} />
-                                    
-                                        {/* <div className="text-muted-foreground font-semibold text-sm">Name of the new document (Optional)</div>
+                                    <PagesSelector
+                                        responseLength={responseLength}
+                                        setResponseLength={setResponseLength}
+                                    />
+
+                                    {/* <div className="text-muted-foreground font-semibold text-sm">Name of the new document (Optional)</div>
                                         <div className="text-xs text-muted-foreground font-normal mb-1.5">
                                             Optional name for the generated document, you can change it later.
                                         </div> */}
-                                    <div className="flex flex-row justify-center items-center gap-1"><Label>Name:</Label>
-                                        <Input placeholder="Name for your document" className="w-[240px]" onChange={(e) => setName(e.target.value)} />
+                                    <div className="flex flex-row justify-center items-center gap-1">
+                                        <Label>Name:</Label>
+                                        <Input
+                                            placeholder="Name for your document"
+                                            className="w-[240px]"
+                                            onChange={(e) => setName(e.target.value)}
+                                        />
                                     </div>
                                 </div>
                                 <AdvancedOptions
@@ -335,7 +343,11 @@ export const ReportGenerator = ({
                                     setName={setName}
                                 />
                                 <FadeTransition
-                                    in={(prompt.length > 0 || requirementDocuments.length > 0) && !showOutline && name.length > 0}
+                                    in={
+                                        (prompt.length > 0 || requirementDocuments.length > 0) &&
+                                        !showOutline &&
+                                        name.length > 0
+                                    }
                                     nodeRef={buttonRef}
                                 >
                                     <div ref={buttonRef} className="w-full mx-auto mt-2">

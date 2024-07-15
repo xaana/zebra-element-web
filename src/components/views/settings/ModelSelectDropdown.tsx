@@ -31,8 +31,7 @@ export const ModelSelectDropdown = (): React.JSX.Element => {
             }
         }).then((res)=>res.json()
         ).then((data)=>{
-
-            setModels(data);
+            if(Array.isArray(data))setModels(data);
         });
         getCurrentSetting();
     },[]);
