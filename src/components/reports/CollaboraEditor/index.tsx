@@ -82,9 +82,9 @@ const CollaboraEditor = ({
                         style={{ height: "100vh", width: "100%" }}
                         // className="flex-1"
                         ref={editorRef}
-                        title="Collabora Online Viewer"
-                        id="collabora-online-viewer"
-                        name="collabora-online-viewer"
+                        title="AlgoReports Editor"
+                        id="algoReports-editor"
+                        name="algoReports-editor"
                         allow="clipboard-read *; clipboard-write *"
                         src={editor.startLoading ? editor.wopiUrl : ""}
                     />
