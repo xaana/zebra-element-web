@@ -50,6 +50,7 @@ export const generateText = async (
                 text: textSelection,
                 task,
                 tone: tone || "",
+                user_id: SettingsStore.getValue("userId"),
             }),
         });
 
