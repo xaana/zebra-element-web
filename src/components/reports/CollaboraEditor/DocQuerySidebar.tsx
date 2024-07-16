@@ -168,6 +168,7 @@ const DocQuerySidebar = ({ onClose, editor }: { onClose: () => void; editor: Col
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
+                        user_id: SettingsStore.getValue("userId"),
                         user_requirement: payload.text,
                         media_ids: extractedFilenames,
                         ...(payload.tone && payload.tone.length > 0 ? { tone: payload.tone } : {}),
