@@ -76,11 +76,11 @@ const spreadsheetSupportedDownloadTypes: DownloadType[] = [
         label: "Excel 2003 Spreadsheet (.xls)",
         icon: <IconDocumentExcel className="w-4 h-4 ml-1" />,
     },
-    {
-        type: "pdf",
-        label: "PDF Document (.pdf)",
-        icon: <IconDocumentPDF className="w-4 h-4 ml-1" />,
-    },
+    // {
+    //     type: "pdf",
+    //     label: "PDF Document (.pdf)",
+    //     icon: <IconDocumentPDF className="w-4 h-4 ml-1" />,
+    // },
 ];
 
 export function ReportActions({
