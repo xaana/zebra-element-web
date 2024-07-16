@@ -136,6 +136,7 @@ export const AiWriterView = ({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
+                        user_id: SettingsStore.getValue("userId"),
                         user_requirement: payload.text,
                         tone: payload.tone || "",
                         media_ids: extractedFilenames,
