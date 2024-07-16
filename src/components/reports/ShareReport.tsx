@@ -45,6 +45,18 @@ export const ShareReport = ({
 
             if (response.status === 200) {
                 toast.success(`Document shared successfully.`, { closeButton: true });
+                await fetch(`${SettingsStore.getValue("botApiUrl")}/send_approval`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId: cli.getSafeUserId(),
+                        receiverId: userId,
+                        fileName: report.name,
+                        shared:true
+                    }),
+                })
             } else if (response.status === 403) {
                 toast.error(`Unable to share. You do not have admin privileges for this document.`, {
                     closeButton: true,
