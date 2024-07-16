@@ -29,8 +29,6 @@ export { FileHandler } from "@tiptap-pro/extension-file-handler";
 export { Selection } from "./Selection";
 export { AiWriter } from "./AiWriter";
 export { AiDataQuery } from "./AiDataQuery";
-export { AiTextModify } from "./AiTextModify";
-// export { AiImage } from './AiImage'
 export { Table, TableCell, TableHeader, TableRow } from "./Table";
 export { HorizontalRule } from "./HorizontalRule";
 export { Heading } from "./Heading";
