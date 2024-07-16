@@ -49,6 +49,8 @@ import ZebraAlert from "../ui/ZebraAlert";
 
 import { MatrixFile as File } from "@/plugins/files/types";
 import { shouldSetTimeOutForComposer } from "@/utils/MessageUtils";
+import Modal from "matrix-react-sdk/src/Modal";
+import ErrorDialog from "matrix-react-sdk/src/components/views/dialogs/ErrorDialog";
 
 interface IProps {
     room: Room;
@@ -332,6 +334,16 @@ export default class ThreadView extends React.Component<IProps, IState> {
                                 filteredFiles = filteredList.filter(
                                     (file) => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name),
                                 );
+                            }
+                            const tempLength = filteredFiles.length;
+                            filteredFiles = filteredFiles.filter(
+                                (file) => !/\.(xlsx|xls)$/i.test(file.name),
+                            );
+                            if (tempLength> filteredFiles.length){
+                                Modal.createDialog(ErrorDialog, {
+                                    title: "SpreadSheet Selected",
+                                    description: "Currently we do not support spreadsheets query. Removed from list. Apologize for inconvenience",
+                                });
                             }
                             if (filteredFiles.length > 5) {
                                 filteredFiles.splice(5, filteredList.length - 5);

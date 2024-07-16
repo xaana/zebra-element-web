@@ -468,6 +468,16 @@ export class RoomViewStore extends EventEmitter {
                                         (file) => !/\.(jpeg|jpg|png|gif|webp)$/i.test(file.name),
                                     );
                                 }
+                                const tempLength = filteredFiles.length;
+                                filteredFiles = filteredFiles.filter(
+                                    (file) => !/\.(xlsx|xls)$/i.test(file.name),
+                                );
+                                if (tempLength> filteredFiles.length){
+                                    Modal.createDialog(ErrorDialog, {
+                                        title: "SpreadSheet Selected",
+                                        description: "Currently we do not support spreadsheets query. Removed from list. Apologize for inconvenience",
+                                    });
+                                }
                                 if (filteredFiles.length > 5) {
                                     filteredFiles.splice(5, filteredList.length - 5);
                                 }
