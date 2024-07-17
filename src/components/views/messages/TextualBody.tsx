@@ -693,10 +693,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             rawQuestion = temp.split(" ").slice(0, -1).join(" ") + "...";
         }
         if (content.weather) {
-            console.log(content.weather);
             body = (
                 <>
-                    <WeatherWidget weatherData={content.weather} />
+                    <WeatherWidget weatherData={JSON.parse(content.weather)} />
                     {body}
                 </>
             );
