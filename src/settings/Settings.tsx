@@ -176,6 +176,7 @@ export interface IBaseSetting<T extends SettingValueType = SettingValueType> {
     // Whether the setting should have a warning sign in the microcopy
     shouldWarn?: boolean;
 
+    userId?: string | null;
     botApiUrl?: string | null;
     reportsApiUrl?: string | null;
     cockpitApiUrl?: string | null;
@@ -1172,6 +1173,10 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         displayName: _td("settings|preferences|enable_hardware_acceleration"),
         default: true,
     },
+    "userId": {
+        supportedLevels: [SettingLevel.DEVICE],
+        default: null,
+    },
     "botApiUrl": {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
@@ -1196,8 +1201,8 @@ export const SETTINGS: { [setting: string]: ISetting } = {
         supportedLevels: [SettingLevel.DEVICE],
         default: null,
     },
-    "LLMModel":{
+    "LLMModel": {
         supportedLevels: [SettingLevel.ACCOUNT],
         default: "Zebra LLM",
-    }
+    },
 };

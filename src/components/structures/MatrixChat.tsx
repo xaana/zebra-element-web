@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import React, { createRef } from "react";
 import { throttle } from "lodash";
 import { CryptoEvent } from "matrix-js-sdk/src/crypto";
 import { DecryptionError } from "matrix-js-sdk/src/crypto/algorithms";
@@ -33,11 +34,8 @@ import {
     createClient,
 } from "matrix-js-sdk/src/matrix";
 import { IDeferred, QueryDict, defer } from "matrix-js-sdk/src/utils";
-import React, { createRef } from "react";
-
 // what-input helps improve keyboard accessibility
 import "what-input";
-
 import { DecryptionFailureTracker } from "matrix-react-sdk/src/DecryptionFailureTracker";
 import * as Lifecycle from "matrix-react-sdk/src/Lifecycle";
 import { IMatrixClientCreds, MatrixClientPeg } from "matrix-react-sdk/src/MatrixClientPeg";
@@ -60,9 +58,9 @@ import Views from "matrix-react-sdk/src/Views";
 import { IRoomStateEventsActionPayload } from "matrix-react-sdk/src/actions/MatrixActionCreators";
 import { viewUserDeviceSettings } from "matrix-react-sdk/src/actions/handlers/viewUserDeviceSettings";
 import LoggedInView from "matrix-react-sdk/src/components/structures/LoggedInView";
-import CompleteSecurity from "matrix-react-sdk/src/components/structures/auth/CompleteSecurity";
+// import CompleteSecurity from "matrix-react-sdk/src/components/structures/auth/CompleteSecurity";
 import { ConfirmSessionLockTheftView } from "matrix-react-sdk/src/components/structures/auth/ConfirmSessionLockTheftView";
-import E2eSetup from "matrix-react-sdk/src/components/structures/auth/E2eSetup";
+// import E2eSetup from "matrix-react-sdk/src/components/structures/auth/E2eSetup";
 import ForgotPassword from "matrix-react-sdk/src/components/structures/auth/ForgotPassword";
 import Login from "matrix-react-sdk/src/components/structures/auth/Login";
 import { LoginSplashView } from "matrix-react-sdk/src/components/structures/auth/LoginSplashView";
@@ -614,6 +612,9 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
     // Set the botApiUrl and reportsApiUrl in SettingsStore based on the configuration
     private async setApiUrl(): Promise<void> {
         try {
+            const cli = MatrixClientPeg.safeGet();
+            const userId = cli.getSafeUserId();
+            await SettingsStore.setValue("userId", null, SettingLevel.DEVICE, userId);
             const configData = await getVectorConfig();
             if (configData?.bot_api) {
                 await SettingsStore.setValue("botApiUrl", null, SettingLevel.DEVICE, configData.bot_api);

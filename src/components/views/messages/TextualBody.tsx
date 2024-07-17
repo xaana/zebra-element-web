@@ -693,10 +693,9 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             rawQuestion = temp.split(" ").slice(0, -1).join(" ") + "...";
         }
         if (content.weather) {
-            console.log(content.weather);
             body = (
                 <>
-                    <WeatherWidget weatherData={content.weather} />
+                    <WeatherWidget weatherData={JSON.parse(content.weather)} />
                     {body}
                 </>
             );
@@ -931,6 +930,18 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                 </>
             );
         }
+        if (!content.open&&content.knowledge&&rawQuestion) {
+            body=(
+                <>
+                    <h2>
+                        <strong>{rawQuestion}</strong>
+                    </h2>
+                    <Separator />
+                    {this.getSectionTitle("Answer", Bell)}
+                    {body}
+                </>
+            )
+        }
         if (databaseTable && roomId && mxEvent.getId()) {
             const tableJson = JSON.parse(databaseTable);
             body = (
@@ -1099,7 +1110,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
                         <ZebraStream
                             roomId={roomId}
                             eventId={mxEvent.getId()}
-                            rawQuestion={rawQuestion}
+                            rawQuestion={content.raw_question}
                             content={content}
                         />
                     )}

@@ -60,6 +60,7 @@ export const generateText = async (task: string, editor: Editor, editorChat: Cha
                 text: textSelection,
                 task,
                 tone: tone || "",
+                user_id: SettingsStore.getValue("userId"),
             }),
         });
 

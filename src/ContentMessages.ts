@@ -634,12 +634,13 @@ export default class ContentMessages {
             if(uploadZebra&&(content.body.endsWith(".pdf") 
                 || content.body.endsWith(".docx")
                 ||content.body.endsWith(".doc")
-                ||content.body.endsWith(".odt")
-                ||content.body.endsWith(".rtf")
-                ||content.body.endsWith(".xlsx")
-                ||content.body.endsWith(".xls")
-                ||content.body.endsWith(".ods")
-                ||content.body.endsWith(".csv"))) {
+                // ||content.body.endsWith(".odt")
+                // ||content.body.endsWith(".rtf")
+                // ||content.body.endsWith(".xlsx")
+                // ||content.body.endsWith(".xls")
+                // ||content.body.endsWith(".ods")
+                // ||content.body.endsWith(".csv")
+            )) {
                 dis.dispatch({action:"uploading_files",uploading:true})
                 result = await uploadFile(matrixClient, roomId, file, undefined,upload.abortController);
                 content.file = result.file;

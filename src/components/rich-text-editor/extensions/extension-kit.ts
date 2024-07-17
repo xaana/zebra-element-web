@@ -11,8 +11,6 @@ import { common, createLowlight } from "lowlight";
 import {
     AiWriter,
     AiDataQuery,
-    AiTextModify,
-    // AiImage,
     BlockquoteFigure,
     CharacterCount,
     Color,
@@ -73,7 +71,6 @@ export const ExtensionKit = ({ userId, userName = "Zebra" }: ExtensionKitProps):
     TaskItem.configure({
         nested: true,
     }),
-    AiTextModify,
     AiWriter.configure({
         authorId: userId,
         authorName: userName,

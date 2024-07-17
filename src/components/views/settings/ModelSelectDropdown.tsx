@@ -24,7 +24,7 @@ export const ModelSelectDropdown = (): React.JSX.Element => {
 
     React.useEffect(()=>{
         //TODO
-        fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/llm_mgmt/get_model/${client.getUserId()}`, {
+        fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/llm_mgmt/get_model/user_id=${client.getUserId()}`, {
             method: 'GET', // GET is the default method, so this is optional
             headers: {
                 'Content-Type': 'application/json'
