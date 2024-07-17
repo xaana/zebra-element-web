@@ -219,12 +219,21 @@ const ZebraStream: React.FC<IProps> = ({ roomId, eventId,rawQuestion,content }) 
 
     if(!content.fetching) return null
     if (markdown === "") return (<div>Thinking...</div>)
-
+    const getDisplayQuestion = () => {
+        if (rawQuestion && rawQuestion.length > 58) {
+            const temp = rawQuestion.substring(0, 58);
+            const question = temp.split(" ").slice(0, -1).join(" ") + "...";
+            return question
+        }
+        else{
+            return rawQuestion
+        }
+    }
     return (
         <div>
             <div className="p-4">
                     <h2>
-                        <strong>{rawQuestion}</strong>
+                        <strong>{getDisplayQuestion()}</strong>
                     </h2>
                     {webSource ? (
                         <WebSearchSources data={webSource} />
