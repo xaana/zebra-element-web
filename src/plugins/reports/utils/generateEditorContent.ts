@@ -84,6 +84,7 @@ export const generateContentFromOutlines = async (
                 ...(targetAudience && { target_audience: targetAudience }),
                 ...(tone && { tone: tone }),
                 ...(mediaIds && mediaIds.length > 0 && { content_media_ids: mediaIds }),
+                user_id: SettingsStore.getValue("userId"),
             }),
         });
         const data = await res.json();

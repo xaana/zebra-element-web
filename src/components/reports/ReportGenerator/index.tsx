@@ -74,6 +74,7 @@ export const ReportGenerator = ({
                         request: prompt,
                         pages_count: responseLength === "long" ? 8 : 4,
                         ...(mediaIds.length > 0 && { content_media_ids: mediaIds }),
+                        user_id: userId,
                     }),
                 });
                 const data = await res.json();
