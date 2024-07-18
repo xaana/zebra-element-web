@@ -53,7 +53,7 @@
         },
         "reports": {
             "cockpitApi": "https://dev-memory.securezebra.com",
-            "api": "https://zebraap2-demo.turium.ai",
+            "api": "https://zebraap2-demo.xaana.net",
             "collaboraServerUrl": "https://demo-reporting.turium.ai",
             "wopiSrc": "http://fastapi:8000"
         },
@@ -61,7 +61,7 @@
             "url": "https://zebraalgology-demo.turium.ai"
         },
         "websocket": {
-            "url": "wss://zebraap2-demo.turium.ai/ws"
+            "url": "wss://zebraap2-demo.xaana.net/ws"
         },
         "workflow": {
             "url": "https://zebraheugo-demo.turium.ai"
