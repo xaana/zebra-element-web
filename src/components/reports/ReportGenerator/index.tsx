@@ -77,8 +77,11 @@ export const ReportGenerator = ({
                         user_id: userId,
                     }),
                 });
-                const data = await res.json();
-                setOutlineItems(data);
+                if (res.ok) {
+                    const data = await res.json();
+                    setOutlineItems(data);
+                }
+                
             } catch (errPayload: any) {
                 const errorMessage = errPayload?.response?.data?.error;
                 const message =
@@ -327,6 +330,7 @@ export const ReportGenerator = ({
                                         <Input
                                             placeholder="Name for your document"
                                             className="w-[240px]"
+                                            value={name}
                                             onChange={(e) => setName(e.target.value)}
                                         />
                                     </div>
