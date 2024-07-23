@@ -114,7 +114,7 @@ export const generateContentFromRequirements = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer app-tgdwV3QrhqtBb0UaiyYi5mBV",
+                "Authorization": "Bearer app-EkYVNe4H7tB9XtdTu9GBE1Zt",
             },
             body: JSON.stringify({
                 inputs: {
