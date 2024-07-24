@@ -7,6 +7,8 @@ import { ResponseActionCollabora } from "@/components/reports/Chat/response-acti
 import { markdownToHtml } from "@/lib/utils/markdownToHtml";
 import SheetResponse from "@/components/reports/Chat/SheetResponse";
 import { Button } from "@/components/ui/button";
+import TableMessage, { Data } from "@/components/reports/Chat/TableMessage";
+import ImageMessage from "@/components/reports/Chat/ImageMessage";
 
 export const generateText = async (
     task: string,
@@ -208,6 +210,126 @@ export const generateSheetText = async (
     } catch (errPayload: any) {
         const errorMessage = errPayload?.response?.data?.error;
         const message = errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
+        console.error(message);
+    }
+};
+
+export const generateDataQuery = async (
+    selectedCells:{[key:string]:string},
+    task: string,
+    editorChat: Chat,
+    editor: CollaboraExports,
+    questionQuery: boolean,
+): Promise<void> => {
+    // Text selection successfull, append task to chat
+    await editorChat.appendMessage(
+        `${task}`,
+        "user",
+        false,
+        null,
+        false,
+        false,
+        true,
+    );
+    // Generate text from backend
+    try {
+        await editorChat.appendMessage(
+            "Generating...",
+            "system",
+            true,
+            null,
+            false,
+            false,
+            true,
+        );
+        const res: Response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/data_query`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                data: JSON.stringify(selectedCells),
+                task,
+                // user_id: SettingsStore.getValue("userId"),
+            }),
+        });
+        
+        if (res.ok) {
+            editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+            const response = await res.json();
+            const result = response.result
+            const type = response.type
+            
+            if (response.result){
+                if (type==="string"){
+                    await editorChat.appendMessage(
+                        result,
+                        "system",
+                        false,
+                        null,
+                        false,
+                        false,
+                        true,
+                    );
+                }else if (type==="json"){
+                    const tableData:Data[] = JSON.parse(result);
+                    if(tableData&&tableData.length>0){
+                        await editorChat.appendMessage(
+                            "Data for your question: "+task,
+                            "system",
+                            false,
+                            <TableMessage tableData={tableData.slice(0,10)} />,
+                            false,
+                            false,
+                            true,
+                        );
+                    }
+                }
+                else if(type ==="chart"){
+                    console.log('image data',result)
+                    await editorChat.appendMessage(
+                        "Data for your question: "+task,
+                        "system",
+                        false,
+                        <ImageMessage imageData={result} />,
+                        false,
+                        false,
+                        true,
+                    );
+                }
+                
+            }
+            else{
+                throw new Error(await res.text());
+            }
+            
+        }
+        else{
+            editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+            await editorChat.appendMessage(
+                "Error while generating, please try again",
+                "system",
+                false,
+                null,
+                false,
+                false,
+                true,
+            );
+            throw new Error(await res.text());
+        }
+    } catch (errPayload: any) {
+        const errorMessage = errPayload?.response?.data?.error;
+        const message = errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
+        editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+        await editorChat.appendMessage(
+            "Error while generating, please try again",
+            "system",
+            false,
+            null,
+            false,
+            false,
+            true,
+        );
         console.error(message);
     }
 };

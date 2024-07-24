@@ -9,7 +9,7 @@ import { Chat, useChat } from "@/plugins/reports/hooks/use-chat";
 import DataQuerySidebar from "@/components/reports/CollaboraEditor/DataQuerySidebar";
 import DocQuerySidebar from "@/components/reports/CollaboraEditor/DocQuerySidebar";
 import { useCollabora } from "@/plugins/reports/hooks/useCollabora";
-import { generateSheetText, generateText } from "@/plugins/reports/utils/generateTextCollabora";
+import { generateDataQuery, generateSheetText, generateText } from "@/plugins/reports/utils/generateTextCollabora";
 import { Message, Report } from "@/plugins/reports/types";
 import { generateSheetResultFromSoma } from "@/plugins/reports/utils/generateEditorContent";
 
@@ -124,7 +124,13 @@ const CollaboraEditor = ({
                     true,
                 );
             }
-            await generateSheetText(selectedCells,inputText,questions,chat, editor,questionQuery);
+            if (questionQuery){
+                await generateSheetText(selectedCells,inputText,questions,chat, editor,questionQuery);
+            }else{
+                await generateDataQuery(selectedCells,inputText,chat, editor,questionQuery);
+            }
+            
+            
             // if(res){
             //     const results = res.split("$_$");
             //     const keys = Object.keys(selectedCells).map((key)=>{
