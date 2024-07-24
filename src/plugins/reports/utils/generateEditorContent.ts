@@ -111,33 +111,78 @@ export const generateContentFromRequirements = async (
     userId: string,
 ): Promise<string | undefined> => {
     try {
-        const res = await fetch(`${SettingsStore.getValue("cockpitApiUrl")}/v1/workflows/run`, {
+        const res = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/generate_content_from_soma`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer app-uLVwneZm4KsJimMqpkszBXJN",
             },
             body: JSON.stringify({
-                inputs: {
-                    requirement_csv: requirementDocumentIds,
-                    supporting_csv: supportingDocumentIds,
-                    response_length: responseLength,
-                },
+                requirement_csv: requirementDocumentIds,
+                supporting_csv: supportingDocumentIds,
+                response_length: responseLength,
                 response_mode: "blocking",
                 user: userId,
             }),
         });
 
-        const response = await res.json();
-        if (response.data.status === "succeeded") {
-            return response.data.outputs.text;
+       
+        if (res.ok) {
+            const response = await res.json();
+            if (response.result){
+                return response.result;
+            }
+            else{
+                throw new Error(await res.text());
+            }
+            
         }
-        return;
+        else{
+            throw new Error(await res.text());
+        }
         // if (data.answer) {
         //     return data.answer as string;
         // } else return;
     } catch (errPayload: any) {
-        console.error(`An error occurred: ${errPayload?.response?.data?.error ?? errPayload}`);
+        console.error(`An error occurred: ${errPayload}`);
+        throw errPayload;
+    }
+};
+
+
+export const generateSheetResultFromSoma = async (
+    selectedCells:any,
+    userId: string,
+): Promise<string | undefined> => {
+    try {
+        const res = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/generate_sheet_from_soma`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                question: selectedCells,
+            }),
+        });
+
+       
+        if (res.ok) {
+            const response = await res.json();
+            if (response.result){
+                return response.result;
+            }
+            else{
+                throw new Error(await res.text());
+            }
+            
+        }
+        else{
+            throw new Error(await res.text());
+        }
+        // if (data.answer) {
+        //     return data.answer as string;
+        // } else return;
+    } catch (errPayload: any) {
+        console.error(`An error occurred: ${errPayload}`);
         throw errPayload;
     }
 };

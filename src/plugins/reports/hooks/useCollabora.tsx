@@ -32,8 +32,8 @@ export interface CollaboraExports {
     sendMessage: (message: CollaboraPostMessage) => void;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
-    fetchSelectedCells: () => Promise<Object | undefined>;
-    insertCells: () => void;
+    fetchSelectedCells: () => Promise<{[key:string]:string} | undefined>;
+    insertCells: (value: {[key: string]: any}) => any;
     insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
@@ -233,6 +233,7 @@ export function useCollabora({
             ...(!message.SendTime && { SendTime: timestamp }),
             ...(!message.Values && { Values: null }),
         };
+        console.log('send message', sendMessage)
         iframeRef.current.contentWindow?.postMessage(JSON.stringify(sendMessage), "*");
 
         if (expectResponse) {
@@ -377,7 +378,7 @@ export function useCollabora({
         }
     };
 
-    const fetchSelectedCells = async (): Promise<Object | undefined> => {
+    const fetchSelectedCells = async (): Promise<{[key:string]:string}| undefined> => {
         const response = await sendMessage(
             {
                 MessageId: "CallPythonScript",
@@ -401,12 +402,16 @@ export function useCollabora({
         }
     };
 
-    const insertCells = (): void => {
-        sendMessage(
+    const insertCells = (value:{[key:string]:any}): any => {
+        console.log(JSON.stringify(value));
+        return sendMessage(
             {
                 MessageId: "CallPythonScript",
                 ScriptFile: "InsertCell.py", // Ensure this Python script is deployed on the server
-                Function: "insertContentIntoCells",
+                Function: "InsertCell",
+                Values: {
+                    input: { type: "string", value: JSON.stringify(value) },
+                },
             },
             false,
         );
@@ -474,16 +479,18 @@ export function useCollabora({
         );
         setIsAiLoading(false);
         if (generatedMarkdownContent) {
+            console.log(generatedMarkdownContent);
             goToSecondPage();
             // Insert html formatted content
-            markdownToHtml(generatedMarkdownContent)
-                .then((html) => {
-                    insertCustomHtml(html);
-                })
-                .catch((error) => {
-                    console.error("Error while inserting report content:", error);
-                    toast.error("Report generation failed. Please try again later.");
-                });
+            // markdownToHtml(generatedMarkdownContent)
+            //     .then((html) => {
+            //         insertCustomHtml(html);
+            //     })
+            //     .catch((error) => {
+            //         console.error("Error while inserting report content:", error);
+            //         toast.error("Report generation failed. Please try again later.");
+            //     });
+            insertCustomHtml(generatedMarkdownContent);
         } else {
             toast.error("Report generation failed. Please try again later.");
         }
