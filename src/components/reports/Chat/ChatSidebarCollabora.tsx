@@ -12,12 +12,16 @@ export const ChatSidebarCollabora = ({
     setChatInput,
     onClose,
     onQueryFormSubmit,
+    sheet,
+    setSheetQuery,
 }: {
     chat: Chat;
     chatInput: string;
     setChatInput: React.Dispatch<React.SetStateAction<string>>;
     onClose: () => void;
     onQueryFormSubmit: () => void;
+    sheet?:boolean
+    setSheetQuery: (query: string) => void;
 }): JSX.Element => {
     const handleChatStop = (): void => {
         console.log("Stop");
@@ -46,6 +50,8 @@ export const ChatSidebarCollabora = ({
                 setInput={setChatInput}
                 onQueryFormSubmit={onQueryFormSubmit}
                 onStop={handleChatStop}
+                sheet={sheet}
+                setSheetQuery={setSheetQuery}
             />
         </div>
     );

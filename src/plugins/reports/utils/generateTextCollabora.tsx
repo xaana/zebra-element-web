@@ -145,30 +145,65 @@ export const generateSheetText = async (
             false,
             true,
         );
-        const res: Response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/generate_sheet_from_soma`, {
+        const res: Response = await fetch(`${SettingsStore.getValue("reportsApiUrl")}/api/generate/data_filling`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                questions: questions,
-                task,
+                data: JSON.stringify(selectedCells),
+                question:task,
                 // user_id: SettingsStore.getValue("userId"),
             }),
         });
         
         if (res.ok) {
             editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+            await editorChat.appendMessage(
+                "Inserting...",
+                "system",
+                true,
+                null,
+                false,
+                false,
+                true,
+            );
             const response = await res.json();
-            const result = response.result
-            const answers:{[key:string]:string} = {}
-            Object.keys(selectedCells).forEach((key)=>{
-                 const nextCol:string = nextColumn(key);
-                 const q = selectedCells[key];
-                 if (result[q]){
-                    answers[nextCol] = result[q];
-                 }
-            })
+            const result = response
+            const status = await editor.insertCells(result)
+            console.log(status)
+            if (status.success){
+                editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+                await editorChat.appendMessage(
+                    "Inserted!",
+                    "system",
+                    false,
+                    null,
+                    false,
+                    false,
+                    true,
+                );
+            }
+            else{
+                editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+                await editorChat.appendMessage(
+                    "Failed to insert, please try again.",
+                    "system",
+                    false,
+                    null,
+                    false,
+                    false,
+                    true,
+                );
+            }
+            // const answers:{[key:string]:string} = {}
+            // Object.keys(selectedCells).forEach((key)=>{
+            //      const nextCol:string = nextColumn(key);
+            //      const q = selectedCells[key];
+            //      if (result[q]){
+            //         answers[nextCol] = result[q];
+            //      }
+            // })
             // const children = 
             // <div>
             //     {Object.keys(response.result).map((key) => {
@@ -177,21 +212,20 @@ export const generateSheetText = async (
             //     })}
             //     <Button onClick={() => {}}>Insert</Button>
             // </div>
-            if (response.result){
-                await editorChat.appendMessage(
-                    "",
-                    "system",
-                    false,
-                    <SheetResponse result={response.result} cells={answers} editor={editor} />,
-                    false,
-                    false,
-                    true,
-                );
-                return response.result;
-            }
-            else{
-                throw new Error(await res.text());
-            }
+            // if (response.result){
+            //     await editorChat.appendMessage(
+            //         "",
+            //         "system",
+            //         false,
+            //         <SheetResponse result={response.result} cells={answers} editor={editor} />,
+            //         false,
+            //         false,
+            //         true,
+            //     );
+            // }
+            // else{
+            //     throw new Error(await res.text());
+            // }
             
         }
         else{
@@ -210,6 +244,16 @@ export const generateSheetText = async (
     } catch (errPayload: any) {
         const errorMessage = errPayload?.response?.data?.error;
         const message = errorMessage !== "An error occurred" ? `An error has occured: ${errorMessage}` : errorMessage;
+        editorChat.setMessages((prev)=>prev.filter((message)=>(message.id!==editorChat.lastSystemMessageId.current)));
+        await editorChat.appendMessage(
+            "Error while generating, please try again",
+            "system",
+            false,
+            null,
+            false,
+            false,
+            true,
+        );
         console.error(message);
     }
 };
@@ -291,7 +335,7 @@ export const generateDataQuery = async (
                         "Data for your question: "+task,
                         "system",
                         false,
-                        <ImageMessage imageData={result} />,
+                        <ImageMessage imageData={result} editor={editor} />,
                         false,
                         false,
                         true,

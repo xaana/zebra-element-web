@@ -6,6 +6,7 @@ import { useEnterSubmit } from "@/plugins/reports/hooks/use-enter-submit";
 import DotPulseLoader from "@/components/ui/loaders/dot-pulse-loader";
 import { Icon } from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/TooltipAlt";
+import { IconZebra } from "@/components/ui/icons";
 // Interface when disabled is provided and disabledMessage is required
 interface ChatQueryFormPropsWithDisabled {
     input: string;
@@ -15,6 +16,8 @@ interface ChatQueryFormPropsWithDisabled {
     disabled: boolean;
     disabledMessage: string;
     onStop?: () => void;
+    sheet?:boolean;
+    setSheetQuery: (query: string) => void;
 }
 
 // Interface when disabled and disabledMessage are optional
@@ -26,6 +29,8 @@ interface ChatQueryFormPropsWithoutDisabled {
     disabled?: never;
     disabledMessage?: string;
     onStop?: () => void;
+    sheet?:boolean;
+    setSheetQuery: (query: string) => void;
 }
 
 // Combining both interfaces using a union type
@@ -39,9 +44,22 @@ export function ChatQueryForm({
     disabled = false,
     disabledMessage = "",
     onStop,
+    sheet,
+    setSheetQuery,
 }: ChatQueryFormProps): JSX.Element {
     const { formRef, onKeyDown } = useEnterSubmit();
     const inputRef = React.useRef<HTMLTextAreaElement>(null);
+    const [insights, setInsights] = React.useState("Filling");
+    const handleTaggle = (e) => {
+        e.preventDefault();
+        if(insights==="Insights"){
+            setSheetQuery("Filling")
+            setInsights("Filling")
+        }else{
+            setSheetQuery("Insights")
+            setInsights("Insights")
+        }
+    }
     React.useEffect(() => {
         if (inputRef.current) {
             inputRef.current.focus();
@@ -69,12 +87,16 @@ export function ChatQueryForm({
                         style={{ boxSizing: "border-box" }}
                         minRows={1}
                         maxRows={3}
-                        value={input}
+                        value={input?input:" "}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder={disabled && disabledMessage ? disabledMessage : "Message Zebra..."}
                         spellCheck={false}
                         className="w-full resize-none bg-transparent py-3.5 focus-within:outline-none text-sm"
                     />
+                    {sheet&&<Button variant="outline" size="icon" className="font-semibold text-xs h-7 w-16" onClick={(e)=>handleTaggle(e)}>
+                        <IconZebra className="h-4 w-4" />
+                            {insights}
+                    </Button>}
                     {isLoading ? (
                         <DotPulseLoader />
                     ) : (

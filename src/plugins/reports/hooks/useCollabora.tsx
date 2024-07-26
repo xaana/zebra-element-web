@@ -29,7 +29,7 @@ export interface CollaboraExports {
     zebraMode: string;
     setZebraMode: React.Dispatch<React.SetStateAction<string>>;
     documentLoaded: boolean;
-    sendMessage: (message: CollaboraPostMessage) => void;
+    sendMessage: (message: CollaboraPostMessage, waitForResponse?: boolean) => Promise<any> | undefined;
     startLoading: boolean;
     fetchSelectedText: () => Promise<string | undefined>;
     fetchSelectedCells: () => Promise<{[key:string]:string} | undefined>;
@@ -332,31 +332,31 @@ export function useCollabora({
                 insertBefore: "sidebar",
             },
         });
-        sendMessage({
-            MessageId: "Insert_Button",
-            Values: {
-                id: "custom_toggle_doc_query",
-                imgurl: `${window.location.origin}/img/ai-writer.svg`,
-                hint: "AI Writer",
-                mobile: true,
-                tablet: true,
-                label: "AI Writer",
-                insertBefore: "custom_toggle_zebra",
-            },
-        });
-        // Insert custom buttons for Zebra
-        sendMessage({
-            MessageId: "Insert_Button",
-            Values: {
-                id: "custom_toggle_data_query",
-                imgurl: `${window.location.origin}/img/data-query.svg`,
-                hint: "AI Database Query",
-                mobile: false,
-                tablet: true,
-                label: "AI Database Query",
-                insertBefore: "custom_toggle_doc_query",
-            },
-        });
+        // sendMessage({
+        //     MessageId: "Insert_Button",
+        //     Values: {
+        //         id: "custom_toggle_doc_query",
+        //         imgurl: `${window.location.origin}/img/ai-writer.svg`,
+        //         hint: "AI Writer",
+        //         mobile: true,
+        //         tablet: true,
+        //         label: "AI Writer",
+        //         insertBefore: "custom_toggle_zebra",
+        //     },
+        // });
+        // // Insert custom buttons for Zebra
+        // sendMessage({
+        //     MessageId: "Insert_Button",
+        //     Values: {
+        //         id: "custom_toggle_data_query",
+        //         imgurl: `${window.location.origin}/img/data-query.svg`,
+        //         hint: "AI Database Query",
+        //         mobile: false,
+        //         tablet: true,
+        //         label: "AI Database Query",
+        //         insertBefore: "custom_toggle_doc_query",
+        //     },
+        // });
     };
 
     const fetchSelectedText = async (): Promise<string | undefined> => {
@@ -403,7 +403,6 @@ export function useCollabora({
     };
 
     const insertCells = (value:{[key:string]:any}): any => {
-        console.log(JSON.stringify(value));
         return sendMessage(
             {
                 MessageId: "CallPythonScript",
@@ -413,7 +412,7 @@ export function useCollabora({
                     input: { type: "string", value: JSON.stringify(value) },
                 },
             },
-            false,
+            true,
         );
     };
 
