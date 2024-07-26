@@ -696,7 +696,7 @@ export default class TextualBody extends React.Component<IBodyProps, IState> {
             console.log(content.weather);
             body = (
                 <>
-                    <WeatherWidget weatherData={content.weather} />
+                    <WeatherWidget weatherData={JSON.parse(content.weather)} />
                     {body}
                 </>
             );
