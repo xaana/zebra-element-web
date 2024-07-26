@@ -21,6 +21,7 @@
         media-src * blob: data:;
         child-src * blob: data:;
         worker-src 'self' blob: <%= csp_extra_source %>;
+        frame-ancestors 'self' https://dev.turium.ai;
         frame-src * blob: data:;
         form-action 'self' <%= csp_extra_source %>;
         manifest-src 'self' <%= csp_extra_source %>;
