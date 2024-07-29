@@ -34,6 +34,7 @@ export interface CollaboraExports {
     fetchSelectedText: () => Promise<string | undefined>;
     fetchSelectedCells: () => Promise<{[key:string]:string} | undefined>;
     insertCells: (value: {[key: string]: any}) => any;
+    insertTable: (position:string,table:string) => any;
     insertText: (text: string, selectInsertedText?: boolean) => void;
     insertCustomHtml: (htmlContent: string) => void;
     undo: () => void;
@@ -415,6 +416,20 @@ export function useCollabora({
             true,
         );
     };
+    const insertTable = (position:string,table:string): any => {
+        return sendMessage(
+            {
+                MessageId: "CallPythonScript",
+                ScriptFile: "InsertCell.py", // Ensure this Python script is deployed on the server
+                Function: "InsertTable",
+                Values: {
+                    position: {type: "string", value: position},
+                    table: { type: "string", value: table },
+                },
+            },
+            true,
+        );
+    };
 
     const insertText = (text: string, selectInsertedText: boolean = false): void => {
         sendMessage({
@@ -584,6 +599,7 @@ export function useCollabora({
         fetchSelectedCells,
         insertCells,
         insertText,
+        insertTable,
         insertCustomHtml,
         undo,
         redo,

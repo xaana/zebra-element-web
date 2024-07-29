@@ -322,7 +322,7 @@ export const generateDataQuery = async (
                             "Data for your question: "+task,
                             "system",
                             false,
-                            <TableMessage tableData={tableData.slice(0,10)} />,
+                            <TableMessage tableData={tableData.slice(0,10)} editor={editor} />,
                             false,
                             false,
                             true,
