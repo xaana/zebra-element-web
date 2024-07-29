@@ -31,6 +31,7 @@ const CollaboraEditor = ({
     const [chatInput, setChatInput] = useState("");
     const handlePromptClick = useRef<undefined | ((prompt: string) => Promise<void>)>();
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const [sheetQuery, setSheetQuery] = useState("Filling");
 
     const chatInitialMessage: Message = (selectedReport.fileType === "docx"||selectedReport.fileType === "doc") ? {
         id: "0",
@@ -105,8 +106,10 @@ const CollaboraEditor = ({
             selectedText = await editor.fetchSelectedText();
         }else if (type==="xlsx" || type === "xls") {
             const selectedCells = await editor.fetchSelectedCells();
+            console.log(selectedCells)
             if (!selectedCells) return
-            const questionQuery = changeSingleColumnOrRow(Object.keys(selectedCells))
+            // const questionQuery = changeSingleColumnOrRow(Object.keys(selectedCells))
+            const questionQuery = sheetQuery==="Insights" ? false : true
             const questions:string[] = []
             Object.keys(selectedCells).forEach((key:string) => {
                 if (selectedCells[key]!==""){
@@ -123,6 +126,7 @@ const CollaboraEditor = ({
                     false,
                     true,
                 );
+                return
             }
             if (questionQuery){
                 await generateSheetText(selectedCells,inputText,questions,chat, editor,questionQuery);
@@ -181,6 +185,8 @@ const CollaboraEditor = ({
                                 chat.reset();
                             }}
                             onQueryFormSubmit={handleQueryFormSubmit}
+                            sheet={selectedReport.fileType.toLowerCase()==="xlsx" || selectedReport.fileType.toLowerCase()==="xls"}
+                            setSheetQuery={setSheetQuery}
                         />
                     ) : editor.zebraMode === "doc" ? (
                         <DocQuerySidebar

@@ -140,7 +140,7 @@ const MessageComposerButtons: React.FC<IProps> = (props: IProps) => {
             uploadButton(),
             databaseSelector(),
             filesSelector(room.roomId),
-            knowledgeBaseButton(room.roomId,props.toggleButtonMenu),
+            // knowledgeBaseButton(room.roomId,props.toggleButtonMenu),
             voiceRecordingButton(props, narrow),
             audioCaptureButton(),
             // voiceBotButton(matrixClient, room),
